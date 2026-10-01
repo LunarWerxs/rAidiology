@@ -1,0 +1,9 @@
+predictions: work/eval/predictions.csv (2033214 bytes)
+gradings: radiological_gradings.csv (34417 bytes)
+scorecard: modalities/spine_mri/eval/SCORECARD.md (68589 bytes)
+table accounting: 38 rows checked (38 in scorecard, 38 recomputed)
+table overall: 312 rows checked (312 in scorecard, 312 recomputed)
+table vendor: 312 rows checked (312 in scorecard, 312 recomputed)
+table paired: 2 rows checked (2 in scorecard, 2 recomputed)
+recompute: OK, 3794 numbers checked
+exit 0

@@ -1,10 +1,10 @@
-# SuprSkan
+# rAidiology
 
-**Not a medical device.** SuprSkan is not cleared or approved by the FDA or any other regulator. It
+**Not a medical device.** rAidiology is not cleared or approved by the FDA or any other regulator. It
 is for education and a second look, never for diagnosis or treatment decisions; always discuss
 your results with a doctor ([LICENSING.md](LICENSING.md#not-a-medical-device)).
 
-SuprSkan turns a spine MRI reading into a calm, plain-English web page. It shows a status
+rAidiology turns a spine MRI reading into a calm, plain-English web page. It shows a status
 ("Looks OK", "Worth watching" or "See a doctor"), a short summary, and each finding explained in
 everyday words. Findings sit on an interactive 3D model: a glass human body with the spine inside
 it, where the scanned regions glow in colours that match how much each finding matters. You can
@@ -13,6 +13,20 @@ colour-coded diagram, and look up words and questions to ask your doctor.
 
 It is a static site: no build step, no npm. The page is `site/index.html` with plain ES modules
 and CSS; three.js is loaded from jsDelivr (pinned to 0.170.0).
+
+Spine MRI is the first scan type; X-ray and CT are planned, each in its own folder.
+
+## Repository layout
+
+| Folder | What it holds |
+|---|---|
+| `site/` | the viewer (static web app) and its data format, `site/data/CONTRACT.md` |
+| `core/` | parts every scan type shares: DICOM handling (`core/dicom/`), image tools for AI readers (`core/reading/`), and `core/paths.py`, which says where data, weights and tools live |
+| `modalities/` | one folder per scan type, each with its pipeline, reader brief, scorecard (`eval/`) and model cards. How a scan type plugs in: [modalities/README.md](modalities/README.md) |
+| `tools/` | repository tooling, such as the builder of the reference skeleton the viewer shows |
+
+Datasets, trained weights and installed tools sit beside the repository (`../Datasets`,
+`../Models`, `../_tools`), never in it; working files go to the git-ignored `work/`.
 
 ## Run locally
 
@@ -30,7 +44,7 @@ Everything the page shows comes from `site/data/`; the format is in
 [`site/data/CONTRACT.md`](site/data/CONTRACT.md).
 
 - `data/report.json`: the real reading. `make_report.py` builds it from `reading.json`, which AI
-  readers and a person write; that step is not a script (see `pipeline/README.md`, "The reading step").
+  readers and a person write; that step is not a script (see `modalities/spine_mri/README.md`, "The reading step").
 - `data/report.sample.json`: made-up demo data. The page uses it only when `report.json` is
   missing, and then shows a "Sample data" badge.
 - `data/meshes/...`: one `.glb` per vertebra/disc/cord mesh, listed in `report.json`.
@@ -47,10 +61,10 @@ under a `/<repo>/` sub-path.
 
 ## Making the data (pipeline)
 
-`pipeline/` turns a patient MRI disc into everything in `site/data/`: DICOM to NIfTI, the
+`modalities/spine_mri/` turns a patient MRI disc into everything in `site/data/`: DICOM to NIfTI, the
 TotalSpineSeg model (code LGPL-3.0; its trained weights are permission pending, see LICENSING.md) (vertebrae, discs, cord, canal), per-level measurements, smooth
 3D meshes and de-identified image stacks. The written reading comes from an AI reading panel with
-adversarial verification. See [`pipeline/README.md`](pipeline/README.md).
+adversarial verification. See [`modalities/spine_mri/README.md`](modalities/spine_mri/README.md).
 
 For local preview with caching off (so edits show on reload): `python serve.py`.
 
@@ -78,19 +92,19 @@ Required Notice: Copyright (c) 2026 LunarWerx (https://github.com/LunarWerxs)
 
 ## Where it is going
 
-SuprSkan is becoming a measured specialist: a scorecard on expert-graded public scans (SPIDER), a
+rAidiology is becoming a measured specialist: a scorecard on expert-graded public scans (SPIDER), a
 disc grader trained from scratch, healthy-population references and a mistake log. On 44 held-out
 SPIDER patients the disc grader gave the expert's Pfirrmann grade 61% of the time (95% CI 52-68%),
 against 44% for the measurement rules. Every number, method and caveat is in
-[pipeline/eval/SCORECARD.md](pipeline/eval/SCORECARD.md), and the grader's
-[model card](pipeline/models/disc-grader.md) says what it is and is not. Its trained weights are a
+[modalities/spine_mri/eval/SCORECARD.md](modalities/spine_mri/eval/SCORECARD.md), and the grader's
+[model card](modalities/spine_mri/models/disc-grader.md) says what it is and is not. Its trained weights are a
 download on this repository's Releases page (`disc-grader-v1`; unzip into `../Models/disc-grader-v1/`).
 Development used private data that is not part of this repository. Scored runs used an earlier
-wording of `pipeline/reading/READER_BRIEF.md`.
+wording of `modalities/spine_mri/READER_BRIEF.md`.
 
 ## Built on, and what already exists
 
-SuprSkan's viewer, report format and reading workflow were written for this project; no existing
+rAidiology's viewer, report format and reading workflow were written for this project; no existing
 app was copied. It stands on these open-source pieces:
 
 - [TotalSpineSeg](https://github.com/neuropoly/totalspineseg) (NeuroPoly; code LGPL-3.0, trained weights permission pending): labels every vertebra, disc, the cord and the canal (nnU-Net).

@@ -4,9 +4,9 @@ work/
 site/data/report.json
 site/data/meshes/
 site/data/stacks/
-pipeline/reading*.json
-pipeline/comparison.json
-pipeline/eval/cases/
+cases/owner/reading*.json
+cases/owner/comparison.json
+cases/owner/mistake-log/
 __pycache__/
 *.pyc
 .dev.vars

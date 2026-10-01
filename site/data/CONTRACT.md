@@ -1,7 +1,7 @@
 # Data contract: what the analysis pipeline writes and the web app reads
 
 The site is static (any static host; a real scan goes behind access control, see the README).
-Everything the app shows comes from `site/data/`. The pipeline (Python, `pipeline/`) writes these files; the app must render gracefully when
+Everything the app shows comes from `site/data/`. The pipeline (Python, `modalities/spine_mri/`) writes these files; the app must render gracefully when
 any optional file is missing (show a tasteful empty state, never a blank page or a console crash).
 
 ## `data/report.json` (required)
@@ -76,14 +76,14 @@ any optional file is missing (show a tasteful empty state, never a blank page or
 | `disc_to_csf_signal` | disc signal divided by spinal-fluid signal on the same slices (higher = more water) |
 | `canal_ap_at_disc_mm` | front-to-back width of the fluid sac at the disc |
 | `cord_ap_at_disc_mm` | front-to-back width of the cord at the disc |
-| `cord_compression_ratio_hc` | cervical only, in percent: how much narrower front to back the cord is at this level than expected from healthy adults of the same sex and age +-10 years (Spinal Cord Toolbox `sct_compute_compression -normalize-hc 1`, its `diameter_AP_ratio_PAM50_normalized`; database of 203 healthy adults, `pipeline/sct/`). 0 = as expected, positive = narrower, negative = wider. Present only where the reading reports cord or canal narrowing. PAM50 template: permission pending. |
+| `cord_compression_ratio_hc` | cervical only, in percent: how much narrower front to back the cord is at this level than expected from healthy adults of the same sex and age +-10 years (Spinal Cord Toolbox `sct_compute_compression -normalize-hc 1`, its `diameter_AP_ratio_PAM50_normalized`; database of 203 healthy adults, `modalities/spine_mri/sct/`). 0 = as expected, positive = narrower, negative = wider. Present only where the reading reports cord or canal narrowing. PAM50 template: permission pending. |
 
 `levels[].specialist` (optional, lumbar T12-L1 to L5-S1 only): the shipped specialist model's
 grades. Present only when a method passed the ship rule on the held-out test split
-(`pipeline/eval/SCORECARD.md`); otherwise absent and the app shows nothing.
+(`modalities/spine_mri/eval/SCORECARD.md`); otherwise absent and the app shows nothing.
 
 ```json
-{ "model": "SuprSkan disc grader v1",
+{ "model": "rAidiology disc grader v1",
   "pfirrmann": 3, "pfirrmann_confidence": 0.62, "pfirrmann_probs": [0.02, 0.21, 0.62, 0.13, 0.02],
   "items": { "herniation": 0.08, "narrowing": 0.31, "bulging": 0.71, "spondylolisthesis": 0.01,
              "up_endplate": 0.22, "low_endplate": 0.18, "modic": 0.05 },
@@ -102,12 +102,12 @@ Present only with `levels[].specialist`. The app shows `headline.text` as one li
 Overview and never claims more than it says.
 
 ```json
-{ "method": "SuprSkan disc grader v1", "split": "held-out test, SPIDER",
+{ "method": "rAidiology disc grader v1", "split": "held-out test, SPIDER",
   "n_scans": 44, "n_discs": 264,
   "headline": { "item": "pfirrmann", "metric": "exact", "value": 0.61, "ci": [0.52, 0.68],
                 "text": "Tested on 44 expert-graded scans: agrees with the expert on disc drying 61% of the time (95% CI 52-68%)." },
   "permission": "TSS weights: permission pending",
-  "source": "pipeline/eval/SCORECARD.md" }
+  "source": "modalities/spine_mri/eval/SCORECARD.md" }
 ```
 
 ### Optional `comparison.model_label` and `comparison.rows[].model_short`

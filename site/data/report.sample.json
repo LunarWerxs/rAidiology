@@ -39,17 +39,17 @@
     { "region": "cervical", "level": "C6-C7", "status": "normal", "disc": "Healthy disc.", "canal": "none", "foramen_left": "none", "foramen_right": "none", "note": "" },
     { "region": "cervical", "level": "C7-T1", "status": "normal", "disc": "Healthy disc.", "canal": "none", "foramen_left": "none", "foramen_right": "none", "note": "" },
     { "region": "lumbar", "level": "T12-L1", "status": "normal", "disc": "Healthy disc.", "canal": "none", "foramen_left": "none", "foramen_right": "none", "note": "",
-      "specialist": { "model": "SuprSkan disc grader v1", "pfirrmann": 2, "pfirrmann_confidence": 0.81, "flags": [], "not_blind": false } },
+      "specialist": { "model": "rAidiology disc grader v1", "pfirrmann": 2, "pfirrmann_confidence": 0.81, "flags": [], "not_blind": false } },
     { "region": "lumbar", "level": "L1-L2", "status": "normal", "disc": "Healthy disc.", "canal": "none", "foramen_left": "none", "foramen_right": "none", "note": "",
-      "specialist": { "model": "SuprSkan disc grader v1", "pfirrmann": 2, "pfirrmann_confidence": 0.77, "flags": [], "not_blind": false } },
+      "specialist": { "model": "rAidiology disc grader v1", "pfirrmann": 2, "pfirrmann_confidence": 0.77, "flags": [], "not_blind": false } },
     { "region": "lumbar", "level": "L2-L3", "status": "normal", "disc": "Healthy disc.", "canal": "none", "foramen_left": "none", "foramen_right": "none", "note": "",
-      "specialist": { "model": "SuprSkan disc grader v1", "pfirrmann": 2, "pfirrmann_confidence": 0.72, "flags": [], "not_blind": false } },
+      "specialist": { "model": "rAidiology disc grader v1", "pfirrmann": 2, "pfirrmann_confidence": 0.72, "flags": [], "not_blind": false } },
     { "region": "lumbar", "level": "L3-L4", "status": "normal", "disc": "Healthy disc.", "canal": "none", "foramen_left": "none", "foramen_right": "none", "note": "",
-      "specialist": { "model": "SuprSkan disc grader v1", "pfirrmann": 3, "pfirrmann_confidence": 0.54, "flags": [], "not_blind": false } },
+      "specialist": { "model": "rAidiology disc grader v1", "pfirrmann": 3, "pfirrmann_confidence": 0.54, "flags": [], "not_blind": false } },
     { "region": "lumbar", "level": "L4-L5", "status": "mild", "disc": "Drier than normal, with a mild all-round bulge.", "canal": "none", "foramen_left": "mild", "foramen_right": "mild", "note": "Nerve exits slightly narrowed on both sides; nerves not squeezed.",
-      "specialist": { "model": "SuprSkan disc grader v1", "pfirrmann": 3, "pfirrmann_confidence": 0.62, "flags": ["bulging"], "not_blind": false } },
+      "specialist": { "model": "rAidiology disc grader v1", "pfirrmann": 3, "pfirrmann_confidence": 0.62, "flags": ["bulging"], "not_blind": false } },
     { "region": "lumbar", "level": "L5-S1", "status": "moderate", "disc": "Drier than normal, with a small bulge pointing back and to the right.", "canal": "mild", "foramen_left": "none", "foramen_right": "mild", "note": "The bulge touches the right S1 nerve root but does not squash it.",
-      "specialist": { "model": "SuprSkan disc grader v1", "pfirrmann": 4, "pfirrmann_confidence": 0.58, "flags": ["bulging", "narrowing"], "not_blind": false } }
+      "specialist": { "model": "rAidiology disc grader v1", "pfirrmann": 4, "pfirrmann_confidence": 0.58, "flags": ["bulging", "narrowing"], "not_blind": false } }
   ],
   "findings": [
     {
@@ -170,11 +170,11 @@
   },
   "disclaimer": "SAMPLE DATA. Not a diagnosis: this page explains an MRI reading in plain words. Always discuss your results with a qualified doctor.",
   "scorecard": {
-    "method": "SuprSkan disc grader v1", "split": "held-out test, SPIDER",
+    "method": "rAidiology disc grader v1", "split": "held-out test, SPIDER",
     "n_scans": 44, "n_discs": 264,
     "headline": { "item": "pfirrmann", "metric": "exact", "value": 0.61, "ci": [0.52, 0.68],
                   "text": "SAMPLE: tested on 44 expert-graded scans, agrees with the expert on disc drying 61% of the time (95% CI 52-68%)." },
     "permission": "TSS weights: permission pending",
-    "source": "pipeline/eval/SCORECARD.md"
+    "source": "modalities/spine_mri/eval/SCORECARD.md"
   }
 }
