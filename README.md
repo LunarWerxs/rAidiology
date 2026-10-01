@@ -102,6 +102,9 @@ download on this repository's Releases page (`disc-grader-v1`; unzip into `../Mo
 Development used private data that is not part of this repository. Scored runs used an earlier
 wording of `modalities/spine_mri/READER_BRIEF.md`.
 
+Next: X-ray and CT ([modalities/](modalities/README.md)), and a landing page where anyone can open
+their own scan in the browser.
+
 ## Built on, and what already exists
 
 rAidiology's viewer, report format and reading workflow were written for this project; no existing

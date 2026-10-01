@@ -5,25 +5,33 @@ rAidiology's first scan type.
 From a patient MRI disc (a folder with a `DICOMDIR`) to the data the web app shows.
 
 ```
-DICOM  ->  to_nifti.py      one NIfTI volume per series (pixels + geometry, no patient tags)
-       ->  TotalSpineSeg    vertebrae C1..L5 + sacrum, discs, spinal cord, spinal canal (nnU-Net, GPU)
-       ->  metrics.py       per level: disc height, disc-to-CSF signal (hydration), canal and cord width
-       ->  build_meshes.py  smooth .glb mesh per structure + anchor points (app frame, mm)
-       ->  build_stacks.py  de-identified JPEG slice stacks, plus "AI outlines" overlays
-       ->  geometry.py      per-slice DICOM geometry (kept in work/, never published)
-reading (AI readers + skeptics + human-checked synthesis) -> reading.json
-       ->  make_report.py   report.json: anchors resolved to 3D points, image marks placed by geometry
+DICOM  ->  core/dicom/to_nifti.py   one NIfTI volume per series (pixels + geometry, no patient tags)
+       ->  TotalSpineSeg (tss.py)   vertebrae C1..L5 + sacrum, discs, spinal cord, spinal canal (nnU-Net, GPU)
+       ->  metrics.py               per level: disc height, disc-to-CSF signal (hydration), canal and cord width
+       ->  build_meshes.py          smooth .glb mesh per structure + anchor points (app frame, mm)
+       ->  build_stacks.py          de-identified JPEG slice stacks, plus "AI outlines" overlays
+       ->  core/dicom/geometry.py   per-slice DICOM geometry (kept in work/, never published)
+reading (AI readers + skeptics + human-checked synthesis) -> cases/<patient>/reading.json
+       ->  specialist.py            the shipped disc grader's grades (only if it passed the ship rule)
+       ->  sct/cord_compression.py  cervical cord against healthy adults (only where the reading reports narrowing)
+       ->  make_report.py           report.json: anchors resolved to 3D points, image marks placed by geometry
 ```
 
 The reading step is not a runnable tool: AI readers (an agent orchestrating them, or a person)
 follow `READER_BRIEF.md` (this folder) and write `reading.json` in the format `make_report.py` reads
-(its docstring, and `site/data/CONTRACT.md` for what reaches the app). Run everything else:
+(its docstring, and `site/data/CONTRACT.md` for what reaches the app). Run everything else, from the
+repository root:
 
 ```bash
 python modalities/spine_mri/run_pipeline.py <cd_folder> site
 python core/dicom/geometry.py <cd_folder> site work/geometry.json
-python modalities/spine_mri/make_report.py cases/owner/reading.json site work/geometry.json
+python modalities/spine_mri/specialist.py work
+python modalities/spine_mri/sct/cord_compression.py cases/<patient>/reading.json work --age <years> --sex <M|F>
+python modalities/spine_mri/make_report.py cases/<patient>/reading.json site work/geometry.json
 ```
+
+A patient's own material (the reading, the comparison with the radiologist's report, mistake-log
+cases) lives in `cases/<patient>/` at the repository root, never next to the code.
 
 ## Setup (Windows, NVIDIA GPU)
 

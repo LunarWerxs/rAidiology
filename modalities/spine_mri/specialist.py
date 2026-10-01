@@ -4,7 +4,7 @@ Reads work/eval/final_eval.json (the ship decision) and modalities/spine_mri/eva
 test numbers the app may quote), runs the shipped grader on the patient's lumbar sagittal T2/T1 with
 its TotalSpineSeg labels, and writes work/specialist.json for make_report.py. When nothing shipped
 it writes nothing and removes a stale file, so the app shows no model.
-A scan that feeds a mistake-log case (cases/owner/mistake-log/) is development data: its re-run is
+A scan that feeds a mistake-log case (cases/<patient>/mistake-log/) is development data: its re-run is
 marked not blind.
 Usage: python specialist.py <work_dir> [--grader-version 1]"""
 import argparse
