@@ -1,0 +1,1995 @@
+{
+ "seed": 20260930,
+ "source": "SPIDER (van der Graaf, van Hooff, Buckens et al., 'Lumbar spine segmentation in MR images: a dataset and a public benchmark', Scientific Data 11, 264 (2024), doi:10.1038/s41597-024-03090-w; data doi:10.5281/zenodo.10159290, CC BY 4.0), overview.csv",
+ "rule": "Patient split for the SPIDER scorecard: 20% held-out test, 80% development in 5 folds.\n\nSeed 20260930. SPIDER's own `subset` column is ignored. SPIDER does not record the hospital, so\npatients are stratified by Manufacturer x MagneticFieldStrength as recorded on their T2 series\n(their first series when they have no T2). Strata under 10 patients are pooled for stratifying.\n\nProcedure (deterministic): one numpy Generator(seed); for each stratum in sorted name order, the\nstratum's patients sorted by id are permuted; the first round(0.2 * n) go to test; the rest of\nevery stratum, concatenated in that same order, are dealt to folds 0..4 in turn with one running\ncounter, so small strata spread over the folds.",
+ "strata": {
+  "Philips Healthcare 3.0T": 90,
+  "Philips Medical Systems 1.5T": 18,
+  "Philips Medical Systems 3.0T": 1,
+  "SIEMENS 1.5T": 102,
+  "SIEMENS 3.0T": 7
+ },
+ "n": {
+  "patients": 218,
+  "test": 44,
+  "dev": 174
+ },
+ "test": [
+  1,
+  4,
+  5,
+  6,
+  7,
+  21,
+  22,
+  24,
+  25,
+  29,
+  33,
+  40,
+  41,
+  45,
+  48,
+  63,
+  67,
+  75,
+  93,
+  101,
+  106,
+  112,
+  113,
+  115,
+  124,
+  127,
+  137,
+  141,
+  151,
+  152,
+  154,
+  159,
+  165,
+  174,
+  184,
+  185,
+  196,
+  203,
+  220,
+  227,
+  237,
+  239,
+  242,
+  252
+ ],
+ "dev_folds": {
+  "0": [
+   11,
+   13,
+   37,
+   44,
+   47,
+   52,
+   60,
+   80,
+   87,
+   95,
+   97,
+   108,
+   122,
+   125,
+   126,
+   129,
+   132,
+   142,
+   146,
+   147,
+   166,
+   168,
+   169,
+   170,
+   171,
+   172,
+   186,
+   187,
+   190,
+   201,
+   205,
+   208,
+   209,
+   229,
+   254
+  ],
+  "1": [
+   12,
+   23,
+   28,
+   31,
+   34,
+   39,
+   50,
+   65,
+   73,
+   77,
+   85,
+   86,
+   91,
+   110,
+   121,
+   133,
+   145,
+   155,
+   156,
+   163,
+   175,
+   179,
+   182,
+   192,
+   193,
+   197,
+   212,
+   215,
+   217,
+   218,
+   231,
+   232,
+   236,
+   246,
+   250
+  ],
+  "2": [
+   10,
+   16,
+   17,
+   19,
+   35,
+   42,
+   57,
+   64,
+   66,
+   68,
+   78,
+   81,
+   82,
+   83,
+   89,
+   105,
+   109,
+   117,
+   134,
+   136,
+   160,
+   162,
+   167,
+   173,
+   204,
+   207,
+   214,
+   219,
+   224,
+   225,
+   228,
+   233,
+   244,
+   249,
+   255
+  ],
+  "3": [
+   3,
+   8,
+   9,
+   30,
+   51,
+   53,
+   56,
+   58,
+   74,
+   88,
+   90,
+   99,
+   104,
+   107,
+   116,
+   120,
+   123,
+   131,
+   140,
+   143,
+   144,
+   161,
+   177,
+   180,
+   183,
+   189,
+   191,
+   198,
+   210,
+   221,
+   226,
+   243,
+   251,
+   253,
+   257
+  ],
+  "4": [
+   2,
+   15,
+   18,
+   20,
+   32,
+   36,
+   38,
+   55,
+   59,
+   61,
+   62,
+   69,
+   71,
+   72,
+   94,
+   96,
+   98,
+   100,
+   118,
+   130,
+   138,
+   149,
+   181,
+   188,
+   195,
+   200,
+   202,
+   213,
+   222,
+   223,
+   234,
+   241,
+   245,
+   256
+  ]
+ },
+ "patients": {
+  "1": {
+   "split": "test",
+   "fold": null,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "1_t2",
+   "t1": "1_t1"
+  },
+  "2": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "2_t2",
+   "t1": "2_t1"
+  },
+  "3": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "3_t2",
+   "t1": "3_t1"
+  },
+  "4": {
+   "split": "test",
+   "fold": null,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "4_t2",
+   "t1": "4_t1"
+  },
+  "5": {
+   "split": "test",
+   "fold": null,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "5_t2",
+   "t1": "5_t1"
+  },
+  "6": {
+   "split": "test",
+   "fold": null,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "6_t2",
+   "t1": null
+  },
+  "7": {
+   "split": "test",
+   "fold": null,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "7_t2",
+   "t1": "7_t1"
+  },
+  "8": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "8_t2",
+   "t1": "8_t1"
+  },
+  "9": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "9_t2",
+   "t1": "9_t1"
+  },
+  "10": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "SIEMENS 3.0T",
+   "vendor": "Siemens",
+   "t2": "10_t2",
+   "t1": "10_t1"
+  },
+  "11": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "11_t2",
+   "t1": "11_t1"
+  },
+  "12": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "12_t2",
+   "t1": "12_t1"
+  },
+  "13": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "Philips Medical Systems 1.5T",
+   "vendor": "Philips",
+   "t2": "13_t2",
+   "t1": "13_t1"
+  },
+  "15": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "15_t2",
+   "t1": "15_t1"
+  },
+  "16": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "16_t2",
+   "t1": "16_t1"
+  },
+  "17": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "17_t2",
+   "t1": "17_t1"
+  },
+  "18": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "18_t2",
+   "t1": "18_t1"
+  },
+  "19": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "19_t2",
+   "t1": "19_t1"
+  },
+  "20": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "Philips Medical Systems 1.5T",
+   "vendor": "Philips",
+   "t2": "20_t2",
+   "t1": null
+  },
+  "21": {
+   "split": "test",
+   "fold": null,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "21_t2",
+   "t1": null
+  },
+  "22": {
+   "split": "test",
+   "fold": null,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "22_t2",
+   "t1": "22_t1"
+  },
+  "23": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "23_t2",
+   "t1": "23_t1"
+  },
+  "24": {
+   "split": "test",
+   "fold": null,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "24_t2",
+   "t1": "24_t1"
+  },
+  "25": {
+   "split": "test",
+   "fold": null,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "25_t2",
+   "t1": "25_t1"
+  },
+  "28": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "28_t2",
+   "t1": "28_t1"
+  },
+  "29": {
+   "split": "test",
+   "fold": null,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "29_t2",
+   "t1": "29_t1"
+  },
+  "30": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "30_t2",
+   "t1": "30_t1"
+  },
+  "31": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "31_t2",
+   "t1": "31_t1"
+  },
+  "32": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "32_t2",
+   "t1": "32_t1"
+  },
+  "33": {
+   "split": "test",
+   "fold": null,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "33_t2",
+   "t1": "33_t1"
+  },
+  "34": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "34_t2",
+   "t1": "34_t1"
+  },
+  "35": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "35_t2",
+   "t1": "35_t1"
+  },
+  "36": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "36_t2",
+   "t1": "36_t1"
+  },
+  "37": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "37_t2",
+   "t1": "37_t1"
+  },
+  "38": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "38_t2",
+   "t1": "38_t1"
+  },
+  "39": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "39_t2",
+   "t1": "39_t1"
+  },
+  "40": {
+   "split": "test",
+   "fold": null,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "40_t2",
+   "t1": "40_t1"
+  },
+  "41": {
+   "split": "test",
+   "fold": null,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "41_t2_SPACE",
+   "t1": null
+  },
+  "42": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "Philips Medical Systems 1.5T",
+   "vendor": "Philips",
+   "t2": "42_t2",
+   "t1": null
+  },
+  "44": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "44_t2",
+   "t1": "44_t1"
+  },
+  "45": {
+   "split": "test",
+   "fold": null,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "45_t2",
+   "t1": "45_t1"
+  },
+  "47": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "47_t2",
+   "t1": "47_t1"
+  },
+  "48": {
+   "split": "test",
+   "fold": null,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "48_t2",
+   "t1": "48_t1"
+  },
+  "50": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "50_t2",
+   "t1": "50_t1"
+  },
+  "51": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "51_t2",
+   "t1": "51_t1"
+  },
+  "52": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "52_t2",
+   "t1": "52_t1"
+  },
+  "53": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "53_t2",
+   "t1": "53_t1"
+  },
+  "55": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "55_t2",
+   "t1": "55_t1"
+  },
+  "56": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "56_t2",
+   "t1": "56_t1"
+  },
+  "57": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "57_t2",
+   "t1": "57_t1"
+  },
+  "58": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "58_t2",
+   "t1": "58_t1"
+  },
+  "59": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "59_t2",
+   "t1": "59_t1"
+  },
+  "60": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "60_t2",
+   "t1": "60_t1"
+  },
+  "61": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "61_t2",
+   "t1": "61_t1"
+  },
+  "62": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "62_t2",
+   "t1": "62_t1"
+  },
+  "63": {
+   "split": "test",
+   "fold": null,
+   "stratum": "Philips Medical Systems 1.5T",
+   "vendor": "Philips",
+   "t2": "63_t2",
+   "t1": "63_t1"
+  },
+  "64": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "64_t2",
+   "t1": "64_t1"
+  },
+  "65": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "65_t2",
+   "t1": "65_t1"
+  },
+  "66": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "Philips Medical Systems 1.5T",
+   "vendor": "Philips",
+   "t2": "66_t2",
+   "t1": "66_t1"
+  },
+  "67": {
+   "split": "test",
+   "fold": null,
+   "stratum": "SIEMENS 3.0T",
+   "vendor": "Siemens",
+   "t2": "67_t2",
+   "t1": "67_t1"
+  },
+  "68": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "68_t2",
+   "t1": "68_t1"
+  },
+  "69": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "69_t2",
+   "t1": "69_t1"
+  },
+  "71": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "71_t2",
+   "t1": "71_t1"
+  },
+  "72": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": null,
+   "t1": "72_t1"
+  },
+  "73": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "73_t2",
+   "t1": "73_t1"
+  },
+  "74": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "74_t2",
+   "t1": "74_t1"
+  },
+  "75": {
+   "split": "test",
+   "fold": null,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "75_t2",
+   "t1": "75_t1"
+  },
+  "77": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": null,
+   "t1": "77_t1"
+  },
+  "78": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "78_t2",
+   "t1": "78_t1"
+  },
+  "80": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "80_t2",
+   "t1": "80_t1"
+  },
+  "81": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "81_t2",
+   "t1": "81_t1"
+  },
+  "82": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "82_t2",
+   "t1": "82_t1"
+  },
+  "83": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "83_t2",
+   "t1": "83_t1"
+  },
+  "85": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "85_t2",
+   "t1": "85_t1"
+  },
+  "86": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "86_t2",
+   "t1": "86_t1"
+  },
+  "87": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "87_t2",
+   "t1": "87_t1"
+  },
+  "88": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "88_t2",
+   "t1": "88_t1"
+  },
+  "89": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "89_t2",
+   "t1": null
+  },
+  "90": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "90_t2",
+   "t1": "90_t1"
+  },
+  "91": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "91_t2",
+   "t1": null
+  },
+  "93": {
+   "split": "test",
+   "fold": null,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "93_t2",
+   "t1": "93_t1"
+  },
+  "94": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "94_t2",
+   "t1": "94_t1"
+  },
+  "95": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "95_t2",
+   "t1": "95_t1"
+  },
+  "96": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "96_t2",
+   "t1": "96_t1"
+  },
+  "97": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "97_t2",
+   "t1": null
+  },
+  "98": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "98_t2",
+   "t1": "98_t1"
+  },
+  "99": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "Philips Medical Systems 3.0T",
+   "vendor": "Philips",
+   "t2": "99_t2",
+   "t1": null
+  },
+  "100": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "Philips Medical Systems 1.5T",
+   "vendor": "Philips",
+   "t2": "100_t2",
+   "t1": "100_t1"
+  },
+  "101": {
+   "split": "test",
+   "fold": null,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "101_t2",
+   "t1": "101_t1"
+  },
+  "104": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "104_t2",
+   "t1": "104_t1"
+  },
+  "105": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "105_t2",
+   "t1": "105_t1"
+  },
+  "106": {
+   "split": "test",
+   "fold": null,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "106_t2",
+   "t1": "106_t1"
+  },
+  "107": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "107_t2",
+   "t1": "107_t1"
+  },
+  "108": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "108_t2",
+   "t1": "108_t1"
+  },
+  "109": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "109_t2",
+   "t1": "109_t1"
+  },
+  "110": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "110_t2",
+   "t1": "110_t1"
+  },
+  "112": {
+   "split": "test",
+   "fold": null,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "112_t2",
+   "t1": "112_t1"
+  },
+  "113": {
+   "split": "test",
+   "fold": null,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "113_t2",
+   "t1": "113_t1"
+  },
+  "115": {
+   "split": "test",
+   "fold": null,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "115_t2",
+   "t1": "115_t1"
+  },
+  "116": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "SIEMENS 3.0T",
+   "vendor": "Siemens",
+   "t2": "116_t2",
+   "t1": "116_t1"
+  },
+  "117": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "117_t2",
+   "t1": "117_t1"
+  },
+  "118": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "118_t2",
+   "t1": "118_t1"
+  },
+  "120": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "120_t2",
+   "t1": null
+  },
+  "121": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "121_t2",
+   "t1": "121_t1"
+  },
+  "122": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "122_t2",
+   "t1": "122_t1"
+  },
+  "123": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "Philips Medical Systems 1.5T",
+   "vendor": "Philips",
+   "t2": "123_t2",
+   "t1": null
+  },
+  "124": {
+   "split": "test",
+   "fold": null,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "124_t2",
+   "t1": null
+  },
+  "125": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "125_t2",
+   "t1": "125_t1"
+  },
+  "126": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": null,
+   "t1": "126_t1"
+  },
+  "127": {
+   "split": "test",
+   "fold": null,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "127_t2",
+   "t1": "127_t1"
+  },
+  "129": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "129_t2",
+   "t1": "129_t1"
+  },
+  "130": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "130_t2",
+   "t1": "130_t1"
+  },
+  "131": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "131_t2",
+   "t1": "131_t1"
+  },
+  "132": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": null,
+   "t1": "132_t1"
+  },
+  "133": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "133_t2",
+   "t1": "133_t1"
+  },
+  "134": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "Philips Medical Systems 1.5T",
+   "vendor": "Philips",
+   "t2": "134_t2",
+   "t1": null
+  },
+  "136": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "136_t2",
+   "t1": "136_t1"
+  },
+  "137": {
+   "split": "test",
+   "fold": null,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "137_t2",
+   "t1": "137_t1"
+  },
+  "138": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "Philips Medical Systems 1.5T",
+   "vendor": "Philips",
+   "t2": "138_t2",
+   "t1": "138_t1"
+  },
+  "140": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "140_t2",
+   "t1": "140_t1"
+  },
+  "141": {
+   "split": "test",
+   "fold": null,
+   "stratum": "SIEMENS 3.0T",
+   "vendor": "Siemens",
+   "t2": "141_t2_SPACE",
+   "t1": null
+  },
+  "142": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "142_t2",
+   "t1": "142_t1"
+  },
+  "143": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "Philips Medical Systems 1.5T",
+   "vendor": "Philips",
+   "t2": "143_t2",
+   "t1": "143_t1"
+  },
+  "144": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "144_t2",
+   "t1": "144_t1"
+  },
+  "145": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "145_t2",
+   "t1": "145_t1"
+  },
+  "146": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "146_t2",
+   "t1": "146_t1"
+  },
+  "147": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "Philips Medical Systems 1.5T",
+   "vendor": "Philips",
+   "t2": "147_t2",
+   "t1": null
+  },
+  "149": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "149_t2",
+   "t1": "149_t1"
+  },
+  "151": {
+   "split": "test",
+   "fold": null,
+   "stratum": "Philips Medical Systems 1.5T",
+   "vendor": "Philips",
+   "t2": "151_t2",
+   "t1": null
+  },
+  "152": {
+   "split": "test",
+   "fold": null,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "152_t2",
+   "t1": "152_t1"
+  },
+  "154": {
+   "split": "test",
+   "fold": null,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "154_t2",
+   "t1": "154_t1"
+  },
+  "155": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "155_t2",
+   "t1": "155_t1"
+  },
+  "156": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "156_t2",
+   "t1": "156_t1"
+  },
+  "159": {
+   "split": "test",
+   "fold": null,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "159_t2",
+   "t1": null
+  },
+  "160": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "160_t2",
+   "t1": "160_t1"
+  },
+  "161": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "161_t2",
+   "t1": "161_t1"
+  },
+  "162": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "162_t2",
+   "t1": "162_t1"
+  },
+  "163": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "Philips Medical Systems 1.5T",
+   "vendor": "Philips",
+   "t2": "163_t2",
+   "t1": "163_t1"
+  },
+  "165": {
+   "split": "test",
+   "fold": null,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "165_t2",
+   "t1": "165_t1"
+  },
+  "166": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "166_t2",
+   "t1": "166_t1"
+  },
+  "167": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "167_t2",
+   "t1": "167_t1"
+  },
+  "168": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "168_t2",
+   "t1": "168_t1"
+  },
+  "169": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "169_t2",
+   "t1": "169_t1"
+  },
+  "170": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "170_t2",
+   "t1": "170_t1"
+  },
+  "171": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "171_t2",
+   "t1": "171_t1"
+  },
+  "172": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "172_t2",
+   "t1": "172_t1"
+  },
+  "173": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "173_t2",
+   "t1": "173_t1"
+  },
+  "174": {
+   "split": "test",
+   "fold": null,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "174_t2",
+   "t1": "174_t1"
+  },
+  "175": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "175_t2",
+   "t1": "175_t1"
+  },
+  "177": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "177_t2",
+   "t1": "177_t1"
+  },
+  "179": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "179_t2",
+   "t1": "179_t1"
+  },
+  "180": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": null,
+   "t1": "180_t1"
+  },
+  "181": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "181_t2",
+   "t1": "181_t1"
+  },
+  "182": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "182_t2",
+   "t1": "182_t1"
+  },
+  "183": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "183_t2",
+   "t1": null
+  },
+  "184": {
+   "split": "test",
+   "fold": null,
+   "stratum": "Philips Medical Systems 1.5T",
+   "vendor": "Philips",
+   "t2": "184_t2",
+   "t1": "184_t1"
+  },
+  "185": {
+   "split": "test",
+   "fold": null,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "185_t2",
+   "t1": "185_t1"
+  },
+  "186": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "186_t2",
+   "t1": "186_t1"
+  },
+  "187": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "Philips Medical Systems 1.5T",
+   "vendor": "Philips",
+   "t2": "187_t2",
+   "t1": "187_t1"
+  },
+  "188": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "188_t2",
+   "t1": "188_t1"
+  },
+  "189": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "Philips Medical Systems 1.5T",
+   "vendor": "Philips",
+   "t2": "189_t2",
+   "t1": "189_t1"
+  },
+  "190": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "190_t2",
+   "t1": "190_t1"
+  },
+  "191": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "191_t2",
+   "t1": "191_t1"
+  },
+  "192": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "192_t2",
+   "t1": "192_t1"
+  },
+  "193": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "193_t2",
+   "t1": "193_t1"
+  },
+  "195": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "195_t2",
+   "t1": "195_t1"
+  },
+  "196": {
+   "split": "test",
+   "fold": null,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "196_t2",
+   "t1": "196_t1"
+  },
+  "197": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "197_t2",
+   "t1": null
+  },
+  "198": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "198_t2",
+   "t1": "198_t1"
+  },
+  "200": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "200_t2",
+   "t1": "200_t1"
+  },
+  "201": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "201_t2",
+   "t1": null
+  },
+  "202": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "202_t2",
+   "t1": "202_t1"
+  },
+  "203": {
+   "split": "test",
+   "fold": null,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "203_t2",
+   "t1": "203_t1"
+  },
+  "204": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "204_t2",
+   "t1": "204_t1"
+  },
+  "205": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "205_t2",
+   "t1": "205_t1"
+  },
+  "207": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "207_t2",
+   "t1": "207_t1"
+  },
+  "208": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "208_t2",
+   "t1": null
+  },
+  "209": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "SIEMENS 3.0T",
+   "vendor": "Siemens",
+   "t2": "209_t2",
+   "t1": "209_t1"
+  },
+  "210": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "210_t2",
+   "t1": "210_t1"
+  },
+  "212": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "212_t2",
+   "t1": "212_t1"
+  },
+  "213": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "213_t2",
+   "t1": "213_t1"
+  },
+  "214": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "214_t2",
+   "t1": "214_t1"
+  },
+  "215": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "215_t2",
+   "t1": "215_t1"
+  },
+  "217": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "Philips Medical Systems 1.5T",
+   "vendor": "Philips",
+   "t2": "217_t2",
+   "t1": "217_t1"
+  },
+  "218": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "218_t2",
+   "t1": "218_t1"
+  },
+  "219": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": null,
+   "t1": "219_t1"
+  },
+  "220": {
+   "split": "test",
+   "fold": null,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "220_t2",
+   "t1": "220_t1"
+  },
+  "221": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "221_t2",
+   "t1": "221_t1"
+  },
+  "222": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "222_t2",
+   "t1": "222_t1"
+  },
+  "223": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "223_t2",
+   "t1": "223_t1"
+  },
+  "224": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "224_t2",
+   "t1": "224_t1"
+  },
+  "225": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "225_t2",
+   "t1": "225_t1"
+  },
+  "226": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "226_t2",
+   "t1": "226_t1"
+  },
+  "227": {
+   "split": "test",
+   "fold": null,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "227_t2",
+   "t1": "227_t1"
+  },
+  "228": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "228_t2",
+   "t1": "228_t1"
+  },
+  "229": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "229_t2",
+   "t1": "229_t1"
+  },
+  "231": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "231_t2",
+   "t1": "231_t1"
+  },
+  "232": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "232_t2",
+   "t1": "232_t1"
+  },
+  "233": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "233_t2",
+   "t1": "233_t1"
+  },
+  "234": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "234_t2",
+   "t1": "234_t1"
+  },
+  "236": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "236_t2",
+   "t1": "236_t1"
+  },
+  "237": {
+   "split": "test",
+   "fold": null,
+   "stratum": "Philips Medical Systems 1.5T",
+   "vendor": "Philips",
+   "t2": "237_t2",
+   "t1": "237_t1"
+  },
+  "239": {
+   "split": "test",
+   "fold": null,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "239_t2",
+   "t1": "239_t1"
+  },
+  "241": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "241_t2",
+   "t1": "241_t1"
+  },
+  "242": {
+   "split": "test",
+   "fold": null,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "242_t2",
+   "t1": "242_t1"
+  },
+  "243": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "243_t2",
+   "t1": "243_t1"
+  },
+  "244": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "244_t2",
+   "t1": "244_t1"
+  },
+  "245": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "245_t2",
+   "t1": "245_t1"
+  },
+  "246": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "246_t2",
+   "t1": null
+  },
+  "249": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "SIEMENS 1.5T",
+   "vendor": "Siemens",
+   "t2": "249_t2",
+   "t1": "249_t1"
+  },
+  "250": {
+   "split": "dev",
+   "fold": 1,
+   "stratum": "SIEMENS 3.0T",
+   "vendor": "Siemens",
+   "t2": "250_t2",
+   "t1": "250_t1"
+  },
+  "251": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "251_t2",
+   "t1": "251_t1"
+  },
+  "252": {
+   "split": "test",
+   "fold": null,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "252_t2",
+   "t1": "252_t1"
+  },
+  "253": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "253_t2",
+   "t1": "253_t1"
+  },
+  "254": {
+   "split": "dev",
+   "fold": 0,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "254_t2",
+   "t1": "254_t1"
+  },
+  "255": {
+   "split": "dev",
+   "fold": 2,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "255_t2",
+   "t1": "255_t1"
+  },
+  "256": {
+   "split": "dev",
+   "fold": 4,
+   "stratum": "SIEMENS 3.0T",
+   "vendor": "Siemens",
+   "t2": "256_t2",
+   "t1": "256_t1"
+  },
+  "257": {
+   "split": "dev",
+   "fold": 3,
+   "stratum": "Philips Healthcare 3.0T",
+   "vendor": "Philips",
+   "t2": "257_t2",
+   "t1": "257_t1"
+  }
+ }
+}

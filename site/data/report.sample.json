@@ -1,0 +1,180 @@
+{
+  "version": 1,
+  "patient": { "label": "Sample person", "age": 52, "sex": "F" },
+  "study": {
+    "month": "2025-03",
+    "field_strength": "3T",
+    "contrast": false,
+    "exams": ["Cervical spine MRI", "Lumbar spine MRI"]
+  },
+  "summary": {
+    "status": "watch",
+    "headline": "SAMPLE DATA: a mostly healthy spine, with two lower-back discs worth keeping an eye on.",
+    "plain": "SAMPLE DATA, made up to demonstrate this page; it is not anyone's real scan. In this example the bones of the neck and lower back are healthy and well lined up. Two of the cushions (discs) near the bottom of the back have worn a little and bulge backwards, and one of them sits close to a nerve. That is very common at 52 and often causes no trouble, but it can explain leg pain if you have it.",
+    "technical": "SAMPLE DATA. Cervical: C5-C6 minimal posterior disc bulge without canal or foraminal stenosis. Cord normal in calibre and signal. Lumbar: L4-L5 disc desiccation with a mild diffuse bulge, mild bilateral foraminal narrowing, no canal stenosis. L5-S1 disc desiccation with a small central-right protrusion contacting the traversing right S1 nerve root without compression. Incidental 8 mm typical haemangioma in the L2 vertebral body. Conus terminates normally at L1."
+  },
+  "regions": [
+    {
+      "id": "cervical",
+      "name": "Neck (cervical spine)",
+      "anchor": "neck",
+      "levels_present": ["C1", "C2", "C3", "C4", "C5", "C6", "C7", "T1"],
+      "summary": "SAMPLE. The neck bones and spinal cord look healthy. One disc (C5-C6) bulges very slightly, which is common and harmless on its own.",
+      "meshes": []
+    },
+    {
+      "id": "lumbar",
+      "name": "Lower back (lumbar spine)",
+      "anchor": "lower_back",
+      "levels_present": ["T12", "L1", "L2", "L3", "L4", "L5", "S1"],
+      "summary": "SAMPLE. The two lowest discs show everyday wear. The bottom one (L5-S1) bulges towards the right S1 nerve. There is also a harmless blood-vessel spot in one bone.",
+      "meshes": []
+    }
+  ],
+  "levels": [
+    { "region": "cervical", "level": "C2-C3", "status": "normal", "disc": "Healthy disc.", "canal": "none", "foramen_left": "none", "foramen_right": "none", "note": "" },
+    { "region": "cervical", "level": "C3-C4", "status": "normal", "disc": "Healthy disc.", "canal": "none", "foramen_left": "none", "foramen_right": "none", "note": "" },
+    { "region": "cervical", "level": "C4-C5", "status": "normal", "disc": "Healthy disc.", "canal": "none", "foramen_left": "none", "foramen_right": "none", "note": "" },
+    { "region": "cervical", "level": "C5-C6", "status": "mild", "disc": "Very slight backward bulge.", "canal": "none", "foramen_left": "none", "foramen_right": "none", "note": "Does not touch the cord or nerves." },
+    { "region": "cervical", "level": "C6-C7", "status": "normal", "disc": "Healthy disc.", "canal": "none", "foramen_left": "none", "foramen_right": "none", "note": "" },
+    { "region": "cervical", "level": "C7-T1", "status": "normal", "disc": "Healthy disc.", "canal": "none", "foramen_left": "none", "foramen_right": "none", "note": "" },
+    { "region": "lumbar", "level": "T12-L1", "status": "normal", "disc": "Healthy disc.", "canal": "none", "foramen_left": "none", "foramen_right": "none", "note": "",
+      "specialist": { "model": "SuprSkan disc grader v1", "pfirrmann": 2, "pfirrmann_confidence": 0.81, "flags": [], "not_blind": false } },
+    { "region": "lumbar", "level": "L1-L2", "status": "normal", "disc": "Healthy disc.", "canal": "none", "foramen_left": "none", "foramen_right": "none", "note": "",
+      "specialist": { "model": "SuprSkan disc grader v1", "pfirrmann": 2, "pfirrmann_confidence": 0.77, "flags": [], "not_blind": false } },
+    { "region": "lumbar", "level": "L2-L3", "status": "normal", "disc": "Healthy disc.", "canal": "none", "foramen_left": "none", "foramen_right": "none", "note": "",
+      "specialist": { "model": "SuprSkan disc grader v1", "pfirrmann": 2, "pfirrmann_confidence": 0.72, "flags": [], "not_blind": false } },
+    { "region": "lumbar", "level": "L3-L4", "status": "normal", "disc": "Healthy disc.", "canal": "none", "foramen_left": "none", "foramen_right": "none", "note": "",
+      "specialist": { "model": "SuprSkan disc grader v1", "pfirrmann": 3, "pfirrmann_confidence": 0.54, "flags": [], "not_blind": false } },
+    { "region": "lumbar", "level": "L4-L5", "status": "mild", "disc": "Drier than normal, with a mild all-round bulge.", "canal": "none", "foramen_left": "mild", "foramen_right": "mild", "note": "Nerve exits slightly narrowed on both sides; nerves not squeezed.",
+      "specialist": { "model": "SuprSkan disc grader v1", "pfirrmann": 3, "pfirrmann_confidence": 0.62, "flags": ["bulging"], "not_blind": false } },
+    { "region": "lumbar", "level": "L5-S1", "status": "moderate", "disc": "Drier than normal, with a small bulge pointing back and to the right.", "canal": "mild", "foramen_left": "none", "foramen_right": "mild", "note": "The bulge touches the right S1 nerve root but does not squash it.",
+      "specialist": { "model": "SuprSkan disc grader v1", "pfirrmann": 4, "pfirrmann_confidence": 0.58, "flags": ["bulging", "narrowing"], "not_blind": false } }
+  ],
+  "findings": [
+    {
+      "id": "lumbar-l5s1-protrusion",
+      "region": "lumbar",
+      "level": "L5-S1",
+      "title": "Small disc bulge touching a nerve (L5-S1)",
+      "technical_title": "Small central-right disc protrusion contacting the right S1 nerve root",
+      "severity": "moderate",
+      "confidence": "high",
+      "plain": "The lowest disc in your back pushes out a little towards the right side. It touches the nerve that runs down the back of your right leg, but does not squash it.",
+      "technical": "L5-S1 disc desiccation with a small central-right protrusion contacting, without compressing or displacing, the traversing right S1 nerve root. Mild narrowing of the right lateral recess. No central canal stenosis.",
+      "why_it_matters": "This is the kind of disc change that can cause pain, tingling or numbness down the back of the right leg (sciatica). If you have no such symptoms, it may simply be something to know about.",
+      "what_to_do": "Mention it to your doctor, especially if you have leg pain or tingling. Most people improve with time, staying active and physiotherapy; sudden weakness or trouble with bladder or bowel needs urgent care.",
+      "anchor": { "mesh": "disc_L5_S1", "point": [4.0, -12.0, -18.0] },
+      "views": [
+        {
+          "stack": "L_SAG_T2", "slice": 6, "caption": "Side view",
+          "marks": [
+            { "type": "circle", "x": 0.53, "y": 0.79, "r": 0.045 },
+            { "type": "arrow", "x": 0.555, "y": 0.785, "dx": 0.1, "dy": -0.07 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lumbar-l4l5-bulge",
+      "region": "lumbar",
+      "level": "L4-L5",
+      "title": "Worn disc with a mild bulge (L4-L5)",
+      "technical_title": "L4-L5 disc desiccation with mild diffuse bulge and mild bilateral foraminal narrowing",
+      "severity": "mild",
+      "confidence": "high",
+      "plain": "The second-lowest disc has lost some water and bulges slightly all the way round, a bit like a tyre with lower pressure.",
+      "technical": "L4-L5 disc desiccation and mild loss of height with a mild diffuse posterior bulge. Mild bilateral neural foraminal narrowing without nerve root compression. Central canal patent.",
+      "why_it_matters": "Disc wear like this is found in many people in their fifties who have no pain at all. It can add to lower-back stiffness.",
+      "what_to_do": "Nothing urgent. Regular movement, core strength and good lifting habits help keep discs healthy.",
+      "anchor": { "mesh": "disc_L4_L5", "point": [0.0, -8.0, -16.0] },
+      "views": [
+        {
+          "stack": "L_SAG_T2", "slice": 6, "caption": "Side view",
+          "marks": [ { "type": "circle", "x": 0.51, "y": 0.66, "r": 0.04 } ]
+        }
+      ]
+    },
+    {
+      "id": "cervical-c5c6-bulge",
+      "region": "cervical",
+      "level": "C5-C6",
+      "title": "Very slight disc bulge in the neck (C5-C6)",
+      "technical_title": "C5-C6 minimal posterior disc bulge without stenosis",
+      "severity": "mild",
+      "confidence": "medium",
+      "plain": "One disc in the middle of your neck bulges very slightly backwards. It does not touch the spinal cord or the nerves.",
+      "technical": "C5-C6 minimal posterior disc bulge effacing the ventral CSF without cord contact. No foraminal stenosis. Cord normal in calibre and signal.",
+      "why_it_matters": "C5-C6 is the neck level that moves the most, so mild wear there is very common and usually causes no symptoms.",
+      "what_to_do": "No action needed for this alone. If you have neck pain, posture and movement exercises are usually the first step.",
+      "anchor": { "mesh": "disc_C5_C6", "point": [0.0, -2.0, -10.0] },
+      "views": [
+        {
+          "stack": "C_SAG_T2", "slice": 6, "caption": "Side view of the neck",
+          "marks": [
+            { "type": "circle", "x": 0.5, "y": 0.58, "r": 0.035 },
+            { "type": "arrow", "x": 0.52, "y": 0.575, "dx": 0.09, "dy": -0.06 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lumbar-l2-haemangioma",
+      "region": "lumbar",
+      "level": "L2",
+      "title": "Harmless blood-vessel spot in a bone (L2)",
+      "technical_title": "Typical vertebral body haemangioma, L2",
+      "severity": "incidental",
+      "confidence": "high",
+      "plain": "There is a small spot inside one of the lower-back bones made of tiny blood vessels and fat. It is one of the most common things seen on spine scans.",
+      "technical": "8 mm well-defined T1 and T2 hyperintense lesion in the L2 vertebral body, consistent with a typical haemangioma.",
+      "why_it_matters": "These spots are benign and almost never cause problems. They are noted so nobody is surprised by them on a future scan.",
+      "what_to_do": "Nothing to do. It does not need follow-up on its own.",
+      "anchor": { "mesh": "L2", "point": [0.0, 2.0, 6.0] },
+      "views": [
+        {
+          "stack": "L_SAG_T2", "slice": 5, "caption": "Side view",
+          "marks": [ { "type": "circle", "x": 0.425, "y": 0.335, "r": 0.035 } ]
+        }
+      ]
+    }
+  ],
+  "glossary": [
+    { "term": "Vertebra", "plain": "One of the 33 stacked bones that make up your spine. Plural: vertebrae." },
+    { "term": "Disc", "plain": "The rubbery cushion between two vertebrae. It has a tough outer ring and a softer, jelly-like centre." },
+    { "term": "Disc bulge", "plain": "The disc spreads out a little beyond the edge of the bones, usually all the way round. Very common and often painless." },
+    { "term": "Disc protrusion", "plain": "A more focused bulge in one direction. It matters mainly if it presses on a nerve." },
+    { "term": "Desiccation", "plain": "The disc has lost some water, so it looks darker on the scan. A normal part of ageing." },
+    { "term": "Nerve root", "plain": "A nerve branching off the spinal cord and leaving the spine between two vertebrae, on its way to your arms or legs." },
+    { "term": "Spinal canal", "plain": "The tunnel through the vertebrae that holds and protects the spinal cord and nerves." },
+    { "term": "Foramen", "plain": "The small side opening where a nerve root exits the spine. Plural: foramina." },
+    { "term": "Lordosis", "plain": "The natural inward (forward) curve of the neck and the lower back." },
+    { "term": "Haemangioma", "plain": "A harmless cluster of tiny blood vessels and fat inside a bone." },
+    { "term": "T2 image", "plain": "An MRI setting in which fluid looks bright, which makes discs and the fluid around the nerves easy to see." }
+  ],
+  "questions_for_doctor": [
+    "Could the L5-S1 disc explain any leg pain or tingling I have?",
+    "Which exercises or activities are safe and helpful for me?",
+    "Would physiotherapy make sense for my lower back?",
+    "Which warning signs should make me seek help quickly?",
+    "Do I need a follow-up scan, and if so, when?"
+  ],
+  "method": {
+    "ai_models": ["SAMPLE: example segmentation model", "SAMPLE: example report-writing model"],
+    "readers": "SAMPLE DATA: this example was written by hand to demonstrate the page. A real report lists here who and what produced the reading.",
+    "limitations": [
+      "Sample data only; it does not describe a real person.",
+      "The 3D model shows the shapes in a simplified way and is not to scale for any one person.",
+      "An MRI shows structure, not pain: findings must be matched with symptoms by a doctor."
+    ]
+  },
+  "disclaimer": "SAMPLE DATA. Not a diagnosis: this page explains an MRI reading in plain words. Always discuss your results with a qualified doctor.",
+  "scorecard": {
+    "method": "SuprSkan disc grader v1", "split": "held-out test, SPIDER",
+    "n_scans": 44, "n_discs": 264,
+    "headline": { "item": "pfirrmann", "metric": "exact", "value": 0.61, "ci": [0.52, 0.68],
+                  "text": "SAMPLE: tested on 44 expert-graded scans, agrees with the expert on disc drying 61% of the time (95% CI 52-68%)." },
+    "permission": "TSS weights: permission pending",
+    "source": "pipeline/eval/SCORECARD.md"
+  }
+}

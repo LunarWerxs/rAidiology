@@ -1,0 +1,16 @@
+# patient working data never goes in git: volumes, labels, model weights
+work/
+# your own scan's outputs: they must never reach a public repository
+site/data/report.json
+site/data/meshes/
+site/data/stacks/
+pipeline/reading*.json
+pipeline/comparison.json
+pipeline/eval/cases/
+__pycache__/
+*.pyc
+.dev.vars
+.wrangler/
+.env
+.venv/
+venv/

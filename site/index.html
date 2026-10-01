@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>SuprSkan · Your spine MRI, explained</title>
+  <meta name="description" content="A calm, plain-English 3D walkthrough of a spine MRI reading.">
+  <meta name="theme-color" content="#0d0d0c">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%231c1b18'/%3E%3Cg fill='%23e9dfc9'%3E%3Crect x='11' y='5' width='10' height='4' rx='2'/%3E%3Crect x='10' y='11' width='12' height='4' rx='2'/%3E%3Crect x='10' y='17' width='12' height='4' rx='2'/%3E%3Crect x='11' y='23' width='10' height='4' rx='2'/%3E%3C/g%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <canvas id="scene" aria-label="Interactive 3D model of the body and spine. Drag to rotate, scroll or pinch to zoom."></canvas>
+  <div id="labels" aria-hidden="true"></div>
+  <div id="scene-fallback" class="scene-fallback" hidden>
+    <p><strong>The 3D view could not start on this device.</strong><br>Everything in the panel still works.</p>
+  </div>
+
+  <header class="topbar glass">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#1c1b18"/><g fill="#e9dfc9"><rect x="11" y="5" width="10" height="4" rx="2"/><rect x="10" y="11" width="12" height="4" rx="2" opacity=".85"/><rect x="10" y="17" width="12" height="4" rx="2" opacity=".7"/><rect x="11" y="23" width="10" height="4" rx="2" opacity=".55"/></g></svg>
+      <span class="brand-name">SuprSkan</span>
+    </div>
+    <div class="meta" id="meta"></div>
+    <span class="sample-badge" id="sample-badge" hidden title="This page is showing made-up demo data, not a real scan.">Sample data</span>
+  </header>
+
+  <nav class="dock glass" aria-label="3D view controls">
+    <button class="dock-btn" type="button" data-action="reset" title="Reset view">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4" /></svg><span>Reset</span>
+    </button>
+    <button class="dock-btn" type="button" data-action="neck" title="Focus on the neck">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="6" r="3.2"/><path d="M10.5 9.5v4M13.5 9.5v4M7 20c0-3.5 2.2-6 5-6s5 2.5 5 6"/></svg><span>Neck</span>
+    </button>
+    <button class="dock-btn" type="button" data-action="lower_back" title="Focus on the lower back">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1.6"/><rect x="7.5" y="9" width="9" height="4" rx="1.6"/><path d="M7 15h10l-2.5 6h-5z"/></svg><span>Lower back</span>
+    </button>
+    <span class="dock-sep" aria-hidden="true"></span>
+    <button class="dock-btn model-btn" type="button" id="model-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="model-menu" title="Choose the 3D model">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="4.5" r="2.3"/><path d="M8 21l1-8-3-4 3.5-1.5h5L18 9l-3 4 1 8"/></svg><span id="model-label">Glass body</span>
+      <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg>
+    </button>
+    <button class="dock-btn toggle" type="button" data-toggle="ghost" aria-pressed="true" title="Show or hide the rest of the spine">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="3.4" rx="1.3"/><rect x="8.5" y="7.6" width="7" height="3.4" rx="1.3"/><rect x="8.5" y="12.7" width="7" height="3.4" rx="1.3"/><rect x="9" y="17.8" width="6" height="3.4" rx="1.3"/></svg><span>Ghost spine</span>
+    </button>
+    <button class="dock-btn toggle" type="button" data-toggle="labels" aria-pressed="true" title="Show or hide level labels when zoomed in">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12l7-7h9v9l-7 7z"/><circle cx="15" cy="9" r="1.6"/></svg><span>Labels</span>
+    </button>
+  </nav>
+
+  <div class="model-menu glass" id="model-menu" role="menu" aria-label="3D model" hidden>
+    <button type="button" role="menuitemradio" aria-checked="true" data-model="glass"><strong>Glass body</strong><span>See-through body with your spine inside</span></button>
+    <button type="button" role="menuitemradio" aria-checked="false" data-model="skeleton"><strong>Skeleton</strong><span>Full anatomical skeleton, your scanned spine in place</span></button>
+    <button type="button" role="menuitemradio" aria-checked="false" data-model="xray"><strong>X-ray</strong><span>Glowing skeleton inside a faint body</span></button>
+    <button type="button" role="menuitemradio" aria-checked="false" data-model="spine"><strong>Spine only</strong><span>Just your scanned spine, nothing around it</span></button>
+    <p class="model-credit">Skeleton: BodyParts3D, © The Database Center for Life Science, licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC Attribution 4.0 International</a>; modified (parts merged and simplified) by LunarWerx</p>
+  </div>
+
+  <div id="tooltip" class="tooltip" role="status" aria-live="polite" hidden></div>
+
+  <aside id="panel" class="panel glass" aria-label="Your results">
+    <button class="sheet-handle" id="sheet-toggle" type="button" aria-expanded="true" aria-controls="panel-body">
+      <span class="grip" aria-hidden="true"></span>
+      <svg class="sheet-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      <span class="sr-only">Tuck the results panel away</span>
+    </button>
+    <div class="tabs" role="tablist" aria-label="Sections">
+      <button class="tab" role="tab" id="tab-overview" aria-controls="pane-overview" aria-selected="true" type="button">Overview</button>
+      <button class="tab" role="tab" id="tab-viewer" aria-controls="pane-viewer" aria-selected="false" tabindex="-1" type="button" aria-label="Scan viewer"><span class="tab-long">Scan viewer</span><span class="tab-short" aria-hidden="true">Scans</span></button>
+      <button class="tab" role="tab" id="tab-levels" aria-controls="pane-levels" aria-selected="false" tabindex="-1" type="button">Levels</button>
+      <button class="tab" role="tab" id="tab-compare" aria-controls="pane-compare" aria-selected="false" tabindex="-1" type="button" hidden>Compare</button>
+      <button class="tab" role="tab" id="tab-words" aria-controls="pane-words" aria-selected="false" tabindex="-1" type="button">Words</button>
+    </div>
+    <div class="panel-body" id="panel-body">
+      <section class="tabpanel" role="tabpanel" id="pane-overview" aria-labelledby="tab-overview" tabindex="0"></section>
+      <section class="tabpanel" role="tabpanel" id="pane-viewer" aria-labelledby="tab-viewer" tabindex="0" hidden></section>
+      <section class="tabpanel" role="tabpanel" id="pane-levels" aria-labelledby="tab-levels" tabindex="0" hidden></section>
+      <section class="tabpanel" role="tabpanel" id="pane-compare" aria-labelledby="tab-compare" tabindex="0" hidden></section>
+      <section class="tabpanel" role="tabpanel" id="pane-words" aria-labelledby="tab-words" tabindex="0" hidden></section>
+    </div>
+  </aside>
+
+  <footer class="disclaimer" id="disclaimer">
+    <button type="button" id="disclaimer-btn" aria-expanded="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>
+      <span id="disclaimer-text">Not a medical device, not a diagnosis. Always talk to a doctor about your results.</span>
+    </button>
+  </footer>
+
+  <div id="loader" class="loader" role="status" aria-live="polite">
+    <div class="loader-ring" aria-hidden="true"></div>
+    <p>Preparing your 3D spine&hellip;</p>
+  </div>
+
+  <noscript><div class="noscript">This page needs JavaScript to show your results.</div></noscript>
+</body>
+</html>
