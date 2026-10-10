@@ -129,7 +129,7 @@ CC BY 4.0 asks you to give credit, link the licence and say what was changed. Ea
 
 ## Licence
 
-The weights and the code are under the PolyForm Noncommercial License 1.0.0 (see [LICENSE](LICENSE)). The notice below travels with every copy:
+The weights and the code are under the PolyForm Noncommercial License 1.0.0 (see [LICENSE](https://github.com/LunarWerxs/rAidiology/blob/main/LICENSE)). The notice below travels with every copy:
 
 Required Notice: Copyright (c) 2026 LunarWerx (https://github.com/LunarWerxs)
 
@@ -141,15 +141,15 @@ The three collections above each allow commercial use with credit, so the data d
 
 ## How to run it
 
-Read one picture with one of the two sets:
+Read one picture with the pair, with the reader that ships beside the weights:
 
 ```
-python modalities/xray/eval/detector.py image PATH_TO_RADIOGRAPH --version 140 --profile grazpedwri
-python modalities/xray/eval/detector.py image PATH_TO_RADIOGRAPH --version 141 --profile grazpedwri
+python reading/xray/fracture_reader.py PATH_TO_RADIOGRAPH --profile wrist
+python reading/xray/fracture_reader.py PATH_TO_RADIOGRAPH --profile other --onnx
 ```
 
-Use `--profile grazpedwri` for a wrist and `--profile fracatlas` for a hand, leg, hip or shoulder. Each call prints one line of JSON per picture with the score, the yes or no at that set's own cut-off, and the version, and then a "not a medical device" line.
+`--profile wrist` is for a wrist and `--profile other` for a hand, leg, hip or shoulder. The reader prints the pair's score (the average of the ten fold networks), the yes or no at that profile's cut-off (0.5208 for a wrist, 0.1261 for other bones) and a "research model, not a medical device" line. It reads the `.safetensors` files by default (PyTorch is needed) and the `.onnx` files with `--onnx` (ONNX Runtime only). It looks for the weights in `--weights DIR` (holding `v140/` and `v141/`, or `xray-fracture-detector-v140/` and `xray-fracture-detector-v141/` as this repository names them), else in `models/xray-fracture-detector/` inside the project, else in `xray-fracture-detector-v140` and `xray-fracture-detector-v141` beside the project.
 
-To read with the pair, average the two scores and compare the average with the pair's cut-offs: 0.5208 (wrist) or 0.1261 (other bones). The repository has no one-step command for this yet. The way the pair was scored on the held-out test is `modalities/xray/eval/final_eval.py --second-look --versions 140,141`, which re-opens the test split and is for the project's own scoring, not for reading your pictures.
+The way the pair was scored on the held-out test is `modalities/xray/eval/final_eval.py --second-look --versions 140,141`, which re-opens the test split and is for the project's own scoring, not for reading your pictures.
 
-Files, for each of v140 and v141: `fold0.pt` to `fold4.pt` (9,445,016 bytes each) and `meta.json`. The two sets use the same file names, so keep them in two separate folders. The code looks for them under the repository: v140's files in `work/eval/xray/detector-v140/model/` (`work/eval/xray/detector-v140/model/fold0.pt` and so on) and v141's files in `work/eval/xray/detector-v141/model/` (`work/eval/xray/detector-v141/model/fold0.pt` and so on). Inside each folder the files must be called `fold0.pt` to `fold4.pt` and `meta.json`. `RAIDIOLOGY_WORK` moves `work/`. No ONNX graph has been exported for v140 or v141. The exporter, `tools/export_detector_onnx.py --version N`, takes a version number, but the ONNX reader (`modalities/xray/eval/onnx_reader.py`) looks only in the folder for released versions, which is version 1 today.
+Files, for each of v140 and v141: `fold0.safetensors` to `fold4.safetensors` (the five networks' tensors, no pickle), `fold0.onnx` to `fold4.onnx` (the same five networks as ONNX graphs, each taking pictures scaled to 0 to 1 and returning that fold's probability) and `meta.json` (the settings, the pixel mean and spread of each fold, the profiles' own cut-offs and the development scores). The two sets use the same file names, so keep them in two separate folders, as this repository does (`xray-fracture-detector-v140/` and `xray-fracture-detector-v141/`). The pickled `.pt` checkpoints the networks were trained into are not published. On 60 held-out pictures the `.safetensors` networks gave exactly the `.pt` scores, and the ONNX graphs differed from PyTorch by at most 1.3e-6 on a fold's probability with no yes or no changing.

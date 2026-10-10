@@ -238,9 +238,9 @@ def _read_dicom(path, size):
 
 
 def _read_picture(path, size):
-    with Image.open(path) as im:
-        im.load()
-        arr = np.asarray(im.convert("L"))
+    """(pixels, "image file"): the same door as the cache (`decode`), so a 16-bit picture keeps its
+    stored values instead of being clipped to 8 bits by convert("L") (all black, 2026-10-10)."""
+    arr = read_grey(path)
     return letterbox(scaled(arr), size), "image file"
 
 

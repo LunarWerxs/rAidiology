@@ -66,6 +66,7 @@ CODE_SPAN = re.compile(r"(`+)(?:(?!\1).)+?\1")                    # one line onl
 HTML_LINK = re.compile(r"""(?:href|src)\s*=\s*["']([^"']*)""", re.I)  # <a href="..."> and <img src="...">
 NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
 REPO_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*/[A-Za-z0-9][A-Za-z0-9._-]*")
+MACHINE_PATH = re.compile(r"[A-Za-z]:[\\/]|/Users/|/home/")
 TOKENISH = re.compile(r"(hf_[A-Za-z0-9]{6,}|Bearer\s+\S+)")
 
 
@@ -169,7 +170,7 @@ def check_license():
         die("LICENSE is not the PolyForm Noncommercial License 1.0.0 with its Required Notice line")
 
 
-def collect_weights(specs, include):
+def collect_weights(specs, include, tensors_only=False):
     """Walk each weights folder (a --weights-dir value: DIR, or NAME=DIR) and pick its files. Each file goes into the
     repository as <folder name>/<path inside the folder>, so two versions that share file names (fold0.pt) never clash.
     Returns (picked, left_behind): picked is a sorted list of (path in the repository, source file) and left_behind is
@@ -177,7 +178,8 @@ def collect_weights(specs, include):
     for pattern in include:
         if not pattern.lower().endswith(WEIGHT_SUFFIXES):
             die(f"--include {pattern}: only patterns ending in {', '.join(WEIGHT_SUFFIXES)} can be added this way")
-    patterns = tuple(p.lower() for p in FOLDER_PATTERNS + tuple(include))
+    base = tuple(p for p in FOLDER_PATTERNS if not (tensors_only and p.endswith(".pt")))
+    patterns = tuple(p.lower() for p in base + tuple(include))
     chosen, seen, left_behind = [], {}, 0
     for spec in specs:
         name, sep, folder = spec.partition("=")
@@ -205,6 +207,8 @@ def collect_weights(specs, include):
                 if rel.lower() in seen:
                     die(f"two files would both be {rel} ({seen[rel.lower()]} and {src}); give one folder another name "
                         "with NAME=PATH")
+                if low.endswith(".json") and MACHINE_PATH.search(open(src, encoding="utf-8", errors="replace").read()):
+                    die(f"{src}: holds a path on this machine; clean it before it goes into a release")
                 seen[rel.lower()] = src
                 chosen.append((rel, src))
         if len(chosen) == before:
@@ -275,6 +279,8 @@ def main():
                     help="version folders to take weights from; each keeps its name in the repository (NAME=DIR picks another)")
     ap.add_argument("--include", action="append", default=[], metavar="PATTERN",
                     help="also take weight files matching this name pattern from the folders (can repeat), for example 'chest-*.pt'")
+    ap.add_argument("--tensors-only", action="store_true",
+                    help="leave the pickled fold networks (fold0.pt ...) behind; send only .onnx and .safetensors files and the config file")
     ap.add_argument("--repo-id", help="the Hugging Face repository, as ORG/NAME (needed for --push)")
     ap.add_argument("--push", action="store_true", help="upload; without it this is a dry run")
     ap.add_argument("--public", action="store_true", help="with --push: make the gated repository public afterwards")
@@ -295,7 +301,7 @@ def main():
     check_license()
     card, card_text = read_card(a.card)
     readme = build_readme(card_text)
-    weights, left_behind = collect_weights(a.weights_dir, a.include)
+    weights, left_behind = collect_weights(a.weights_dir, a.include, a.tensors_only)
 
     if a.out:
         out = os.path.abspath(a.out)

@@ -50,7 +50,7 @@ These are research models. Their weights are coming as a gated download on Huggi
 
 | Model | Reads | Status | Card |
 |---|---|---|---|
-| Fracture detector | X-ray of a wrist, hand, leg, hip or shoulder | Research model; weights coming on Hugging Face (version 1 already downloads from this repository's Releases page) | [card](release/cards/fracture-detector.md) |
+| Fracture detector | X-ray of a wrist, hand, leg, hip or shoulder | Research model; weights coming on Hugging Face | [card](release/cards/fracture-detector.md) |
 | Disc grader | Lumbar spine MRI | Research model; weights coming on Hugging Face (version 1 already downloads from the Releases page as `disc-grader-v1`) | [card](release/cards/disc-grader.md) |
 | CT segmenter | 3D CT scan | Research model; weights coming on Hugging Face | [card](release/cards/ct-segmenter.md) |
 | Chest X-ray reader | Frontal chest X-ray | Research model; weights coming on Hugging Face | [card](release/cards/chest-xray.md) |
