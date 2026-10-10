@@ -1,143 +1,93 @@
 # rAidiology
 
-**Not a medical device.** rAidiology is not cleared or approved by the FDA or any other regulator. It
-is for education and research, never for diagnosis or treatment decisions; always discuss
-your results with a doctor ([LICENSING.md](LICENSING.md#not-a-medical-device)).
+A free, open-source viewer for medical scans that runs in your browser and on your own computer.
 
-rAidiology turns a spine MRI reading into a calm, plain-English web page. It shows a status
-("Looks OK", "Worth watching" or "See a doctor"), a short summary, and each finding explained in
-everyday words. Findings sit on an interactive 3D model: a glass human body with the spine inside
-it, where the scanned regions glow in colours that match how much each finding matters. You can
-also scroll through the scan images with the findings marked on them, see every spinal level on a
-colour-coded diagram, and look up words and questions to ask your doctor.
+[![License: PolyForm Noncommercial 1.0.0](https://img.shields.io/badge/license-PolyForm_Noncommercial_1.0.0-blue)](LICENSE) [![Discord](https://img.shields.io/badge/Discord-join_the_community-5865F2?logo=discord&logoColor=white)](https://discord.gg/PsWpeNUzhk) ![Not a medical device](https://img.shields.io/badge/not_a_medical_device-for_education_and_research-lightgrey)
 
-It is a static site: no build step, no npm, plain ES modules and CSS. Three pages: `site/index.html`
-is the public landing page, `site/open.html` opens a visitor's own scan entirely in their browser
-with nothing uploaded, and `site/report.html` is the 3D reading, which the password gate keeps
-private (`functions/_middleware.js`). three.js is loaded from jsDelivr (pinned to 0.170.0) by the
-report page only.
+![rAidiology](site/img/screenshot-home.png)
 
-Spine MRI was the first scan type and X-ray is the second and ships; CT is in development. Each
-lives in its own folder.
+> **Not a medical device.** For education and research, never for diagnosis.
 
-## Repository layout
+## What you can do with it today
+
+- Open the pictures from your own scan in your browser. Nothing is uploaded.
+- Look at a sample reading in 3D: a glass body with the spine inside it.
+- Read the cards of the research models, which say what each one does and does not do.
+- Run all of it on your own computer.
+
+## Run it on your own computer
+
+You do not need to be technical.
+
+1. Download the ZIP: [rAidiology-main.zip](https://github.com/LunarWerxs/rAidiology/archive/refs/heads/main.zip).
+2. Unzip it anywhere.
+3. Double-click the launcher for your computer:
+   - Windows: `start-windows.bat`
+   - Mac: `start-mac.command` (the first time, right-click it and choose Open)
+   - Linux: `start-linux.sh`
+4. Your browser opens on rAidiology.
+
+It needs Python. If it is missing, Windows offers to install it for you. A Mac may ask to install its developer tools: say yes. Otherwise get Python from [python.org](https://www.python.org/downloads/).
+
+To stop it, close the launcher window.
+
+### For developers
+
+```sh
+git clone https://github.com/LunarWerxs/rAidiology.git
+cd rAidiology
+python reading/local/launcher.py   # the launcher
+python serve.py                    # or just the bare site, caching off
+```
+
+The site in `site/` is static: no build step, no npm. Opening a page straight from disk does not work, because browsers block module loading from `file://`.
+
+Model weights go in `models/<key>/`. The MCP server in [mcp/](mcp/README.md) lets your own AI read a scan on your own machine and leave behind a small file the viewer opens.
+
+## Research models
+
+These are research models. Their weights are coming as a gated download on Hugging Face. Each card says what the model reads, how it was tested and which data it used.
+
+| Model | Reads | Status | Card |
+|---|---|---|---|
+| Fracture detector | X-ray of a wrist, hand, leg, hip or shoulder | Research model; weights coming on Hugging Face (version 1 already downloads from this repository's Releases page) | [card](release/cards/fracture-detector.md) |
+| Disc grader | Lumbar spine MRI | Research model; weights coming on Hugging Face (version 1 already downloads from the Releases page as `disc-grader-v1`) | [card](release/cards/disc-grader.md) |
+| CT segmenter | 3D CT scan | Research model; weights coming on Hugging Face | [card](release/cards/ct-segmenter.md) |
+| Chest X-ray reader | Frontal chest X-ray | Research model; weights coming on Hugging Face | [card](release/cards/chest-xray.md) |
+| Lung nodule finder | Chest CT | Research model; weights coming on Hugging Face | [card](release/cards/lung-nodules.md) |
+| Mammogram reader | Mammogram | Research model; weights coming on Hugging Face | [card](release/cards/mammography.md) |
+| Spine X-ray corner reader | Lumbar spine X-ray | Research model; weights coming on Hugging Face | [card](release/cards/spine-xray-corners.md) |
+
+## How it is built
 
 | Folder | What it holds |
 |---|---|
-| `site/` | the landing page, the in-browser scan opener, the 3D viewer, and the viewer's data format `site/data/CONTRACT.md` |
-| `core/` | parts every scan type shares: DICOM handling (`core/dicom/`), image tools for AI readers (`core/reading/`), and `core/paths.py`, which says where data, weights and tools live |
-| `modalities/` | one folder per scan type, each with its pipeline, reader brief, scorecard (`eval/`) and model cards. How a scan type plugs in: [modalities/README.md](modalities/README.md) |
-| `tools/` | repository tooling, such as the builder of the reference skeleton the viewer shows |
-| `ledger/` | one line per run of anything that produces a number or takes time, so a regression or a slowdown is a query: `python core/ledger.py report` |
+| `site/` | the website, the in-browser scan opener and the 3D viewer; the data format is in `site/data/CONTRACT.md` |
+| `reading/` | the local launcher and the reading tools |
+| `core/` | parts every scan type shares: DICOM handling, image tools, paths |
+| `modalities/` | one folder per scan type, with its pipeline, scorecard and model cards ([how one plugs in](modalities/README.md)) |
+| `mcp/` | the MCP server ([mcp/README.md](mcp/README.md)) |
+| `tools/` | repository tooling |
 
-Datasets, trained weights and installed tools sit beside the repository (`../Datasets`,
-`../Models`, `../_tools`), never in it; working files go to the git-ignored `work/`.
+Datasets and trained weights sit beside the repository, never in it. The repository holds no patient data: `site/data/` has only a made-up sample. Anything you make from your own scan stays on your computer, and `.gitignore` keeps it out of commits.
 
-## Run locally
+## Contributing
 
-```sh
-cd site
-python -m http.server 8000
-```
+Read [CONTRIBUTING.md](CONTRIBUTING.md). You sign the [CLA](CLA.md) once, by a comment on your pull request.
 
-Then open http://localhost:8000. Opening a page straight from disk does not work, because browsers
-block module and data loading from `file://`.
+## Community
 
-## Data
-
-Everything the page shows comes from `site/data/`; the format is in
-[`site/data/CONTRACT.md`](site/data/CONTRACT.md).
-
-- `data/report.json`: the real reading. `make_report.py` builds it from `reading.json`, which AI
-  readers and a person write; that step is not a script (see `modalities/spine_mri/README.md`, "The reading step").
-- `data/report.sample.json`: made-up demo data. The page uses it only when `report.json` is
-  missing, and then shows a "Sample data" badge.
-- `data/meshes/...`: one `.glb` per vertebra/disc/cord mesh, listed in `report.json`.
-- `data/stacks/index.json` plus `data/stacks/<id>/00.jpg ...`: the image series for the scan viewer.
-
-Anything optional that is missing shows a friendly empty state instead.
-
-## Deploy
-
-`site/` is a static site; any static host serves it. A deployment that shows a real scan needs
-access control in front of it (for example Cloudflare Access, or a password gate as a Pages
-Function); never put a real scan on a public host. All URLs are relative, so the site also works
-under a `/<repo>/` sub-path.
-
-## Making the data (pipeline)
-
-`modalities/spine_mri/` turns a patient MRI disc into everything in `site/data/`: DICOM to NIfTI, the
-TotalSpineSeg model (code LGPL-3.0; its trained weights are permission pending, see LICENSING.md) (vertebrae, discs, cord, canal), per-level measurements, smooth
-3D meshes and de-identified image stacks. The written reading comes from an AI reading panel with
-adversarial verification. See [`modalities/spine_mri/README.md`](modalities/spine_mri/README.md).
-
-For local preview with caching off (so edits show on reload): `python serve.py`.
-
-## Privacy
-
-The page shows only `patient.label`, `age` and `sex`. Names, birth dates, accession numbers and
-institutions are dropped when the report is loaded and never shown.
-
-This repository holds no patient data. `site/data/` has only the made-up `report.sample.json`, the
-format description and the reference skeleton, so the page opens on the sample with a "Sample
-data" badge. Running the pipeline on your own disc writes your `report.json`, meshes and image
-stacks; `.gitignore` keeps them out of commits. Keep them out of any public repository, because
-git history keeps every committed file.
-
-Not a diagnosis. Always discuss results with a doctor.
+Join the [Discord](https://discord.gg/PsWpeNUzhk) or open a [GitHub issue](https://github.com/LunarWerxs/rAidiology/issues). Please do not post your own scans or health details in either place.
 
 ## Licence
 
-PolyForm Noncommercial 1.0.0, verbatim in [LICENSE](LICENSE). It is free for personal use and for
-charitable, educational, public-research, public-health and government organisations. Any other
-use with a commercial application, such as private clinics, insurers and legal work, needs a paid
-licence. Who needs a licence and the third-party licences: [LICENSING.md](LICENSING.md).
+[PolyForm Noncommercial 1.0.0](LICENSE). Free for personal use and for charitable, educational, public-research, public-health and government organisations. Commercial licences: contact at lunarwerx dot com. Third-party licences: [LICENSING.md](LICENSING.md).
 
 Required Notice: Copyright (c) 2026 LunarWerx (https://github.com/LunarWerxs)
 
-## Where it is going
+## Credits
 
-rAidiology is becoming a measured specialist: a scorecard on expert-graded public scans (SPIDER), a
-disc grader trained from scratch, healthy-population references and a mistake log. On 44 held-out
-SPIDER patients the disc grader gave the expert's Pfirrmann grade 61% of the time (95% CI 52-68%),
-against 44% for the measurement rules. Every number, method and caveat is in
-[modalities/spine_mri/eval/SCORECARD.md](modalities/spine_mri/eval/SCORECARD.md), and the grader's
-[model card](modalities/spine_mri/models/disc-grader.md) says what it is and is not. Its trained weights are a
-download on this repository's Releases page (`disc-grader-v1`; unzip into `../Models/disc-grader-v1/`).
-Development used private data that is not part of this repository. Scored runs used an earlier
-wording of `modalities/spine_mri/READER_BRIEF.md`.
-
-X-ray followed and ships: a fracture detector trained from scratch that scored AUROC 0.976
-(95% CI 0.970-0.981) on 4,170 held-out paediatric wrist radiographs from 1,218 patients it had
-never seen, against 0.838 for the best classical baseline
-([modalities/xray/eval/SCORECARD.md](modalities/xray/eval/SCORECARD.md)). It is what the MCP
-server in [mcp/](mcp/README.md) grades with, so your own AI can read your scan on your own
-machine and leave behind a small file the viewer opens
-([docs/FINDINGS_FILE.md](docs/FINDINGS_FILE.md)). CT ships too: a segmenter trained from scratch
-that labels 117 organs and bones scored 0.7667 mean Dice (95% CI 0.7517-0.7811) on the 89
-held-out scans of the TotalSegmentator dataset, against 0.1776 for the best baseline
-([modalities/ct/eval/SCORECARD.md](modalities/ct/eval/SCORECARD.md)).
-
-Newer readers have model cards in [release/cards/](release/cards/): the CT segmenter read at 1.5 mm, a
-chest X-ray reader, lung nodules on chest CT, a mammogram reader and spine X-ray corners. Each card gives
-the scores with the test set they were measured on, the datasets and the credit each asks for. Their
-weights are not published yet; each will be a gated download on Hugging Face.
-
-## Built on, and what already exists
-
-rAidiology's viewer, report format and reading workflow were written for this project; no existing
-app was copied. It stands on these open-source pieces:
-
-- [TotalSpineSeg](https://github.com/neuropoly/totalspineseg) (NeuroPoly; code LGPL-3.0, trained weights permission pending): labels every vertebra, disc, the cord and the canal (nnU-Net).
-- [SpineReport](https://github.com/ivadomed/SpineReport) (NeuroPoly, LGPL-3.0): 3D canal, disc and foramen morphometrics, used as an independent measurement.
-- [BodyParts3D](https://dbarchive.biosciencedbc.jp/en/bodyparts3d/) (DBCLS, CC BY 4.0): the anatomical reference skeleton, modified (parts merged and simplified).
+- [TotalSpineSeg](https://github.com/neuropoly/totalspineseg) and [SpineReport](https://github.com/ivadomed/SpineReport) (NeuroPoly; LGPL-3.0): spine labels and measurements.
+- [BodyParts3D](https://dbarchive.biosciencedbc.jp/en/bodyparts3d/) (DBCLS, CC BY 4.0): the reference skeleton, modified.
 - [three.js](https://threejs.org/), pydicom, SimpleITK, nibabel, scikit-image, trimesh.
-
-Closest existing things, none of which combine a patient-facing explanation, a 3D model of the
-patient's own spine, a blind AI reading with adversarial checks, and a side-by-side with the
-radiologist's report:
-
-- [CoLumbo](https://blackfordanalysis.com/ai-portfolio-columbo-spine-copilot): FDA-cleared commercial AI that pre-reads lumbar MRI for radiologists (measurements, draft report).
-- [SpineNet](http://zeus.robots.ox.ac.uk/spinenet/) (Oxford): research model for Pfirrmann grade, disc narrowing and canal stenosis.
-- [SpineReport](https://arxiv.org/abs/2606.10021): research reports of 3D spine morphometrics against a control group, for clinicians.
-- General web and desktop viewers such as [EPAM MRI Viewer](https://github.com/epam/mriviewer) and [OpenMRI](https://github.com/yairmcaudillo-cell/OpenMRI): viewing only, no interpretation.
+- The datasets behind each model, with the credit each asks for, are listed in its card.

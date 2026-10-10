@@ -1,0 +1,57 @@
+/* Home and "Run it yourself" layouts. Tokens and header/footer come from brand.css. */
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); -webkit-font-smoothing: antialiased; }
+a { color: var(--primary); text-underline-offset: 3px; }
+img { max-width: 100%; height: auto; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 clamp(16px, 4vw, 28px); }
+.narrow { max-width: 760px; }
+.sec { padding: var(--sp-5) 0 0; }
+.sec.soft { background: var(--bg-soft); padding: var(--sp-4) 0 var(--sp-5); margin-top: var(--sp-5); }
+.sec + .sec.soft { margin-top: var(--sp-5); }
+h2 { font-size: var(--fs-xl); margin: 0 0 var(--sp-2); }
+h3 { font-size: var(--fs-l); margin: 0 0 8px; }
+p { margin: 0 0 var(--sp-2); max-width: 66ch; }
+.fine { font-size: var(--fs-s); color: var(--muted); }
+
+.hero { background: linear-gradient(180deg, var(--bg-tint), var(--bg)); padding: var(--sp-4) 0 var(--sp-3); }
+.hero-grid { display: grid; gap: var(--sp-4); align-items: center; }
+@media (min-width: 880px) { .hero-grid { grid-template-columns: 1.1fr 0.9fr; } .hero { padding-top: var(--sp-5); } }
+h1 { font-size: var(--fs-xxl); margin: 0 0 var(--sp-2); }
+.lede { font-size: var(--fs-l); color: var(--text); max-width: 34em; }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px var(--sp-2); margin-top: var(--sp-3); }
+.shot { margin: 0; }
+.shot img { display: block; width: 100%; max-width: 480px; margin: 0 auto; border-radius: 20px; background: #0b1320; border: 6px solid var(--ink); box-shadow: 0 18px 40px rgba(21, 48, 77, 0.22); }
+.shot figcaption { font-size: var(--fs-s); color: var(--muted); text-align: center; margin-top: 12px; }
+.small-hero { padding: var(--sp-4) 0 var(--sp-2); }
+
+.steps { list-style: none; padding: 0; margin: var(--sp-3) 0 0; display: grid; gap: var(--sp-3); }
+@media (min-width: 760px) { .steps { grid-template-columns: repeat(3, 1fr); } }
+.steps li { border: 1px solid var(--line); border-radius: var(--radius); padding: var(--sp-3); background: #fff; }
+.num { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: var(--ink); color: #fff; font-weight: 700; margin-bottom: 12px; }
+.intro { color: var(--muted); }
+
+.mgrid { list-style: none; margin: var(--sp-3) 0 0; padding: 0; display: grid; gap: var(--sp-2); grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.mcard { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: var(--sp-3); display: flex; flex-direction: column; }
+.mcard h3 { font-size: 1.12rem; }
+.mcard .pic { font-size: var(--fs-s); color: var(--primary); font-weight: 600; margin-bottom: 8px; }
+.mcard .stat { font-size: var(--fs-s); color: var(--muted); margin-top: auto; }
+.mcard a { font-weight: 600; }
+
+.two { display: grid; gap: var(--sp-3); align-items: center; }
+@media (min-width: 760px) { .two { grid-template-columns: 1fr auto; } }
+.two p { margin-bottom: 0; }
+.plainlist { padding-left: 1.2em; max-width: 66ch; }
+.plainlist li { margin-bottom: 10px; }
+.who { display: grid; gap: var(--sp-3); }
+@media (min-width: 760px) { .who { grid-template-columns: 1.6fr 1fr; } }
+.contact { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: var(--sp-3); }
+
+.bigsteps { list-style: none; padding: 0; margin: 0 0 var(--sp-4); display: grid; gap: var(--sp-3); font-size: 1.15rem; }
+.bigsteps > li { display: grid; grid-template-columns: 44px 1fr; gap: var(--sp-2); }
+.bigsteps .num { width: 44px; height: 44px; margin: 0; }
+.bigsteps ul { padding-left: 1.1em; }
+code { font-family: var(--mono); background: var(--bg-soft); padding: 2px 6px; border-radius: 6px; font-size: 0.92em; word-break: break-word; }
+pre { background: var(--ink); color: #fff; padding: var(--sp-2); border-radius: var(--radius); overflow-x: auto; }
+pre code { background: none; padding: 0; color: inherit; }
+.narrow h2 { margin-top: var(--sp-4); }

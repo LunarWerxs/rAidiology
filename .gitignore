@@ -16,3 +16,6 @@ __pycache__/
 venv/
 # the fingerprint's key (records/provenance/README.md): on this machine only, never committed
 records/provenance/secret.key
+
+# research-model weights go here (reading/local/README.md); never committed
+models/

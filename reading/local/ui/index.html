@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>rAidiology on this computer</title>
+<link rel="icon" href="/img/logo.svg">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="ui.css">
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <img src="/img/logo.svg" alt="" width="48" height="48" onerror="this.remove()">
+    <h1>rAidiology is running on this computer.</h1>
+    <p>Nothing you open here leaves it.</p>
+  </header>
+
+  <nav class="tiles">
+    <a class="tile" href="/open.html"><strong>Open your own scan</strong><span>Pick a scan from this computer and look at it.</span></a>
+    <a class="tile" href="/report.html"><strong>See the sample</strong><span>A made-up example, so you can see how it looks.</span></a>
+    <a class="tile" href="#models"><strong>Research models</strong><span>Which models are on this computer.</span></a>
+  </nav>
+
+  <section id="models">
+    <h2>Research models</h2>
+    <p>Weights are gated downloads for education and research. Put them in the <code>models</code> folder.</p>
+    <table>
+      <thead><tr><th>Name</th><th>Reads</th><th>Installed</th><th>Card</th></tr></thead>
+      <tbody id="rows"><tr><td colspan="4">Loading...</td></tr></tbody>
+    </table>
+  </section>
+
+  <section class="help">
+    <h2>Help</h2>
+    <ul>
+      <li>To stop: press the Stop button below, or Ctrl+C in the window that opened with this page.</li>
+      <li>The files are in the folder you unzipped. Models go in its <code>models</code> folder.</li>
+      <li>It works offline.</li>
+    </ul>
+    <p id="info" class="small"></p>
+  </section>
+
+  <p><button id="stop" type="button">Stop</button> <span id="stopped"></span></p>
+  <footer><p>Not a medical device. For education and research.</p></footer>
+</main>
+<script src="ui.js"></script>
+</body>
+</html>
