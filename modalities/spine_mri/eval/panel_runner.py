@@ -497,6 +497,55 @@ def calibrated(df):
     return out.drop(columns=["pfirrmann_expect"])
 
 
+def _ask_localisation(p, split, base, loc, lab_dir, ids, png_dir, series, mid, raw_dir, client, cap, dry, est):
+    """One grading call on one localisation's markers. Returns (answers by label or None, pending)."""
+    markers = disc_markers(os.path.join(base, lab_dir, f"{p}.nii.gz"), ids)
+    if not markers:
+        return None, False
+    backs = disc_backs(os.path.join(base, lab_dir, f"{p}.nii.gz"), list(markers))
+    content, _, letters = build_content(png_dir, series, mid, markers, backs)
+    cache = os.path.join(raw_dir, f"{p}_{loc}.json")
+    if os.path.exists(cache) and not dry:
+        res = json.load(open(cache))
+    else:
+        ans, rec = call(client, system_prompt(GRADING), content, disc_schema(letters), cap, f"{split} {p} {loc}", dry,
+                        cache=cache, letters=letters)
+        res = {"letters": letters, "answer": ans, "call": rec}
+        if dry:
+            est.append(rec["worst_case_usd"])
+            return None, False
+        if ans == PENDING:
+            return None, True
+        json.dump(res, open(cache, "w"), indent=1)
+    by_label = {}
+    for d in (res["answer"] or {}).get("discs", []):
+        lab = res["letters"].get(d["marker"])
+        if lab:
+            by_label[int(lab[0])] = d
+    return by_label, False
+
+
+def _disc_answer(r, loc, answers):
+    if r.in_scope == 1 and r.matched == 1 and r.tss_label != "":
+        return answers.get("tss", {}).get(int(r.tss_label))
+    if r.in_scope == 1 and loc == "spider_masks":
+        from prepare import disc_id
+        return answers.get("spider_masks", {}).get(disc_id(int(r.ivd)))
+    return None
+
+
+def _panel_row(r, loc, d, split):
+    row = {c: r[c] for c in ("patient", "ivd", "fold", "vendor", "nominal_level", "tss_level", "dice",
+                             "matched", "in_scope", "drop_reason")}
+    row.update(method="panel", localisation=loc, split=split,
+               pfirrmann_pred=d["pfirrmann"] if d else np.nan,
+               pfirrmann_expect=expected_grade(d) if d else np.nan)
+    for b in ITEMS:
+        row[f"{b}_pred"] = d[b] if d else np.nan
+        row[f"{b}_score"] = min(max(d[b + "_p"], 0), 100) / 100 if d else np.nan
+    return row
+
+
 def run_spider(split, patients, cap, dry, out_name=None):
     base = os.path.join(WORK, split)
     m = pd.read_csv(os.path.join(base, "matches.csv"), keep_default_na=False)
@@ -520,50 +569,16 @@ def run_spider(split, patients, cap, dry, out_name=None):
                     break
                 from prepare import disc_id
                 ids = [disc_id(int(i)) for i in miss.ivd]
-            markers = disc_markers(os.path.join(base, lab_dir, f"{p}.nii.gz"), ids)
-            if not markers:
-                continue
-            backs = disc_backs(os.path.join(base, lab_dir, f"{p}.nii.gz"), list(markers))
-            content, _, letters = build_content(png_dir, series, mid, markers, backs)
-            cache = os.path.join(raw_dir, f"{p}_{loc}.json")
-            if os.path.exists(cache) and not dry:
-                res = json.load(open(cache))
-            else:
-                ans, rec = call(client, system_prompt(GRADING), content, disc_schema(letters), cap, f"{split} {p} {loc}", dry,
-                                cache=cache, letters=letters)
-                res = {"letters": letters, "answer": ans, "call": rec}
-                if dry:
-                    est.append(rec["worst_case_usd"])
-                    continue
-                if ans == PENDING:
-                    pending += 1
-                    continue
-                json.dump(res, open(cache, "w"), indent=1)
-            by_label = {}
-            for d in (res["answer"] or {}).get("discs", []):
-                lab = res["letters"].get(d["marker"])
-                if lab:
-                    by_label[int(lab[0])] = d
-            answers[loc] = by_label
+            by_label, is_pending = _ask_localisation(p, split, base, loc, lab_dir, ids, png_dir, series, mid,
+                                                     raw_dir, client, cap, dry, est)
+            pending += is_pending
+            if by_label is not None:
+                answers[loc] = by_label
         if dry:
             continue
         for _, r in mp.iterrows():
             for loc in ("tss", "spider_masks"):
-                d = None
-                if r.in_scope == 1 and r.matched == 1 and r.tss_label != "":
-                    d = answers.get("tss", {}).get(int(r.tss_label))
-                elif r.in_scope == 1 and loc == "spider_masks":
-                    from prepare import disc_id
-                    d = answers.get("spider_masks", {}).get(disc_id(int(r.ivd)))
-                row = {c: r[c] for c in ("patient", "ivd", "fold", "vendor", "nominal_level", "tss_level", "dice",
-                                         "matched", "in_scope", "drop_reason")}
-                row.update(method="panel", localisation=loc, split=split,
-                           pfirrmann_pred=d["pfirrmann"] if d else np.nan,
-                           pfirrmann_expect=expected_grade(d) if d else np.nan)
-                for b in ITEMS:
-                    row[f"{b}_pred"] = d[b] if d else np.nan
-                    row[f"{b}_score"] = min(max(d[b + "_p"], 0), 100) / 100 if d else np.nan
-                rows.append(row)
+                rows.append(_panel_row(r, loc, _disc_answer(r, loc, answers), split))
     if dry:
         print(f"dry run: {len(est)} calls, worst case ${sum(est):.2f} total, ${np.mean(est) if est else 0:.3f} per call")
         return
@@ -583,14 +598,7 @@ def run_spider(split, patients, cap, dry, out_name=None):
     print("wrote", out, "spent so far $%.2f" % spent())
 
 
-def run_case(case_p, cd, cap, dry):
-    """Re-run one mistake-log case on a patient's own disc; prints PASS or FAIL per expected answer."""
-    from render import main as render_disc
-    case = json.load(open(case_p, encoding="utf-8"))
-    reader = os.path.join(PANEL, "cases", "reader")
-    png = os.path.join(reader, "png")
-    if not os.path.exists(os.path.join(png, "series_meta.json")):
-        render_disc(cd, reader)
+def _case_content(case, png):
     content = []
     for s, slices in case["series"].items():
         for k in slices:
@@ -608,13 +616,29 @@ def run_case(case_p, cd, cap, dry):
         for label, im in margin_montages(src, disc_backs(lab_p, ids)):
             content.append({"type": "text", "text": label})
             content.append(png_block(im))
-    t = case["test"]
-    content.append({"type": "text", "text": t["question"]})
-    schema = {"type": "object", "additionalProperties": False, "required": ["answers"], "properties": {"answers": {
+    return content
+
+
+def _case_schema(t):
+    return {"type": "object", "additionalProperties": False, "required": ["answers"], "properties": {"answers": {
         "type": "array", "items": {"type": "object", "additionalProperties": False, "required": ["level", t["field"], "evidence"],
                                    "properties": {"level": {"type": "string", "enum": t["levels"]},
                                                   t["field"]: {"type": "string", "enum": t["choices"]},
                                                   "evidence": {"type": "string"}}}}}}
+
+
+def run_case(case_p, cd, cap, dry):
+    """Re-run one mistake-log case on a patient's own disc; prints PASS or FAIL per expected answer."""
+    from render import main as render_disc
+    case = json.load(open(case_p, encoding="utf-8"))
+    reader = os.path.join(PANEL, "cases", "reader")
+    png = os.path.join(reader, "png")
+    if not os.path.exists(os.path.join(png, "series_meta.json")):
+        render_disc(cd, reader)
+    content = _case_content(case, png)
+    t = case["test"]
+    content.append({"type": "text", "text": t["question"]})
+    schema = _case_schema(t)
     extra = "## This task\nA single question about this scan (the series named in the brief). Read the attached images."
     cache = os.path.join(PANEL, "cases", case["id"] + ".answer.json")
     if os.path.exists(cache) and not dry:

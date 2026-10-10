@@ -2,7 +2,8 @@
 evaluation (eval/), so both segment the same way.
 
 TotalSpineSeg's released weights are "permission pending" (LICENSING.md): anything that depends
-on them is internal development and evaluation only until NeuroPoly agrees in writing."""
+on them is internal development and evaluation only: NeuroPoly is not asked (no email goes to a data
+owner, 2026-10-06), so nothing that depends on them goes into a paid product."""
 import glob
 import os
 import shutil

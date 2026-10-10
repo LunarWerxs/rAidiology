@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>rAidiology · See or delete your donation</title>
+  <meta name="description" content="See, save or delete a scan you donated to rAidiology, with your donation number.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="color-scheme" content="light">
+  <link rel="canonical" href="/donation.html">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2315304d'/%3E%3Cg fill='%23ffffff'%3E%3Crect x='11' y='5' width='10' height='4' rx='2'/%3E%3Crect x='10' y='11' width='12' height='4' rx='2'/%3E%3Crect x='10' y='17' width='12' height='4' rx='2'/%3E%3Crect x='11' y='23' width='10' height='4' rx='2'/%3E%3C/g%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/open.css">
+  <script type="module" src="js/donation.js"></script>
+</head>
+<body>
+  <header class="bar">
+    <a class="brand" href="/" aria-label="rAidiology home">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#15304d"/><g fill="#ffffff"><rect x="11" y="5" width="10" height="4" rx="2"/><rect x="10" y="11" width="12" height="4" rx="2" opacity=".9"/><rect x="10" y="17" width="12" height="4" rx="2" opacity=".8"/><rect x="11" y="23" width="10" height="4" rx="2" opacity=".7"/></g></svg>
+      <span class="brand-name">rAidiology</span>
+    </a>
+  </header>
+
+  <main>
+    <section id="with-number" class="pane" aria-labelledby="with-h">
+      <h1 id="with-h">See or delete your donation</h1>
+      <p class="lede">Type the donation number you were shown when you donated. Your browser asks our
+        storage for the locked files and opens them here, on this device. No account, no name.</p>
+      <form id="number-form">
+        <p><label for="number">Your donation number</label><br>
+          <input class="number-input" id="number" autocomplete="off" spellcheck="false" placeholder="ABCD-EF12-…"></p>
+        <p><button class="cta" type="submit" id="number-go">Look it up</button></p>
+      </form>
+      <div id="found" hidden></div>
+      <p id="number-msg" class="fine" role="status"></p>
+    </section>
+
+    <section id="no-number" class="pane" aria-labelledby="without-h">
+      <h2 id="without-h">Lost your number?</h2>
+      <p class="fine">Open the same scan here. Your browser makes a short code from the pictures, on
+        this device. Email us the code and we can find and delete the donation. Nothing is sent from
+        this page.</p>
+      <div class="pickers">
+        <button class="ghost" type="button" id="pick-folder">Choose the disc or a folder</button>
+        <button class="ghost" type="button" id="pick-zip">Choose a ZIP file</button>
+      </div>
+      <div class="progress" id="code-progress" hidden role="status"><p id="code-progress-text"></p><div class="track"><div class="fill" id="code-progress-fill"></div></div></div>
+      <ul class="series-list" id="codes"></ul>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p class="meta"><a href="/">Back to the front page</a> &middot; <a href="health-data-privacy.html">Privacy</a> &middot; <a href="open.html">Open your own scan</a> &middot; &copy; 2026 LunarWerx Studios &middot; <a href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a></p>
+  </footer>
+
+  <noscript><div class="pane"><p>This page needs JavaScript, because your browser opens the locked files itself.</p></div></noscript>
+</body>
+</html>

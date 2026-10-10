@@ -1,7 +1,7 @@
 # rAidiology
 
 **Not a medical device.** rAidiology is not cleared or approved by the FDA or any other regulator. It
-is for education and a second look, never for diagnosis or treatment decisions; always discuss
+is for education and research, never for diagnosis or treatment decisions; always discuss
 your results with a doctor ([LICENSING.md](LICENSING.md#not-a-medical-device)).
 
 rAidiology turns a spine MRI reading into a calm, plain-English web page. It shows a status
@@ -11,19 +11,24 @@ it, where the scanned regions glow in colours that match how much each finding m
 also scroll through the scan images with the findings marked on them, see every spinal level on a
 colour-coded diagram, and look up words and questions to ask your doctor.
 
-It is a static site: no build step, no npm. The page is `site/index.html` with plain ES modules
-and CSS; three.js is loaded from jsDelivr (pinned to 0.170.0).
+It is a static site: no build step, no npm, plain ES modules and CSS. Three pages: `site/index.html`
+is the public landing page, `site/open.html` opens a visitor's own scan entirely in their browser
+with nothing uploaded, and `site/report.html` is the 3D reading, which the password gate keeps
+private (`functions/_middleware.js`). three.js is loaded from jsDelivr (pinned to 0.170.0) by the
+report page only.
 
-Spine MRI is the first scan type; X-ray and CT are planned, each in its own folder.
+Spine MRI was the first scan type and X-ray is the second and ships; CT is in development. Each
+lives in its own folder.
 
 ## Repository layout
 
 | Folder | What it holds |
 |---|---|
-| `site/` | the viewer (static web app) and its data format, `site/data/CONTRACT.md` |
+| `site/` | the landing page, the in-browser scan opener, the 3D viewer, and the viewer's data format `site/data/CONTRACT.md` |
 | `core/` | parts every scan type shares: DICOM handling (`core/dicom/`), image tools for AI readers (`core/reading/`), and `core/paths.py`, which says where data, weights and tools live |
 | `modalities/` | one folder per scan type, each with its pipeline, reader brief, scorecard (`eval/`) and model cards. How a scan type plugs in: [modalities/README.md](modalities/README.md) |
 | `tools/` | repository tooling, such as the builder of the reference skeleton the viewer shows |
+| `ledger/` | one line per run of anything that produces a number or takes time, so a regression or a slowdown is a query: `python core/ledger.py report` |
 
 Datasets, trained weights and installed tools sit beside the repository (`../Datasets`,
 `../Models`, `../_tools`), never in it; working files go to the git-ignored `work/`.
@@ -35,8 +40,8 @@ cd site
 python -m http.server 8000
 ```
 
-Then open http://localhost:8000. Opening `index.html` straight from disk does not work, because
-browsers block module and data loading from `file://`.
+Then open http://localhost:8000. Opening a page straight from disk does not work, because browsers
+block module and data loading from `file://`.
 
 ## Data
 
@@ -102,8 +107,21 @@ download on this repository's Releases page (`disc-grader-v1`; unzip into `../Mo
 Development used private data that is not part of this repository. Scored runs used an earlier
 wording of `modalities/spine_mri/READER_BRIEF.md`.
 
-Next: X-ray and CT ([modalities/](modalities/README.md)), and a landing page where anyone can open
-their own scan in the browser.
+X-ray followed and ships: a fracture detector trained from scratch that scored AUROC 0.976
+(95% CI 0.970-0.981) on 4,170 held-out paediatric wrist radiographs from 1,218 patients it had
+never seen, against 0.838 for the best classical baseline
+([modalities/xray/eval/SCORECARD.md](modalities/xray/eval/SCORECARD.md)). It is what the MCP
+server in [mcp/](mcp/README.md) grades with, so your own AI can read your scan on your own
+machine and leave behind a small file the viewer opens
+([docs/FINDINGS_FILE.md](docs/FINDINGS_FILE.md)). CT ships too: a segmenter trained from scratch
+that labels 117 organs and bones scored 0.7667 mean Dice (95% CI 0.7517-0.7811) on the 89
+held-out scans of the TotalSegmentator dataset, against 0.1776 for the best baseline
+([modalities/ct/eval/SCORECARD.md](modalities/ct/eval/SCORECARD.md)).
+
+Newer readers have model cards in [release/cards/](release/cards/): the CT segmenter read at 1.5 mm, a
+chest X-ray reader, lung nodules on chest CT, a mammogram reader and spine X-ray corners. Each card gives
+the scores with the test set they were measured on, the datasets and the credit each asks for. Their
+weights are not published yet; each will be a gated download on Hugging Face.
 
 ## Built on, and what already exists
 

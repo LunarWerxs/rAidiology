@@ -1,8 +1,8 @@
-// panel.js: the side panel / bottom sheet: Overview (summary + findings), Scan viewer, Levels, Words.
-import { el, svgEl, icon, sev, STATUS, GRADE, SEVERITY, LEVEL_ORDER, normLevel, levelList, compareLevels, firstSentence } from './data.js';
+// panel.js: the side panel / bottom sheet. A mode switch (AI report, Radiologist, Good & bad) picks whose words the
+// Report tab shows; the Scans tab is the scan viewer. Nothing from one report is drawn while the other is on.
+import { el, icon, sev, STATUS, GRADE, normLevel, levelList, compareLevels, firstSentence } from './data.js';
 import { createViewer, stackFigure, emptyState } from './viewer.js';
 
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const phone = window.matchMedia('(max-width: 860px)');
 const ICON = {
   why: ['M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V17h5.2v-1.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z', 'M9.8 20.5h4.4'],
@@ -14,28 +14,31 @@ const ICON = {
   copy: ['M9 9h10v10H9z', 'M5 15V5h10'],
 };
 
-const regionSlot = (r) => (r.anchor === 'neck' || r.anchor === 'lower_back' ? r.anchor
-  : r.id === 'cervical' ? 'neck' : r.id === 'lumbar' ? 'lower_back' : null);
-
-const cssId = (s) => String(s).replace(/[^a-zA-Z0-9_-]/g, '_');
-
 // Specialist model flag keys (CONTRACT.md, levels[].specialist) in plain words.
 const FLAG = {
   herniation: 'herniation', narrowing: 'narrowing', bulging: 'bulge', spondylolisthesis: 'slipped vertebra',
   up_endplate: 'upper endplate change', low_endplate: 'lower endplate change', modic: 'bone-marrow (Modic) change',
 };
 
-export function createPanel(root, { report, stacks, on = {} }) {
+// Verdict colours of the "Good & bad" capability card.
+const VERDICT_COLOR = { 'on par': '#7fbf9f', behind: '#e07a3a', 'no model': '#a3a9b5', unsettled: '#d9a441' };
+
+export function createPanel(root, { report, stacks, incidentalColor = '#5cc2f2', on = {} }) {
   const $ = (s) => root.querySelector(s);
-  if (report?.comparison) $('#tab-compare').hidden = false;
-  else { $('#tab-compare')?.remove(); $('#pane-compare')?.remove(); }
-  const panes = { overview: $('#pane-overview'), viewer: $('#pane-viewer'), levels: $('#pane-levels'), words: $('#pane-words') };
-  if (report?.comparison) panes.compare = $('#pane-compare');
+  const hasCompare = !!report?.comparison;
+  const hasRadiologist = !!report?.comparison?.report;
+  const switchEl = $('#mode-switch');
+  const modeBtns = [...switchEl.querySelectorAll('[data-mode]')];
+  if (!hasRadiologist) modeBtns.find((b) => b.dataset.mode === 'radiologist')?.remove();
+  switchEl.hidden = !hasCompare;
+  const panes = { report: $('#pane-report'), viewer: $('#pane-viewer') };
   const tabs = [...root.querySelectorAll('[role="tab"]')];
   const findings = [...(report?.findings || [])].sort((a, b) => sev(b.severity).rank - sev(a.severity).rank || compareLevels(a.level, b.level));
-  const cards = new Map();
-  let levelFilter = null;
   let viewer = null;
+  let mode = 'ai';
+  let view = null;        // what the Report tab shows when no detail is open
+  let detailOpen = false;
+  let savedTop = 0;
 
   function showTab(name) {
     for (const t of tabs) {
@@ -60,25 +63,49 @@ export function createPanel(root, { report, stacks, on = {} }) {
     });
   });
 
-  const filterSlot = el('span');
-  const list = el('div', { class: 'stack' });
-
-  function renderOverview() {
-    const pane = panes.overview;
+  // ---------- the Report tab: view, detail, back ----------
+  function renderReport() {
+    const pane = panes.report;
+    detailOpen = false;
     pane.replaceChildren();
     if (!report) {
       pane.append(emptyState('No report yet', 'Add data/report.json (or data/report.sample.json) next to this page and reload.'));
       return;
     }
-    pane.append(summaryCard());
-    pane.append(el('div', { class: 'section-title' }, el('span', {}, 'What we found'), filterSlot), list);
-    renderFindings();
-    if (report.regions.length) {
-      pane.append(el('div', { class: 'section-title' }, 'Scanned areas'),
-        el('div', { class: 'region-grid' }, report.regions.map(regionCard)));
-    }
+    view = mode === 'radiologist' ? radiologistView() : mode === 'compare' ? compareView() : aiView();
+    pane.append(view);
+    pane.scrollTop = 0;
   }
 
+  function showDetail(node) {
+    const pane = panes.report;
+    if (!detailOpen) savedTop = pane.scrollTop;
+    detailOpen = true;
+    pane.replaceChildren(node);
+    pane.scrollTop = 0;
+    on.reveal?.();
+  }
+
+  function backToReport() {
+    const pane = panes.report;
+    detailOpen = false;
+    pane.replaceChildren(view);
+    pane.scrollTop = savedTop;
+  }
+
+  const backBtn = () => el('button', { class: 'btn ghost back-btn', type: 'button', onclick: backToReport }, '← Back to the report');
+
+  function setMode(m) {
+    mode = m === 'radiologist' && hasRadiologist ? 'radiologist' : m === 'compare' && hasCompare ? 'compare' : 'ai';
+    for (const b of modeBtns) b.setAttribute('aria-pressed', String(b.dataset.mode === mode));
+    viewer?.setMode(mode);
+    showTab('report');
+    renderReport();
+    on.mode?.(mode);
+  }
+  for (const b of modeBtns) b.addEventListener('click', () => setMode(b.dataset.mode));
+
+  // ---------- shared bits ----------
   // Long text shows its first lines on phones, with one button for the rest and for any `extra`
   // that belongs with it (CSS: .is-clamped, .clamp-extra, .more-btn; desktop shows everything).
   function clamped(cls, text, extra = null) {
@@ -95,27 +122,12 @@ export function createPanel(root, { report, stacks, on = {} }) {
     return wrap;
   }
 
-  function summaryCard() {
-    const st = STATUS[report.summary.status] || STATUS.watch;
-    const exams = [...report.study.exams];
-    const counts = Object.values(SEVERITY)
-      .map((s) => ({ s, n: findings.filter((f) => sev(f.severity) === s).length }))
-      .filter((c) => c.n)
-      .sort((a, b) => b.s.rank - a.s.rank);
-    return el('section', { class: 'card summary-card', style: { '--tone': st.color }, 'aria-labelledby': 'summary-headline' },
-      el('div', { class: 'summary-top' },
-        el('span', { class: 'status-pill' }, el('span', { class: 'dot', 'aria-hidden': 'true' }), st.label),
-        exams.length ? el('span', { class: 'summary-exam' }, exams.join(' · ')) : null),
-      el('h1', { class: 'headline', id: 'summary-headline' }, report.summary.headline || 'Your spine MRI, explained'),
-      report.summary.plain ? clamped('summary-plain', report.summary.plain, scoreLine()) : scoreLine(),
-      counts.length ? el('div', { class: 'counts' }, counts.map(({ s, n }) =>
-        el('span', { class: 'count-chip', style: { '--sev': s.color } }, el('i', { 'aria-hidden': 'true' }), `${n} ${s.label.toLowerCase()}`))) : null,
-      report.summary.technical ? techDetails("The radiologist's wording", null, report.summary.technical) : null);
-  }
-
   function scoreLine() {
-    return report.scorecard?.headline?.text ? el('p', { class: 'summary-score muted small',
+    const main = report.scorecard?.headline?.text ? el('p', { class: 'summary-score muted small',
       title: [report.scorecard.method, report.scorecard.permission].filter(Boolean).join(' · ') }, report.scorecard.headline.text) : null;
+    const dev = report.dev_scorecard?.text ? el('p', { class: 'summary-score muted small',
+      title: [report.dev_scorecard.method, report.dev_scorecard.split].filter(Boolean).join(' · ') }, report.dev_scorecard.text) : null;
+    return main && dev ? [main, dev] : main || dev;
   }
 
   function techDetails(label, title, text) {
@@ -123,60 +135,95 @@ export function createPanel(root, { report, stacks, on = {} }) {
       el('div', { class: 'tech-body' }, title ? el('strong', {}, title) : null, text));
   }
 
-  function regionCard(r) {
-    const slot = regionSlot(r);
-    return el('div', { class: 'card region-card' },
-      el('h3', {}, r.name),
-      el('p', {}, r.summary || `${r.levels_present.length} levels imaged.`),
-      slot ? el('div', {}, el('button', { class: 'btn', type: 'button', onclick: () => on.slot?.(slot) }, icon(ICON.cube), 'Show in 3D')) : null);
+  const fold = (label, ...kids) => el('details', { class: 'fold' }, el('summary', {}, label), el('div', { class: 'fold-body' }, kids));
+
+  const dotColor = (status) => (status === 'incidental' ? incidentalColor : sev(status).color);
+  const firstLevel = (text) => levelList(text)[0] || '';
+  const levelEntry = (name) => report.levels.find((l) => normLevel(l.level) === normLevel(name));
+
+  // One clickable line of a report: `label  text` (findings) or just the text (impression).
+  function reportRow(item, { label = true, dot = null, onOpen = null } = {}) {
+    const kids = [
+      dot ? el('span', { class: 'rep-dot', style: { background: dot }, 'aria-hidden': 'true' }) : null,
+      label && item.label ? el('span', { class: 'rep-label' }, item.label) : null,
+      el('span', { class: 'rep-text' }, item.text),
+    ];
+    return onOpen
+      ? el('button', { class: 'rep-row', type: 'button', onclick: onOpen }, kids)
+      : el('div', { class: 'rep-row is-plain' }, kids);
   }
 
-  function renderFindings() {
-    list.replaceChildren();
-    filterSlot.replaceChildren();
-    if (levelFilter) {
-      filterSlot.append(el('span', { class: 'filter-chip' }, `Level ${levelFilter.label}`,
-        el('button', { type: 'button', 'aria-label': 'Show all findings', onclick: () => setLevelFilter(null) }, icon(ICON.close))));
-    }
-    const items = findings.filter((f) => !levelFilter || levelList(f.level).includes(levelFilter.key));
-    if (!items.length) {
-      list.append(el('p', { class: 'empty-note' }, levelFilter
-        ? `Nothing specific was noted at ${levelFilter.label}.`
-        : 'No findings were listed in this report.'));
-    }
-    for (const f of items) list.append(findingCard(f));
-  }
-
-  function findingCard(f) {
-    if (cards.has(f.id)) return cards.get(f.id).article;
-    const s = sev(f.severity);
-    const bodyId = `fd-${cssId(f.id)}`;
-    const head = el('button', { class: 'finding-head', type: 'button', 'aria-expanded': 'false', 'aria-controls': bodyId },
-      el('span', { class: 'finding-tags' },
-        el('span', { class: 'sev-chip' }, s.label),
-        f.level ? el('span', { class: 'level-chip' }, f.level) : null),
-      el('span', { class: 'finding-title' }, f.title),
-      f.plain ? el('span', { class: 'finding-line' }, firstSentence(f.plain)) : null,
-      icon(ICON.chevron, 'chev'));
-    const body = el('div', { class: 'finding-body', id: bodyId, hidden: true });
-    const article = el('article', { class: 'finding', id: `finding-${cssId(f.id)}`, style: { '--sev': s.color } }, head, body);
-    let built = false;
-    const setOpen = (open) => {
-      if (open && !built) {
-        body.append(...findingBody(f));
-        built = true;
-      }
-      body.hidden = !open;
-      head.setAttribute('aria-expanded', String(open));
-      article.classList.toggle('is-open', open);
+  // ---------- AI mode ----------
+  // Every word here is the AI's. The radiologist's report never reaches this view or its details.
+  function fallbackAiReport() {
+    const lines = (list) => list.map((f) => ({ label: f.level || f.title, text: f.plain ? firstSentence(f.plain) : f.title, level: firstLevel(f.level), finding: f.id }));
+    return {
+      title: '', byline: '', exam: '', history: '', technique: '', who: [],
+      impression: findings.map((f) => ({ text: f.title, level: firstLevel(f.level), finding: f.id, status: f.severity })),
+      sections: report.regions.map((r) => ({ region: r.id, title: r.name, lines: lines(findings.filter((f) => f.region === r.id)) })).filter((g) => g.lines.length),
     };
-    head.addEventListener('click', () => {
-      const open = head.getAttribute('aria-expanded') !== 'true';
-      setOpen(open);
-      if (open) on.finding?.(f.id);
-    });
-    cards.set(f.id, { article, setOpen });
-    return article;
+  }
+
+  function aiView() {
+    const a = report.ai_report || fallbackAiReport();
+    const st = STATUS[report.summary.status] || STATUS.watch;
+    const open = (item) => () => showDetail(aiDetail(item));
+    return el('div', { class: 'report-view' },
+      el('section', { class: 'card summary-card', style: { '--tone': st.color }, 'aria-labelledby': 'summary-headline' },
+        el('div', { class: 'summary-top' },
+          el('span', { class: 'status-pill' }, el('span', { class: 'dot', 'aria-hidden': 'true' }), st.label),
+          a.title ? el('span', { class: 'summary-exam' }, a.title) : null),
+        el('h1', { class: 'headline', id: 'summary-headline' }, report.summary.headline || 'Your spine MRI, explained'),
+        report.summary.plain ? clamped('summary-plain', report.summary.plain) : null,
+        a.byline ? el('p', { class: 'rep-byline muted small' }, a.byline) : null,
+        report.summary.technical ? techDetails('In medical terms', null, report.summary.technical) : null),
+      a.impression.length ? el('div', { class: 'section-title' }, 'Impression') : null,
+      a.impression.length ? el('ol', { class: 'rep-impression' }, a.impression.map((it) =>
+        el('li', {}, reportRow(it, { label: false, dot: dotColor(it.status), onOpen: open(it) })))) : null,
+      a.sections.length ? el('div', { class: 'section-title' }, 'Findings') : null,
+      a.sections.map((g) => el('section', { class: 'rep-section' },
+        el('h3', { class: 'rep-h' }, g.title),
+        el('div', { class: 'rep-lines' }, g.lines.map((ln) => reportRow(ln, { onOpen: open(ln) }))))),
+      !a.sections.length && !a.impression.length ? el('p', { class: 'empty-note' }, 'No findings were listed in this report.') : null,
+      aiFooter(a));
+  }
+
+  function aiFooter(a) {
+    const meta = [['Exam', a.exam], ['History', a.history], ['Technique', a.technique]].filter(([, v]) => v);
+    const score = scoreLine();
+    const who = a.who.length || score ? fold('Who made this report',
+      a.who.length ? el('ul', { class: 'method-list' }, a.who.map((w) => el('li', {}, w))) : null, score) : null;
+    return el('footer', { class: 'rep-foot' },
+      meta.length ? el('dl', { class: 'rep-meta' }, meta.map(([k, v]) => el('div', {}, el('dt', {}, k), el('dd', {}, v)))) : null,
+      who, wordsFold());
+  }
+
+  // The detail of one AI row: its text, then the finding card and/or the level's measurements.
+  function aiDetail(item) {
+    const f = item.finding ? findings.find((x) => x.id === item.finding) : null;
+    const lvl = item.level || f?.level || '';
+    const status = item.status || f?.severity || '';
+    const title = item.label || f?.title || lvl || 'Detail';
+    const here = !f && lvl ? findings.filter((x) => levelList(x.level).includes(firstLevel(lvl))) : [];
+    const blocks = lvl ? levelBlocks(lvl) : [];
+    if (f) on.finding?.(f.id);
+    else if (lvl) on.level?.(firstLevel(lvl), levelEntry(firstLevel(lvl))?.region);
+    return el('div', { class: 'report-detail' },
+      backBtn(),
+      el('div', { class: 'card detail-card', style: { '--sev': status ? dotColor(status) : 'var(--line-strong)' } },
+        el('div', { class: 'summary-top' },
+          el('h2', { class: 'detail-title' }, title),
+          el('span', { class: 'finding-tags' },
+            status ? el('span', { class: 'sev-chip', style: { '--sev': dotColor(status) } }, sev(status).label) : null,
+            lvl ? el('span', { class: 'level-chip' }, lvl) : null)),
+        item.text ? el('p', { class: 'lead' }, item.text) : null,
+        f ? findingBody(f) : null),
+      blocks,
+      here.length ? el('div', { class: 'section-title' }, 'Findings here') : null,
+      here.length ? el('div', { class: 'mark-list' }, here.map((x) => el('button', {
+        class: 'mark-item', type: 'button', style: { '--sev': sev(x.severity).color },
+        onclick: () => showDetail(aiDetail({ finding: x.id, label: x.title, level: x.level, status: x.severity })),
+      }, el('span', { class: 'dot', 'aria-hidden': 'true' }), el('span', { class: 'grow' }, x.title), el('span', { class: 'sub' }, 'Open')))) : null);
   }
 
   function findingBody(f) {
@@ -191,7 +238,7 @@ export function createPanel(root, { report, stacks, on = {} }) {
         el('span', { class: 'conf-bars', 'aria-hidden': 'true' }, [1, 2, 3].map((i) => el('i', { class: i <= n ? 'on' : '' }))),
         `How sure the reading is: ${f.confidence[0].toUpperCase()}${f.confidence.slice(1)}`));
     }
-    if (f.technical || f.technical_title) out.push(techDetails("The radiologist's wording", f.technical_title, f.technical));
+    if (f.technical || f.technical_title) out.push(techDetails('In medical terms', f.technical_title, f.technical));
     if (f.views.length) out.push(el('div', { class: 'scan-grid' }, f.views.map((v) => stackFigure(stacks, v, s.color))));
     const first = f.views.find((v) => stacks.some((st) => st.id === v.stack));
     out.push(el('div', { class: 'btn-row' },
@@ -207,193 +254,55 @@ export function createPanel(root, { report, stacks, on = {} }) {
     return el('div', { class: 'info-block' }, el('h4', {}, icon(paths), title), el('p', {}, text));
   }
 
-  function setLevelFilter(level) {
-    levelFilter = level ? { key: normLevel(level), label: level } : null;
-    renderFindings();
+  // The AI's measurements for the level(s) a row names (report.levels): its own numbers and graders only.
+  function levelBlocks(levelText) {
+    return levelList(levelText).map(levelEntry).filter(Boolean).map((e) => {
+      const rows = levelRows(e);
+      if (!rows.length) return null;
+      return el('div', { class: 'card level-detail' },
+        el('div', { class: 'summary-top' }, el('h3', {}, e.level),
+          el('span', { class: 'sev-chip', style: { '--sev': dotColor(e.status) } }, sev(e.status).label)),
+        el('div', { style: { marginTop: '8px' } }, rows.map(([k, v]) => el('div', { class: 'row' }, el('span', {}, k), el('span', {}, v)))));
+    }).filter(Boolean);
   }
 
-  function openFinding(id) {
-    const f = findings.find((x) => x.id === id);
-    if (!f) return;
-    if (levelFilter && !levelList(f.level).includes(levelFilter.key)) setLevelFilter(null);
-    showTab('overview');
-    const card = cards.get(id);
-    if (!card) return;
-    card.setOpen(true);
-    card.article.scrollIntoView({ block: 'start', behavior: reduceMotion.matches ? 'auto' : 'smooth' });
-    card.article.classList.add('is-flash');
-    setTimeout(() => card.article.classList.remove('is-flash'), 1400);
-    on.reveal?.();
-  }
-
-  function renderLevels() {
-    const pane = panes.levels;
-    pane.replaceChildren();
-    if (!report || !report.levels.length) {
-      pane.append(emptyState('No level-by-level details', 'When the report lists each spinal level, a colour-coded map of your spine will appear here.'));
-      return;
-    }
-    const regionIds = [...new Set([...report.regions.map((r) => r.id), ...report.levels.map((l) => l.region)])];
-    const entryFor = (regionId, name) => report.levels.find((l) => l.region === regionId && normLevel(l.level) === name);
-    const W = 300;
-    const CX = 72;
-    const shapes = [];
-    const hits = new Map();
-    let y = 4;
-
-    for (const regionId of regionIds) {
-      const region = report.regions.find((r) => r.id === regionId);
-      const entries = report.levels.filter((l) => l.region === regionId);
-      const names = [...entries.flatMap((l) => normLevel(l.level).split('-')), ...(region?.levels_present || []).map(normLevel)];
-      const idx = names.map((n) => LEVEL_ORDER.indexOf(n)).filter((i) => i >= 0 && i < LEVEL_ORDER.length - 1);
-      if (!idx.length) continue;
-      const vs = LEVEL_ORDER.slice(Math.min(...idx), Math.max(...idx) + 1);
-      shapes.push(svgEl('text', { x: 4, y: y + 14, fill: '#9dabc0', 'font-size': 11.5, 'font-weight': 700, 'letter-spacing': '0.08em' },
-        (region?.name || regionId).toUpperCase()));
-      y += 26;
-      vs.forEach((v, i) => {
-        const e = entryFor(regionId, v);
-        const fill = e ? sev(e.status).color : '#e9e1cf';
-        const shape = v === 'S1'
-          ? svgEl('path', { class: 'shape', d: `M${CX - 34} ${y} H${CX + 34} L${CX + 16} ${y + 34} H${CX - 16} Z`, fill, stroke: 'transparent', 'stroke-linejoin': 'round' })
-          : svgEl('rect', { class: 'shape', x: CX - 31, y, width: 62, height: 24, rx: 7, fill, stroke: 'transparent' });
-        const h = v === 'S1' ? 34 : 24;
-        const g = svgEl('g', { class: 'hit', role: 'button', tabindex: 0, 'aria-label': `${v}${e ? `, ${sev(e.status).label}` : ''}` },
-          shape,
-          svgEl('text', { x: CX, y: y + (v === 'S1' ? 15 : 16), 'text-anchor': 'middle', fill: '#141a26', 'font-size': 11.5, 'font-weight': 700 }, v === 'S1' ? 'Sacrum' : v));
-        wire(g, v, regionId);
-        shapes.push(g);
-        y += h + 4;
-        const below = vs[i + 1];
-        if (!below) return;
-        if (v === 'C1') { y += 8; return; }
-        const name = `${v}-${below}`;
-        const de = entryFor(regionId, name);
-        const s = de ? sev(de.status) : null;
-        const cy = y + 5;
-        const dg = svgEl('g', { class: 'hit', role: 'button', tabindex: 0, 'aria-label': `${name} disc${s ? `, ${s.label}` : ''}` },
-          svgEl('rect', { class: 'shape', x: CX - 27, y, width: 54, height: 10, rx: 5, fill: s ? s.color : '#6f86a8', stroke: 'transparent' }),
-          svgEl('line', { x1: CX + 30, y1: cy, x2: 134, y2: cy, stroke: 'rgba(255,255,255,0.18)', 'stroke-width': 1 }),
-          svgEl('text', { x: 140, y: cy + 4, fill: '#eef2f8', 'font-size': 12.5, 'font-weight': 650 }, name),
-          svgEl('text', { x: 206, y: cy + 4, fill: s ? s.color : '#9dabc0', 'font-size': 12, 'font-weight': 600 }, s ? s.label : 'Not listed'));
-        wire(dg, name, regionId);
-        shapes.push(dg);
-        y += 14;
-      });
-      y += 18;
-    }
-
-    function wire(g, name, regionId) {
-      hits.set(`${regionId}:${name}`, g);
-      const act = () => selectLevel(name, regionId);
-      g.addEventListener('click', act);
-      g.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); act(); }
-      });
-    }
-
-    const svg = svgEl('svg', { class: 'spine-diagram', viewBox: `0 0 ${W} ${y}`, role: 'group', 'aria-label': 'Spine diagram. Choose a level to see details.' }, shapes);
-    const placeholder = () => el('p', { class: 'muted small' }, 'Tap a level to see the details and focus the 3D view on it.');
-    const detail = el('div', { class: 'card level-detail' }, placeholder());
-    const legend = el('div', { class: 'legend' }, ['normal', 'mild', 'moderate', 'severe'].map((k) =>
-      el('span', { class: 'sev-chip', style: { '--sev': sev(k).color } }, sev(k).label)));
-    // On phones the diagram is taller than the screen, so the hint sits above it and a chosen level's
-    // details pin to the bottom of the panel (CSS: .levels-hint, .level-detail.has-level).
-    const hint = el('p', { class: 'levels-hint muted small' }, 'Tap a level for its details.');
-    pane.append(el('div', { class: 'levels-wrap' }, legend, hint, el('div', { class: 'card' }, svg), detail, discHealth()));
-    const clearLevel = () => {
-      for (const g of hits.values()) g.classList.remove('is-selected');
-      detail.classList.remove('has-level');
-      detail.replaceChildren(placeholder());
-      setLevelFilter(null);
+  function levelRows(e) {
+    const rows = [];
+    if (e.disc) rows.push(['Disc', e.disc]);
+    if (e.canal) rows.push(['Spinal canal narrowing', gradeChip(e.canal)]);
+    if (e.foramen_left) rows.push(['Left nerve exit', gradeChip(e.foramen_left)]);
+    if (e.foramen_right) rows.push(['Right nerve exit', gradeChip(e.foramen_right)]);
+    if (e.note) rows.push(['Note', e.note]);
+    const m = e.measure || {};
+    const parts = [
+      m.disc_height_mm != null && `disc height ${m.disc_height_mm} mm`,
+      m.disc_to_csf_signal != null && `water signal ${m.disc_to_csf_signal.toFixed(2)} x fluid`,
+      m.canal_ap_at_disc_mm != null && `fluid space ${m.canal_ap_at_disc_mm} mm front to back`,
+      m.cord_ap_at_disc_mm != null && `cord ${m.cord_ap_at_disc_mm} mm`,
+      m.cord_compression_ratio_hc != null && `cord ${Math.abs(m.cord_compression_ratio_hc).toFixed(0)}% ${m.cord_compression_ratio_hc >= 0 ? 'narrower' : 'wider'} than in healthy adults`,
+    ].filter(Boolean);
+    if (parts.length) rows.push(['Measured by AI', parts.join(' · ')]);
+    const modelRow = (label, sp, devChip) => {
+      const flags = sp.flags.map((f) => (FLAG[f] || f) + (sp.items[f] != null ? ` (${Math.round(sp.items[f] * 100)}%)` : ''));
+      rows.push([label, [
+        `Disc drying grade ${sp.pfirrmann} of 5 (${Math.round(sp.pfirrmann_confidence * 100)}% sure)`,
+        flags.length ? ` · also flags: ${flags.join(', ')}` : '',
+        devChip ? el('span', { class: 'level-chip not-blind', title: 'Not yet tested on scans it never saw; shown for comparison only' }, 'in development') : null,
+        sp.not_blind ? el('span', { class: 'level-chip not-blind', title: 'This scan already feeds a mistake-log rule, so this re-run is not a blind reading.' }, 'not blind') : null,
+      ]]);
     };
-
-    // Measured water content of each disc, relative to spinal fluid on the same slices (automated).
-    function discHealth() {
-      const groups = regionIds.map((regionId) => {
-        const rows = report.levels.filter((l) => l.region === regionId && l.measure && l.measure.disc_to_csf_signal != null);
-        if (!rows.length) return null;
-        const max = Math.max(...rows.map((l) => l.measure.disc_to_csf_signal));
-        const region = report.regions.find((r) => r.id === regionId);
-        return el('div', { class: 'disc-health-group' },
-          el('div', { class: 'section-title' }, region?.name || regionId),
-          rows.map((l) => {
-            const v = l.measure.disc_to_csf_signal;
-            const pct = Math.round((100 * v) / max);
-            return el('button', { class: 'disc-bar', type: 'button', style: { '--sev': sev(l.status).color },
-              title: `Disc water signal ${v.toFixed(2)} x spinal fluid${l.measure.disc_height_mm ? `, height ${l.measure.disc_height_mm} mm` : ''}`,
-              onclick: () => selectLevel(normLevel(l.level), regionId) },
-            el('span', { class: 'disc-bar-label' }, l.level),
-            el('span', { class: 'disc-bar-track' }, el('span', { class: 'disc-bar-fill', style: { width: `${pct}%` } })),
-            el('span', { class: 'disc-bar-value' }, `${pct}%`));
-          }));
-      }).filter(Boolean);
-      if (!groups.length) return null;
-      return el('div', { class: 'card disc-health' },
-        el('h3', {}, 'Disc health, measured'),
-        el('p', { class: 'muted small' }, 'How much water each disc holds, from the brightness of the disc on the scan compared with the spinal fluid. 100% is the best-hydrated disc in that part of your spine. Healthy discs sit close together; a short bar means a drier disc.'),
-        groups);
-    }
-
-    function selectLevel(name, regionId) {
-      for (const [k, g] of hits) g.classList.toggle('is-selected', k === `${regionId}:${name}`);
-      const e = entryFor(regionId, name);
-      const at = findings.filter((f) => levelList(f.level).includes(name));
-      setLevelFilter(e?.level || name);
-      on.level?.(name, regionId);
-      const rows = [];
-      if (e) {
-        if (e.disc) rows.push(['Disc', e.disc]);
-        if (e.canal) rows.push(['Spinal canal narrowing', gradeChip(e.canal)]);
-        if (e.foramen_left) rows.push(['Left nerve exit', gradeChip(e.foramen_left)]);
-        if (e.foramen_right) rows.push(['Right nerve exit', gradeChip(e.foramen_right)]);
-        if (e.note) rows.push(['Note', e.note]);
-        const m = e.measure || {};
-        const parts = [
-          m.disc_height_mm != null && `disc height ${m.disc_height_mm} mm`,
-          m.disc_to_csf_signal != null && `water signal ${m.disc_to_csf_signal.toFixed(2)} x fluid`,
-          m.canal_ap_at_disc_mm != null && `fluid space ${m.canal_ap_at_disc_mm} mm front to back`,
-          m.cord_ap_at_disc_mm != null && `cord ${m.cord_ap_at_disc_mm} mm`,
-          m.cord_compression_ratio_hc != null && `cord ${Math.abs(m.cord_compression_ratio_hc).toFixed(0)}% ${m.cord_compression_ratio_hc >= 0 ? 'narrower' : 'wider'} than in healthy adults`,
-        ].filter(Boolean);
-        if (parts.length) rows.push(['Measured by AI', parts.join(' · ')]);
-        const sp = e.specialist;
-        if (sp) {
-          const flags = sp.flags.map((f) => (FLAG[f] || f) + (sp.items[f] != null ? ` (${Math.round(sp.items[f] * 100)}%)` : ''));
-          rows.push(['Specialist model', [
-            `Disc drying grade ${sp.pfirrmann} of 5 (${Math.round(sp.pfirrmann_confidence * 100)}% sure)`,
-            flags.length ? ` · also flags: ${flags.join(', ')}` : '',
-            sp.not_blind ? el('span', { class: 'level-chip not-blind', title: 'This scan already feeds a mistake-log rule, so this re-run is not a blind reading.' }, 'not blind') : null,
-          ]]);
-        }
-      }
-      detail.classList.add('has-level');
-      if (phone.matches) on.expand?.();
-      detail.replaceChildren(
-        el('div', { class: 'summary-top' }, el('h3', {}, e?.level || name),
-          e ? el('span', { class: 'sev-chip', style: { '--sev': sev(e.status).color } }, sev(e.status).label) : null,
-          el('button', { class: 'icon-btn detail-close', type: 'button', 'aria-label': 'Close the level details', onclick: clearLevel }, icon(ICON.close))),
-        rows.length ? el('div', { style: { marginTop: '8px' } }, rows.map(([k, v]) => el('div', { class: 'row' }, el('span', {}, k), el('span', {}, v))))
-          : el('p', { class: 'muted small', style: { marginTop: '8px' } }, 'No specific notes for this level.'),
-        at.length ? el('div', { class: 'section-title' }, 'Findings here') : null,
-        at.length ? el('div', { class: 'mark-list' }, at.map((f) => el('button', {
-          class: 'mark-item', type: 'button', style: { '--sev': sev(f.severity).color },
-          onclick: () => { openFinding(f.id); on.finding?.(f.id); },
-        }, el('span', { class: 'dot', 'aria-hidden': 'true' }), el('span', { class: 'grow' }, f.title), el('span', { class: 'sub' }, 'Open')))) : null);
-    }
+    if (e.specialist) modelRow('Disc grader v1', e.specialist, false);
+    if (e.specialist_dev) modelRow('Disc grader v120', e.specialist_dev, true);
+    return rows;
   }
 
   function gradeChip(g) {
     return el('span', { class: 'sev-chip', style: { '--sev': sev(g === 'none' ? 'normal' : g).color } }, GRADE[g] || g);
   }
 
-  function renderWords() {
-    const pane = panes.words;
-    pane.replaceChildren();
-    if (!report) {
-      pane.append(emptyState('Nothing here yet', 'Word explanations and questions for your doctor appear once a report is loaded.'));
-      return;
-    }
+  // The old Words tab: word list, questions for the doctor, how this was made. Collapsed under the AI report.
+  function wordsFold() {
+    const body = [];
     const gl = report.glossary;
     if (gl.length) {
       const dl = el('dl', { class: 'glossary' });
@@ -406,7 +315,7 @@ export function createPanel(root, { report, stacks, on = {} }) {
       const search = el('input', { class: 'search', type: 'search', placeholder: 'Search words', 'aria-label': 'Search the word list' });
       search.addEventListener('input', () => draw(search.value));
       draw('');
-      pane.append(el('div', { class: 'section-title' }, 'Words, explained'), el('div', { class: 'stack' }, search, dl));
+      body.push(el('div', { class: 'stack' }, search, dl));
     }
     const qs = report.questions_for_doctor;
     if (qs.length) {
@@ -420,28 +329,81 @@ export function createPanel(root, { report, stacks, on = {} }) {
         }
         setTimeout(() => { copy.lastChild.textContent = 'Copy'; }, 1800);
       });
-      pane.append(el('div', { class: 'section-title' }, el('span', {}, 'Questions for your doctor'), copy),
+      body.push(el('div', { class: 'section-title' }, el('span', {}, 'Questions for your doctor'), copy),
         el('ol', { class: 'questions' }, qs.map((q) => el('li', {}, el('span', {}, q)))));
     }
     const m = report.method;
     if (m.ai_models.length || m.readers || m.limitations.length) {
-      pane.append(el('div', { class: 'section-title' }, 'How this was made'),
+      body.push(el('div', { class: 'section-title' }, 'How this was made'),
         el('div', { class: 'card' },
           m.readers ? el('p', { class: 'small' }, m.readers) : null,
           m.ai_models.length ? el('p', { class: 'small muted' }, `Tools: ${m.ai_models.join(', ')}`) : null,
           m.limitations.length ? el('details', { class: 'tech' }, el('summary', {}, 'Limitations'),
             el('ul', { class: 'method-list' }, m.limitations.map((l) => el('li', {}, l)))) : null));
     }
-    if (!pane.children.length) pane.append(emptyState('Nothing here yet', 'This report has no word list or questions.'));
+    return body.length ? fold('Words explained', body) : null;
   }
 
-  // Compare tab: the AI's blind reading vs the outside radiologist report vs the AI after re-checking.
+  // ---------- Radiologist mode ----------
+  // Only the outside radiologist's words (report.comparison.report). No AI content in this view.
+  function radiologistView() {
+    const r = report.comparison.report;
+    const row = (item, region, opts) => reportRow(item, { ...opts, onOpen: item.level ? () => showDetail(radiologistDetail(item, region)) : null });
+    return el('div', { class: 'report-view' },
+      el('section', { class: 'card summary-card', style: { '--tone': '#b58cf0' } },
+        el('div', { class: 'summary-top' }, r.author ? el('span', { class: 'summary-exam' }, r.author) : null),
+        el('h1', { class: 'headline' }, r.title || "Radiologist's report"),
+        r.history ? el('p', { class: 'summary-plain' }, `History: ${r.history}`) : null,
+        r.byline ? el('p', { class: 'rep-byline muted small' }, r.byline) : null),
+      r.impression.length ? el('div', { class: 'section-title' }, 'Impression') : null,
+      r.impression_label ? el('p', { class: 'rep-note muted small' }, r.impression_label) : null,
+      r.impression.length ? el('ol', { class: 'rep-impression' }, r.impression.map((it) =>
+        el('li', {}, row(it, '', { label: false, dot: sev(it.status).color })))) : null,
+      r.sections.length ? el('div', { class: 'section-title' }, 'Findings') : null,
+      r.sections.map((g) => el('section', { class: 'rep-section' },
+        el('h3', { class: 'rep-h' }, g.title),
+        el('div', { class: 'rep-lines' }, g.lines.map((ln) => row(ln, g.region))))));
+  }
+
+  function radiologistDetail(item, region) {
+    const lvl = firstLevel(item.level);
+    if (lvl) on.level?.(lvl, region);
+    return el('div', { class: 'report-detail' },
+      backBtn(),
+      el('div', { class: 'card detail-card' },
+        el('div', { class: 'summary-top' },
+          el('h2', { class: 'detail-title' }, item.label || item.level),
+          el('span', { class: 'level-chip' }, item.level)),
+        el('p', { class: 'lead' }, item.text),
+        el('div', { class: 'btn-row' },
+          el('button', { class: 'btn', type: 'button', onclick: () => showTab('viewer') }, icon(ICON.scan), 'Open the scans'))));
+  }
+
+  // ---------- Good & bad mode ----------
+  function compareView() {
+    const cap = report.comparison.capability;
+    return el('div', { class: 'report-view' }, cap ? capabilityCard(cap) : null, renderCompare());
+  }
+
+  function capabilityCard(cap) {
+    return el('section', { class: 'card cap-card' },
+      cap.title ? el('h3', {}, cap.title) : null,
+      cap.headline ? el('p', { class: 'cap-headline' }, cap.headline) : null,
+      el('ul', { class: 'cap-list' }, cap.items.map((it) => el('li', {},
+        el('div', { class: 'cap-top' },
+          el('span', { class: 'cap-topic' }, it.topic),
+          el('span', { class: 'sev-chip', style: { '--sev': VERDICT_COLOR[it.verdict] } }, it.verdict)),
+        it.plain ? el('p', { class: 'cap-plain small' }, it.plain) : null))),
+      cap.bottom ? el('p', { class: 'cap-bottom muted small' }, cap.bottom) : null);
+  }
+
+  // The AI's blind reading vs the outside radiologist report vs the AI after re-checking.
   // Short phrases first; the long reasoning sits behind "Why".
   const VERDICT = {
     agree: { label: 'Agree', tone: 'agree' },
     ai: { label: 'Favors AI', tone: 'ai' },
     radiologist: { label: 'Favors radiologist', tone: 'rad' },
-    both: { label: 'Both fair', tone: 'both' },
+    both: { label: 'No clear difference', tone: 'both' },
     unclear: { label: 'Unclear', tone: 'both' },
   };
   const verdictOf = (r) => (r.leans === 'radiologist' ? VERDICT.radiologist
@@ -456,14 +418,21 @@ export function createPanel(root, { report, stacks, on = {} }) {
   // Optional fourth column: the specialist model's opinion. Not part of the same/different check.
   const MODEL = report?.comparison?.model_label && report.comparison.rows.some((r) => r.model_short)
     ? ['model', report.comparison.model_label, 'A trained disc model, re-run on this scan after the mistake log used it, so not blind.'] : null;
+  // Optional column after it: a newer model still in development. Never held-out numbers.
+  const MODEL_DEV = report?.comparison?.model_dev_label && report.comparison.rows.some((r) => r.model_dev_short)
+    ? ['model_dev', report.comparison.model_dev_label, 'Not yet tested on scans it never saw; shown for comparison only.'] : null;
 
   function compareRow(r) {
     const v = verdictOf(r);
     const same = short(r, 'blind') === short(r, 'radiologist') && short(r, 'radiologist') === short(r, 'after');
-    const model = MODEL && r.model_short ? [
-      el('span', { class: 'cmp-k cmp-k-model', title: MODEL[2] }, MODEL[1]),
-      el('span', { class: 'cmp-v cmp-v-model' }, r.model_short),
-    ] : null;
+    const model = [
+      MODEL && r.model_short ? [
+        el('span', { class: 'cmp-k cmp-k-model', title: MODEL[2] }, MODEL[1]),
+        el('span', { class: 'cmp-v cmp-v-model' }, r.model_short)] : null,
+      MODEL_DEV && r.model_dev_short ? [
+        el('span', { class: 'cmp-k cmp-k-model', title: MODEL_DEV[2] }, MODEL_DEV[1]),
+        el('span', { class: 'cmp-v cmp-v-model' }, r.model_dev_short)] : null,
+    ];
     const grid = same
       ? el('div', { class: 'cmp-grid' }, el('span', { class: 'cmp-k' }, 'All three'), el('span', { class: 'cmp-v' }, short(r, 'after')), model)
       : el('div', { class: 'cmp-grid' }, COLS.map(([k, label]) => [
@@ -477,7 +446,7 @@ export function createPanel(root, { report, stacks, on = {} }) {
       el('div', { class: 'cmp-full' },
         r.blind ? el('p', {}, el('b', {}, 'AI, blind: '), r.blind) : null,
         r.radiologist ? el('p', {}, el('b', {}, 'Radiologist: '), r.radiologist) : null),
-      r.finding ? el('button', { class: 'btn ghost', type: 'button', onclick: () => { openFinding(r.finding); on.finding?.(r.finding); showTab('overview'); } },
+      r.finding ? el('button', { class: 'btn ghost', type: 'button', onclick: () => openFinding(r.finding) },
         icon(ICON.cube), 'Show on the model') : null);
     // On phones each row folds to one line (level, topic, verdict) and opens on tap.
     const chev = el('button', { class: 'cmp-chev', type: 'button', 'aria-expanded': 'false',
@@ -498,8 +467,6 @@ export function createPanel(root, { report, stacks, on = {} }) {
 
   function renderCompare() {
     const c = report.comparison;
-    const pane = panes.compare;
-    pane.replaceChildren();
     const n = { agree: 0, partial: 0, disagree: 0 };
     for (const r of c.rows) n[r.agreement] += 1;
     const list = el('div', { class: 'cmp-list' }, c.rows.map(compareRow));
@@ -512,10 +479,10 @@ export function createPanel(root, { report, stacks, on = {} }) {
           for (const row of list.children) row.hidden = k === 'diff' ? row.dataset.diff !== 'true' : k === 'same' ? row.dataset.diff === 'true' : false;
         },
       }, label)));
-    pane.append(
+    return el('div', { class: 'cmp-view' },
       el('section', { class: 'card cmp-hero' },
         el('div', { class: 'cmp-hero-top' },
-          el('h3', {}, 'AI reading vs the radiologist'),
+          el('h3', {}, 'The AI reading next to the radiologist\u2019s report'),
           el('button', { class: 'btn ghost', type: 'button', onclick: () => openWide() }, icon(ICON.scan), 'Table')),
         c.opinion.bottom_line.length
           ? el('ul', { class: 'cmp-bottom' }, c.opinion.bottom_line.map((b) => el('li', {}, b)))
@@ -548,13 +515,15 @@ export function createPanel(root, { report, stacks, on = {} }) {
         el('div', { class: 'compare-table-wrap' },
           el('table', { class: 'compare-table' },
             el('thead', {}, el('tr', {}, el('th', {}, 'Level'), COLS.map(([, label, tip]) => el('th', { title: tip }, label)),
-              MODEL ? el('th', { class: 'cmp-v-model', title: MODEL[2] }, MODEL[1]) : null, el('th', {}, 'Verdict'))),
+              MODEL ? el('th', { class: 'cmp-v-model', title: MODEL[2] }, MODEL[1]) : null,
+              MODEL_DEV ? el('th', { class: 'cmp-v-model', title: MODEL_DEV[2] }, MODEL_DEV[1]) : null, el('th', {}, 'Verdict'))),
             el('tbody', {}, c.rows.map((r) => {
               const v = verdictOf(r);
               return el('tr', { class: `tone-${v.tone}` },
                 el('td', { class: 'compare-point' }, el('strong', {}, r.level), el('span', {}, r.topic)),
                 COLS.map(([k]) => el('td', { class: `cmp-v-${k}` }, short(r, k) || '-')),
                 MODEL ? el('td', { class: 'cmp-v-model' }, r.model_short) : null,
+                MODEL_DEV ? el('td', { class: 'cmp-v-model' }, r.model_dev_short) : null,
                 el('td', {}, el('span', { class: `cmp-pill tone-${v.tone}` }, v.label)));
             }))))));
     document.body.append(overlay);
@@ -563,11 +532,17 @@ export function createPanel(root, { report, stacks, on = {} }) {
     overlay.querySelector('button').focus();
   }
 
-  renderOverview();
-  if (panes.compare) renderCompare();
-  viewer = createViewer(panes.viewer, { stacks, report, onOpenFinding: (id) => { openFinding(id); on.finding?.(id); } });
-  renderLevels();
-  renderWords();
+  // A tap on a 3D marker or a scan mark: open that finding's card in the AI's words (and fly there).
+  // Not in Radiologist mode, where nothing of the AI's is shown.
+  function openFinding(id) {
+    const f = findings.find((x) => x.id === id);
+    if (!f || mode === 'radiologist') return;
+    showTab('report');
+    showDetail(aiDetail({ finding: f.id, label: f.title, level: f.level, status: f.severity }));
+  }
 
-  return { openFinding, showTab };
+  viewer = createViewer(panes.viewer, { stacks, report, onOpenFinding: (id) => openFinding(id) });
+  setMode('ai');
+
+  return { openFinding, showTab, setMode };
 }

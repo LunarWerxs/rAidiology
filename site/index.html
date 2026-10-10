@@ -3,105 +3,198 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>rAidiology · Your spine MRI, explained</title>
-  <meta name="description" content="A calm, plain-English 3D walkthrough of a spine MRI reading.">
-  <meta name="theme-color" content="#0d0d0c">
-  <meta name="color-scheme" content="dark">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%231c1b18'/%3E%3Cg fill='%23e9dfc9'%3E%3Crect x='11' y='5' width='10' height='4' rx='2'/%3E%3Crect x='10' y='11' width='12' height='4' rx='2'/%3E%3Crect x='10' y='17' width='12' height='4' rx='2'/%3E%3Crect x='11' y='23' width='10' height='4' rx='2'/%3E%3C/g%3E%3C/svg%3E">
-  <link rel="stylesheet" href="css/style.css">
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
-    }
-  }
-  </script>
-  <script type="module" src="js/main.js"></script>
+  <title>rAidiology · Open your own scan in the browser</title>
+  <meta name="description" content="Open the disc or ZIP from your hospital in your own browser and look at your scan. Nothing is uploaded unless you choose to donate a scan. It shows the pictures, and never says whether anything is wrong.">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="color-scheme" content="light">
+  <link rel="canonical" href="/">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2315304d'/%3E%3Cg fill='%23ffffff'%3E%3Crect x='11' y='5' width='10' height='4' rx='2'/%3E%3Crect x='10' y='11' width='12' height='4' rx='2'/%3E%3Crect x='10' y='17' width='12' height='4' rx='2'/%3E%3Crect x='11' y='23' width='10' height='4' rx='2'/%3E%3C/g%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/landing.css">
 </head>
 <body>
-  <canvas id="scene" aria-label="Interactive 3D model of the body and spine. Drag to rotate, scroll or pinch to zoom."></canvas>
-  <div id="labels" aria-hidden="true"></div>
-  <div id="scene-fallback" class="scene-fallback" hidden>
-    <p><strong>The 3D view could not start on this device.</strong><br>Everything in the panel still works.</p>
-  </div>
+  <a class="skip" href="#main">Skip to the content</a>
 
-  <header class="topbar glass">
-    <div class="brand">
-      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#1c1b18"/><g fill="#e9dfc9"><rect x="11" y="5" width="10" height="4" rx="2"/><rect x="10" y="11" width="12" height="4" rx="2" opacity=".85"/><rect x="10" y="17" width="12" height="4" rx="2" opacity=".7"/><rect x="11" y="23" width="10" height="4" rx="2" opacity=".55"/></g></svg>
-      <span class="brand-name">rAidiology</span>
+  <header class="bar">
+    <div class="bar-in">
+      <a class="brand" href="/" aria-label="rAidiology home">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#15304d"/><g fill="#ffffff"><rect x="11" y="5" width="10" height="4" rx="2"/><rect x="10" y="11" width="12" height="4" rx="2" opacity=".9"/><rect x="10" y="17" width="12" height="4" rx="2" opacity=".8"/><rect x="11" y="23" width="10" height="4" rx="2" opacity=".7"/></g></svg>
+        <span class="brand-name">rAidiology</span>
+      </a>
+      <nav aria-label="Sections">
+        <a href="#how">How it works</a>
+        <a href="#privacy">Privacy</a>
+        <a href="#who">Who we are</a>
+        <a class="cta small" href="/open">Open your scan</a>
+      </nav>
     </div>
-    <div class="meta" id="meta"></div>
-    <span class="sample-badge" id="sample-badge" hidden title="This page is showing made-up demo data, not a real scan.">Sample data</span>
   </header>
 
-  <nav class="dock glass" aria-label="3D view controls">
-    <button class="dock-btn" type="button" data-action="reset" title="Reset view">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4" /></svg><span>Reset</span>
-    </button>
-    <button class="dock-btn" type="button" data-action="neck" title="Focus on the neck">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="6" r="3.2"/><path d="M10.5 9.5v4M13.5 9.5v4M7 20c0-3.5 2.2-6 5-6s5 2.5 5 6"/></svg><span>Neck</span>
-    </button>
-    <button class="dock-btn" type="button" data-action="lower_back" title="Focus on the lower back">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1.6"/><rect x="7.5" y="9" width="9" height="4" rx="1.6"/><path d="M7 15h10l-2.5 6h-5z"/></svg><span>Lower back</span>
-    </button>
-    <span class="dock-sep" aria-hidden="true"></span>
-    <button class="dock-btn model-btn" type="button" id="model-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="model-menu" title="Choose the 3D model">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="4.5" r="2.3"/><path d="M8 21l1-8-3-4 3.5-1.5h5L18 9l-3 4 1 8"/></svg><span id="model-label">Glass body</span>
-      <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg>
-    </button>
-    <button class="dock-btn toggle" type="button" data-toggle="ghost" aria-pressed="true" title="Show or hide the rest of the spine">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="3.4" rx="1.3"/><rect x="8.5" y="7.6" width="7" height="3.4" rx="1.3"/><rect x="8.5" y="12.7" width="7" height="3.4" rx="1.3"/><rect x="9" y="17.8" width="6" height="3.4" rx="1.3"/></svg><span>Ghost spine</span>
-    </button>
-    <button class="dock-btn toggle" type="button" data-toggle="labels" aria-pressed="true" title="Show or hide level labels when zoomed in">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12l7-7h9v9l-7 7z"/><circle cx="15" cy="9" r="1.6"/></svg><span>Labels</span>
-    </button>
-  </nav>
+  <main id="main">
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <h1>See the pictures from your own scan, at home.</h1>
+          <p class="lede">The hospital gave you a disc, or a ZIP from the patient portal. Open it here and
+            look through your MRI, CT or X-ray in your own browser. There is no account, and your scan
+            never leaves your computer unless you choose to donate it.</p>
+          <div class="actions">
+            <a class="cta" href="/open">Open your own scan</a>
+            <a class="ghost" href="/open?sample=1">Try a sample scan first</a>
+          </div>
+          <p class="fine">When you choose your scan, your browser asks whether this page may read the
+            files. Allowing it only lets the page read them; nothing is sent.</p>
+          <p class="fine">On a phone? A ZIP from your patient portal opens here too. A disc needs a
+            computer, so <a href="/open#send-self">email yourself the link</a> for when you are at one.</p>
+          <p class="note"><strong>What it does not do yet:</strong> it does not say what your own scan
+            shows, or explain your written report. Today it shows you the pictures, and on the sample
+            scan it names each part of the body you point at. The rest is still being built and
+            tested. It never says whether anything is wrong.</p>
+        </div>
 
-  <div class="model-menu glass" id="model-menu" role="menu" aria-label="3D model" hidden>
-    <button type="button" role="menuitemradio" aria-checked="true" data-model="glass"><strong>Glass body</strong><span>See-through body with your spine inside</span></button>
-    <button type="button" role="menuitemradio" aria-checked="false" data-model="skeleton"><strong>Skeleton</strong><span>Full anatomical skeleton, your scanned spine in place</span></button>
-    <button type="button" role="menuitemradio" aria-checked="false" data-model="xray"><strong>X-ray</strong><span>Glowing skeleton inside a faint body</span></button>
-    <button type="button" role="menuitemradio" aria-checked="false" data-model="spine"><strong>Spine only</strong><span>Just your scanned spine, nothing around it</span></button>
-    <p class="model-credit">Skeleton: BodyParts3D, © The Database Center for Life Science, licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC Attribution 4.0 International</a>; modified (parts merged and simplified) by LunarWerx</p>
-  </div>
+        <figure class="shot">
+          <div class="shot-frame">
+            <div class="shot-bar"><span class="dot" aria-hidden="true"></span>Sample CT scan<span class="shot-where">Opened on this computer</span></div>
+            <div class="shot-image">
+              <img src="img/sample-slice.webp" width="560" height="560" alt="One picture from the sample CT scan: a slice across the body, with its edges labelled front, back, right side and left side.">
+              <span class="tag tag-top" aria-hidden="true">front</span>
+              <span class="tag tag-bottom" aria-hidden="true">back</span>
+              <span class="tag tag-left" aria-hidden="true">right side</span>
+              <span class="tag tag-right" aria-hidden="true">left side</span>
+            </div>
+          </div>
+          <figcaption>What the page shows: the sample scan, opened in the browser, with each edge
+            labelled in plain words.
+            <span class="source">Where the sample comes from, for the record: the TotalSegmentator
+              dataset, CC BY 4.0.</span></figcaption>
+        </figure>
+      </div>
+    </section>
 
-  <div id="tooltip" class="tooltip" role="status" aria-live="polite" hidden></div>
+    <section class="band" id="how" aria-labelledby="how-h">
+      <div class="wrap">
+        <h2 id="how-h">How it works</h2>
+        <ol class="steps">
+          <li>
+            <span class="num" aria-hidden="true">1</span>
+            <h3>Get your scan files</h3>
+            <p>Put the hospital's CD or DVD in a computer, or find the ZIP you downloaded from the
+              patient portal. A phone cannot read a disc, so use a computer for that.</p>
+          </li>
+          <li>
+            <span class="num" aria-hidden="true">2</span>
+            <h3>Choose the disc or the ZIP</h3>
+            <p>Press <em>Open your own scan</em> and pick the disc, or the ZIP. Your browser reads the
+              files where they are. They do not go anywhere.</p>
+          </li>
+          <li>
+            <span class="num" aria-hidden="true">3</span>
+            <h3>Look through the pictures</h3>
+            <p>A scan is several sets of pictures taken from different directions. Pick a set, scroll
+              through it, zoom in, and change the brightness.</p>
+          </li>
+        </ol>
+        <p class="aside">No disc to hand? <a href="/open?sample=1">Try a sample scan</a> to see what
+          it looks like before you find yours.</p>
+      </div>
+    </section>
 
-  <aside id="panel" class="panel glass" aria-label="Your results">
-    <button class="sheet-handle" id="sheet-toggle" type="button" aria-expanded="true" aria-controls="panel-body">
-      <span class="grip" aria-hidden="true"></span>
-      <svg class="sheet-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-      <span class="sr-only">Tuck the results panel away</span>
-    </button>
-    <div class="tabs" role="tablist" aria-label="Sections">
-      <button class="tab" role="tab" id="tab-overview" aria-controls="pane-overview" aria-selected="true" type="button">Overview</button>
-      <button class="tab" role="tab" id="tab-viewer" aria-controls="pane-viewer" aria-selected="false" tabindex="-1" type="button" aria-label="Scan viewer"><span class="tab-long">Scan viewer</span><span class="tab-short" aria-hidden="true">Scans</span></button>
-      <button class="tab" role="tab" id="tab-levels" aria-controls="pane-levels" aria-selected="false" tabindex="-1" type="button">Levels</button>
-      <button class="tab" role="tab" id="tab-compare" aria-controls="pane-compare" aria-selected="false" tabindex="-1" type="button" hidden>Compare</button>
-      <button class="tab" role="tab" id="tab-words" aria-controls="pane-words" aria-selected="false" tabindex="-1" type="button">Words</button>
+    <section class="band soft" aria-labelledby="honest-h">
+      <div class="wrap">
+        <h2 id="honest-h">What it does today, and what it does not</h2>
+        <div class="cards">
+          <article class="card good">
+            <h3>What it does today</h3>
+            <ul>
+              <li>Opens the disc or ZIP your hospital gave you.</li>
+              <li>Shows every picture, with zoom, brightness and contrast.</li>
+              <li>Runs in your browser on your own computer. Nothing is uploaded unless you donate a scan.</li>
+              <li>On the sample scan, names each organ, bone and blood vessel you point at.</li>
+            </ul>
+          </article>
+          <article class="card bad">
+            <h3>What it does not do</h3>
+            <ul>
+              <li>It does not say what your own scan shows, or explain your written report, yet.</li>
+              <li>It is not a diagnosis and it is not a doctor.</li>
+              <li>It does not replace your radiologist's report.</li>
+              <li>It is not cleared or approved by any regulator.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="building" aria-labelledby="building-h">
+      <div class="wrap">
+        <h2 id="building-h">What is being built</h2>
+        <p>Alongside the viewer, rAidiology trains research models on public scans and publishes
+          how each one scored. On this site, only the sample scan has labels. This is where the
+          models stand.</p>
+        <ul class="status">
+          <li><div><strong>Spine MRI</strong><span>A research model that grades the wear of each disc (in development, not on this site). It was compared with one radiologist's grading on scans it had not seen.</span></div></li>
+          <li><div><strong>X-ray</strong><span>A research model that scores X-rays for a visible broken bone. Tested on 4,170 children's wrist X-rays it had not seen before.</span></div></li>
+          <li><div><strong>CT</strong><span>A research model that outlines 117 organs and bones. Tested against experts'
+            outlines on 89 scans it had not seen.</span></div></li>
+        </ul>
+        <p class="aside">None of these is a diagnosis or a medical device. Each model is published
+          with how often it was right on scans it never saw during training.</p>
+      </div>
+    </section>
+
+    <section class="band soft" id="privacy" aria-labelledby="privacy-h">
+      <div class="wrap">
+        <h2 id="privacy-h">Your scan stays yours</h2>
+        <p>A medical scan is about as private as a thing gets. So the page that opens it sends nothing
+          unless you choose to donate a scan.</p>
+        <ul class="checks">
+          <li>Nothing is uploaded unless you choose to donate a scan. The page reads the files on your own computer and
+            draws them on your screen. Close the tab and they are gone from it.</li>
+          <li><strong>Your name is never read.</strong> The files carry your name, your date of birth
+            and your hospital number. The page skips your name and number. It reads your date of birth on your device only, to check you are 18 or older if you donate, and never sends it.</li>
+          <li><strong>No trackers.</strong> No analytics, no cookies on the pages you use, and nothing
+            loaded from anybody else.</li>
+          <li><strong>You can check it yourself.</strong> Go to the <em>Open your own scan</em> page
+            first. Then switch off your Wi-Fi, and only then choose your scan. It still opens, because
+            your scan never needed to go anywhere.</li>
+          <li><strong>One thing your browser may say.</strong> When you pick a folder, your browser
+            asks whether the page may read it, and some browsers word that as "Upload files to this
+            site?". Nothing is sent.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="band" id="who" aria-labelledby="who-h">
+      <div class="wrap who">
+        <div>
+          <h2 id="who-h">Who we are</h2>
+          <p>rAidiology is made by <a href="https://lunarwerx.com/">LunarWerx Studios</a>, a small
+            team of software developers who build web platforms and mobile apps.
+            It is free for your own personal use, and free for charities, schools, universities,
+            public research, and public health and safety organisations.</p>
+          <p>Clinics, insurers, law firms and companies building a product on it need a paid licence.
+            The full terms are in <a href="https://github.com/LunarWerxs/rAidiology/blob/main/LICENSE">the
+            project's licence</a>.</p>
+        </div>
+        <div class="contact">
+          <h3>Questions, or a licence?</h3>
+          <p>Write to us at LunarWerx Studios.</p>
+          <a class="ghost" href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a>
+          <p class="fine">Please do not send us your scan or your report. We never need them.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="foot">
+    <div class="wrap">
+      <p class="disclaim"><strong>Not a medical device, not a diagnosis.</strong> rAidiology is for
+        education and research, not for diagnosis or treatment decisions. It is not cleared or
+        approved by the FDA or any other regulator. Always talk to a doctor about your results.</p>
+      <p class="meta">&copy; 2026 LunarWerx Studios &middot; <a href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a>
+        &middot; <a href="health-data-privacy.html">Privacy</a>
+        &middot; <a href="/report">Site owner's sign-in</a></p>
     </div>
-    <div class="panel-body" id="panel-body">
-      <section class="tabpanel" role="tabpanel" id="pane-overview" aria-labelledby="tab-overview" tabindex="0"></section>
-      <section class="tabpanel" role="tabpanel" id="pane-viewer" aria-labelledby="tab-viewer" tabindex="0" hidden></section>
-      <section class="tabpanel" role="tabpanel" id="pane-levels" aria-labelledby="tab-levels" tabindex="0" hidden></section>
-      <section class="tabpanel" role="tabpanel" id="pane-compare" aria-labelledby="tab-compare" tabindex="0" hidden></section>
-      <section class="tabpanel" role="tabpanel" id="pane-words" aria-labelledby="tab-words" tabindex="0" hidden></section>
-    </div>
-  </aside>
-
-  <footer class="disclaimer" id="disclaimer">
-    <button type="button" id="disclaimer-btn" aria-expanded="false">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>
-      <span id="disclaimer-text">Not a medical device, not a diagnosis. Always talk to a doctor about your results.</span>
-    </button>
   </footer>
-
-  <div id="loader" class="loader" role="status" aria-live="polite">
-    <div class="loader-ring" aria-hidden="true"></div>
-    <p>Preparing your 3D spine&hellip;</p>
-  </div>
-
-  <noscript><div class="noscript">This page needs JavaScript to show your results.</div></noscript>
 </body>
 </html>

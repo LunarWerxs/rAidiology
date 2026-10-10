@@ -14,3 +14,5 @@ __pycache__/
 .env
 .venv/
 venv/
+# the fingerprint's key (records/provenance/README.md): on this machine only, never committed
+records/provenance/secret.key

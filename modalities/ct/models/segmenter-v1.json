@@ -1,0 +1,492 @@
+{
+ "version": 1,
+ "made_by": "modalities/ct/eval/model_card.py",
+ "test_scans": 89,
+ "test_opened": "2026-10-02 00:58:17",
+ "mean_dice": [
+  0.7666953231717494,
+  0.7517487311864164,
+  0.7811358878483587
+ ],
+ "invention_rate": [
+  0.041726275631855034,
+  0.03214706742026422,
+  0.05274572686632675
+ ],
+ "reference": "bone-window",
+ "minus_reference": [
+  0.589106737836514,
+  0.5728409902654504,
+  0.6054808424852162
+ ],
+ "per_structure_test_dice": {
+  "adrenal_gland_left": [
+   0.6454,
+   65
+  ],
+  "adrenal_gland_right": [
+   0.654,
+   65
+  ],
+  "aorta": [
+   0.883,
+   77
+  ],
+  "atrial_appendage_left": [
+   0.7205,
+   40
+  ],
+  "autochthon_left": [
+   0.924,
+   81
+  ],
+  "autochthon_right": [
+   0.9142,
+   81
+  ],
+  "brachiocephalic_trunk": [
+   0.8048,
+   39
+  ],
+  "brachiocephalic_vein_left": [
+   0.7943,
+   40
+  ],
+  "brachiocephalic_vein_right": [
+   0.7724,
+   40
+  ],
+  "brain": [
+   0.8836,
+   22
+  ],
+  "clavicula_left": [
+   0.8699,
+   40
+  ],
+  "clavicula_right": [
+   0.8943,
+   39
+  ],
+  "colon": [
+   0.7687,
+   69
+  ],
+  "common_carotid_artery_left": [
+   0.6323,
+   39
+  ],
+  "common_carotid_artery_right": [
+   0.5467,
+   39
+  ],
+  "costal_cartilages": [
+   0.7517,
+   72
+  ],
+  "duodenum": [
+   0.666,
+   65
+  ],
+  "esophagus": [
+   0.7443,
+   71
+  ],
+  "femur_left": [
+   0.9206,
+   55
+  ],
+  "femur_right": [
+   0.9157,
+   54
+  ],
+  "gallbladder": [
+   0.6426,
+   52
+  ],
+  "gluteus_maximus_left": [
+   0.9363,
+   54
+  ],
+  "gluteus_maximus_right": [
+   0.9319,
+   54
+  ],
+  "gluteus_medius_left": [
+   0.906,
+   57
+  ],
+  "gluteus_medius_right": [
+   0.9031,
+   55
+  ],
+  "gluteus_minimus_left": [
+   0.8432,
+   54
+  ],
+  "gluteus_minimus_right": [
+   0.8532,
+   53
+  ],
+  "heart": [
+   0.868,
+   69
+  ],
+  "hip_left": [
+   0.94,
+   58
+  ],
+  "hip_right": [
+   0.9239,
+   59
+  ],
+  "humerus_left": [
+   0.8413,
+   40
+  ],
+  "humerus_right": [
+   0.7676,
+   41
+  ],
+  "iliac_artery_left": [
+   0.6782,
+   59
+  ],
+  "iliac_artery_right": [
+   0.6608,
+   59
+  ],
+  "iliac_vena_left": [
+   0.7306,
+   58
+  ],
+  "iliac_vena_right": [
+   0.7328,
+   57
+  ],
+  "iliopsoas_left": [
+   0.8437,
+   69
+  ],
+  "iliopsoas_right": [
+   0.8751,
+   67
+  ],
+  "inferior_vena_cava": [
+   0.7784,
+   72
+  ],
+  "kidney_cyst_left": [
+   0.0,
+   4
+  ],
+  "kidney_cyst_right": [
+   0.0,
+   3
+  ],
+  "kidney_left": [
+   0.8757,
+   68
+  ],
+  "kidney_right": [
+   0.8691,
+   64
+  ],
+  "liver": [
+   0.9258,
+   70
+  ],
+  "lung_lower_lobe_left": [
+   0.9047,
+   72
+  ],
+  "lung_lower_lobe_right": [
+   0.9055,
+   71
+  ],
+  "lung_middle_lobe_right": [
+   0.8584,
+   64
+  ],
+  "lung_upper_lobe_left": [
+   0.8985,
+   71
+  ],
+  "lung_upper_lobe_right": [
+   0.8004,
+   54
+  ],
+  "pancreas": [
+   0.7167,
+   65
+  ],
+  "portal_vein_and_splenic_vein": [
+   0.5749,
+   65
+  ],
+  "prostate": [
+   0.7131,
+   28
+  ],
+  "pulmonary_vein": [
+   0.7083,
+   50
+  ],
+  "rib_left_1": [
+   0.8098,
+   39
+  ],
+  "rib_left_10": [
+   0.7556,
+   66
+  ],
+  "rib_left_11": [
+   0.7578,
+   66
+  ],
+  "rib_left_12": [
+   0.7638,
+   62
+  ],
+  "rib_left_2": [
+   0.7866,
+   41
+  ],
+  "rib_left_3": [
+   0.7043,
+   44
+  ],
+  "rib_left_4": [
+   0.716,
+   48
+  ],
+  "rib_left_5": [
+   0.663,
+   57
+  ],
+  "rib_left_6": [
+   0.674,
+   65
+  ],
+  "rib_left_7": [
+   0.7178,
+   64
+  ],
+  "rib_left_8": [
+   0.7144,
+   66
+  ],
+  "rib_left_9": [
+   0.7477,
+   66
+  ],
+  "rib_right_1": [
+   0.8314,
+   39
+  ],
+  "rib_right_10": [
+   0.7293,
+   66
+  ],
+  "rib_right_11": [
+   0.7399,
+   66
+  ],
+  "rib_right_12": [
+   0.7697,
+   62
+  ],
+  "rib_right_2": [
+   0.8145,
+   40
+  ],
+  "rib_right_3": [
+   0.7066,
+   43
+  ],
+  "rib_right_4": [
+   0.6795,
+   48
+  ],
+  "rib_right_5": [
+   0.6096,
+   57
+  ],
+  "rib_right_6": [
+   0.6293,
+   64
+  ],
+  "rib_right_7": [
+   0.6771,
+   64
+  ],
+  "rib_right_8": [
+   0.6967,
+   66
+  ],
+  "rib_right_9": [
+   0.7182,
+   66
+  ],
+  "sacrum": [
+   0.838,
+   57
+  ],
+  "scapula_left": [
+   0.8413,
+   48
+  ],
+  "scapula_right": [
+   0.8569,
+   48
+  ],
+  "skull": [
+   0.7471,
+   34
+  ],
+  "small_bowel": [
+   0.7612,
+   64
+  ],
+  "spinal_cord": [
+   0.8719,
+   88
+  ],
+  "spleen": [
+   0.9427,
+   65
+  ],
+  "sternum": [
+   0.8038,
+   68
+  ],
+  "stomach": [
+   0.8455,
+   66
+  ],
+  "subclavian_artery_left": [
+   0.6587,
+   39
+  ],
+  "subclavian_artery_right": [
+   0.6466,
+   39
+  ],
+  "superior_vena_cava": [
+   0.7838,
+   47
+  ],
+  "thyroid_gland": [
+   0.7101,
+   39
+  ],
+  "trachea": [
+   0.8837,
+   43
+  ],
+  "urinary_bladder": [
+   0.7962,
+   54
+  ],
+  "vertebrae_C1": [
+   0.7071,
+   22
+  ],
+  "vertebrae_C2": [
+   0.7365,
+   21
+  ],
+  "vertebrae_C3": [
+   0.6959,
+   14
+  ],
+  "vertebrae_C4": [
+   0.6411,
+   15
+  ],
+  "vertebrae_C5": [
+   0.5559,
+   20
+  ],
+  "vertebrae_C6": [
+   0.5113,
+   34
+  ],
+  "vertebrae_C7": [
+   0.7486,
+   37
+  ],
+  "vertebrae_L1": [
+   0.7598,
+   64
+  ],
+  "vertebrae_L2": [
+   0.7898,
+   59
+  ],
+  "vertebrae_L3": [
+   0.8054,
+   59
+  ],
+  "vertebrae_L4": [
+   0.8192,
+   60
+  ],
+  "vertebrae_L5": [
+   0.8523,
+   57
+  ],
+  "vertebrae_S1": [
+   0.848,
+   55
+  ],
+  "vertebrae_T1": [
+   0.7799,
+   38
+  ],
+  "vertebrae_T10": [
+   0.7025,
+   64
+  ],
+  "vertebrae_T11": [
+   0.7326,
+   63
+  ],
+  "vertebrae_T12": [
+   0.7426,
+   65
+  ],
+  "vertebrae_T2": [
+   0.7466,
+   39
+  ],
+  "vertebrae_T3": [
+   0.723,
+   39
+  ],
+  "vertebrae_T4": [
+   0.6957,
+   40
+  ],
+  "vertebrae_T5": [
+   0.6208,
+   43
+  ],
+  "vertebrae_T6": [
+   0.5904,
+   44
+  ],
+  "vertebrae_T7": [
+   0.5811,
+   51
+  ],
+  "vertebrae_T8": [
+   0.6099,
+   59
+  ],
+  "vertebrae_T9": [
+   0.6599,
+   64
+  ]
+ }
+}

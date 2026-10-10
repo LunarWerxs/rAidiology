@@ -8,11 +8,11 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { buildBody, buildFloor } from './body.js';
-import { buildSpine, loadRegion, slotForRegion } from './spine.js';
+import { buildSpine, loadRegion, slotForRegion, materialFor } from './spine.js';
 import { loadSkeleton } from './skeleton.js';
-import { sev, normLevel, levelList, el } from './data.js';
+import { sev, normLevel, levelList, levelStatusMap, el, reportFlaggedDiscs } from './data.js';
+import { prefersReducedMotion } from './motion.js';
 
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const HOME_TARGET = new THREE.Vector3(0, 930, 0);
 const HOME_DIR = new THREE.Vector3(0.42, 0.1, 1).normalize();
 // Oblique from the patient's front-left: shows the side-on curve of the spine and its back edge.
@@ -21,9 +21,11 @@ const LABEL_DISTANCE = 1100;
 // Closer than this to the orbit target, bones and glass between the camera and the target fade out.
 const FADE_DISTANCE = 1600;
 const FADED = 0.12;
-// Marker sprite height as a fraction of the view height; the disc is pulled this far (mm) toward the
-// camera so a marker sitting on or just under a surface still reads as in front of it.
+// Marker sprite size as a fraction of the view's smaller side (floor MARKER_MIN_PX CSS px); the disc is
+// pulled MARKER_NUDGE (mm) toward the camera so a marker sitting on or just under a surface still reads
+// as in front of it.
 const MARKER_SIZE = 0.035;
+const MARKER_MIN_PX = 22;
 const MARKER_NUDGE = 8;
 
 function backgroundTexture() {
@@ -71,16 +73,30 @@ function markerTexture(color, selected) {
   return tex;
 }
 
+// Ring for a disc the radiologist's report flagged: one colour no severity uses (violet), hollow.
+const RING_COLOR = '#b58cf0';
+let ringTex = null;
+function ringTexture() {
+  if (ringTex) return ringTex;
+  const cv = document.createElement('canvas');
+  cv.width = cv.height = 128;
+  const c = cv.getContext('2d');
+  c.beginPath();
+  c.arc(64, 64, 50, 0, Math.PI * 2);
+  c.lineWidth = 20;
+  c.strokeStyle = '#111';
+  c.stroke();
+  c.lineWidth = 11;
+  c.strokeStyle = RING_COLOR;
+  c.stroke();
+  ringTex = new THREE.CanvasTexture(cv);
+  ringTex.colorSpace = THREE.SRGBColorSpace;
+  return ringTex;
+}
+
 /** Worst severity per level, from report.levels and from findings at exactly that level. */
 function makeStatusFn(report) {
-  const map = new Map();
-  const rank = (s) => sev(s).rank;
-  for (const l of report?.levels || []) map.set(normLevel(l.level), l.status);
-  for (const f of report?.findings || []) {
-    for (const n of levelList(f.level)) {
-      if (rank(f.severity) >= 2 && (!map.has(n) || rank(f.severity) > rank(map.get(n)))) map.set(n, f.severity);
-    }
-  }
+  const map = levelStatusMap(report);
   return (n) => map.get(normLevel(n)) || 'normal';
 }
 
@@ -118,7 +134,7 @@ export function createScene({ canvas, labelLayer, tooltip, getInset }) {
   controls.minDistance = 120;
   controls.maxDistance = 20000; // phones with a short visible band need ~13 m to fit the whole body
   controls.target.copy(HOME_TARGET);
-  controls.autoRotate = !reduceMotion.matches;
+  controls.autoRotate = !prefersReducedMotion();
   controls.autoRotateSpeed = 0.45;
 
   const body = buildBody();
@@ -174,7 +190,7 @@ export function createScene({ canvas, labelLayer, tooltip, getInset }) {
     const d = (dir || camera.position.clone().sub(controls.target)).clone().normalize();
     const toPos = target.clone().addScaledVector(d, dist);
     controls.autoRotate = false;
-    if (reduceMotion.matches) {
+    if (prefersReducedMotion()) {
       flight = null;
       controls.target.copy(target);
       camera.position.copy(toPos);
@@ -196,7 +212,29 @@ export function createScene({ canvas, labelLayer, tooltip, getInset }) {
     camera.position.copy(controls.target).addScaledVector(dir, THREE.MathUtils.lerp(flight.fromLen, flight.toLen, k));
     if (k >= 1) flight = null;
   }
+  // Zoom buttons: dolly toward or away from the target by a factor, eased (instant under reduced motion).
+  let zoomAnim = null;
+  function zoomBy(factor) {
+    const cur = camera.position.distanceTo(controls.target);
+    const from = zoomAnim ? zoomAnim.to : cur;
+    const to = THREE.MathUtils.clamp(from / factor, controls.minDistance, controls.maxDistance);
+    flight = null;
+    controls.autoRotate = false;
+    if (prefersReducedMotion()) {
+      zoomAnim = null;
+      camera.position.sub(controls.target).setLength(to).add(controls.target);
+      return;
+    }
+    zoomAnim = { from: cur, to, t0: performance.now() };
+  }
+  function stepZoom(now) {
+    const k = Math.min(1, (now - zoomAnim.t0) / 240);
+    const dir = camera.position.clone().sub(controls.target).normalize();
+    camera.position.copy(controls.target).addScaledVector(dir, THREE.MathUtils.lerp(zoomAnim.from, zoomAnim.to, ease(k)));
+    if (k >= 1) zoomAnim = null;
+  }
   controls.addEventListener('start', () => {
+    zoomAnim = null;
     flight = null;
     controls.autoRotate = false;
   });
@@ -257,6 +295,34 @@ export function createScene({ canvas, labelLayer, tooltip, getInset }) {
     addMarker(f, scene, pos, 1);
   }
 
+  // Rings on the discs the radiologist's report flagged. Always drawn (no depth test) so bone cannot hide them.
+  const rings = [];
+  let ringsOn = false;
+  let markersOn = true;
+  let mode = 'ai';
+  let modeReport = null;
+  function addRing({ level, text }) {
+    let pos = null;
+    for (const st of regionState.values()) {
+      if (st.ok && st.meshByLevel.has(level)) pos = new THREE.Box3().setFromObject(st.meshByLevel.get(level)).getCenter(new THREE.Vector3());
+    }
+    pos ||= spine.levels.get(level)?.center.clone();
+    pos ||= spine.anchorFor(level);
+    const group = new THREE.Group();
+    group.position.copy(pos);
+    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: ringTexture(), sizeAttenuation: false, transparent: true, depthTest: false, depthWrite: false,
+    }));
+    sprite.renderOrder = 32;
+    const hit = new THREE.Mesh(new THREE.SphereGeometry(14, 10, 8), new THREE.MeshBasicMaterial({ visible: false }));
+    group.add(sprite, hit);
+    group.visible = ringsOn;
+    scene.add(group);
+    const r = { id: `ring:${level}`, level, text, group, sprite, hit };
+    hit.userData.ring = r;
+    rings.push(r);
+  }
+
   const labels = new Map();
   function buildLabels() {
     for (const e of spine.levels.values()) {
@@ -276,8 +342,8 @@ export function createScene({ canvas, labelLayer, tooltip, getInset }) {
   }
 
   let labelsOn = true;
-  let bodyTarget = 1;
-  let model = 'glass';
+  let bodyTarget = 0;
+  let model = 'skeleton';
   let ghostPref = true;
   let skeleton = null;
   let skeletonLoading = null;
@@ -320,6 +386,7 @@ export function createScene({ canvas, labelLayer, tooltip, getInset }) {
   function frame() {
     const t = clock.getElapsedTime();
     if (flight) stepFlight(performance.now());
+    if (zoomAnim) stepZoom(performance.now());
     controls.update();
 
     const dist = camera.position.distanceTo(controls.target);
@@ -330,12 +397,16 @@ export function createScene({ canvas, labelLayer, tooltip, getInset }) {
     u.value += (bodyTarget * (0.3 + 0.7 * near) - u.value) * 0.14;
     body.group.visible = u.value > 0.01;
 
-    const still = reduceMotion.matches;
+    const still = prefersReducedMotion();
     // Sprite scale (sizeAttenuation off) is in view units: this gives MARKER_SIZE of the view height.
     // Smaller when the whole body is in view (markers would crowd the spine), full size close up.
     const far = THREE.MathUtils.smoothstep(dist, 800, 4000);
-    const unit = (2 * MARKER_SIZE * (1 - 0.45 * far)) / camera.projectionMatrix.elements[5];
+    // MARKER_SIZE follows the smaller side of the view (never below MARKER_MIN_PX), so a tall phone
+    // gets about the marker size of a desktop window instead of a height-scaled one.
+    const markerFrac = Math.max(MARKER_MIN_PX, MARKER_SIZE * Math.min(view.w, view.h)) / (view.h || 1);
+    const unit = (2 * markerFrac * (1 - 0.45 * far)) / camera.projectionMatrix.elements[5];
     for (const m of markers) {
+      if (!markersOn) break;
       m.group.getWorldPosition(tmp);
       const k = THREE.MathUtils.clamp(tmp.distanceTo(camera.position) / 1100, 0.3, 1.8) / m.parentScale;
       const selected = m.id === selectedId;
@@ -352,6 +423,16 @@ export function createScene({ canvas, labelLayer, tooltip, getInset }) {
       }
     }
 
+    if (ringsOn) {
+      for (const r of rings) {
+        r.group.getWorldPosition(tmp);
+        const k = THREE.MathUtils.clamp(tmp.distanceTo(camera.position) / 1100, 0.3, 1.8);
+        r.hit.scale.setScalar(k * 1.1);
+        const size = unit * 1.45 * (r.id === hoveredId ? 1.15 : 1);
+        r.sprite.scale.set(size, size, 1);
+      }
+    }
+
     labelLayer.classList.toggle('is-visible', labelsOn && camera.position.distanceTo(controls.target) < LABEL_DISTANCE);
     composer.render();
     labelRenderer.render(scene, camera);
@@ -360,7 +441,7 @@ export function createScene({ canvas, labelLayer, tooltip, getInset }) {
   const raycaster = new THREE.Raycaster();
   const ndc = new THREE.Vector2();
   function pick(e) {
-    if (!markers.length) return null;
+    if (!markers.length || !markersOn) return null;
     const r = canvas.getBoundingClientRect();
     ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
     raycaster.setFromCamera(ndc, camera);
@@ -368,14 +449,27 @@ export function createScene({ canvas, labelLayer, tooltip, getInset }) {
     return hits.length ? hits[0].object.userData.marker : null;
   }
 
+  function pickRing(e) {
+    if (!ringsOn || !rings.length) return null;
+    const r = canvas.getBoundingClientRect();
+    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    raycaster.setFromCamera(ndc, camera);
+    const hits = raycaster.intersectObjects(rings.map((x) => x.hit), false);
+    return hits.length ? hits[0].object.userData.ring : null;
+  }
+
   function showTooltip(m, x, y) {
-    const s = sev(m.finding.severity);
-    tooltip.replaceChildren(
-      el('div', { class: 'tt-level' },
-        el('span', { class: 'sev-chip', style: { '--sev': s.color } }, s.label),
-        m.finding.level),
-      el('div', { class: 'tt-title' }, m.finding.title),
-    );
+    if (m.text != null) {
+      tooltip.replaceChildren(el('div', { class: 'tt-title' }, `${m.level}: the radiologist's report says ${m.text}`));
+    } else {
+      const s = sev(m.finding.severity);
+      tooltip.replaceChildren(
+        el('div', { class: 'tt-level' },
+          el('span', { class: 'sev-chip', style: { '--sev': s.color } }, s.label),
+          m.finding.level),
+        el('div', { class: 'tt-title' }, m.finding.title),
+      );
+    }
     tooltip.hidden = false;
     const pad = 14;
     const w = tooltip.offsetWidth;
@@ -409,6 +503,9 @@ export function createScene({ canvas, labelLayer, tooltip, getInset }) {
       if ([...regionState.values()].some((s) => s.ok)) spine.cord.material.opacity = 0.18;
       const findings = report?.findings || [];
       findings.forEach((f, i, all) => placeMarker(f, i, all));
+      reportFlaggedDiscs(report).forEach(addRing);
+      modeReport = report;
+      api.setMode(mode);
       api.ready = true;
     },
 
@@ -420,8 +517,8 @@ export function createScene({ canvas, labelLayer, tooltip, getInset }) {
     intro() {
       const d = fitDistance();
       controls.target.copy(HOME_TARGET);
-      camera.position.copy(HOME_TARGET).addScaledVector(HOME_DIR, d * (reduceMotion.matches ? 1 : 1.9));
-      if (!reduceMotion.matches) {
+      camera.position.copy(HOME_TARGET).addScaledVector(HOME_DIR, d * (prefersReducedMotion() ? 1 : 1.9));
+      if (!prefersReducedMotion()) {
         const keepSpin = controls.autoRotate;
         flyTo(HOME_TARGET, d, HOME_DIR);
         controls.autoRotate = keepSpin;
@@ -487,6 +584,42 @@ export function createScene({ canvas, labelLayer, tooltip, getInset }) {
       return true;
     },
     setLabels(v) { labelsOn = v; },
+    /** Dolly the camera in (factor > 1) or out (< 1) from the current target. */
+    zoomBy,
+    /** Show or hide the rings on the discs the radiologist's report flagged. */
+    setRings(v) {
+      ringsOn = v;
+      for (const r of rings) r.group.visible = v;
+      if (!v) tooltip.hidden = true;
+    },
+
+    /**
+     * 'ai' | 'radiologist' | 'compare'. Repaints the discs (and the bones, which only carry the AI's tint)
+     * and shows what belongs to the mode: ai = the AI's colours and finding markers; radiologist = the
+     * radiologist's colours only (no markers, no incidental blue); compare = the AI plus the violet rings.
+     */
+    setMode(m) {
+      mode = m;
+      const rad = mode === 'radiologist';
+      const levels = modeReport?.comparison?.report?.levels;
+      const radStatus = (n) => { const v = levels?.get(normLevel(n)); return v && v !== 'incidental' ? v : 'normal'; };
+      for (const st of regionState.values()) {
+        if (!st.ok) continue;
+        for (const mesh of st.inner.children) {
+          const { kind, level, status } = mesh.userData;
+          if (!kind) continue;
+          mesh.material = materialFor(kind, rad ? (kind === 'disc' ? radStatus(level) : 'normal') : status);
+        }
+      }
+      const aiStatus = modeReport ? makeStatusFn(modeReport) : () => 'normal';
+      spine.repaint(rad ? (n) => (n.includes('-') ? radStatus(n) : 'normal') : aiStatus);
+      markersOn = !rad;
+      for (const mk of markers) mk.group.visible = markersOn;
+      selectedId = null;
+      hoveredId = null;
+      api.setRings(mode === 'compare');
+      tooltip.hidden = true;
+    },
   };
 
   let down = null;
@@ -494,16 +627,23 @@ export function createScene({ canvas, labelLayer, tooltip, getInset }) {
   canvas.addEventListener('pointerup', (e) => {
     if (down && Math.hypot(e.clientX - down.x, e.clientY - down.y) < 6) {
       const m = pick(e);
+      const ring = m ? null : pickRing(e);
       if (m) {
         api.focusFinding(m.id);
         api.onFindingClick?.(m.id);
+      } else if (ring) {
+        // a tap on a phone has no hover, so show the report's words now
+        showTooltip(ring, e.clientX, e.clientY);
+        api.focusLevel(ring.level);
+      } else if (e.pointerType === 'touch') {
+        tooltip.hidden = true;
       }
     }
     down = null;
   });
   canvas.addEventListener('pointermove', (e) => {
     if (e.pointerType === 'touch' || e.buttons) return;
-    const m = pick(e);
+    const m = pick(e) || pickRing(e);
     hoveredId = m?.id ?? null;
     canvas.style.cursor = m ? 'pointer' : '';
     if (m) showTooltip(m, e.clientX, e.clientY);

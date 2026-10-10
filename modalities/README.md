@@ -23,8 +23,9 @@ A scan type's folder holds:
 | Scan type | Status |
 |---|---|
 | [spine_mri](spine_mri/) | Working: AI reading, 3D view, and a disc grader that beat the measurement rules on a held-out test (`spine_mri/eval/SCORECARD.md`) |
-| [xray](xray/) | Planned |
-| [ct](ct/) | Planned |
+| [xray](xray/) | **Ships.** "Is a fracture visible?" on GRAZPEDWRI-DX and FracAtlas. Held-out test opened once: AUROC 0.976 against the best baseline's 0.838 (`xray/eval/SCORECARD.md`). It is what the MCP server grades with |
+| [ct](ct/) | **Ships.** "Where is each organ and bone?" on the TotalSegmentator dataset, 117 structures. Held-out test opened once: 0.7667 mean Dice against the best baseline's 0.1776, difference +0.5891 (95% CI +0.5728 to +0.6055) (`ct/eval/SCORECARD.md`). Not yet wired into the app or the MCP server |
+| [chest_xray](chest_xray/) | **Started 2026-10-03.** "Is this chest X-ray normal?" and fourteen findings on NIH ChestX-ray14; data downloading, no reader yet (`chest_xray/README.md`) |
 
 ## How a new scan type gets a trained model
 

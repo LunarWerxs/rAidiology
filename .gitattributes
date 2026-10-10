@@ -1,0 +1,4 @@
+# Stamped records keep their exact bytes on every checkout (records/provenance/stamp.py signs those bytes).
+records/models/*.jsonl -text
+records/provenance/*.tsv -text
+records/provenance/stamps/* binary

@@ -116,6 +116,29 @@ When a specialist model has an opinion on a comparison row, `rows[].model_short`
 words and `comparison.model_label` names the column (for example "Specialist model (not blind)").
 Rows without `model_short` show nothing in that column.
 
+### Optional `levels[].specialist_dev`, `dev_scorecard`, `comparison.model_dev_label`, `rows[].model_dev_short`
+
+A second, DEVELOPMENT model's reading beside the shipped one (`modalities/spine_mri/specialist.py
+--dev-version N`, merged from `work/specialist_dev.json`). It is shown without the ship rule and
+never claims held-out numbers; the app labels it "Newer model" with an "in development" chip.
+`levels[].specialist_dev` has the same shape as `levels[].specialist` (with `model` such as
+"rAidiology disc grader v120 (in development)"). `rows[].model_dev_short` is the short text for a
+comparison row (same rule as `model_short`) and `comparison.model_dev_label` names its column
+(for example "Newer model, in development (not blind)"). The app shows that column only when any
+row has `model_dev_short`.
+
+```json
+{ "method": "rAidiology disc grader v120 (in development)", "split": "SPIDER development, out of fold",
+  "n_patients": 168, "n_discs": 840,
+  "exact": {"value": 0.62, "ci": [0.58, 0.66]}, "within_one": {"value": 0.97, "ci": [0.95, 0.98]},
+  "kappa": {"value": 0.81, "ci": [0.77, 0.85]},
+  "v1": {"exact": {"value": 0.58, "ci": [0.54, 0.62]}, "within_one": {"value": 0.96, "ci": [0.94, 0.98]},
+         "kappa": {"value": 0.78, "ci": [0.74, 0.82]}},
+  "text": "A newer version of the disc model, still in development: on 168 expert-graded development scans it gave the expert's exact grade 62% of the time (v1: 58%) and is not yet tested on scans it never saw." }
+```
+
+The app shows only `text`, as a second muted line under the `scorecard` headline.
+
 Severity colours (use everywhere, including 3D): normal/normal-variant = teal/green,
 incidental = slate blue, mild = amber, moderate = orange, severe = red.
 

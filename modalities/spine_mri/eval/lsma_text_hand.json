@@ -1,0 +1,12 @@
+{
+  "15": {"herniation_levels": [], "herniation_unplaced": true, "why": "Hand, 2026-10-04 22:59: 'Small right foraminal disc protrusion with annular tear is noted' is its own sentence with no level; the L5-S1 sentence before it names a bulge. Likely L5-S1, not stated: unplaced."},
+  "36": {"herniation_levels": ["L4-L5"], "herniation_unplaced": false, "why": "Hand, 22:59: a sequestrated fragment 'just posterior to L5 vertebral body below L4/L5 level': migrated down from the L4-L5 disc."},
+  "137": {"herniation_levels": [], "herniation_unplaced": false, "why": "Hand, 22:59: the unplaced 'multilevel small posterior central disc protrusion' is in the C-spine section; the lumbar section reports a bulge only at L5-S1."},
+  "144": {"herniation_levels": ["L5-S1"], "herniation_unplaced": false, "why": "Hand, 22:59: protrusion at L5/S1; the other protrusion is placed at D11/D12, thoracic, so nothing is unplaced."},
+  "306": {"herniation_levels": ["L4-L5"], "herniation_unplaced": false, "why": "Hand, 22:59: under the 'L4-L5' heading (no colon), 'Diffuse disc bulge with left paracentral and foraminal protrusion'."},
+  "308": {"herniation_levels": [], "herniation_unplaced": true, "why": "Hand, 22:59: 'soft tissue fullness posterior to lower L4 vertebra, probably detached disc material', contrast advised: a probable fragment whose disc is not stated."},
+  "333": {"herniation_levels": ["L3-L4"], "herniation_unplaced": true, "why": "Hand, 22:59: protrusion at L3/L4; and a lesion 'just posterior to L4 vertebral body ... suggestive sequestrated disc, calcification', contrast advised: a possible fragment from L3-L4 or L4-L5, not placed."},
+  "363": {"herniation_levels": [], "herniation_unplaced": true, "why": "Hand, 22:59: 'extra axial soft tissue lesion at L3/L4 ? sequestrated disc, neuroma, others', contrast advised: a herniation is one of three possibilities, so not counted as one, and not ruled out."},
+  "504": {"herniation_levels": ["L5-S1"], "herniation_unplaced": false, "why": "Hand, 22:59: 'Central and Lt paracentral disc prortusion noted at L5/S1' (misspelt protrusion)."},
+  "532": {"herniation_levels": ["L4-L5"], "herniation_unplaced": false, "why": "Hand, 22:59: 'Rt para central disc protrotion, slight caudal migration noted at L4/L5' (misspelt protrusion)."}
+}

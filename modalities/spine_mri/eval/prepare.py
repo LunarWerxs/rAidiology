@@ -94,6 +94,87 @@ def rows_centroid(m, v):
     return float(yy.mean()) if len(yy) else None
 
 
+def _cut(m, v):
+    # a structure cut by the top edge of the image has a misleading centroid, so it is not checked
+    rows = np.nonzero(m == v)[1]
+    return len(rows) == 0 or rows.min() < EDGE
+
+
+def _check_order(p, m, discs, report):
+    # convention: disc 200+i lies below vertebra i and above vertebra i-1
+    for i in discs:
+        if i < 1 or _cut(m, i) or _cut(m, 200 + i):
+            continue
+        d, up, lo = rows_centroid(m, 200 + i), rows_centroid(m, i), rows_centroid(m, i - 1) if i > 1 else None
+        if up is not None and not d > up:
+            report["order_violations"].append([p, i, "disc not below vertebra i"])
+        if lo is not None and not d < lo:
+            report["order_violations"].append([p, i, "disc not above vertebra i-1"])
+
+
+def _check_discs(p, info, graded, discs, report):
+    missing = [i for i in graded if i not in discs]
+    if missing:
+        report["graded_without_mask"].append([p, missing])
+    if int(info["row"].num_discs) != len([i for i in discs if i >= 1]):
+        report["num_discs_mismatch"].append([p, int(info["row"].num_discs), len(discs)])
+
+
+def _convert_files(p, info, base, g):
+    """Write the T2 and the mask for patient p (from SPIDER's .mha files) where missing; returns
+    the paths and the graded discs, and the discs the mask lacks."""
+    t2 = os.path.join(base, "t2", f"{p}.nii.gz")
+    msk = os.path.join(base, "mask", f"{p}.nii.gz")
+    if not os.path.exists(t2):
+        mha_to_nifti(path("images", info["t2"] + ".mha"), t2)
+    graded = sorted(int(i) for i in g[g.patient == p].ivd)
+    orig = set(int(v) - 200 for v in np.unique(sitk.GetArrayFromImage(sitk.ReadImage(path("masks", info["t2"] + ".mha")))) if v >= 200)
+    lacking = [i for i in graded if i >= 1 and i not in orig]
+    if not os.path.exists(msk) or lacking:
+        mha_to_nifti(path("masks", info["t2"] + ".mha"), msk, label=True)   # start from SPIDER's own mask
+    return t2, msk, graded, lacking
+
+
+def _prepare_patient(p, info, g, base, report):
+    t2, msk, graded, lacking = _convert_files(p, info, base, g)
+    added = fill_missing_discs(p, info, msk, t2, graded) if lacking else []
+    lab_p = os.path.join(base, "spiderlab", f"{p}.nii.gz")
+    if lacking:
+        report["mask_filled_from_other_series"].append([p, added])
+        if os.path.exists(lab_p):
+            os.remove(lab_p)
+    a, b = nib.load(t2), nib.load(msk)
+    if a.shape != b.shape or not np.allclose(a.affine, b.affine, atol=1e-3):
+        report["grid_mismatch"].append(p)
+    if info["t1"]:
+        t1 = os.path.join(base, "t1", f"{p}.nii.gz")
+        if not os.path.exists(t1):
+            mha_to_nifti(path("images", info["t1"] + ".mha"), t1)
+    else:
+        report["no_t1"].append(p)
+    m = np.asarray(b.dataobj).astype(np.int32)
+    labs = set(int(v) for v in np.unique(m))
+    discs = sorted(v - 200 for v in labs if v >= 200)
+    if 0 in discs:
+        report["ivd0_mask"].append(p)
+    _check_order(p, m, discs, report)
+    _check_discs(p, info, graded, discs, report)
+    if not os.path.exists(lab_p):
+        os.makedirs(os.path.dirname(lab_p), exist_ok=True)
+        nib.save(nib.Nifti1Image(spider_to_tss(m), b.affine, b.header), lab_p)
+
+
+def _finish(report, base):
+    for k in list(report):
+        if isinstance(report[k], list):
+            report["n_" + k] = len(report[k])
+    json.dump(report, open(os.path.join(base, "prepare.json"), "w"), indent=1)
+    print(json.dumps({k: v for k, v in report.items() if not isinstance(v, list)}, indent=1))
+    scored_bad = [v for v in report["order_violations"] if v[1] <= 6]   # IVD 1-6: the levels the scorecard can score
+    if report["grid_mismatch"] or scored_bad:
+        sys.exit("SPIDER convention check failed; see prepare.json")
+
+
 def main(split, work=WORK):
     guard_test(split)
     sp = load_split()
@@ -114,65 +195,8 @@ def main(split, work=WORK):
         report["patients"] += 1
         if info["t2"].endswith("SPACE"):
             report["t2_space"].append(p)
-        t2 = os.path.join(base, "t2", f"{p}.nii.gz")
-        msk = os.path.join(base, "mask", f"{p}.nii.gz")
-        if not os.path.exists(t2):
-            mha_to_nifti(path("images", info["t2"] + ".mha"), t2)
-        graded = sorted(int(i) for i in g[g.patient == p].ivd)
-        orig = set(int(v) - 200 for v in np.unique(sitk.GetArrayFromImage(sitk.ReadImage(path("masks", info["t2"] + ".mha")))) if v >= 200)
-        lacking = [i for i in graded if i >= 1 and i not in orig]
-        if not os.path.exists(msk) or lacking:
-            mha_to_nifti(path("masks", info["t2"] + ".mha"), msk, label=True)   # start from SPIDER's own mask
-        added = fill_missing_discs(p, info, msk, t2, graded) if lacking else []
-        lab_p = os.path.join(base, "spiderlab", f"{p}.nii.gz")
-        if lacking:
-            report["mask_filled_from_other_series"].append([p, added])
-            if os.path.exists(lab_p):
-                os.remove(lab_p)
-        a, b = nib.load(t2), nib.load(msk)
-        if a.shape != b.shape or not np.allclose(a.affine, b.affine, atol=1e-3):
-            report["grid_mismatch"].append(p)
-        if info["t1"]:
-            t1 = os.path.join(base, "t1", f"{p}.nii.gz")
-            if not os.path.exists(t1):
-                mha_to_nifti(path("images", info["t1"] + ".mha"), t1)
-        else:
-            report["no_t1"].append(p)
-        m = np.asarray(b.dataobj).astype(np.int32)
-        labs = set(int(v) for v in np.unique(m))
-        discs = sorted(v - 200 for v in labs if v >= 200)
-        if 0 in discs:
-            report["ivd0_mask"].append(p)
-        # convention: disc 200+i lies below vertebra i and above vertebra i-1; a structure cut by
-        # the top edge of the image has a misleading centroid, so it is not checked
-        def cut(v):
-            rows = np.nonzero(m == v)[1]
-            return len(rows) == 0 or rows.min() < EDGE
-
-        for i in discs:
-            if i < 1 or cut(i) or cut(200 + i):
-                continue
-            d, up, lo = rows_centroid(m, 200 + i), rows_centroid(m, i), rows_centroid(m, i - 1) if i > 1 else None
-            if up is not None and not d > up:
-                report["order_violations"].append([p, i, "disc not below vertebra i"])
-            if lo is not None and not d < lo:
-                report["order_violations"].append([p, i, "disc not above vertebra i-1"])
-        missing = [i for i in graded if i not in discs]
-        if missing:
-            report["graded_without_mask"].append([p, missing])
-        if int(info["row"].num_discs) != len([i for i in discs if i >= 1]):
-            report["num_discs_mismatch"].append([p, int(info["row"].num_discs), len(discs)])
-        if not os.path.exists(lab_p):
-            os.makedirs(os.path.dirname(lab_p), exist_ok=True)
-            nib.save(nib.Nifti1Image(spider_to_tss(m), b.affine, b.header), lab_p)
-    for k in list(report):
-        if isinstance(report[k], list):
-            report["n_" + k] = len(report[k])
-    json.dump(report, open(os.path.join(base, "prepare.json"), "w"), indent=1)
-    print(json.dumps({k: v for k, v in report.items() if not isinstance(v, list)}, indent=1))
-    scored_bad = [v for v in report["order_violations"] if v[1] <= 6]   # IVD 1-6: the levels the scorecard can score
-    if report["grid_mismatch"] or scored_bad:
-        sys.exit("SPIDER convention check failed; see prepare.json")
+        _prepare_patient(p, info, g, base, report)
+    _finish(report, base)
 
 
 if __name__ == "__main__":

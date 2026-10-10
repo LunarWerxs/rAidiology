@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>rAidiology · Open your own scan</title>
+  <meta name="description" content="Open the disc or ZIP from your hospital in your own browser and look at your scan. Nothing is uploaded unless you donate a scan.">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="color-scheme" content="light">
+  <link rel="canonical" href="/open.html">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2315304d'/%3E%3Cg fill='%23ffffff'%3E%3Crect x='11' y='5' width='10' height='4' rx='2'/%3E%3Crect x='10' y='11' width='12' height='4' rx='2'/%3E%3Crect x='10' y='17' width='12' height='4' rx='2'/%3E%3Crect x='11' y='23' width='10' height='4' rx='2'/%3E%3C/g%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/open.css">
+  <script type="module" src="js/open/viewer.js"></script>
+  <script type="module" src="js/open/sample.js"></script>
+</head>
+<body>
+  <header class="bar">
+    <a class="brand" href="/" aria-label="rAidiology home">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#15304d"/><g fill="#ffffff"><rect x="11" y="5" width="10" height="4" rx="2"/><rect x="10" y="11" width="12" height="4" rx="2" opacity=".9"/><rect x="10" y="17" width="12" height="4" rx="2" opacity=".8"/><rect x="11" y="23" width="10" height="4" rx="2" opacity=".7"/></g></svg>
+      <span class="brand-name">rAidiology</span>
+    </a>
+    <button class="ghost small" type="button" id="start-over" hidden>Open a different scan</button>
+  </header>
+
+  <main>
+    <section id="intake" class="pane">
+      <h1>Open your own scan</h1>
+      <p class="lede">Choose the disc or the ZIP your hospital gave you. Your browser opens it on
+        this device. Nothing is uploaded unless you choose to donate a scan, there is no account, the page does not use or keep your name, and it is
+        free.</p>
+
+      <div class="drop" id="drop" tabindex="0" role="button" aria-describedby="drop-help">
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="drop-icon"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        <strong>Drop your scan folder or ZIP here</strong>
+        <span id="drop-help">or use a button below. Nothing is sent unless you donate.</span>
+        <div class="pickers">
+          <button class="cta" type="button" id="pick-folder">Choose the disc or a folder</button>
+          <button class="ghost" type="button" id="pick-zip">Choose a ZIP file</button>
+        </div>
+      </div>
+
+      <p class="fine browser-asks">Your browser will ask whether this page may read the files.
+        Allowing it only lets the page read them; nothing is sent.</p>
+
+      <p class="try">No scan to hand?
+        <button class="ghost" type="button" id="pick-sample">Try a sample scan</button></p>
+      <p class="try">Not at your computer? Open this page there, with your disc:
+        <a class="ghost small" id="send-self" href="mailto:">Email this page to yourself</a></p>
+
+      <details class="help">
+        <summary>Where is my scan? Step by step</summary>
+        <ol>
+          <li>Put the hospital's CD or DVD in this computer. A phone cannot read a disc.</li>
+          <li>Press <strong>Choose the disc or a folder</strong>, above.</li>
+          <li>In the window that opens, click the disc. It is often called D: or E:, or carries the
+            hospital's name. Then press the button at the bottom of that window.</li>
+          <li class="browser-asks">Your browser will ask whether this page may read the files. Say yes.
+            They stay on this computer.</li>
+        </ol>
+        <p>Got a ZIP from a patient portal instead? Press <strong>Choose a ZIP file</strong> and
+          pick it from your downloads.</p>
+        <p><strong>To check that nothing is sent, turn off Wi-Fi and open your scan.</strong> It
+          still works, because the scan is read on this device.</p>
+      </details>
+
+      <p class="aside">This page shows you your pictures. On the sample, it also names each part of
+        the body you point at. It never says whether anything is wrong, and it is not a diagnosis.</p>
+
+      <div class="progress" id="progress" hidden role="status" aria-live="polite">
+        <p id="progress-text">Reading&hellip;</p>
+        <div class="track"><div class="fill" id="progress-fill"></div></div>
+        <button class="ghost small" type="button" id="cancel">Stop</button>
+      </div>
+    </section>
+
+    <section id="series" class="pane" hidden aria-labelledby="series-h">
+      <h2 id="series-h">What is on your disc</h2>
+      <p class="fine" id="series-summary"></p>
+      <p class="fine" id="sample-credit" hidden></p>
+      <p class="fine">Each box is one set of pictures. Click one to look through it.</p>
+      <div class="cards" id="series-cards"></div>
+
+      <details class="reading" id="reading-box" hidden>
+        <summary>A reading of this scan from your own AI assistant</summary>
+        <p class="fine">Most people can skip this. If your own AI assistant read this scan with
+          rAidiology on your computer, it saved a small file ending in <code>.raidiology.json.gz</code>.
+          Add it here to see what it found on your own pictures.</p>
+        <p class="fine">The file holds no name, patient number or date of birth. This tab reads it, and
+          it goes nowhere.</p>
+        <div class="drop small" id="reading-drop" tabindex="0" role="button">
+          <strong>Drop the reading file here</strong>
+          <span>or <button class="ghost small" type="button" id="pick-reading">choose the file</button></span>
+        </div>
+        <div id="reading-out" hidden></div>
+      </details>
+    </section>
+
+    <section id="viewer" class="pane viewer" hidden aria-labelledby="viewer-h">
+      <div class="viewer-head">
+        <button class="ghost small" type="button" id="back">Back to the list</button>
+        <h2 id="viewer-h"></h2>
+      </div>
+      <div class="stage" id="stage">
+        <canvas id="canvas" aria-label="One picture of the chosen set. Drag up and down to move through the pictures, left and right to change the brightness."></canvas>
+        <div class="hud" id="hud" aria-live="off"></div>
+        <div class="name-tip" id="name-tip" hidden role="status"></div>
+        <span class="edge edge-top" id="edge-top" hidden></span>
+        <span class="edge edge-bottom" id="edge-bottom" hidden></span>
+        <span class="edge edge-left" id="edge-left" hidden></span>
+        <span class="edge edge-right" id="edge-right" hidden></span>
+        <div class="scalebar" id="scalebar" hidden><span id="scalebar-label">1 cm</span></div>
+      </div>
+      <div class="controls">
+        <button class="ghost small" type="button" id="toggle-marks" hidden>Hide the marks</button>
+        <button class="ghost small" type="button" id="prev-picture" aria-label="Previous picture">Previous</button>
+        <label class="slider">Picture <input type="range" id="slice" min="0" max="0" value="0"></label>
+        <button class="ghost small" type="button" id="next-picture" aria-label="Next picture">Next</button>
+      </div>
+      <details class="adjust">
+        <summary>Brightness and contrast</summary>
+        <div class="controls">
+          <label class="slider">Brightness <input type="range" id="centre" min="0" max="1000" value="500"></label>
+          <label class="slider">Contrast <input type="range" id="width" min="1" max="1000" value="500"></label>
+          <button class="ghost small" type="button" id="reset-window">Reset brightness</button>
+        </div>
+      </details>
+      <p class="fine">Use Previous and Next, drag up and down on the picture, or press the arrow keys
+        to move through the pictures. Scroll or pinch to zoom in.</p>
+      <p class="what" id="what" hidden></p>
+      <div class="finding" id="finding" hidden role="status" aria-live="polite"></div>
+      <p class="fine" id="viewer-credit" hidden></p>
+      <div id="sample-reading-about" hidden>
+        <p class="fine">rAidiology's program drew these outlines on the sample. Your own scan opens
+          here as plain pictures, with nothing to install.</p>
+        <p class="fine">Outlines on your own scan are optional: an AI assistant such as Claude or
+          ChatGPT can add them after a one-time setup. That step is optional.</p>
+      </div>
+    </section>
+
+    <section id="problems" class="pane" hidden aria-labelledby="problems-h">
+      <h2 id="problems-h">What could not be opened</h2>
+      <ul id="problems-list" class="plain"></ul>
+    </section>
+
+    <section id="donate-offer" class="pane" hidden>
+      <h2>Help train rAidiology (optional)</h2>
+      <p class="fine">You can donate this scan after your browser removes what could identify you. You see everything first. Nothing is sent until you say so.</p>
+      <button class="cta" type="button" id="donate-start">Donate this scan</button>
+    </section>
+
+    <section id="donate" class="pane" hidden aria-labelledby="donate-h"></section>
+  </main>
+
+  <footer class="foot">
+    <p class="disclaim"><strong>Not a medical device, not a diagnosis.</strong> This page shows you
+      your own images. It never says whether anything is wrong. Always talk to a doctor about your results.</p>
+    <p class="meta"><a href="/">Back to the front page</a> &middot; <a href="health-data-privacy.html">Privacy</a> &middot; <a href="donation.html">See or delete a donation</a> &middot; &copy; 2026 LunarWerx Studios &middot; <a href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a></p>
+  </footer>
+
+  <noscript><div class="pane"><p>This page needs JavaScript, because the whole point is that your
+    scan is read by your own browser and not by a server.</p></div></noscript>
+</body>
+</html>

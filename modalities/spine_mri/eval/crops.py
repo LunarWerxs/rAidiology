@@ -29,11 +29,14 @@ LEVEL_ID = {v[5:].replace("_", "-"): k for k, v in NAMES.items() if v.startswith
 
 
 class Series:
-    def __init__(self, path):
-        img = nib.load(path)
-        self.a = np.asarray(img.dataobj).astype(np.float32)
-        self.aff = img.affine
-        self.inv = np.linalg.inv(img.affine)
+    def __init__(self, path=None, a=None, aff=None):
+        """A NIfTI file, or an array and its affine already in memory (lsma.py)."""
+        if path is not None:
+            img = nib.load(path)
+            a, aff = np.asarray(img.dataobj), img.affine
+        self.a = a.astype(np.float32)
+        self.aff = aff
+        self.inv = np.linalg.inv(aff)
         body = self.a[self.a > 0.1 * np.percentile(self.a, 99)]
         self.lo, self.hi = np.percentile(body if body.size > 1000 else self.a, [1, 99])
 

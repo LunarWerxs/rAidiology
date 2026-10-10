@@ -1,0 +1,7 @@
+# The landing page and "open your own scan" are meant to be found. One person's scan is not.
+User-agent: *
+Allow: /
+Disallow: /report.html
+Disallow: /data/report.json
+Disallow: /data/meshes/
+Disallow: /data/stacks/

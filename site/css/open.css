@@ -1,0 +1,323 @@
+/* "Open your own scan". Its own stylesheet: this page is a document that turns into a viewer, and
+   style.css is built around a full-screen 3D canvas. The tokens are the front page's: a light,
+   quiet medical page in the studio's navy with one calm blue for what to press. The picture itself
+   sits on black, as in every hospital viewer, and what is drawn over it is light. */
+
+:root {
+  --bg: #ffffff;
+  --bg-soft: #f4f7fb;
+  --surface: #ffffff;
+  --card: #f6f9fc;
+  --card-hover: #edf3f9;
+  --line: #dfe6ee;
+  --line-strong: #c3cfdc;
+  --ink: #15304d;
+  --text: #2f4255;
+  --text-2: #3c4f62;
+  --muted: #536677;                 /* dark enough for the oldest visitor to read the caveats */
+  --accent: #1d5fa6;
+  --accent-hover: #174f8c;
+  --accent-soft: #e7f0fa;
+  --on-accent: #ffffff;
+  --warn: #8a5200;
+  --on-picture: #eef3f8;            /* words drawn over a picture */
+  --scrim: rgba(0, 0, 0, 0.6);      /* behind words drawn over a picture */
+  /* colours the page paints outside the palette above, named by value */
+  --alert-edge: #a33;
+  --alert-ink: #7a1f1f;
+  --black: #000;
+  --sev-mild-a07: rgba(217, 164, 65, 0.07);
+  --sev-mild-a16: rgba(217, 164, 65, 0.16);
+  --shade-a55: rgba(0, 0, 0, 0.55);
+  --bg-tint: #eaf1f8;
+  --bar-bg: rgba(255, 255, 255, 0.94);
+  --lift: 0 1px 2px rgba(21, 48, 77, 0.18);
+  --lift-soft: 0 1px 2px rgba(21, 48, 77, 0.05);
+  --r-lg: 16px;
+  --r-md: 12px;
+  --r-sm: 10px;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --wrap: 1040px;
+
+  color-scheme: light;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+* { box-sizing: border-box; }
+/* Without this, every rule below that sets `display` beats the browser's own rule for the `hidden`
+   attribute. That is how "Reading..." and a Stop button came to sit on this page before anybody
+   had opened anything, which five visitors out of five noticed. */
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text);
+  background: linear-gradient(180deg, var(--bg-tint) 0, var(--bg) 420px);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent); text-underline-offset: 3px; }
+a:hover { color: var(--accent-hover); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+
+/* A pane scrolled to its start lands under the sticky bar, not behind it: round eight's visitor read
+   a viewer whose title was hidden as being dropped mid-page. */
+.pane { scroll-margin-block-start: 80px; }
+
+.bar {
+  position: sticky; inset-block-start: 0; z-index: 5;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 12px clamp(18px, 5vw, 32px);
+  background: var(--bar-bg); backdrop-filter: saturate(1.4) blur(10px);
+  border-block-end: 1px solid var(--line);
+}
+.brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+.brand-mark { width: 30px; height: 30px; flex: none; }
+.brand-name { font-weight: 700; font-size: 1.08rem; letter-spacing: -0.01em; }
+
+.pane { width: min(var(--wrap), 100%); margin: 0 auto; padding: clamp(24px, 5vw, 48px) clamp(18px, 5vw, 32px); }
+h1, h2, h3 { color: var(--ink); }
+h1 { margin: 0 0 14px; font-size: clamp(1.75rem, 4.2vw, 2.4rem); line-height: 1.15; letter-spacing: -0.02em; font-weight: 700; }
+h2 { margin: 0 0 12px; font-size: clamp(1.2rem, 3vw, 1.5rem); font-weight: 700; }
+p { max-width: 68ch; }
+.lede { color: var(--text-2); font-size: clamp(1rem, 2.2vw, 1.1rem); margin: 0 0 10px; }
+.fine { color: var(--muted); font-size: 0.95rem; margin: 0 0 18px; }
+.aside {
+  margin: 20px 0 0; padding: 13px 16px; border-inline-start: 2px solid var(--line-strong);
+  color: var(--text-2); font-size: 1rem; background: var(--card);
+  border-start-end-radius: var(--r-md); border-end-end-radius: var(--r-md);
+}
+.try { margin: 16px 0 0; color: var(--text-2); display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.try a.ghost { text-decoration: none; }
+.browser-asks { margin: 12px 0 0; }
+.help { margin: 16px 0 0; color: var(--text-2); max-width: 68ch; }
+.help summary, details.reading summary { cursor: pointer; color: var(--text); font-weight: 600; padding: 8px 0; }
+.help ol { margin: 6px 0 10px; padding-inline-start: 22px; }
+.help li + li { margin-top: 8px; }
+.help p { margin: 0; }
+
+.cta, .ghost {
+  /* Our own pressables draw their own pressed state; without this a phone also flashes its
+     default translucent box over them. */
+  -webkit-tap-highlight-color: transparent;
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 46px; padding: 0 20px; border-radius: var(--r-sm);
+  font: 600 1rem/1 inherit; cursor: pointer; border: 0;
+  transition: background var(--ease) 160ms, border-color var(--ease) 160ms;
+}
+.cta { background: var(--accent); color: var(--on-accent); box-shadow: var(--lift); }
+.cta:hover { background: var(--accent-hover); color: var(--on-accent); }
+.ghost { border: 1px solid var(--line-strong); color: var(--ink); background: var(--bg); }
+.ghost:hover { border-color: var(--accent); color: var(--accent); }
+.small { min-height: 34px; padding: 0 14px; font-size: 0.88rem; }
+
+.drop {
+  -webkit-tap-highlight-color: transparent;
+  margin: 8px 0 0; padding: clamp(26px, 6vw, 44px) 20px;
+  border: 2px dashed var(--line-strong); border-radius: var(--r-lg);
+  background: var(--card); text-align: center; cursor: pointer;
+  display: grid; justify-items: center; gap: 10px;
+  transition: border-color var(--ease) 160ms, background var(--ease) 160ms;
+}
+.drop:hover, .drop.over { border-color: var(--accent); background: var(--accent-soft); }
+.drop strong { font-size: 1.05rem; color: var(--ink); }
+.drop span { color: var(--muted); font-size: 0.92rem; }
+.drop-icon { width: 34px; height: 34px; fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.pickers { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 8px; }
+
+.progress { margin-top: 22px; display: grid; gap: 10px; justify-items: start; }
+.progress .track { width: 100%; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.progress .fill { height: 100%; width: 0; background: var(--accent); transition: width 120ms linear; }
+.progress p { margin: 0; color: var(--text-2); }
+
+.cards { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+.series-card {
+  -webkit-tap-highlight-color: transparent;
+  display: grid; gap: 8px; padding: 12px; text-align: start; cursor: pointer;
+  border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--bg); color: inherit;
+  box-shadow: var(--lift-soft);
+}
+.series-card:hover { background: var(--card-hover); border-color: var(--accent); }
+.series-card canvas { width: 100%; aspect-ratio: 1; border-radius: var(--r-md); background: var(--black); object-fit: contain; }
+.series-card .title { font-weight: 620; }
+.series-card .sub { color: var(--muted); font-size: 0.86rem; }
+
+.viewer-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.viewer-head h2 { margin: 0; }
+.stage {
+  position: relative; background: var(--black); border: 1px solid var(--line); border-radius: var(--r-lg);
+  overflow: hidden; touch-action: none; aspect-ratio: 1 / 1;
+  /* 70vh keeps the controls in view on a laptop; the floor stops a very short window (or a browser
+     that reports no height yet) from collapsing the stage to nothing. */
+  max-height: 70vh; min-height: 240px;
+}
+.stage canvas { display: block; width: 100%; height: 100%; }
+.hud {
+  position: absolute; inset-inline-start: 10px; inset-block-start: 10px; padding: 5px 9px; border-radius: 8px;
+  background: var(--shade-a55); color: var(--on-picture); font-size: 0.95rem;
+  font-variant-numeric: tabular-nums; pointer-events: none; white-space: pre-line;
+}
+/* The name of what the visitor is pointing at, beside the pointer. */
+.name-tip {
+  position: absolute; max-inline-size: min(18rem, 70%); padding: 6px 10px; border-radius: 8px;
+  background: var(--scrim); color: var(--on-picture); font-size: 0.95rem; line-height: 1.4;
+  pointer-events: none;
+}
+.name-tip strong { font-weight: 700; }
+/* Which side of the body each edge of the picture is. Drawn over the image, so like the scale bar
+   these are sides of the picture and must not mirror with the reading direction. */
+.edge {
+  position: absolute; padding: 3px 9px; border-radius: 999px; pointer-events: none;
+  background: var(--scrim); color: var(--on-picture); font-size: 0.9rem; white-space: nowrap;
+}
+/* arkitect-allow: css-logical-direction-properties - a side of the picture, not of a sentence. */
+.edge-top { top: 10px; left: 50%; transform: translateX(-50%); }
+.edge-bottom { bottom: 10px; left: 50%; transform: translateX(-50%); }
+/* arkitect-allow: css-logical-direction-properties - a side of the picture, not of a sentence. */
+.edge-left { left: 10px; top: 50%; transform: translateY(-50%); }
+/* arkitect-allow: css-logical-direction-properties - a side of the picture, not of a sentence. */
+.edge-right { right: 10px; top: 50%; transform: translateY(-50%); }
+.what { margin: 12px 0 0; color: var(--text-2); max-width: 72ch; }
+.source { font-size: 0.86rem; }
+
+.scalebar {
+  position: absolute; right: 12px; bottom: 12px; height: 18px;
+  /* arkitect-allow: css-logical-direction-properties - this is drawn over the image, where a
+     side is a side of the picture, not the start of a sentence, so it must not mirror. */
+  border-inline-start: 2px solid var(--on-picture); border-inline-end: 2px solid var(--on-picture); border-bottom: 2px solid var(--on-picture);
+  pointer-events: none;
+}
+.scalebar span { position: absolute; right: 0; bottom: 20px; color: var(--on-picture); font-size: 0.75rem; }
+
+.controls { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin: 14px 0 10px; }
+.controls .slider { flex: 1 1 14rem; }
+.slider { display: grid; gap: 4px; color: var(--text-2); font-size: 0.95rem; }
+/* Brightness and contrast, one click away: round seven found the view busy with every slider open,
+   and dragging sideways on the picture does the same. */
+.adjust { margin: 0 0 10px; color: var(--text-2); }
+.adjust summary { cursor: pointer; font-weight: 600; padding: 6px 0; }
+.adjust .controls { margin-top: 4px; }
+.slider input { width: 100%; accent-color: var(--accent); }
+
+ul.plain { list-style: none; margin: 0; padding: 0; }
+ul.plain li { padding: 10px 0; border-top: 1px solid var(--line); color: var(--text-2); font-size: 0.93rem; }
+ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
+
+.foot { border-top: 1px solid var(--line); padding: 28px clamp(16px, 5vw, 28px) 40px; width: min(var(--wrap), 100%); margin: 0 auto; }
+.foot .disclaim { color: var(--muted); font-size: 0.9rem; margin: 0 0 12px; }
+.foot .disclaim strong { color: var(--warn); }
+.foot .meta { color: var(--muted); font-size: 0.86rem; margin: 0; }
+
+/* A phone or a tablet cannot read a disc, so there the sample and the email-it-to-yourself link
+   come straight after the opening words, ahead of the box for a disc, and every control is at least
+   a fingertip tall. The round-three board's first fix. */
+@media (max-width: 560px), (hover: none) and (pointer: coarse) {
+  #intake { display: flex; flex-direction: column; }
+  #intake > h1, #intake > .lede { order: -2; }
+  #intake > .try { order: -1; }
+  .cta, .ghost, .small { min-height: 48px; }
+  /* The picture slider across the whole width, with Previous and Next under it side by side. */
+  .controls > .slider { flex-basis: 100%; order: -1; }
+  /* On one line, "right side of the body" and "left side of the body" met across the middle of a
+     phone's picture; on two they keep to the edges. */
+  .edge-left, .edge-right { white-space: normal; max-inline-size: 6.5em; text-align: center; border-radius: 12px; line-height: 1.25; }
+}
+/* A touch-only device cannot read a disc and mostly cannot hand a page a folder, so there the ZIP is
+   the main button and the folder one is not offered (round four: the big blue button on a phone was
+   the one a phone cannot use). */
+@media (hover: none) and (pointer: coarse) {
+  #pick-folder { display: none; }
+  #pick-zip { background: var(--accent); color: var(--on-accent); border: 0; box-shadow: var(--lift); }
+  /* Round eight: on a phone the name after a tap read as "small, easy to miss". */
+  .name-tip { font-size: 1.05rem; padding: 8px 12px; max-inline-size: 92%; }
+}
+
+/* The picture and the slider under it fit one laptop screen, so nobody takes it for one still picture. */
+@media (min-width: 720px) {
+  .stage { max-height: 60vh; }
+}
+
+@media (min-width: 720px) {
+  .stage { aspect-ratio: 4 / 3; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+
+/* The reading file: what somebody's own AI wrote about this scan on their own machine. It is an
+   optional extra on a page that works without it, so it sits under the series rather than above
+   them and never takes the first screen. */
+.reading { margin: 28px 0 0; padding: 12px 20px; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--card); }
+.reading[open] { padding-block-end: 20px; }
+.reading code { font-size: 0.88em; color: var(--text-2); }
+.drop.small { padding: 18px 16px; gap: 6px; }
+.drop.small strong { font-size: 0.98rem; }
+
+.reading-summary { margin: 16px 0 0; color: var(--text); max-width: 68ch; }
+.reading-bad { margin: 16px 0 0; color: var(--warn); max-width: 68ch; }
+.reading-note { margin: 10px 0 0; color: var(--muted); font-size: 0.88rem; max-width: 72ch; }
+.reading-list { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 8px; }
+.reading-list li {
+  padding: 12px 14px; border: 1px solid var(--line-strong); border-radius: var(--r-md);
+  background: var(--sev-mild-a07); display: grid; gap: 4px;
+}
+.reading-go {
+  -webkit-tap-highlight-color: transparent;
+  background: none; border: 0; padding: 0; margin: 0; cursor: pointer;
+  color: var(--text); font: inherit; text-align: start; text-decoration: underline;
+  text-decoration-color: var(--line-strong); text-underline-offset: 3px;
+}
+.reading-go:hover { text-decoration-color: var(--warn); }
+.reading-score { color: var(--muted); font-size: 0.85rem; }
+
+.series-flag {
+  margin-top: 2px; align-self: start;
+  padding: 3px 9px; border-radius: 999px; font-size: 0.78rem;
+  background: var(--sev-mild-a16); color: var(--warn);
+}
+
+.finding {
+  margin: 12px 0 0; padding: 12px 14px; border-radius: var(--r-md);
+  border-inline-start: 2px solid var(--line-strong);
+  background: var(--card); color: var(--muted); font-size: 0.92rem; max-width: 80ch;
+}
+.finding.marked { border-inline-start-color: var(--warn); color: var(--text-2); }
+/* A CT reading's key: each outlined structure next to the colour it is drawn in. */
+.outline-key { white-space: nowrap; cursor: default; }
+.finding p { margin: 0; max-width: none; }
+.finding p + * { margin-top: 8px; }
+.outline-all summary { cursor: pointer; color: var(--text); font-weight: 600; }
+.outline-all p { margin-top: 6px; }
+.outline-swatch {
+  display: inline-block; inline-size: 0.8em; block-size: 0.8em; border-radius: 0.15em;
+  margin-inline-end: 0.3em; vertical-align: -0.05em;
+}
+
+/* Donating a scan, and the page to see or delete a donation. */
+.donate-steps { display: grid; gap: 22px; }
+.donate-steps .step { padding: 16px 18px; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--card); }
+.donate-steps h3 { margin: 0 0 8px; font-size: 1.1rem; }
+.series-list { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 8px; }
+.series-list li { padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--bg); }
+.series-list .refused { color: var(--text-2); }
+.series-list label { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
+.series-list input[type=checkbox] { margin-top: 5px; width: 1.1rem; height: 1.1rem; }
+.preview-stage { background: var(--black); border-radius: var(--r-md); overflow: auto; max-height: 85vh; text-align: center; }
+.preview-canvas { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+.preview .check { display: inline-flex; gap: 6px; align-items: center; color: var(--text-2); }
+.tag-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.tag-table th, .tag-table td { text-align: start; padding: 4px 8px; border-top: 1px solid var(--line); word-break: break-word; }
+.tag-scroll { max-height: 18rem; overflow: auto; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--bg); }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+.number-big { font: 700 clamp(1.5rem, 6vw, 2.6rem)/1.2 ui-monospace, Consolas, monospace; letter-spacing: 0.04em; color: var(--ink); background: var(--bg); border: 2px solid var(--accent); border-radius: var(--r-md); padding: 16px 18px; word-break: break-all; margin: 12px 0; user-select: all; }
+.warn-note { padding: 12px 14px; border-inline-start: 3px solid var(--warn); background: var(--card); color: var(--text); max-width: 68ch; }
+.number-input { font: 600 1.2rem/1 ui-monospace, Consolas, monospace; padding: 12px 14px; min-width: min(100%, 22rem); border: 1px solid var(--line-strong); border-radius: var(--r-sm); }
+/* The consent panel's own <section> (terms_v1.js). Its words are hashed into the consent record, so its
+   markup stays as written; this rule states what the browser already does with it. */
+.donate-panel { display: block; }
+.donate-panel-host { margin: 6px 0; padding: 4px 18px; border: 1px solid var(--line-strong); border-radius: var(--r-lg); background: var(--bg); }
+.danger { border-color: var(--alert-edge); color: var(--alert-ink); }

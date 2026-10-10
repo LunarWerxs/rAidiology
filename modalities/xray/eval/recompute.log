@@ -1,0 +1,7 @@
+table 1 (data accounting): 62 cells checked, 0 differing, 0 row(s) only in the scorecard, 0 row(s) only recomputed
+table 2 (scores): 2700 cells checked, 0 differing, 0 row(s) only in the scorecard, 0 row(s) only recomputed
+table 3 (paired differences): 216 cells checked, 0 differing, 0 row(s) only in the scorecard, 0 row(s) only recomputed
+
+TOTAL: 2978 cells checked, 0 differing, 0 row discrepancies, 0 other problem(s)
+wall time 13.8 s
+PASS: the scorecard agrees with the recomputation

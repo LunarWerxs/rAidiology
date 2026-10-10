@@ -47,6 +47,19 @@ export function levelList(s) {
   return String(s ?? '').split(/[,;&]|\band\b/i).map(normLevel).filter(Boolean);
 }
 
+/** Worst severity per level, from report.levels and from findings at exactly that level. The 3D tints discs with this. */
+export function levelStatusMap(report) {
+  const map = new Map();
+  const rank = (s) => sev(s).rank;
+  for (const l of report?.levels || []) map.set(normLevel(l.level), l.status);
+  for (const f of report?.findings || []) {
+    for (const n of levelList(f.level)) {
+      if (rank(f.severity) >= 2 && (!map.has(n) || rank(f.severity) > rank(map.get(n)))) map.set(n, f.severity);
+    }
+  }
+  return map;
+}
+
 export function levelIndex(s) {
   const parts = (levelList(s)[0] || '').split('-');
   const idx = parts.map((p) => LEVEL_ORDER.indexOf(p));
@@ -59,6 +72,26 @@ export function isDiscLevel(s) {
   if (parts.length !== 2) return false;
   const [a, b] = parts.map((p) => LEVEL_ORDER.indexOf(p));
   return a >= 0 && b === a + 1;
+}
+
+const NOTHING = new Set(['', '-', '–', '—', 'normal', 'not mentioned']);
+
+/**
+ * Discs the outside radiologist flagged: comparison rows whose level is exactly one disc level and
+ * whose radiologist_short says something. Rows on the same level merge. [{ level, text }]
+ */
+export function reportFlaggedDiscs(report) {
+  const byLevel = new Map();
+  for (const r of report?.comparison?.rows || []) {
+    const parts = String(r.level ?? '').split(/[,;&]|\band\b/i);
+    const text = String(r.radiologist_short ?? '').trim();
+    if (parts.length !== 1 || !isDiscLevel(r.level) || NOTHING.has(text.toLowerCase())) continue;
+    const level = normLevel(r.level);
+    const texts = byLevel.get(level) || [];
+    if (!texts.includes(text)) texts.push(text);
+    byLevel.set(level, texts);
+  }
+  return [...byLevel].map(([level, texts]) => ({ level, text: texts.join('; ') })).sort((a, b) => compareLevels(a.level, b.level));
 }
 
 export function compareLevels(a, b) {
@@ -118,7 +151,9 @@ export function fmtMonth(month) {
   const m = String(month || '').match(/^(\d{4})-(\d{2})/);
   if (!m) return String(month || '');
   const d = new Date(Date.UTC(+m[1], +m[2] - 1, 1));
-  return d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+  // undefined, not a fixed country: the date should read the way the person's own device
+  // writes dates, which is not the same country for every reader.
+  return d.toLocaleDateString(undefined, { month: 'short', year: 'numeric', timeZone: 'UTC' });
 }
 
 export function sexLabel(s) {
@@ -213,6 +248,7 @@ export function sanitizeReport(raw) {
         ? Object.fromEntries(Object.entries(l.measure).filter(([, v]) => Number.isFinite(v)))
         : null,
       specialist: sanitizeSpecialist(l.specialist),
+      specialist_dev: sanitizeSpecialist(l.specialist_dev),
     })),
     findings: arr(r.findings).filter((f) => f && f.id).map((f) => ({
       id: str(f.id),
@@ -245,7 +281,9 @@ export function sanitizeReport(raw) {
     },
     disclaimer: str(r.disclaimer),
     comparison: sanitizeComparison(r.comparison),
+    ai_report: sanitizeReportText(r.ai_report, false),
     scorecard: sanitizeScorecard(r.scorecard),
+    dev_scorecard: sanitizeDevScorecard(r.dev_scorecard),
   };
 }
 
@@ -268,6 +306,50 @@ function sanitizeScorecard(x) {
   return text ? { headline: { text }, permission: str(x.permission), method: str(x.method) } : null;
 }
 
+/** A development model's one plain sentence (plus its method and split); null without text. */
+function sanitizeDevScorecard(x) {
+  const text = str(x?.text).trim();
+  return text ? { text, method: str(x.method), split: str(x.split) } : null;
+}
+
+
+const VERDICTS = ['on par', 'behind', 'no model', 'unsettled'];
+const reportLine = (x) => ({ label: str(x.label), text: str(x.text), level: str(x.level), finding: str(x.finding) });
+const reportPoint = (x) => ({ text: str(x.text), level: str(x.level), finding: str(x.finding), status: SEVERITY[x.status] ? x.status : 'normal' });
+
+/** A report in radiologist form: the AI's (`ai_report`) or the outside radiologist's (`comparison.report`). null without sections. */
+function sanitizeReportText(a, outside) {
+  if (!a || typeof a !== 'object') return null;
+  const sections = arr(a.sections).filter((g) => g && arr(g.lines).length).map((g) => ({
+    region: str(g.region),
+    title: str(g.title),
+    lines: arr(g.lines).filter((x) => x && x.text).map(reportLine),
+  }));
+  const impression = arr(a.impression).filter((x) => x && x.text).map(reportPoint);
+  if (!sections.length && !impression.length) return null;
+  const out = {
+    title: str(a.title), author: str(a.author), byline: str(a.byline), history: str(a.history),
+    exam: str(a.exam), technique: str(a.technique), who: arr(a.who).map(str).filter(Boolean),
+    sections, impression,
+  };
+  if (outside) {
+    out.impression_label = str(a.impression_label);
+    out.levels_note = str(a.levels_note);
+    out.levels = new Map(Object.entries(a.levels && typeof a.levels === 'object' ? a.levels : {})
+      .filter(([, v]) => LEVEL_STATUS.includes(v)).map(([k, v]) => [normLevel(k), v]));
+  }
+  return out;
+}
+
+/** How the AI's tools compare with the field; null without items. */
+function sanitizeCapability(c) {
+  if (!c || typeof c !== 'object') return null;
+  const items = arr(c.items).filter((x) => x && x.topic).map((x) => ({
+    topic: str(x.topic), verdict: oneOf(x.verdict, VERDICTS, 'unsettled'), plain: str(x.plain),
+  }));
+  return items.length ? { title: str(c.title), headline: str(c.headline), items, bottom: str(c.bottom) } : null;
+}
+
 const AGREEMENT = ['agree', 'partial', 'disagree'];
 
 /** Blind AI reading vs an outside radiologist report vs the AI's view after re-measuring. */
@@ -284,6 +366,7 @@ function sanitizeComparison(c) {
     radiologist_short: str(x.radiologist_short),
     after_short: str(x.after_short),
     model_short: str(x.model_short),
+    model_dev_short: str(x.model_dev_short),
     agreement: oneOf(x.agreement, AGREEMENT, 'partial'),
     leans: oneOf(x.leans, ['ai', 'radiologist', 'both', 'unclear'], 'unclear'),
     measured: arr(x.measured).map(str).filter(Boolean),
@@ -296,7 +379,10 @@ function sanitizeComparison(c) {
     indication: str(c.indication),
     method: str(c.method),
     model_label: str(c.model_label),
+    model_dev_label: str(c.model_dev_label),
     rows,
+    report: sanitizeReportText(c.report, true),
+    capability: sanitizeCapability(c.capability),
     opinion: {
       headline: str(o.headline),
       bottom_line: arr(o.bottom_line).map(str).filter(Boolean),

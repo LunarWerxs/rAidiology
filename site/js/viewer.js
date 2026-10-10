@@ -1,6 +1,8 @@
 // viewer.js: the 2D scan viewer (slice scrolling + finding marks) and the small scan figures
 // used inside finding cards.
+import { observeResize } from './lifetime.js';
 import { el, svgEl, sev, icon } from './data.js';
+import { prefersReducedMotion } from './motion.js';
 
 const OPPOSITE = { head: 'Feet', feet: 'Head', front: 'Back', back: 'Front', left: 'Right', right: 'Left', up: 'Down', down: 'Up' };
 
@@ -195,13 +197,15 @@ function drawSynthetic(canvas, stack, i) {
 export function buildStage(stack, { labels = false } = {}) {
   const W = stack.width;
   const H = stack.height;
-  const root = el('div', { class: 'stage', style: { aspectRatio: `${W} / ${H}` } });
+  const root = el('div', { class: 'stage', style: { aspectRatio: `${W} / ${H}`, '--ar': W / H } });
   const media = stack.synthetic
     ? el('canvas', { class: 'stage-media', width: W, height: H, 'aria-hidden': 'true' })
     : el('img', { class: 'stage-media', alt: '', decoding: 'async' });
   const missing = el('div', { class: 'stage-missing', hidden: true }, 'This image is not available yet');
   const marks = svgEl('svg', { class: 'stage-marks', viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: 'xMidYMid meet', 'aria-hidden': 'true' });
-  root.append(media, marks, missing);
+  // One layer carries image and marks, so a zoom/pan transform moves both together.
+  const layer = el('div', { class: 'stage-layer' }, media, marks, missing);
+  root.append(layer);
   if (!stack.synthetic) {
     media.addEventListener('error', () => { missing.hidden = false; media.style.visibility = 'hidden'; });
     media.addEventListener('load', () => { missing.hidden = true; media.style.visibility = ''; });
@@ -215,6 +219,7 @@ export function buildStage(stack, { labels = false } = {}) {
   }
   return {
     el: root,
+    layer,
     show(i, sets) {
       if (stack.synthetic) drawSynthetic(media, stack, i);
       else {
@@ -238,6 +243,159 @@ export function stackFigure(stacks, view, color) {
   return el('figure', { class: 'scan-fig' }, stage.el, caption);
 }
 
+const MAX_ZOOM = 8;
+const DOUBLE_ZOOM = 2.5;
+
+/**
+ * Zoom (1x to 8x) and pan for a stage: wheel with Ctrl/Cmd or pinch-wheel, mouse drag, touch drag and
+ * pinch, double-click/tap, on-screen buttons. The pan is kept as a fraction of the stage size so a
+ * resize keeps the same view. Returns helpers for the keyboard handler.
+ */
+function attachZoom(root, layer) {
+  let s = 1;
+  let fx = 0;
+  let fy = 0;
+  const pointers = new Map();
+  let gesture = null; // { moved, t, x, y } for tap detection
+  let lastTap = null;
+
+  const readout = el('span', { class: 'zoom-readout', 'aria-live': 'polite' });
+  const mk = (label, path, onclick) => el('button', { class: 'icon-btn zoom-btn', type: 'button', 'aria-label': label, title: label, onclick },
+    icon(path));
+  const outBtn = mk('Zoom out', ['M5 12h14'], () => zoomAt(s / 1.5, null, true));
+  const inBtn = mk('Zoom in', ['M5 12h14', 'M12 5v14'], () => zoomAt(s * 1.5, null, true));
+  const fitBtn = el('button', { class: 'icon-btn zoom-btn zoom-fit', type: 'button', 'aria-label': 'Fit to view', title: 'Fit to view', onclick: () => reset(true) }, 'Fit');
+  const controls = el('div', { class: 'stage-zoom' }, outBtn, readout, inBtn, fitBtn);
+  root.append(controls);
+
+  function apply(smooth) {
+    const w = root.clientWidth;
+    const h = root.clientHeight;
+    // Keep the scaled image covering the stage: it can never be dragged out of view.
+    fx = s <= 1 ? 0 : Math.max(1 - s, Math.min(0, fx));
+    fy = s <= 1 ? 0 : Math.max(1 - s, Math.min(0, fy));
+    layer.classList.toggle('smooth', !!smooth && !prefersReducedMotion());
+    layer.style.transform = s === 1 ? '' : `translate(${fx * w}px, ${fy * h}px) scale(${s})`;
+    root.classList.toggle('zoomed', s > 1);
+    root.style.touchAction = s > 1 ? 'none' : 'pan-y';
+    readout.textContent = `${s.toFixed(1)}x`;
+    outBtn.disabled = s <= 1;
+    inBtn.disabled = s >= MAX_ZOOM;
+    fitBtn.disabled = s <= 1;
+  }
+
+  /** Zoom to scale ns keeping the stage point (px, py), in stage pixels, fixed; null = stage centre. */
+  function zoomAt(ns, pt, smooth) {
+    const w = root.clientWidth || 1;
+    const h = root.clientHeight || 1;
+    const px = (pt ? pt.x : w / 2) / w;
+    const py = (pt ? pt.y : h / 2) / h;
+    ns = Math.max(1, Math.min(MAX_ZOOM, ns));
+    const k = ns / s;
+    fx = px - (px - fx) * k;
+    fy = py - (py - fy) * k;
+    s = ns;
+    apply(smooth);
+  }
+
+  function reset(smooth) {
+    s = 1; fx = 0; fy = 0;
+    apply(smooth);
+  }
+
+  const local = (e) => {
+    const r = root.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  };
+  const pair = () => {
+    const [a, b] = [...pointers.values()];
+    return { mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2, d: Math.hypot(a.x - b.x, a.y - b.y) || 1 };
+  };
+
+  root.addEventListener('pointerdown', (e) => {
+    if (e.target.closest('.stage-zoom')) return;
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    pointers.set(e.pointerId, local(e));
+    try { root.setPointerCapture(e.pointerId); } catch { /* pointer already gone */ }
+    if (pointers.size === 1) gesture = { moved: false, t: e.timeStamp, ...local(e) };
+    else if (gesture) gesture.moved = true;
+    if (s > 1 && e.pointerType === 'mouse') root.classList.add('grabbing');
+  });
+
+  root.addEventListener('pointermove', (e) => {
+    const prev = pointers.get(e.pointerId);
+    if (!prev) return;
+    const now = local(e);
+    const w = root.clientWidth || 1;
+    const h = root.clientHeight || 1;
+    if (pointers.size >= 2) {
+      const before = pair();
+      pointers.set(e.pointerId, now);
+      const after = pair();
+      zoomAt(s * after.d / before.d, { x: before.mx, y: before.my });
+      fx += (after.mx - before.mx) / w;
+      fy += (after.my - before.my) / h;
+      apply();
+      e.preventDefault();
+    } else {
+      pointers.set(e.pointerId, now);
+      if (gesture && Math.hypot(now.x - gesture.x, now.y - gesture.y) > 8) gesture.moved = true;
+      if (s > 1) {
+        fx += (now.x - prev.x) / w;
+        fy += (now.y - prev.y) / h;
+        apply();
+        e.preventDefault();
+      }
+    }
+  });
+
+  function endPointer(e, cancelled) {
+    if (!pointers.delete(e.pointerId)) return;
+    root.classList.remove('grabbing');
+    if (cancelled || !gesture || gesture.moved || pointers.size) {
+      if (!pointers.size) gesture = null;
+      if (cancelled) lastTap = null;
+      return;
+    }
+    // A short, still touch or click: two in a row is a double-tap / double-click.
+    const { x, y } = gesture;
+    gesture = null;
+    if (lastTap && e.timeStamp - lastTap.t < 350 && Math.hypot(x - lastTap.x, y - lastTap.y) < 30) {
+      lastTap = null;
+      if (s > 1) reset(true);
+      else zoomAt(DOUBLE_ZOOM, { x, y }, true);
+    } else {
+      lastTap = { t: e.timeStamp, x, y };
+    }
+  }
+  root.addEventListener('pointerup', (e) => endPointer(e, false));
+  root.addEventListener('pointercancel', (e) => endPointer(e, true));
+  root.addEventListener('lostpointercapture', (e) => endPointer(e, true));
+
+  if (window.ResizeObserver) observeResize(() => apply(), root);
+  apply();
+
+  return {
+    /** Handles a wheel event that means zoom (Ctrl/Cmd or trackpad pinch); returns false if it is not one. */
+    wheel(e) {
+      if (!e.ctrlKey && !e.metaKey) return false;
+      e.preventDefault();
+      const dy = e.deltaY * (e.deltaMode === 1 ? 16 : 1);
+      zoomAt(s * Math.exp(-Math.max(-30, Math.min(30, dy)) * 0.01), local(e));
+      return true;
+    },
+    key(e) {
+      if (e.ctrlKey || e.metaKey || e.altKey) return false;
+      if (e.key === '+' || e.key === '=') zoomAt(s * 1.5, null, true);
+      else if (e.key === '-' || e.key === '_') zoomAt(s / 1.5, null, true);
+      else if (e.key === '0') reset(true);
+      else return false;
+      e.preventDefault();
+      return true;
+    },
+  };
+}
+
 export function emptyState(title, text) {
   return el('div', { class: 'empty-state' },
     icon(['M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2', 'M9 12h6M12 9v6']),
@@ -248,11 +406,16 @@ export function createViewer(root, { stacks, report, onOpenFinding }) {
   root.replaceChildren();
   if (!stacks.length) {
     root.append(emptyState('No scan images yet', 'When the image series are added, you can scroll through every slice here and see where each finding is.'));
-    return { focus() {} };
+    return { focus() {}, setMode() {} };
   }
   const findings = report?.findings || [];
-  const select = el('select', { class: 'select', id: 'stack-select' },
-    stacks.map((s) => el('option', { value: s.id }, s.label)));
+  // Radiologist mode shows the plain scans only: no AI outlines series, no AI marks, no AI finding lists.
+  const isAiStack = (s) => /_AI$/.test(s.id);
+  let plainOnly = false;
+  const visibleStacks = () => (plainOnly ? stacks.filter((s) => !isAiStack(s)) : stacks);
+  const select = el('select', { class: 'select', id: 'stack-select' });
+  const fillSelect = () => select.replaceChildren(...visibleStacks().map((s) => el('option', { value: s.id }, s.label)));
+  fillSelect();
   const stageHost = el('div');
   const range = el('input', { type: 'range', min: 0, max: 0, value: 0, step: 1, 'aria-label': 'Slice' });
   const count = el('span', { class: 'slice-count', 'aria-live': 'polite' });
@@ -263,12 +426,27 @@ export function createViewer(root, { stacks, report, onOpenFinding }) {
   const hereTitle = el('div', { class: 'section-title' }, 'Marked on this slice');
   const elseTitle = el('div', { class: 'section-title' }, 'Findings in this series');
 
-  root.append(el('div', { class: 'viewer' },
-    el('div', { class: 'field' }, el('label', { for: 'stack-select' }, 'Series'), select),
-    stageHost,
-    el('div', { class: 'slice-row' }, prev, range, next, count),
-    el('p', { class: 'hint' }, 'Scroll over the image, drag the slider or use the arrow keys to move through the slices.'),
-    hereTitle, here, elseTitle, elsewhere));
+  const field = el('div', { class: 'field' }, el('label', { for: 'stack-select' }, 'Series'), select);
+  const sliceRow = el('div', { class: 'slice-row' }, prev, range, next, count);
+  const help = el('p', { class: 'hint' },
+    el('span', { class: 'hint-mouse' }, 'Slices: scroll over the image, drag the slider or use the arrow keys. Zoom: the + and - buttons, double-click, or Ctrl + scroll. When zoomed in, drag the image to move around.'),
+    el('span', { class: 'hint-touch' }, 'Slices: drag the slider or tap the arrows. Zoom: pinch, double-tap or the + and - buttons; when zoomed in, drag to move around.'));
+  const viewer = el('div', { class: 'viewer' }, field, stageHost, sliceRow, help, hereTitle, here, elseTitle, elsewhere);
+  root.append(viewer);
+
+  // On wide screens keep the stage (and its zoom controls) above the fold of the scrolling panel:
+  // cap its height to the room left after the series select, slider row and hint.
+  const wide = window.matchMedia?.('(min-width: 861px)');
+  function fitStage() {
+    if (!wide?.matches || !root.clientHeight) { stageHost.style.removeProperty('--stage-max-h'); return; }
+    const cs = getComputedStyle(root);
+    const gap = parseFloat(getComputedStyle(viewer).rowGap) || 12;
+    const others = field.offsetHeight + sliceRow.offsetHeight + help.offsetHeight + gap * 3;
+    const room = root.clientHeight - parseFloat(cs.paddingTop) - 12 - others;
+    stageHost.style.setProperty('--stage-max-h', `${Math.max(200, Math.floor(room))}px`);
+  }
+  if (window.ResizeObserver) observeResize(fitStage, root);
+  fitStage();
 
   let stack = null;
   let stage = null;
@@ -280,12 +458,13 @@ export function createViewer(root, { stacks, report, onOpenFinding }) {
   function render() {
     range.value = String(slice);
     count.textContent = `${slice + 1} / ${stack.count}`;
-    const all = viewsFor(stack);
+    const all = plainOnly ? [] : viewsFor(stack);
     const now = all.filter(({ v }) => v.slice === slice);
     stage.show(slice, now.map(({ f, v }) => ({ marks: v.marks, color: sev(f.severity).color })));
     here.replaceChildren(...(now.length ? now.map(({ f }) => item(f, 'Open', () => onOpenFinding?.(f.id)))
       : [el('p', { class: 'hint' }, 'Nothing is marked on this slice.')]));
-    hereTitle.hidden = false;
+    hereTitle.hidden = plainOnly;
+    here.hidden = plainOnly;
     elsewhere.replaceChildren(...all.map(({ f, v }) => item(f, `Slice ${v.slice + 1}`, () => go(v.slice))));
     elseTitle.hidden = !all.length;
     const preload = [slice - 1, slice + 1].filter((k) => k >= 0 && k < stack.count);
@@ -308,13 +487,16 @@ export function createViewer(root, { stacks, report, onOpenFinding }) {
   }
 
   function setStack(id, sliceIndex) {
-    stack = stacks.find((s) => s.id === id) || stacks[0];
+    const pool = visibleStacks();
+    stack = pool.find((s) => s.id === id) || pool[0];
     select.value = stack.id;
     stage = buildStage(stack, { labels: true });
     stage.el.tabIndex = 0;
     stage.el.setAttribute('role', 'img');
-    stage.el.setAttribute('aria-label', `${stack.label}. Use arrow keys to change slice.`);
+    stage.el.setAttribute('aria-label', `${stack.label}. Use arrow keys to change slice, plus and minus to zoom.`);
+    const zoom = attachZoom(stage.el, stage.layer);
     stage.el.addEventListener('wheel', (e) => {
+      if (zoom.wheel(e)) return;
       e.preventDefault();
       wheelAcc += e.deltaY;
       if (Math.abs(wheelAcc) >= 40) {
@@ -323,6 +505,7 @@ export function createViewer(root, { stacks, report, onOpenFinding }) {
       }
     }, { passive: false });
     stage.el.addEventListener('keydown', (e) => {
+      if (e.target !== stage.el || zoom.key(e)) return;
       const d = { ArrowUp: -1, ArrowLeft: -1, ArrowDown: 1, ArrowRight: 1, PageUp: -3, PageDown: 3 }[e.key];
       if (d) { e.preventDefault(); go(slice + d); }
       if (e.key === 'Home') { e.preventDefault(); go(0); }
@@ -341,9 +524,18 @@ export function createViewer(root, { stacks, report, onOpenFinding }) {
   setStack(stacks[0].id);
 
   return {
+    /** 'radiologist' = plain scans only; any other mode behaves as before. */
+    setMode(mode) {
+      const next = mode === 'radiologist';
+      if (next === plainOnly) return;
+      plainOnly = next;
+      fillSelect();
+      // A hidden _AI series falls back to its plain twin (C_SAG_T2_AI -> C_SAG_T2).
+      setStack(stack.id.replace(/_AI$/, ''), slice);
+    },
     /** Jump to a stack/slice, e.g. from a finding's scan view. */
     focus(stackId, sliceIndex) {
-      if (stacks.some((s) => s.id === stackId)) setStack(stackId, sliceIndex);
+      if (visibleStacks().some((s) => s.id === stackId)) setStack(stackId, sliceIndex);
     },
   };
 }

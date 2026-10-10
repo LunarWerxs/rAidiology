@@ -145,6 +145,9 @@ function sacrumGeometry(h) {
 const BASE = { bone: 0xd9cfb9, disc: 0x9fb0bf, cord: 0xd6b25e, csf: 0x9cc4b8 };
 const KIND_GROUP = { vertebra: 'bone', sacrum: 'bone', coccyx: 'bone', disc: 'disc', cord: 'cord', canal: 'csf', csf: 'csf' };
 const materialCache = new Map();
+// A disc the AI noted as incidental: a clear sky blue with a glow, so it stands out from a normal
+// grey-blue disc, mild yellow and the violet report rings (the chips keep SEVERITY's grey).
+export const INCIDENTAL_3D = '#5cc2f2';
 
 /** Solid material by mesh kind, tinted by status with the contract's severity colours. */
 export function materialFor(kind, status = 'normal') {
@@ -153,8 +156,9 @@ export function materialFor(kind, status = 'normal') {
   if (materialCache.has(key)) return materialCache.get(key);
   const color = new THREE.Color(BASE[g]);
   const tinted = !!status && status !== 'normal';
-  const tint = new THREE.Color(sev(status).color);
-  if (tinted) color.lerp(tint, g === 'bone' ? 0.55 : 0.65);
+  const glow = g === 'disc' && status === 'incidental';
+  const tint = new THREE.Color(glow ? INCIDENTAL_3D : sev(status).color);
+  if (tinted) color.lerp(tint, g === 'bone' ? 0.55 : glow ? 0.9 : 0.65);
   const m = new THREE.MeshPhysicalMaterial({
     color,
     roughness: g === 'bone' ? 0.68 : 0.35,
@@ -162,7 +166,7 @@ export function materialFor(kind, status = 'normal') {
     clearcoat: g === 'bone' ? 0.12 : 0.45,
     clearcoatRoughness: 0.35,
     emissive: tinted ? tint : color,
-    emissiveIntensity: tinted ? 0.35 : g === 'cord' ? 0.18 : 0.0,
+    emissiveIntensity: glow ? 0.6 : tinted ? 0.35 : g === 'cord' ? 0.18 : 0.0,
   });
   if (g === 'csf') Object.assign(m, { transparent: true, opacity: 0.18, depthWrite: false, emissiveIntensity: 0.3 });
   if (g === 'disc') Object.assign(m, { transparent: true, opacity: 0.92 });
@@ -301,6 +305,13 @@ export function buildSpine() {
         e.mesh.renderOrder = 0;
         e.lit = true;
         refresh(e);
+      }
+    },
+
+    /** Re-tint the levels `light` made solid (the mesh fallback) with another status function. */
+    repaint(statusOf) {
+      for (const [n, e] of levels) {
+        if (e.lit && !e.replaced) e.mesh.material = materialFor(e.kind, statusOf(n));
       }
     },
 
