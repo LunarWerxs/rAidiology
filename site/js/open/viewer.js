@@ -625,7 +625,7 @@ function choosePart(s) {
   namePart(s);
 }
 
-const RIB = /^(left|right) rib \d+$/;
+const RIB = /^(left|right) rib (\d+)$/;
 const pathCache = new Map();               // path text -> its points, decoded once
 
 function outlinesForSlice() {
@@ -649,12 +649,19 @@ function overlayOutlines(canvas, frame, fit, panX, panY, paths, dpr) {
     const p = pointsOf(text);
     if (p.length < 4) continue;
     const pointed = s === state.pointedAt;
-    ctx.strokeStyle = colourOf(s);
-    ctx.lineWidth = Math.max(1, (pointed ? (state.pulse && s === state.chosen ? 5 : 3) : 1.25) * dpr);
+    const width = Math.max(1, (pointed ? (state.pulse && s === state.chosen ? 5 : 3) : 1.25) * dpr);
     ctx.beginPath();
     ctx.moveTo(x0 + p[0] * fit, y0 + p[1] * fit);
     for (let i = 2; i < p.length; i += 2) ctx.lineTo(x0 + p[i] * fit, y0 + p[i + 1] * fit);
     ctx.closePath();
+    if (pointed) {
+      // A light ring under the coloured stroke so the chosen part stands out on the grey picture.
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = width + 4 * dpr;
+      ctx.stroke();
+    }
+    ctx.strokeStyle = colourOf(s);
+    ctx.lineWidth = width;
     ctx.stroke();
     if (pointed) {
       ctx.globalAlpha = state.pulse && s === state.chosen ? 0.5 : 0.25;
@@ -737,7 +744,12 @@ function describeOutlines(note, drawn) {
       return item;
     };
     // The eight or more rib rows become one, "Ribs (8)", that opens to show each rib.
-    const ribs = drawn.filter((s) => RIB.test(names[s] || ''));
+    // Left ribs then right ribs, each in number order (7, 8, 9, 10), not text order.
+    const ribKey = (s) => {
+      const m = RIB.exec(names[s] || '');
+      return m ? (m[1] === 'left' ? 0 : 1000) + Number(m[2]) : 0;
+    };
+    const ribs = drawn.filter((s) => RIB.test(names[s] || '')).sort((a, b) => ribKey(a) - ribKey(b));
     const grouped = ribs.length > 1;
     let ribsAdded = false;
     for (const s of drawn) {

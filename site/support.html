@@ -30,7 +30,8 @@
         <a href="index.html#scans">Scans we cover</a>
         <a href="models.html">Research</a>
         <a href="pricing.html">Pricing</a>
-        <a href="support.html" aria-current="page">Support</a>
+        <a href="support.html" aria-current="page">Support us</a>
+        <a href="support.html#invest">Investors</a>
         <a class="nav-extra" href="https://github.com/LunarWerxs/rAidiology">GitHub</a>
         <a class="nav-extra" href="https://lunarwerx.com/discord/raidiology">Discord</a>
       </nav>
@@ -48,7 +49,8 @@
         <h1>Fund the next model</h1>
         <p class="lede">Your support pays for training the open research models. The app stays free for everyone.</p>
         <p class="diff">Support is pay what you want. Companies need a <a href="pricing.html#companies">commercial licence</a> from Pricing.</p>
-        <p class="diff">Investing or partnering? <a href="#invest">Read the investor notes.</a></p>
+        <p class="diff">Investing or partnering?</p>
+        <a class="hero-invest" href="#invest">For investors</a>
       </div>
     </section>
 
@@ -63,15 +65,10 @@
           <div class="chips" role="group" aria-label="Amount">
             <button type="button" class="chip" data-amt="5" aria-pressed="false">$5 Backer</button>
             <button type="button" class="chip" data-amt="15" aria-pressed="true">$15 Supporter</button>
-            <button type="button" class="chip" data-amt="30" aria-pressed="false">$30</button>
             <button type="button" class="chip" data-amt="50" aria-pressed="false">$50 Sponsor</button>
-            <button type="button" class="chip" data-amt="100" aria-pressed="false">$100</button>
+            <label class="amt-box" for="give-amt"><span class="amt-lab">Other amount</span><span class="amt-in"><span class="amt-pre" aria-hidden="true">$</span><input id="give-amt" type="text" inputmode="numeric" autocomplete="off" value="15" aria-describedby="give-note give-min"></span></label>
           </div>
-          <div class="amt-row">
-            <label class="amt-box" for="give-amt"><span class="sr-only">Amount in dollars</span><span class="amt-pre" aria-hidden="true">$</span><input id="give-amt" type="text" inputmode="numeric" autocomplete="off" value="15" aria-describedby="give-note"></label>
-            <p class="amt-min" id="give-min">Minimum $3</p>
-            <input class="amt-range" id="give-range" type="range" min="3" max="200" step="1" value="15" aria-label="Amount slider, 3 to 200 dollars">
-          </div>
+          <p class="amt-min" id="give-min">Minimum $3</p>
           <p class="amt-note" id="give-note" hidden></p>
           <div class="readout" aria-live="polite" aria-atomic="true">
             <p class="r-hours" id="give-hours">About 9 hours of A100 GPU training a month</p>
@@ -80,11 +77,11 @@
           <div class="give-cta">
             <a class="btn give-btn" id="give-go" href="https://buy.stripe.com/bJeeVdewTgDK6CG95l9Zm02">Give $15 a month</a>
             <p class="give-err" id="give-err" role="alert" hidden></p>
-            <p class="give-next">Next: a secure Link checkout page, then a receipt by email.</p>
+            <p class="give-next">Next: a secure Stripe checkout page, then a receipt by email.</p>
           </div>
           <p class="fine give-fine">Not tax-deductible. We are a for-profit company.</p>
           <details class="pay-details">
-            <summary>Payment details</summary>
+            <summary>Payment and receipt details</summary>
             <ul class="pay-list">
               <li>Checkout shows Connections Global LLC: it sells for LunarWerx LLC as authorised reseller. Link, from Stripe, takes the payment as merchant of record.</li>
               <li>The money goes to LunarWerx LLC, a for-profit company, so payments are not donations and are not tax-deductible.</li>
@@ -127,6 +124,7 @@
           <h2 id="invest-h">Investors and partners</h2>
           <dl class="vision-list">
             <div><dt>What exists now</dt><dd>7 research models and 54 named parts on the sample scan. <span data-log="runs">1,615</span> training runs recorded, <span data-log="hours">382</span> hours in all.</dd></div>
+            <div><dt>Regulatory</dt><dd>For education and research only. Not a medical device and not cleared by the FDA; no clinical use.</dd></div>
             <div><dt>What is next</dt><dd>Bigger research models, trained on rented data-centre GPUs.</dd></div>
             <div><dt>Who builds it</dt><dd>LunarWerx LLC, a for-profit company, in the open on GitHub.</dd></div>
           </dl>

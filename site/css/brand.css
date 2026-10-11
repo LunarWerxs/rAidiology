@@ -210,8 +210,10 @@ a.chip:hover { background: var(--primary); color: var(--on-primary); }
 .site-nav a:hover { color: var(--ink); background: var(--bg-soft); }
 .site-nav a[aria-current="page"] { color: var(--primary); }
 .site-nav a[aria-current="page"]::after { content: ""; position: absolute; left: 14px; right: 14px; bottom: 2px; height: 2px; border-radius: 2px; background: var(--primary); }
+.site-nav .nav-short { display: none; }
+@media (min-width: 900px) and (max-width: 1099px) { .site-nav .nav-long { display: none; } .site-nav .nav-short { display: inline; } .site-nav a { padding-inline: 10px; } }
 .site-nav .nav-extra { display: none; }
-.site-nav .nav-extra::after { content: "97"; content: "97" / " opens another site"; margin-inline-start: 4px; font-size: 0.85em; }
+.site-nav .nav-extra::after { content: "\2197"; content: "\2197" / " opens another site"; margin-inline-start: 4px; font-size: 0.85em; }
 .head-actions { grid-column: 3; justify-self: end; display: flex; align-items: center; gap: 8px; }
 .gh-link { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 8px; color: var(--ink); }
 .gh-link:hover { color: var(--primary); background: var(--bg-soft); }

@@ -149,6 +149,10 @@ HUNT4 = ("Added 2026-10-05 after the fourth hunt, under the owner's word that ev
          "record's licence was re-read at the source")
 ASKED = ("Added 2026-10-06 on the modelling chat's ask, under the owner's word that this session keeps it stocked, once "
          "its own record's licence was re-read at the source")
+GAPS = ("Added 2026-10-11 for the modelling chat's nine weak lines, on the owner's word that day (\"fill the gaps that "
+        "it's missing things on\"), once its own record's licence and open download were re-read at the source")
+GPL3 = "other:gpl-3.0"   # GitHub's SPDX id as licence_id writes it: copyleft, commercial use allowed (owner, 2026-10-04:
+                         # "I would probably assume share alike is okay")
 SETS = [
     S("unitochest", "Lung CT", 4, Z, 84.1, ZR + "5797912", BY4, ids=[5797912]),
     S("multiomics-nodule-ct", "Lung CT", 4, Z, 215.0, ZR + "13908015", BY4, ids=[13908015, 13908030, 15043680]),
@@ -421,6 +425,18 @@ SETS = [
     S("flare22-labelled", "CT organs", 3, Z, None, ZR + "7860267", BY4, ids=[7860267], approved=ASKED),
     S("pancreatic-ct-cbct-seg", "CT organs", 2, T, 14.3, TC + "pancreatic-ct-cbct-seg/", BY4,
       slug="pancreatic-ct-cbct-seg", approved=ASKED),
+    # The gap hunt of 2026-10-11 (the modelling chat's nine weak lines), each record re-read at its source that day.
+    # LNDb's record says CC BY 4.0 and its description CC BY-NC-ND: the record governs (owner, 2026-10-05); its
+    # 2026-10-03 rejection read only the description.
+    S("lndb", "Lung CT", 5, Z, 30.3, ZR + "8348419", BY4, ids=[8348419], approved=GAPS),
+    S("cradi", "Chest X-ray", 4, Z, 14.6, ZR + "5493595", BY4, ids=[5493595], approved=GAPS),
+    S("pediurf", "Other", 4, F, 2.3, "https://doi.org/10.6084/m9.figshare.29998954", BY4, ids=[29998954],
+      approved=GAPS),
+    # The authors' own repository: 222 patients' sagittal T2 slices with a box per disc (Pfirrmann P1-P5, bulge,
+    # protrusion, extrusion, HIZ, Schmorl's nodes), First Affiliated Hospital of Jishou University; only its data.
+    S("yolov9-aid-lumbar", "Lumbar MRI", 4, "github", 0.4, "https://github.com/JackChow666/YOLOv9-AID", GPL3,
+      repo="JackChow666/YOLOv9-AID", keep=("datasets", "LICENSE.md", "README.md"), approved=GAPS),
+    S("irbid-canal-stenosis-labels", "Lumbar MRI", 2, Z, 0.001, ZR + "23298064", BY4, ids=[23298064], approved=GAPS),
 ]
 BY_NAME = {s["name"]: s for s in SETS}
 
@@ -454,6 +470,8 @@ def listing(s, ctx):
         return fetch.huggingface(name, ctx, s["repo"])
     if a == "osf":
         return fetch.osf(name, ctx, s["node"])
+    if a == "github":
+        return fetch.github(name, ctx, s["repo"], s["keep"])
     if a == "page":
         return fetch.lab_page(name, ctx, s["page"], s["pattern"], s.get("links"))
     if a == T:

@@ -142,16 +142,20 @@
   top: 14px;
   left: 16px;
   z-index: 2;
-  max-width: min(44%, 260px);
+  max-width: calc(100% - 96px);
   margin: 0;
-  color: var(--stage-credit-ink);
-  font-size: 0.6875rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  padding: 4px 10px;
+  border: 1px solid var(--chip-line);
+  border-radius: 8px;
+  background: var(--chip-bg-strong);
+  color: var(--on-dark-strong);
+  font-size: 0.8125rem;
   line-height: 1.4;
 }
-.hero3d .hero3d__credit-short { display: none; }
-.hero3d.hero3d--narrow .hero3d__credit { max-width: calc(50% - 64px); }
-.hero3d.hero3d--narrow .hero3d__credit-long { display: none; }
-.hero3d.hero3d--narrow .hero3d__credit-short { display: inline; }
+/* One short line on the card at every width; the full credit, change note included, is the caption under the card. */
+.hero3d .hero3d__credit-long { display: none; }
+.hero3d .hero3d__credit-short { display: inline; }
 
 @media (prefers-reduced-motion: reduce) {
   .hero3d .hero3d__canvas,

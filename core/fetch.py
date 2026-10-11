@@ -110,6 +110,7 @@ FIGSHARE = "https://api.figshare.com/v2/"
 MENDELEY = "https://data.mendeley.com/public-api/"
 HF = "https://huggingface.co/"
 OSF = "https://api.osf.io/v2/"
+GH = "https://api.github.com/repos/"
 TCIA_SITE = "https://www.cancerimagingarchive.net/api/v1/"
 NBIA = "https://services.cancerimagingarchive.net/nbia-api/services/v1/"
 NBIA_NLST = "https://nlst.cancerimagingarchive.net/nbia-api/services/v1/"
@@ -901,6 +902,31 @@ def osf(name, ctx, node):
             node_files(c["id"], prefix + _safe_name(c["attributes"]["title"]) + "/")
 
     node_files(node, "")
+    return out
+
+
+def github(name, ctx, repo, keep):
+    """A GitHub repository's files under `keep` (folders or single files), each read from raw.githubusercontent.com at
+    the commit the default branch points to now, so a push mid-download cannot mix two versions. The licence is the
+    repository's own, as GitHub's licence detection names it (its SPDX id). A Git LFS pointer is refused, not followed."""
+    info = get_json(GH + repo, ctx)
+    lic = (info.get("license") or {}).get("spdx_id") or ""
+    sha = get_json(GH + "%s/commits/%s" % (repo, info["default_branch"]), ctx)["sha"]
+    tree = get_json(GH + "%s/git/trees/%s?recursive=1" % (repo, sha), ctx)
+    if tree.get("truncated"):
+        raise FetchError("%s: GitHub cut the file list of %s short; not worked around" % (name, repo))
+    out = Listing(lic, GH + repo + " (license)", [], ["%s at commit %s" % (repo, sha)])
+    raw = "https://raw.githubusercontent.com/%s/%s/" % (repo, sha)
+    for x in tree["tree"]:
+        if x["type"] == "blob" and x["path"].rsplit("/", 1)[-1] == ".gitattributes":
+            if "filter=lfs" in get_bytes(raw + urllib.parse.quote(x["path"]), ctx).decode("utf-8", "replace"):
+                raise FetchError("%s: %s keeps files in Git LFS (%s); not followed" % (name, repo, x["path"]))
+    for x in tree["tree"]:
+        p = x["path"]
+        if x["type"] == "blob" and any(p == k or p.startswith(k + "/") for k in keep):
+            out.files.append(Entry(p, int(x["size"]), raw + urllib.parse.quote(p), None, meta={"git_blob": x["sha"]}))
+    if not out.files:
+        raise FetchError("%s: %s holds nothing under %s" % (name, repo, list(keep)))
     return out
 
 

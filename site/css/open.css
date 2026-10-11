@@ -136,6 +136,9 @@ p { max-width: 68ch; }
   font-size: 1rem; line-height: 1.4;
 }
 .name-tip strong { font-weight: 700; color: inherit; }
+/* The strip's place holder while nothing is named, so the kept height reads as a hint, not a gap. */
+.caption-empty { margin: 0; padding: 8px 12px; border: 1px dashed var(--line-strong); border-radius: var(--r-sm); color: var(--text-2); font-size: 0.875rem; line-height: 1.4; }
+.name-tip:not([hidden]) + .caption-empty { display: none; }
 /* Which side of the body each edge of the picture is. Drawn over the image, so like the scale bar
    these are sides of the picture and must not mirror with the reading direction. Small and faint:
    a reviewer found the long words large and sitting on the anatomy. The side ones wrap to two lines
@@ -317,7 +320,7 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
   background: transparent; color: var(--ink); font: inherit; font-size: 1rem; line-height: 1.3; text-align: start; cursor: pointer;
 }
 .outline-swatch { display: inline-block; flex: none; }
-.part-row .outline-swatch { inline-size: 16px; block-size: 16px; border-radius: 4px; margin: 0; box-shadow: 0 0 0 1px var(--swatch-ring); }
+.part-row .outline-swatch { inline-size: 16px; block-size: 16px; border-radius: 4px; margin: 0; border: 1px solid var(--line-strong); box-sizing: border-box; }
 .part-name { display: block; min-width: 0; }
 .part-name::first-letter { text-transform: uppercase; }
 .part-about { display: none; grid-column: 2; margin-top: 4px; color: var(--text-2); font-size: 0.875rem; line-height: 1.45; }
@@ -363,10 +366,10 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
 
 /* Round 3: at laptop widths the picture sits beside a column with the controls, the notes and the
    outline key, so the page uses its width. Below that it is one column, as before. */
-@media (min-width: 1100px) {
+@media (min-width: 768px) {
   .pane.viewer { width: min(1360px, 100%); }
   .pane.viewer:not([hidden]) {
-    display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 380px);
     column-gap: 32px; align-content: start;
   }
   .pane.viewer > * { grid-column: 2; min-width: 0; }
@@ -374,8 +377,11 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
   .pane.viewer > .stage-wrap { grid-column: 1; grid-row: 2 / span 12; align-self: start; position: sticky; top: calc(var(--head-h) + 12px); }
   .pane.viewer .stage { max-height: 68vh; }
   .pane.viewer .stage-caption { inline-size: calc(68vh * 4 / 3); max-inline-size: 100%; }
-  /* The parts list sits high in this column; a long one scrolls inside itself. */
-  .finding .parts { max-block-size: min(26rem, 52vh); overflow-y: auto; overscroll-behavior: contain; }
+  /* The parts list is pinned under the header and fills the rest of the window: one scroll area. */
+  .pane.viewer > .finding:not([hidden]) {
+    position: sticky; inset-block-start: calc(var(--head-h) + 12px); z-index: 2;
+    max-block-size: calc(100dvh - var(--head-h) - 24px); overflow-y: auto; overscroll-behavior: contain;
+  }
 }
 
 /* Parts list: the ribs fold into one row. */
@@ -401,12 +407,38 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
 /* Phones: the picture stays under the site header while the parts list scrolls beneath it. */
 @media (max-width: 767px) {
   .pane.viewer .stage-wrap { position: sticky; inset-block-start: var(--head-h); z-index: 4; background: var(--bg); padding-block: 6px 2px; }
-  .pane.viewer .stage { aspect-ratio: auto; block-size: 40dvh; max-height: none; min-height: 200px; }
+  .pane.viewer .stage { aspect-ratio: auto; block-size: 36dvh; max-height: none; min-height: 200px; }
   .stage-caption { min-block-size: 3.2rem; margin-block-start: 6px; }
   /* The slice bar goes after the parts list, so its pinned-to-the-bottom position holds while the list scrolls. */
   .pane.viewer:not([hidden]) { display: flex; flex-direction: column; }
   .pane.viewer .slice-bar { order: 9; }
   .name-tip { font-size: 1rem; padding: 6px 10px; }
   /* A row scrolled to (keyboard focus) lands below the pinned picture, not behind it. */
-  .part-row { scroll-margin-block: calc(var(--head-h) + 40dvh + 4.5rem) 5rem; }
+  .part-row { scroll-margin-block: calc(var(--head-h) + 36dvh + 4.5rem) 5rem; }
 }
+
+/* Button tiers in the viewer: Previous and Next are tonal (soft fill, no outline), "Hide the
+   outlines" is a text toggle, and the helper lines are never smaller than 14px. */
+.viewer .slice-bar .btn.quiet { border-color: transparent; }
+.viewer .slice-bar .btn.quiet:hover { background: var(--primary-soft); border-color: transparent; }
+.viewer #toggle-marks.btn.quiet {
+  background: transparent; border-color: transparent; border-radius: var(--r-sm);
+  text-decoration: underline; text-underline-offset: 3px; min-height: 44px; padding-inline: 8px;
+}
+.viewer #toggle-marks.btn.quiet:hover { background: var(--primary-soft); }
+.fine, .hint-chip, #viewer-credit, .caption-empty, .reading-note { font-size: max(0.875rem, 14px); color: var(--text); }
+
+/* Folded sections in the viewer: full-width rows, 48px tall, with a chevron at the inline end. */
+.viewer details.adjust > summary, .viewer details.about-sample > summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  min-block-size: 48px; padding: 0 4px; list-style: none; cursor: pointer;
+  border-block-end: 1px solid var(--line);
+}
+.viewer details > summary::-webkit-details-marker { display: none; }
+.viewer details.adjust > summary::after, .viewer details.about-sample > summary::after {
+  content: ""; flex: none; inline-size: 9px; block-size: 9px; margin-inline-end: 4px;
+  border-inline-end: 2px solid currentColor; border-block-end: 2px solid currentColor;
+  transform: rotate(45deg); transition: transform 160ms var(--ease);
+}
+.viewer details[open] > summary::after { transform: rotate(-135deg); }
+@media (prefers-reduced-motion: reduce) { .viewer details > summary::after { transition: none; } }

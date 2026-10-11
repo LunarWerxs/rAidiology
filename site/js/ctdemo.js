@@ -26,7 +26,7 @@ export function mountCtDemo(box, opts = {}) {
   const src = new URL(box.dataset.src || opts.src || 'sample/demo/demo.json', document.baseURI);
   let demo = null;
   let index = 0;
-  let activeId = null;       // the outline named by the chip
+  let activeId = null;       // the outline named in the caption
   let pinned = false;        // set by a tap or click, so leaving the picture keeps it
   let raf = 0;
   let playing = false;
@@ -43,12 +43,12 @@ export function mountCtDemo(box, opts = {}) {
   const lightbox = make('div', 'ctdemo__lightbox');
   const img = make('img', 'ctdemo__img', { alt: 'A slice of the sample CT', draggable: 'false' });
   const svg = svgEl('svg', { class: 'ctdemo__svg', 'aria-hidden': 'true' });
-  const chip = make('div', 'ctdemo__chip');
-  chip.hidden = true;
+  const chip = make('p', 'ctdemo__cap');
+  chip.setAttribute('aria-live', 'polite');
   // The placeholder frame from the HTML stays under the live picture until it paints, so nothing shifts and no text shows.
   const ph = phSrc ? phSrc.cloneNode() : null;
   if (ph) { ph.classList.add('ctdemo__ph'); ph.alt = ''; ph.setAttribute('aria-hidden', 'true'); }
-  lightbox.append(...(ph ? [ph] : []), img, svg, chip);
+  lightbox.append(...(ph ? [ph] : []), img, svg);
 
   const bar = make('div', 'ctdemo__bar');
   const prev = make('button', 'ctdemo__step', { type: 'button', 'aria-label': 'Previous slice' });
@@ -60,11 +60,11 @@ export function mountCtDemo(box, opts = {}) {
   const count = make('p', 'ctdemo__count');
   count.setAttribute('aria-live', 'off');
   const credit = make('p', 'ctdemo__credit');
-  const link = make('a', 'ctdemo__link', { href: 'open.html?sample=1' });
+  const link = make('a', 'btn tonal ctdemo__link', { href: 'open.html?sample=1' });
   link.textContent = 'Open the full viewer';
   const foot = make('div', 'ctdemo__foot');
   foot.append(count);
-  box.append(lightbox, bar, foot, credit);
+  box.append(lightbox, chip, bar, foot, credit);
   const line = make('span', 'ctdemo__line');
   line.textContent = 'Sample CT from TotalSegmentator (CC BY 4.0). Outlines by an open research model.';
   credit.append(line, link);
@@ -116,17 +116,9 @@ export function mountCtDemo(box, opts = {}) {
   function paintActive() {
     for (const p of svg.children) p.classList.toggle('is-active', Number(p.dataset.id) === activeId);
     const el = [...svg.children].find((p) => Number(p.dataset.id) === activeId);
-    if (!el) { chip.hidden = true; return; }
-    const b = el.getBBox();
-    const [w, h] = demo.size;
+    if (!el) { chip.textContent = ''; return; }
     const nm = demo.byId.get(activeId).name;
     chip.textContent = nm.charAt(0).toUpperCase() + nm.slice(1);
-    chip.hidden = false;
-    const cx = ((b.x + b.width / 2) / w) * 100;
-    const top = (b.y / h) * 100;
-    chip.style.left = `${Math.min(86, Math.max(14, cx))}%`;
-    chip.style.top = `${top < 14 ? Math.min(((b.y + b.height) / h) * 100 + 2, 88) : top - 2}%`;
-    chip.classList.toggle('is-below', top < 14);
   }
 
   function setActive(id) {

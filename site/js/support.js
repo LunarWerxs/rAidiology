@@ -1,4 +1,4 @@
-// Support page: one chosen-amount card (frequency, chips, box, slider, live GPU hours, checkout button),
+// Support page: one chosen-amount card (frequency, three tier chips, Other amount box, live GPU hours, checkout button),
 // plus a small refresh of the training-log counts at the bottom of this file.
 const RATE = 1.59;
 const MIN = 3;
@@ -22,7 +22,6 @@ const $ = (id) => document.getElementById(id);
 const box = $('give-amt');
 
 if (box) {
-  const range = $('give-range');
   const go = $('give-go');
   const err = $('give-err');
   const note = $('give-note');
@@ -59,9 +58,8 @@ if (box) {
     const n = state.amount;
     const monthly = state.freq === 'month';
     segs.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.freq === state.freq)));
-    chips.forEach((c) => c.setAttribute('aria-pressed', String(Number(c.dataset.amt) === n)));
+    chips.forEach((c) => c.setAttribute('aria-pressed', String(from !== 'box' && Number(c.dataset.amt) === n)));
     if (from !== 'box') box.value = n ? String(n) : '';
-    if (from !== 'range') range.value = String(Math.min(200, Math.max(MIN, n || MIN)));
     box.setAttribute('aria-invalid', String(Boolean(bad)));
     note.hidden = !bad;
     note.textContent = bad;
@@ -87,9 +85,8 @@ if (box) {
 
   segs.forEach((b) => b.addEventListener('click', () => { state.freq = b.dataset.freq; render(); }));
   chips.forEach((c) => c.addEventListener('click', () => set(Number(c.dataset.amt))));
-  range.addEventListener('input', () => set(parse(range.value), 'range'));
   box.addEventListener('input', () => set(parse(box.value), 'box'));
-  box.addEventListener('blur', () => render());
+  box.addEventListener('blur', () => render('blur'));
 
   go.addEventListener('click', async (e) => {
     if (problem()) { e.preventDefault(); box.focus(); return; }

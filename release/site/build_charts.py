@@ -177,26 +177,28 @@ def numbers(m):
 
 
 PLAIN = {
-    "chest-xray": ("Chest X-ray", "Scores one chest X-ray for 14 kinds of label from a public dataset."),
-    "ct-segmenter": ("Body CT", "Outlines {n} body structures on CT and names each one."),
-    "disc-grader": ("Spine MRI", "Grades the discs of a spine MRI on a public five-step scale."),
-    "fracture-detector": ("Children's wrist X-ray", "Looks at a child's wrist X-ray and scores whether it shows a fracture."),
-    "lung-nodules": ("Chest CT", "Marks small lung nodules on CT."),
-    "mammography": ("Mammogram", "Scores one mammogram picture as benign or malignant against a public dataset."),
-    "spine-xray-corners": ("Side-view spine X-ray", "Marks the corners of the lower back's vertebrae."),
+    "chest-xray": "Scores one chest X-ray for 14 kinds of label from a public dataset.",
+    "ct-segmenter": "Outlines {n} body structures on CT and names each one.",
+    "disc-grader": "Grades the discs of a spine MRI on a public five-step scale.",
+    "fracture-detector": "Looks at a child's wrist X-ray and scores whether it shows a fracture.",
+    "lung-nodules": "Marks small lung nodules on CT.",
+    "mammography": "Scores one mammogram picture as benign or malignant against a public dataset.",
+    "spine-xray-corners": "Marks the corners of the lower back's vertebrae on a side-view spine X-ray.",
 }
+# The size of the set each headline was measured on, read from its own description ("25,596 pictures").
+SET_SIZE = re.compile(r"([\d,]+)\s+(?:[\w-]+\s+){0,2}?(pictures|scans|discs|patients)\b")
 
 
 def tiles():
-    """One tile per model, in plain words (no metric names or intervals); each opens that model's section on models.html."""
+    """One tile per model, in plain words (no metric names, intervals or scores; the size of the set it was measured on);
+    each opens that model's section on models.html."""
     out = []
     for m in STATS["models"]:
         h = m["headline"][0]
-        head, what = PLAIN[m["key"]]
-        pct = f"{round(h['value'] * 100)}%" if h["metric"] != "percent" else f"{round(h['value'])}%"
         n = re.search(r"\d+", h["label"])
-        head = head.format(pct=pct)
-        what = what.format(n=n.group(0) if n else "")
+        what = PLAIN[m["key"]].format(n=n.group(0) if n else "")
+        size = SET_SIZE.search(h["set"])
+        head = f"Measured on {size.group(1)} {size.group(2)}" if size else m["scan"]
         tag = (f'<span class="tag">{GLYPH[True]}Held-out test</span>' if h["held_out"]
                else f'<span class="tag dev">{GLYPH[False]}Development</span>')
         w, h_ = webp_size(m["picture"])

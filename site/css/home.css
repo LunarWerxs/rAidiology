@@ -52,19 +52,21 @@
 .stage-credit { display: none; }
 @media (min-width: 600px) and (max-width: 959px) { .hero-stage .ctdemo { max-width: 440px; margin-inline: auto; } }
 @media (min-width: 960px) {
-  .hero-stage .ctdemo { position: absolute; z-index: 2; left: -56px; bottom: -44px; width: clamp(248px, min(24vw, 40vh), 336px); width: clamp(248px, min(24vw, 40svh), 336px); }
+  /* docked inside the 3D card's frame, 16px in from its bottom and inline-start edges */
+  .hero-stage .ctdemo { position: absolute; z-index: 2; inset-inline-start: 16px; inset-block-end: 16px; width: clamp(200px, 36%, 260px); padding: 6px; }
+  .hero-stage .ctdemo .ctdemo__credit { margin-top: 0; }
   /* the credit moves under the stage so the card stays short */
   .hero-stage .ctdemo .ctdemo__line { display: none; }
-  .hero-stage .ctdemo .ctdemo__link { padding: 8px 0 2px; }
+  .hero-stage .ctdemo .ctdemo__link { min-height: 48px; }
   .demo-sk { height: 113px; }
   /* the CT card sits on the stage's lower-left corner, so the view chips move to the lower-right */
   .hero-stage .hero3d .hero3d__modes { left: auto; right: 14px; transform: none; }
-  .stage-credit { display: block; max-width: none; margin: 0; padding-inline-start: 46%; color: var(--muted); font-size: var(--fs-s); line-height: 1.45; text-align: end; }
+  .stage-credit { display: block; max-width: none; margin: 0; color: var(--muted); font-size: var(--fs-s); line-height: 1.45; text-align: end; }
 }
 
 /* Nothing on this page reads under 12px: hero3d.css sets the stage's picture credit and its view labels at 11px,
    so this page lifts them (it does not edit that stylesheet). */
-.hero-stage .hero3d .hero3d__credit, .hero-stage .hero3d .hero3d__ref { font-size: var(--fs-s); }
+.hero-stage .hero3d .hero3d__ref { font-size: var(--fs-s); }
 
 /* 2a. Why back this: three plain facts, who builds it, and the ask. Sits straight under the hero (and its sample CT). */
 .why { padding-block: clamp(48px, 6vw, 80px); }
@@ -77,7 +79,8 @@
 .why-actions { gap: 8px 24px; margin-top: var(--sp-3); }
 .why .btn.tonal { color: var(--primary-dark); background: var(--primary-soft); border-color: var(--primary-line); }
 .why .btn.tonal:hover { color: var(--primary-dark); background: var(--primary-soft-hover); border-color: var(--primary); }
-.why .more-link { min-height: 44px; }
+.why .btn.outline { color: var(--primary-dark); background: transparent; border: 2px solid var(--primary); box-shadow: none; }
+.why .btn.outline:hover { color: var(--primary-dark); background: var(--primary-soft); border-color: var(--primary-dark); }
 
 /* 2b. Numbers: one light band of three tests; number, label and note. A phone gets rows (number left, words right),
    a wider screen three columns. Also lays out the three facts in "Why back this". */
@@ -228,4 +231,17 @@
   main .actions > .btn, .results-foot > .btn { flex: 1 1 auto; }
   .price .card-foot .btn { width: 100%; }
   .results-foot { flex-direction: column; align-items: stretch; }
+}
+
+/* Phones: the scan cards, the result tiles and the price cards are swipe rows with the next card peeking in,
+   so the home page is not a 12,000px stack (visitors called it very long). Ids outrank results.css, loaded after. */
+@media (max-width: 767px) {
+  #scans .scan-grid, #results .result-tiles, #pricing .card-grid {
+    display: grid; grid-auto-flow: column; grid-auto-columns: 86%; grid-template-columns: none; align-items: stretch;
+    gap: 12px; overflow-x: auto; overscroll-behavior-inline: contain; scroll-snap-type: inline mandatory;
+    margin-inline: calc(-1 * var(--gutter)); padding-inline: var(--gutter); padding-block-end: 10px;
+    scroll-padding-inline: var(--gutter); scrollbar-width: thin;
+  }
+  #scans .scan-grid > *, #results .result-tiles > *, #pricing .card-grid > * { scroll-snap-align: start; min-inline-size: 0; }
+  #results .result-tiles > :last-child:nth-child(odd) { grid-column: auto; }
 }
