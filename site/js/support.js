@@ -29,7 +29,23 @@ if (box) {
   const level = $('give-level');
   const segs = [...document.querySelectorAll('.seg-b')];
   const chips = [...document.querySelectorAll('.chip')];
-  const state = { amount: 15, freq: 'month', busy: false };
+  const next = $('give-next');
+  const state = { amount: 15, freq: 'month', busy: false, custom: false, touched: false };
+  const ICON = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M12 3 2 21h20L12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v5M12 18v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+
+  // A message with a small warning icon. role="alert" only on the render where it first appears.
+  function show(el, text) {
+    const first = el.hidden;
+    el.hidden = false;
+    el.innerHTML = `<span class="msg-ic">${ICON}</span><span></span>`;
+    el.lastChild.textContent = text;
+    if (first) el.setAttribute('role', 'alert'); else el.removeAttribute('role');
+  }
+  function hide(el) {
+    el.hidden = true;
+    el.textContent = '';
+    el.removeAttribute('role');
+  }
   const money = (n) => '$' + n.toLocaleString(undefined);
 
   function parse(text) {
@@ -59,10 +75,13 @@ if (box) {
     const monthly = state.freq === 'month';
     segs.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.freq === state.freq)));
     chips.forEach((c) => c.setAttribute('aria-pressed', String(from !== 'box' && Number(c.dataset.amt) === n)));
-    if (from !== 'box') box.value = n ? String(n) : '';
-    box.setAttribute('aria-invalid', String(Boolean(bad)));
-    note.hidden = !bad;
-    note.textContent = bad;
+    if (from !== 'box') box.value = state.custom && n ? String(n) : '';
+    const showBad = Boolean(bad) && (state.touched || !state.custom);
+    box.setAttribute('aria-invalid', String(showBad));
+    if (showBad) show(note, bad); else hide(note);
+    next.textContent = monthly
+      ? 'Next: a secure Stripe checkout page, then a receipt by email. Cancel any time.'
+      : 'Next: a secure Stripe checkout page, then a receipt by email.';
     if (bad) {
       hours.textContent = 'Pick an amount to see the GPU time it buys';
       level.textContent = '';
@@ -75,7 +94,7 @@ if (box) {
     }
     go.setAttribute('aria-disabled', String(Boolean(bad) || state.busy));
     go.href = target();
-    err.hidden = true;
+    hide(err);
   }
 
   function set(n, from) {
@@ -84,9 +103,9 @@ if (box) {
   }
 
   segs.forEach((b) => b.addEventListener('click', () => { state.freq = b.dataset.freq; render(); }));
-  chips.forEach((c) => c.addEventListener('click', () => set(Number(c.dataset.amt))));
-  box.addEventListener('input', () => set(parse(box.value), 'box'));
-  box.addEventListener('blur', () => render('blur'));
+  chips.forEach((c) => c.addEventListener('click', () => { state.custom = false; state.touched = false; set(Number(c.dataset.amt)); }));
+  box.addEventListener('input', () => { state.custom = true; set(parse(box.value), 'box'); });
+  box.addEventListener('blur', () => { if (state.custom) { state.touched = true; render(); } });
 
   go.addEventListener('click', async (e) => {
     if (problem()) { e.preventDefault(); box.focus(); return; }
@@ -94,7 +113,7 @@ if (box) {
     e.preventDefault();
     if (state.busy) return;
     state.busy = true;
-    err.hidden = true;
+    hide(err);
     go.setAttribute('aria-disabled', 'true');
     go.textContent = 'Opening checkout...';
     try {
@@ -109,14 +128,17 @@ if (box) {
     } catch (x) {
       state.busy = false;
       render();
-      err.textContent = x.message || 'Checkout could not start. Please try again.';
-      err.hidden = false;
+      show(err, x.message || 'Checkout could not start. Please try again.');
     }
   });
 
   const q = new URLSearchParams(location.search);
   if (q.get('freq') === 'once' || q.get('freq') === 'month') state.freq = q.get('freq');
   const a = parseInt(q.get('amount'), 10);
-  if (a > 0) state.amount = a;
+  if (a > 0) {
+    state.amount = a;
+    state.custom = !chips.some((c) => Number(c.dataset.amt) === a);
+    state.touched = state.custom;
+  }
   render();
 }

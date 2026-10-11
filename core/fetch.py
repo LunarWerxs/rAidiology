@@ -111,6 +111,7 @@ MENDELEY = "https://data.mendeley.com/public-api/"
 HF = "https://huggingface.co/"
 OSF = "https://api.osf.io/v2/"
 GH = "https://api.github.com/repos/"
+DATACITE = "https://api.datacite.org/dois/"
 TCIA_SITE = "https://www.cancerimagingarchive.net/api/v1/"
 NBIA = "https://services.cancerimagingarchive.net/nbia-api/services/v1/"
 NBIA_NLST = "https://nlst.cancerimagingarchive.net/nbia-api/services/v1/"
@@ -927,6 +928,31 @@ def github(name, ctx, repo, keep):
             out.files.append(Entry(p, int(x["size"]), raw + urllib.parse.quote(p), None, meta={"git_blob": x["sha"]}))
     if not out.files:
         raise FetchError("%s: %s holds nothing under %s" % (name, repo, list(keep)))
+    return out
+
+
+def frdr(name, ctx, doi, base):
+    """A dataset on the Federated Research Data Repository (Canada), read anonymously over HTTPS from the Globus
+    collection it is published on (`base`, its submitted_data folder there). The licence is the one the DOI's
+    DataCite record names (its SPDX entry first); the files and their SHA256 are those in FRDR's own
+    frdr-dfdr-checksums.txt in that folder, each one's size from the server (its byte ranges give no total)."""
+    rights = get_json(DATACITE + doi, ctx)["data"]["attributes"].get("rightsList") or []
+    spdx = [r["rightsIdentifier"] for r in rights if r.get("rightsIdentifierScheme") == "SPDX" and r.get("rightsIdentifier")]
+    lic = (spdx or [r.get("rights") for r in rights] or [""])[0]
+    text = get_bytes(base + "frdr-dfdr-checksums.txt", ctx).decode("utf-8", "replace")
+    pairs = re.findall(r"Filename/Fichier:[ \t]*(.+?)[ \t]*\r?\n[ \t]*SHA256[^:\n]*:[ \t]*([0-9a-fA-F]{64})", text)
+    if not pairs:
+        raise FetchError("%s: no file in %sfrdr-dfdr-checksums.txt" % (name, base))
+    when = re.search(r"Date generated: *([^\r\n]+?) *\r?\n", text)
+    out = Listing(lic, DATACITE + doi + " (rightsList)", [],
+                  ["frdr-dfdr-checksums.txt of %s" % (when.group(1) if when else "no date")])
+    for fname, sha in pairs:
+        url = base + urllib.parse.quote(fname)
+        with opened(url, ctx, method="HEAD") as r:
+            size = r.headers.get("Content-Length")
+        if not (size or "").isdigit():
+            raise FetchError("%s: %s gave no size" % (name, url))
+        out.files.append(Entry(fname, int(size), url, "sha256:" + sha.lower(), meta={}))
     return out
 
 

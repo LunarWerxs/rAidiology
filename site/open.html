@@ -39,7 +39,7 @@
       <nav id="site-nav" class="site-nav" aria-label="Main">
         <a href="index.html#scans">Scans we cover</a>
         <a href="models.html">Research</a>
-        <a href="pricing.html">Pricing</a>
+        <a href="pricing.html">For companies</a>
         <a href="support.html">Support us</a>
         <a href="support.html#invest">Investors</a>
         <a class="nav-extra" href="https://github.com/LunarWerxs/rAidiology">GitHub</a>
@@ -47,7 +47,7 @@
       </nav>
       <div class="head-actions">
         <a class="gh-link" href="https://github.com/LunarWerxs/rAidiology" aria-label="rAidiology on GitHub"><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
-        <a class="btn small" href="open.html" aria-current="page">Open a scan</a>
+        <a class="btn small" href="open.html" aria-current="page">Open your scan</a>
         <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu"><svg class="i-menu" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><svg class="i-close" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
       </div>
     </div>
@@ -150,6 +150,7 @@
         <h2 id="viewer-h"></h2>
       </div>
       <div class="stage-wrap">
+      <div class="pic-pin">
       <div class="stage" id="stage">
         <canvas id="canvas" aria-label="One picture of the chosen set. Drag up and down to move through the pictures, left and right to change the brightness."></canvas>
         <div class="hud" id="hud" aria-live="off"></div>
@@ -162,16 +163,17 @@
       </div>
       <div class="stage-caption"><div class="name-tip" id="name-tip" hidden role="status"></div><p class="caption-empty">Tap an outline or a listed part to name it.</p></div>
       </div>
+      <div class="pic-controls">
+        <button class="btn quiet tonal" type="button" id="toggle-marks" aria-pressed="false" hidden>Hide the outlines</button>
+        <div class="controls slice-bar">
+          <button class="btn quiet small" type="button" id="prev-picture" aria-label="Previous picture">Previous</button>
+          <label class="slider"><span class="lbl">Picture</span> <input type="range" id="slice" min="0" max="0" value="0" aria-label="Picture"></label>
+          <button class="btn quiet small" type="button" id="next-picture" aria-label="Next picture">Next</button>
+        </div>
+      </div>
+      </div>
       <div class="stage-tools">
         <p class="hint-chip" id="hint-chip" hidden><span class="on-touch">Swipe up or down on the picture</span><span class="on-mouse">Drag up or down on the picture, or press the arrow keys,</span> for the other pictures</p>
-        <button class="btn quiet small" type="button" id="toggle-marks" hidden>Hide the outlines</button>
-      </div>
-      <p class="fine caption" id="outline-caption" hidden>Outlines by an open research model.</p>
-      <p class="fine" id="viewer-credit" hidden></p>
-      <div class="controls slice-bar">
-        <button class="btn quiet small" type="button" id="prev-picture" aria-label="Previous picture">Previous</button>
-        <label class="slider"><span class="lbl">Picture</span> <input type="range" id="slice" min="0" max="0" value="0" aria-label="Picture"></label>
-        <button class="btn quiet small" type="button" id="next-picture" aria-label="Next picture">Next</button>
       </div>
       <div class="finding" id="finding" hidden></div>
       <details class="adjust">
@@ -196,6 +198,10 @@
         <a class="btn" href="open.html">Open your own scan</a>
         <p class="fine">It is free because people support it.</p>
         <a class="btn quiet" href="support.html">Support the next model</a>
+      </div>
+      <div class="footnote" id="viewer-footnote">
+        <p class="fine caption" id="outline-caption" hidden>Outlines by an open research model.</p>
+        <p class="fine" id="viewer-credit" hidden></p>
       </div>
     </section>
 

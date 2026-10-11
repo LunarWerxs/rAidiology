@@ -30,6 +30,7 @@ export function mountCtDemo(box, opts = {}) {
   let pinned = false;        // set by a tap or click, so leaving the picture keeps it
   let raf = 0;
   let playing = false;
+  let auto = true;
   let started = false;
   let io = null;
   let dead = false;
@@ -63,7 +64,14 @@ export function mountCtDemo(box, opts = {}) {
   const link = make('a', 'btn tonal ctdemo__link', { href: 'open.html?sample=1' });
   link.textContent = 'Open the full viewer';
   const foot = make('div', 'ctdemo__foot');
-  foot.append(count);
+  const playBtn = make('button', 'ctdemo__play', { type: 'button', 'aria-label': 'Autoplay', 'aria-pressed': 'false' });
+  const playTxt = make('span', 'ctdemo__play-t');
+  playBtn.append(playTxt);
+  const setPlayUi = () => {
+    playBtn.setAttribute('aria-pressed', String(playing));
+    playTxt.textContent = playing ? '❚❚ Pause' : '▶ Play';
+  };
+  foot.append(playBtn, count);
   box.append(lightbox, chip, bar, foot, credit);
   const line = make('span', 'ctdemo__line');
   line.textContent = 'Sample CT from TotalSegmentator (CC BY 4.0). Outlines by an open research model.';
@@ -163,6 +171,7 @@ export function mountCtDemo(box, opts = {}) {
     if (!playing) return;
     playing = false;
     cancelAnimationFrame(raf);
+    setPlayUi();
   }
 
   function play() {
@@ -172,6 +181,7 @@ export function mountCtDemo(box, opts = {}) {
     const legs = [[m, 0], [0, n], [n, m]];
     const total = legs.reduce((s, [a, b]) => s + Math.abs(b - a), 0);
     playing = true;
+    setPlayUi();
     const t0 = performance.now();
     const tick = (now) => {
       if (!playing) return;
@@ -198,7 +208,7 @@ export function mountCtDemo(box, opts = {}) {
     const order = [...Array(demo.count).keys()].sort((a, b) => Math.abs(a - mid()) - Math.abs(b - mid()));
     let pending = order.length;
     let go = prefersReducedMotion() ? () => {} : play;
-    const done = () => { if (--pending === 0 && !dead) { const f = go; go = () => {}; f(); } };
+    const done = () => { if (--pending === 0 && !dead) { const f = go; go = () => {}; if (auto) f(); } };
     for (const i of order) {
       const im = new Image();
       im.onload = im.onerror = () => { loaded.add(i); done(); };
@@ -228,7 +238,16 @@ export function mountCtDemo(box, opts = {}) {
   on(lightbox, 'pointercancel', endDrag);
   on(lightbox, 'click', () => { if (!moved) clear(); });
   on(lightbox, 'pointerleave', (e) => { if (e.pointerType === 'mouse' && !pinned && !drag) clear(); });
-  on(box, 'touchstart', stopPlay, { passive: true });
+  // Any touch, drag, key or click on the card ends autoplay for good; the Play button below starts it again on request.
+  const stopAuto = (e) => { if (!playBtn.contains(e.target)) { auto = false; stopPlay(); } };
+  on(box, 'touchstart', stopAuto, { passive: true });
+  on(box, 'pointerdown', stopAuto);
+  on(box, 'click', stopAuto);
+  on(box, 'keydown', stopAuto);
+  on(playBtn, 'click', () => {
+    if (playing) { auto = false; stopPlay(); } else if (demo && loaded.size) play();
+  });
+  setPlayUi();
 
   on(range, 'input', () => show(Number(range.value), true));
   on(prev, 'click', () => show(index - 1, true));

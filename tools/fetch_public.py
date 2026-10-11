@@ -437,6 +437,11 @@ SETS = [
     S("yolov9-aid-lumbar", "Lumbar MRI", 4, "github", 0.4, "https://github.com/JackChow666/YOLOv9-AID", GPL3,
       repo="JackChow666/YOLOv9-AID", keep=("datasets", "LICENSE.md", "README.md"), approved=GAPS),
     S("irbid-canal-stenosis-labels", "Lumbar MRI", 2, Z, 0.001, ZR + "23298064", BY4, ids=[23298064], approved=GAPS),
+    # FRDR publishes it on a Globus collection whose HTTPS server answers anyone; FRDR's web page offers only Globus
+    # Transfer (a Globus account) and a zip it makes on request.
+    S("nl-breast-screen", "Mammography", 5, "frdr", 90.8, "https://doi.org/10.20383/103.01526", BY4,
+      doi="10.20383/103.01526", approved=GAPS,
+      base="https://g-772fa5.cd4fe.0ec8.data.globus.org/1/published/publication_1521/submitted_data/"),
 ]
 BY_NAME = {s["name"]: s for s in SETS}
 
@@ -472,6 +477,8 @@ def listing(s, ctx):
         return fetch.osf(name, ctx, s["node"])
     if a == "github":
         return fetch.github(name, ctx, s["repo"], s["keep"])
+    if a == "frdr":
+        return fetch.frdr(name, ctx, s["doi"], s["base"])
     if a == "page":
         return fetch.lab_page(name, ctx, s["page"], s["pattern"], s.get("links"))
     if a == T:
@@ -576,10 +583,11 @@ def plan(sets):
     stamp = datetime.date.today().isoformat()
     path = os.path.join(ARCHIVE, "plan-%s.json" % stamp)
     kept = []
-    if os.path.exists(path):                       # a partial plan updates its rows in the day's file
-        with open(path, encoding="utf-8") as f:
-            kept = [r for r in json.load(f) if r["name"] not in {x["name"] for x in rows}]
-    fetch._save_json(path, sorted(kept + rows, key=lambda r: [s["name"] for s in SETS].index(r["name"])))
+    names = [s["name"] for s in SETS]
+    if os.path.exists(path):                       # a partial plan updates its rows in the day's file; a set taken
+        with open(path, encoding="utf-8") as f:    # out of SETS since loses its row
+            kept = [r for r in json.load(f) if r["name"] in names and r["name"] not in {x["name"] for x in rows}]
+    fetch._save_json(path, sorted(kept + rows, key=lambda r: names.index(r["name"])))
     print("\n%-28s %-9s %-8s %6s %8s %8s  %s" % ("set", "archive", "status", "files", "GB now", "GB plan", "licence"))
     tot, tot_plan = 0.0, 0.0
     for r in rows:

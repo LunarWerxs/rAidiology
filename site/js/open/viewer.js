@@ -431,6 +431,7 @@ async function attachFile(file) {
   if (state.current === state.readingSeries) {
     el('toggle-marks').hidden = false;
     el('toggle-marks').textContent = 'Hide the outlines';
+    el('toggle-marks').setAttribute('aria-pressed', String(!state.showMarks));
     draw();
   }
 }
@@ -824,6 +825,7 @@ async function openSeries(index) {
   const marks = el('toggle-marks');
   marks.hidden = !(state.reading && index === state.readingSeries);
   marks.textContent = state.showMarks ? 'Hide the outlines' : 'Show the outlines';
+  marks.setAttribute('aria-pressed', String(!state.showMarks));
   // One way out of the viewer: back to the list when there is more than one set to choose from,
   // otherwise straight to opening a different scan (a list of one has nothing in it).
   el('back').textContent = state.series.length > 1 ? 'Back to the list' : 'Open a different scan';
@@ -1323,6 +1325,7 @@ function wireIntake() {
   el('toggle-marks').addEventListener('click', () => {
     state.showMarks = !state.showMarks;
     el('toggle-marks').textContent = state.showMarks ? 'Hide the outlines' : 'Show the outlines';
+    el('toggle-marks').setAttribute('aria-pressed', String(!state.showMarks));
     draw();
   });
   el('cancel').addEventListener('click', () => { state.cancelled = true; show('progress', false); });

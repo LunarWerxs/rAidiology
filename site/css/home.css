@@ -17,13 +17,13 @@
   .hero-actions { flex-wrap: nowrap; gap: 8px; margin-top: 20px; }
   .hero-actions .btn { flex: 1 1 0; min-width: 0; padding-inline: 8px; font-size: 0.875rem; white-space: nowrap; }
   .proof { margin-top: 16px; gap: 6px; }
-  .proof li { padding: 5px 10px; font-size: var(--fs-s); }
   .proof-x { display: none; }
 }
 @media (max-width: 359px) { .hero-actions { flex-wrap: wrap; } .hero-actions .btn { flex: 1 1 100%; } }
+.licence-line { margin: -4px 0 14px; max-width: 60ch; color: var(--text); font-size: var(--fs-s); line-height: 1.5; }
 .proof { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
-.proof li { display: inline-flex; align-items: baseline; gap: 5px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg-soft); color: var(--text); font-size: 0.8125rem; font-weight: 550; line-height: 1.35; white-space: nowrap; }
-.proof strong { color: var(--teal-text); font-size: 0.9375rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.proof li { display: inline-flex; align-items: center; gap: 5px; min-height: 34px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg-soft); color: var(--text); font-size: 0.875rem; font-weight: 550; line-height: 1.35; white-space: nowrap; }
+.proof strong { color: var(--teal-text); font-size: 0.875rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 
 .hero-stage { display: grid; gap: 12px; min-width: 0; }
 .stage-wrap { position: relative; display: grid; gap: 12px; min-width: 0; }
@@ -74,7 +74,7 @@
 .why-notes { display: grid; gap: var(--sp-2) var(--sp-4); margin: var(--sp-4) 0 0; padding: 0; }
 @media (min-width: 720px) { .why-notes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .why-notes div { max-width: 52ch; }
-.why-notes dt { margin: 0 0 4px; color: var(--primary); font-size: 0.8125rem; font-weight: 650; letter-spacing: 0.08em; line-height: 1.4; text-transform: uppercase; }
+.why-notes dt { margin: 0 0 4px; color: var(--primary); font-size: 0.875rem; font-weight: 650; letter-spacing: 0.08em; line-height: 1.4; text-transform: uppercase; }
 .why-notes dd { margin: 0; color: var(--ink); font-weight: 500; }
 .why-actions { gap: 8px 24px; margin-top: var(--sp-3); }
 .why .btn.tonal { color: var(--primary-dark); background: var(--primary-soft); border-color: var(--primary-line); }
@@ -114,7 +114,7 @@
 .scan-body h3 { margin-bottom: 6px; }
 .scan-body > p { margin: 0; color: var(--text); }
 .scan-models { margin-top: auto; padding-top: 20px; }
-.scan-body .label { margin: 0 0 10px; color: var(--muted); font-size: 0.8125rem; font-weight: 650; letter-spacing: 0.08em; text-transform: uppercase; }
+.scan-body .label { margin: 0 0 10px; color: var(--muted); font-size: 0.875rem; font-weight: 650; letter-spacing: 0.08em; text-transform: uppercase; }
 .scan-body .chips { gap: 8px; }
 .scan-body .chip { white-space: normal; }
 @media (max-width: 599px) { .scan-body { padding: 20px 20px 24px; } }
