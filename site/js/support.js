@@ -31,7 +31,7 @@ if (box) {
   const segs = [...document.querySelectorAll('.seg-b')];
   const chips = [...document.querySelectorAll('.chip')];
   const next = $('give-next');
-  const state = { amount: 15, freq: 'month', busy: false, custom: false, touched: false };
+  const state = { amount: 15, freq: 'once', busy: false, custom: false, touched: false };
   const ICON = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M12 3 2 21h20L12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v5M12 18v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 
   // A message with a small warning icon. role="alert" only on the render where it first appears.
