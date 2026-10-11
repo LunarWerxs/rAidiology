@@ -1,11 +1,123 @@
-/* Support, pricing and thanks pages. Loaded after brand.css. */
-.money-card { display: flex; flex-direction: column; min-width: 0; overflow-wrap: anywhere; }
-.money-card .tag { margin: 0 0 6px; }
-.money-card p { margin: 0 0 12px; }
-.money-card .btn { display: inline-block; }
-.money-price { font-size: 1.35rem; font-weight: 700; }
+/* Pricing, Support and Thanks (work/release-thread/run-2026-10-11/DESIGN_V3.md section 3).
+   Loaded after brand.css and built from its tokens and classes; nothing here restyles the shell. */
+
+/* v2 classes index.html still uses */
 .money-disclosure { margin-top: 20px; }
-main a { overflow-wrap: anywhere; }
-.callout-dark { border-left: 4px solid var(--primary-light); padding: 6px 16px; max-width: 68ch; font-weight: 600; margin-top: var(--sp-3); }
 .short-list { padding-left: 1.2em; max-width: 68ch; }
 .short-list li { margin-bottom: 8px; }
+main a { overflow-wrap: anywhere; }
+main a.btn { overflow-wrap: normal; }
+
+/* Page head: two jump buttons under the lede */
+.page-head .jump { margin-top: var(--sp-3); }
+
+/* Plan cards. Each card is a subgrid of the row, so tags, names, prices, lists, buttons and fine print
+   line up across a row, and every card's buttons sit at the bottom. r5 / r6 = rows per card. */
+.plans { row-gap: 0; }
+.plans > .plan { display: grid; grid-template-rows: subgrid; grid-row: span 5; row-gap: 0; margin-bottom: var(--sp-3); }
+.plans.r6 > .plan { grid-row: span 6; }
+.plan > * { margin: 0; }
+.plan .tag { margin-bottom: 8px; }
+.plan h3 { margin-bottom: 6px; }
+.price { margin: 0 0 20px; color: var(--muted); font-size: 0.9375rem; line-height: 1.45; }
+.price .amt { color: var(--ink); font-size: 1.375rem; font-weight: 700; letter-spacing: -0.015em; font-variant-numeric: tabular-nums; }
+.price .alt { display: block; margin-top: 2px; }
+.price .alt.gpu { color: var(--teal); font-weight: 600; }
+.ticks { margin: 0 0 24px; padding: 18px 0 0; border-top: 1px solid var(--line); list-style: none; font-size: 0.9375rem; line-height: 1.5; }
+.ticks li { position: relative; padding-left: 26px; }
+.ticks li + li { margin-top: 10px; }
+.ticks li::before { content: ""; position: absolute; left: 4px; top: 0.28em; width: 6px; height: 11px; border-right: 2px solid var(--teal); border-bottom: 2px solid var(--teal); transform: rotate(45deg); }
+.plan-cta { display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; }
+.plan-cta .btn { align-self: stretch; }
+.plan > .fine { margin-top: 14px; font-size: 0.8125rem; }
+
+/* A slim full-width row under a plan grid (Enterprise / OEM, company sponsorship) */
+.plan-wide { gap: var(--sp-2); }
+.plan-wide .tag { margin-bottom: 8px; }
+.pw-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; margin-bottom: 8px; }
+.pw-title h3, .pw-title .price { margin: 0; }
+.pw-main > p:last-child { margin: 0; max-width: 72ch; font-size: 0.9375rem; }
+.pw-cta { display: flex; flex-direction: column; gap: 12px; }
+.pw-cta .btn { align-self: stretch; }
+.pw-cta .fine { margin: 0; font-size: 0.8125rem; }
+@media (min-width: 900px) {
+  .plan-wide { flex-direction: row; align-items: center; gap: 48px; }
+  .pw-main { flex: 1 1 auto; min-width: 0; }
+  .pw-cta { flex: 0 0 260px; }
+}
+.plans-note { margin: var(--sp-3) 0 0; max-width: 80ch; }
+
+/* Every paid licence includes: four white cards with an icon */
+.included .card { padding: 24px; }
+.inc-ic { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-bottom: 18px; border-radius: 12px; background: var(--primary-soft); color: var(--primary); }
+.inc-ic svg { display: block; width: 22px; height: 22px; }
+.included h3 { margin-bottom: 8px; }
+.included p { margin: 0; color: var(--muted); font-size: 0.9375rem; line-height: 1.55; }
+@media (max-width: 719px) {
+  .included .card { display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 16px; padding: 20px; }
+  .included .inc-ic { grid-row: span 2; margin: 0; }
+  .included h3 { font-size: 1.125rem; margin: 9px 0 6px; }
+}
+
+/* What the licence covers: five pictures in black frames; on a phone, a list with thumbnails */
+.covered { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; margin: 0; padding: 0; list-style: none; }
+.covered li { display: grid; grid-template-columns: 72px minmax(0, 1fr); align-items: center; gap: 16px; min-width: 0; }
+.covered .tile { aspect-ratio: 1; }
+.covered .tile figcaption { display: none; }
+.covered p { margin: 0; color: var(--ink); font-weight: 600; line-height: 1.35; }
+@media (min-width: 720px) {
+  .covered { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--sp-3) var(--sp-2); }
+  .covered li { display: flex; flex-direction: column; align-items: stretch; gap: 12px; }
+  .covered .tile { aspect-ratio: 4 / 5; }
+  .covered .tile figcaption { display: block; }
+  .covered p { font-size: 0.9375rem; }
+}
+.cov-note { margin: var(--sp-4) 0 0; padding-top: var(--sp-3); border-top: 1px solid var(--line); }
+.cov-note p { margin: 0; max-width: 80ch; color: var(--muted); font-size: 0.9375rem; }
+.cov-note strong { color: var(--ink); }
+
+/* Terms and questions: a short head on the left, the <details> list on the right */
+.terms { display: grid; gap: var(--sp-4); }
+.terms-head > p { color: var(--muted); }
+.terms-head .actions { margin-top: var(--sp-2); }
+.terms .faq { max-width: none; }
+@media (min-width: 900px) {
+  .terms { grid-template-columns: minmax(0, 5fr) minmax(0, 8fr); gap: 64px; align-items: start; }
+  .terms-head { position: sticky; top: calc(var(--head-h) + 32px); }
+}
+
+/* Support: what the money buys. GPU prices on the left, a month of each tier in A100 hours on the right.
+   Bar labels and values are HTML at a fixed size; bar lengths are hours / 31 of the track. */
+.buys { align-items: center; }
+.buys-text > p:not(.fine) { color: var(--muted); font-size: var(--fs-l); line-height: 1.55; }
+.gpu-stats { margin: var(--sp-4) 0 var(--sp-2); }
+@media (min-width: 900px) { .gpu-stats { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.hours { padding: clamp(24px, 3vw, 36px); }
+.hours h3 { margin-bottom: var(--sp-3); }
+.bars { display: grid; gap: 18px; margin: 0; padding: 0; list-style: none; }
+.bars li { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "l v" "t t"; align-items: baseline; gap: 6px 12px; }
+.bar-l { grid-area: l; color: var(--ink); font-size: 0.9375rem; font-weight: 600; }
+.bar-v { grid-area: v; color: var(--text); font-size: 0.875rem; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bar-t { grid-area: t; display: flex; align-items: center; height: 24px; border-left: 2px solid var(--line-strong); }
+.bar-f { height: 14px; border-radius: 0 7px 7px 0; background: var(--teal); }
+.bar-f.w3 { width: 9.7%; } .bar-f.w9 { width: 29%; } .bar-f.w31 { width: 100%; }
+@media (min-width: 600px) {
+  .bars li { grid-template-columns: 8.5rem minmax(0, 1fr) 7.5rem; grid-template-areas: "l t v"; align-items: center; gap: 16px; }
+}
+
+/* After you pay: three cards, buttons at the bottom */
+.after .card > p { font-size: 0.9375rem; }
+.after .card > .fine { font-size: var(--fs-s); }
+.after .card-foot .btn { align-self: flex-start; }
+
+/* Thanks: two calm cards, one action each; the one a buyer lands on is outlined */
+.thanks-card h2 { margin: 0 0 12px; font-size: 1.5rem; letter-spacing: -0.015em; line-height: 1.25; }
+.thanks-card > p:not(.tag):not(.fine) { margin-bottom: 8px; color: var(--muted); }
+.thanks-card > .fine { margin: 16px 0 0; }
+.thanks-card:target { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft), var(--shadow); }
+.steps { counter-reset: step; margin: 8px 0 0; padding: 0; list-style: none; }
+.steps li { counter-increment: step; position: relative; min-height: 28px; padding-left: 42px; }
+.steps li + li { margin-top: 14px; }
+.steps li::before { content: counter(step); position: absolute; left: 0; top: -1px; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--primary-soft); color: var(--primary-dark); font-size: 0.875rem; font-weight: 700; }
+.thanks-card .card-foot { padding-top: var(--sp-3); }
+@media (min-width: 900px) and (max-width: 1099px) { .buys { grid-template-columns: minmax(0, 1fr); } }

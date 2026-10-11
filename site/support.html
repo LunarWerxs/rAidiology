@@ -10,7 +10,8 @@
   <meta property="og:type" content="website">
   <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
   <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
-  <meta name="theme-color" content="#08131f">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="preload" href="fonts/Inter-Variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/brand.css">
   <link rel="stylesheet" href="css/money.css">
   <script defer src="js/nav.js"></script>
@@ -23,85 +24,182 @@
   <a class="skip" href="#main">Skip to the content</a>
   <header class="site-head">
     <div class="site-head-in">
-      <a class="brand" href="index.html" aria-label="rAidiology home"><img src="img/logo.svg" width="32" height="32" alt="">rAidiology</a>
-      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <a class="brand" href="index.html" aria-label="rAidiology home"><img src="img/logo.svg" width="32" height="32" alt=""><span class="brand-name">rAidiology</span></a>
       <nav id="site-nav" class="site-nav" aria-label="Main">
-        <a href="index.html#scans">Scans we cover</a>
-        <a href="models.html">Research results</a>
-        <a href="run.html">Run it on your computer</a>
+        <a href="index.html#scans">Scans</a>
+        <a href="models.html">Research</a>
         <a href="pricing.html">Pricing</a>
         <a href="support.html" aria-current="page">Support</a>
-        <a href="https://github.com/LunarWerxs/rAidiology">GitHub</a>
-        <a href="https://lunarwerx.com/discord/raidiology">Discord</a>
-        <a class="btn" href="open.html">Open a scan</a>
+        <a class="nav-extra" href="https://github.com/LunarWerxs/rAidiology">GitHub</a>
+        <a class="nav-extra" href="https://lunarwerx.com/discord/raidiology">Discord</a>
       </nav>
+      <div class="head-actions">
+        <a class="gh-link" href="https://github.com/LunarWerxs/rAidiology" aria-label="rAidiology on GitHub"><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+        <a class="btn small" href="open.html">Open a scan</a>
+        <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu"><svg class="i-menu" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><svg class="i-close" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </div>
     </div>
   </header>
 
   <main id="main">
-    <section class="hero small-hero dark">
-      <div class="wrap narrow">
+    <section class="page-head">
+      <div class="wrap">
         <h1>Support the research</h1>
-        <p class="lede">Your money pays for graphics-card time. The app stays free either way.</p>
+        <p class="lede">Your money pays for graphics-card time to train the research models. The app stays free either way.</p>
       </div>
     </section>
-    <section class="sec" aria-labelledby="buys-h">
-      <div class="wrap narrow">
-        <h2 id="buys-h">What the money buys</h2>
-        <p>Training runs today on one home graphics card. Rented data-centre GPUs train bigger models faster. RunPod's listed prices in October 2026: an A100 80GB GPU is $1.59 an hour and an H100 SXM is $3.49 an hour.</p>
-        <p>So $5 is about 3 hours of A100 time, $15 about 9 hours and $50 about 31 hours.</p>
-        <p class="callout-dark money-disclosure">LunarWerx LLC is a for-profit company. Payments are not charitable donations and are not tax-deductible.</p>
-      </div>
-    </section>
+
     <section class="sec" aria-labelledby="tiers-h">
       <div class="wrap">
-        <div class="sec-head"><p class="eyebrow">Supporter licence</p><h2 id="tiers-h">Ways to support</h2>
-        <p>A supporter licence is a personal licence for rAidiology. It adds nothing to the free licence except the perks below. No paid perk gives early or private access to a research model.</p></div>
-        <ul class="card-grid two-up">
-          <li class="card money-card"><p class="tag">One time</p><h3>One time, pay what you want</h3><p class="money-price">From $3, $20 suggested</p><p>A single payment. Choose any amount from $3.</p><p><a class="btn" href="https://buy.stripe.com/7sY9ATagDbjq5yC95l9Zm01">Pay what you want</a></p></li>
-          <li class="card money-card"><p class="tag">Monthly</p><h3>Backer</h3><p class="money-price">$5 a month</p><p>A supporter role on Discord.</p><p><a class="btn" href="https://buy.stripe.com/dRm14nbkHfzG8KOftJ9Zm00">Become a Backer</a></p></li>
-          <li class="card money-card"><p class="tag">Monthly</p><h3>Supporter</h3><p class="money-price">$15 a month</p><p>The Backer perk, your name in the supporters list if you want it, and a vote on what to train next (a supporters' poll on Discord).</p><p><a class="btn" href="https://buy.stripe.com/bJeeVdewTgDK6CG95l9Zm02">Become a Supporter</a></p></li>
-          <li class="card money-card"><p class="tag">Monthly</p><h3>Sponsor</h3><p class="money-price">$50 a month</p><p>The Supporter perks, plus your name or logo in the README's sponsors section if you want it.</p><p><a class="btn" href="https://buy.stripe.com/fZu9AT60n9bi6CGftJ9Zm03">Become a Sponsor</a></p></li>
+        <div class="sec-head">
+          <p class="eyebrow">Supporter licence</p>
+          <h2 id="tiers-h">Ways to support</h2>
+          <p>A supporter licence is a personal licence for rAidiology. It adds nothing to the free licence except the perks below.</p>
+        </div>
+        <ul class="card-grid four-up plans r5">
+          <li class="card plan">
+            <p class="tag">One time</p>
+            <h3>Pay what you want</h3>
+            <p class="price"><span class="amt">From $3</span><span class="alt">$20 suggested</span></p>
+            <ul class="ticks">
+              <li>A single payment of any amount from $3</li>
+              <li>Our thanks. Perks are for monthly members.</li>
+            </ul>
+            <div class="plan-cta"><a class="btn" href="https://buy.stripe.com/7sY9ATagDbjq5yC95l9Zm01">Pay what you want</a></div>
+          </li>
+          <li class="card plan">
+            <p class="tag">Monthly</p>
+            <h3>Backer</h3>
+            <p class="price"><span class="amt">$5</span> <span class="per">a month</span><span class="alt gpu">About 3 hours of A100 time</span></p>
+            <ul class="ticks">
+              <li>A supporter role on Discord</li>
+            </ul>
+            <div class="plan-cta"><a class="btn" href="https://buy.stripe.com/dRm14nbkHfzG8KOftJ9Zm00">Become a Backer</a></div>
+          </li>
+          <li class="card plan">
+            <p class="tag">Monthly</p>
+            <h3>Supporter</h3>
+            <p class="price"><span class="amt">$15</span> <span class="per">a month</span><span class="alt gpu">About 9 hours of A100 time</span></p>
+            <ul class="ticks">
+              <li>The Backer perk</li>
+              <li>Your name in the supporters list, if you want it</li>
+              <li>A vote on what to train next, in a supporters' poll on Discord</li>
+            </ul>
+            <div class="plan-cta"><a class="btn" href="https://buy.stripe.com/bJeeVdewTgDK6CG95l9Zm02">Become a Supporter</a></div>
+          </li>
+          <li class="card plan">
+            <p class="tag">Monthly</p>
+            <h3>Sponsor</h3>
+            <p class="price"><span class="amt">$50</span> <span class="per">a month</span><span class="alt gpu">About 31 hours of A100 time</span></p>
+            <ul class="ticks">
+              <li>The Supporter perks</li>
+              <li>Your name or logo in the README's sponsors section, if you want it</li>
+            </ul>
+            <div class="plan-cta"><a class="btn" href="https://buy.stripe.com/fZu9AT60n9bi6CGftJ9Zm03">Become a Sponsor</a></div>
+          </li>
+        </ul>
+        <div class="card plan-wide">
+          <div class="pw-main">
+            <p class="tag">Companies</p>
+            <div class="pw-title"><h3>Company sponsorship</h3><p class="price"><span class="amt">From $5,000</span> <span class="per">a year</span></p></div>
+            <p>Your company's name or logo on the supporters list. It is support, not a <a href="pricing.html#companies">commercial licence</a>.</p>
+          </div>
+          <div class="pw-cta">
+            <a class="btn secondary" href="mailto:contact@lunarwerx.com?subject=rAidiology%20company%20sponsorship">Email us</a>
+          </div>
+        </div>
+        <p class="fine plans-note">No paid perk gives early or private access to a research model. LunarWerx LLC is a for-profit company. Payments are not charitable donations and are not tax-deductible.</p>
+      </div>
+    </section>
+
+    <section class="sec soft" aria-labelledby="buys-h">
+      <div class="wrap split buys">
+        <div class="buys-text">
+          <h2 id="buys-h">What the money buys</h2>
+          <p>Training runs today on one home graphics card. Rented data-centre GPUs train bigger models faster.</p>
+          <ul class="stats gpu-stats">
+            <li class="stat"><p class="stat-n">$1.59</p><p class="stat-l">An hour of an A100 80GB GPU</p></li>
+            <li class="stat"><p class="stat-n">$3.49</p><p class="stat-l">An hour of an H100 SXM GPU</p></li>
+          </ul>
+          <p class="fine">RunPod's listed prices, October 2026.</p>
+        </div>
+        <div class="card hours">
+          <h3 id="hours-h">A month of support, in A100 hours</h3>
+          <ul class="bars" aria-labelledby="hours-h">
+            <li><span class="bar-l">Backer, $5</span><span class="bar-t"><span class="bar-f w3"></span></span><span class="bar-v">About 3 hours</span></li>
+            <li><span class="bar-l">Supporter, $15</span><span class="bar-t"><span class="bar-f w9"></span></span><span class="bar-v">About 9 hours</span></li>
+            <li><span class="bar-l">Sponsor, $50</span><span class="bar-t"><span class="bar-f w31"></span></span><span class="bar-v">About 31 hours</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" aria-labelledby="after-h">
+      <div class="wrap">
+        <div class="sec-head"><h2 id="after-h">After you pay</h2></div>
+        <ul class="card-grid three-up after">
+          <li class="card">
+            <h3>Get your perks</h3>
+            <p>Email <a href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a> with your receipt number and your Discord username. For the supporters list or the README, add the name or logo you want shown.</p>
+            <p class="fine">Never post a receipt or an email address on Discord.</p>
+            <div class="card-foot"><a class="btn secondary" href="mailto:contact@lunarwerx.com?subject=My%20rAidiology%20supporter%20perks">Email your receipt</a></div>
+          </li>
+          <li class="card">
+            <h3>Cancel any time</h3>
+            <p>At <a href="https://link.com">link.com</a>: sign in with the email you paid with, since Link runs the checkout. Or send the ready-made cancel email, which we honour the same working day.</p>
+            <div class="card-foot"><a class="btn secondary" href="mailto:contact@lunarwerx.com?subject=Cancel%20my%20rAidiology%20support&amp;body=Please%20cancel%20my%20rAidiology%20supporter%20subscription.%20Email%20I%20paid%20with%3A%20">Send the cancel email</a></div>
+          </li>
+          <li class="card">
+            <h3>Refunds</h3>
+            <p>For supporter payments, ask within 14 days at <a href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a>, or through Link's support.</p>
+            <div class="card-foot"><a class="btn secondary" href="mailto:contact@lunarwerx.com?subject=rAidiology%20refund">Ask for a refund</a></div>
+          </li>
         </ul>
       </div>
     </section>
-    <section class="sec" aria-labelledby="co-h">
-      <div class="wrap narrow">
-        <h2 id="co-h">Company sponsorship</h2>
-        <p>From $5,000 a year, by email to <a href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a>. Your name or logo goes on the supporters list. It is support, not a commercial licence. If you need a licence to use the models in a product, see <a href="pricing.html">Pricing</a>.</p>
-        <h2 id="perks-h">How to get the perks</h2>
-        <p>Email <a href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a> with your receipt number, your Discord username and, for the list or the README, the name or logo you want shown. Never post a receipt or an email address on Discord.</p>
-        <h2 id="who-h">Who sells it</h2>
-        <p>LunarWerx LLC is a for-profit company. Payments are not charitable donations and are not tax-deductible. Connections Global LLC sells the licences as LunarWerx LLC's authorised reseller. Link, from Stripe, is the merchant of record: it takes the payment and handles sales tax, refunds and disputes.</p>
-        <h2 id="cancel-h">Cancel any time</h2>
-        <ol class="short-list"><li>At <a href="https://link.com">link.com</a>. Sign in with the email you paid with.</li>
-        <li>Or by email: <a href="mailto:contact@lunarwerx.com?subject=Cancel%20my%20rAidiology%20support&amp;body=Please%20cancel%20my%20rAidiology%20supporter%20subscription.%20Email%20I%20paid%20with%3A%20">send the ready-made cancel email</a>. We honour it the same working day.</li></ol>
-        <h2 id="refund-h">Refunds</h2>
-        <p>Ask within 14 days at <a href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a>, or through Link's support.</p>
-      </div>
-    </section>
+
     <section class="sec" aria-labelledby="faq-h">
-      <div class="wrap narrow">
-        <h2 id="faq-h">Questions</h2>
-        <h3>Is this charity?</h3><p>No. LunarWerx LLC is a for-profit company. Payments are not charitable donations.</p>
-        <h3>Does paying unlock anything in the app?</h3><p>No. The app stays free for everyone. The perks are on Discord, the supporters list and the README.</p>
-        <h3>Why does my statement say LINK.COM?</h3><p>Link, from Stripe, is the merchant of record. The card statement starts with LINK.COM.</p>
-        <h3>Can my company sponsor?</h3><p>Yes, from $5,000 a year. Email <a href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a>.</p>
-        <h3>Can I deduct it from my taxes?</h3><p>No. Payments are not tax-deductible.</p>
-      </div>
-    </section>
-    <section class="sec" aria-labelledby="list-h">
-      <div class="wrap narrow">
-        <h2 id="list-h">Supporters</h2>
-        <p class="fine">No names yet. Supporter and Sponsor members can ask to be listed.</p>
+      <div class="wrap terms">
+        <div class="terms-head">
+          <h2 id="faq-h">Questions</h2>
+          <p>Anything else: <a href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a>.</p>
+        </div>
+        <div class="faq">
+          <details>
+            <summary>Is this charity? Can I deduct it from my taxes?</summary>
+            <p>No. LunarWerx LLC is a for-profit company, so payments are not tax-deductible.</p>
+          </details>
+          <details>
+            <summary>Does paying unlock anything in the app?</summary>
+            <p>No. The app stays free for everyone. The perks live on Discord, the supporters list and the README.</p>
+          </details>
+          <details>
+            <summary>Why does my card statement say LINK.COM?</summary>
+            <p>Connections Global LLC sells the licences as LunarWerx LLC's authorised reseller. Link, from Stripe, is the merchant of record: it takes the payment and handles sales tax, refunds and disputes. Your card statement starts with LINK.COM.</p>
+          </details>
+          <details>
+            <summary>Does company sponsorship cover commercial use?</summary>
+            <p>No. Sponsorship is support, not a licence. Using the models in a product or an internal tool needs a <a href="pricing.html#companies">commercial licence</a>.</p>
+          </details>
+        </div>
       </div>
     </section>
   </main>
   <footer class="site-foot">
     <div class="site-foot-in">
-      <p class="disclaim">Not a medical device. For education and research.</p>
-      <nav aria-label="Footer"><a href="health-data-privacy.html">Privacy</a><a href="pricing.html">Pricing</a><a href="support.html">Support</a><a href="https://github.com/LunarWerxs/rAidiology">GitHub</a><a href="https://lunarwerx.com/discord/raidiology">Discord</a><a href="donation.html">See or delete a donation</a></nav>
-      <p class="meta">&copy; 2026 LunarWerx</p>
+      <div class="foot-brand">
+        <a class="brand" href="index.html"><img src="img/logo.svg" width="28" height="28" alt=""><span class="brand-name">rAidiology</span></a>
+        <p class="disclaim">Not a medical device. For education and research.</p>
+        <p class="foot-legal">LunarWerx LLC is a for-profit company. Payments are not charitable donations and are not tax-deductible.</p>
+      </div>
+      <nav class="foot-cols" aria-label="Footer">
+        <div><h2>Product</h2><ul><li><a href="open.html">Open a scan</a></li><li><a href="index.html#scans">Scans we cover</a></li><li><a href="models.html">Research results</a></li><li><a href="run.html">Run it on your computer</a></li></ul></div>
+        <div><h2>Money</h2><ul><li><a href="pricing.html">Pricing</a></li><li><a href="support.html">Support the research</a></li></ul></div>
+        <div><h2>Project</h2><ul><li><a href="https://github.com/LunarWerxs/rAidiology">GitHub</a></li><li><a href="https://lunarwerx.com/discord/raidiology">Discord</a></li><li><a href="health-data-privacy.html">Privacy</a></li><li><a href="donation.html">See or delete a donation</a></li></ul></div>
+      </nav>
+      <div class="foot-base">
+        <p>&copy; 2026 LunarWerx LLC</p>
+      </div>
     </div>
   </footer>
 </body>

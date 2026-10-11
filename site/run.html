@@ -12,9 +12,10 @@
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
   <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
-  <meta name="theme-color" content="#08131f">
-    <link rel="stylesheet" href="css/brand.css">
-  <link rel="stylesheet" href="css/home.css">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="preload" href="fonts/Inter-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/brand.css">
+  <link rel="stylesheet" href="css/pages.css">
   <script defer src="js/nav.js"></script>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="mobile-web-app-capable" content="yes">
@@ -25,55 +26,168 @@
   <a class="skip" href="#main">Skip to the content</a>
   <header class="site-head">
     <div class="site-head-in">
-      <a class="brand" href="index.html" aria-label="rAidiology home"><img src="img/logo.svg" width="32" height="32" alt="">rAidiology</a>
-      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <a class="brand" href="index.html" aria-label="rAidiology home"><img src="img/logo.svg" width="32" height="32" alt=""><span class="brand-name">rAidiology</span></a>
       <nav id="site-nav" class="site-nav" aria-label="Main">
-        <a href="index.html#scans">Scans we cover</a>
-        <a href="models.html">Research results</a>
-        <a href="run.html" aria-current="page">Run it on your computer</a>
+        <a href="index.html#scans">Scans</a>
+        <a href="models.html">Research</a>
         <a href="pricing.html">Pricing</a>
         <a href="support.html">Support</a>
-        <a href="https://github.com/LunarWerxs/rAidiology">GitHub</a>
-        <a href="https://lunarwerx.com/discord/raidiology">Discord</a>
-        <a class="btn" href="open.html">Open a scan</a>
+        <a class="nav-extra" href="https://github.com/LunarWerxs/rAidiology">GitHub</a>
+        <a class="nav-extra" href="https://lunarwerx.com/discord/raidiology">Discord</a>
       </nav>
+      <div class="head-actions">
+        <a class="gh-link" href="https://github.com/LunarWerxs/rAidiology" aria-label="rAidiology on GitHub"><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+        <a class="btn small" href="open.html">Open a scan</a>
+        <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu"><svg class="i-menu" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><svg class="i-close" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </div>
     </div>
   </header>
 
   <main id="main">
-    <section class="hero small-hero dark">
-      <div class="wrap narrow">
+    <section class="page-head">
+      <div class="wrap">
         <h1>Run it on your own computer</h1>
-        <p class="lede">Install it once from your browser. It then works offline; no account.</p>
+        <p class="lede">Install it once from your browser. It then works offline, with no account.</p>
+        <div class="actions jump">
+          <a class="btn secondary small" href="#install">Install the app</a>
+          <a class="btn secondary small" href="#researchers">For researchers</a>
+        </div>
       </div>
     </section>
-    <section class="sec" aria-labelledby="steps-h">
-      <div class="wrap narrow">
-        <h2 id="steps-h">Install the app</h2>
-        <p><button id="install-app" class="btn" hidden>Install the app</button></p>
-        <ul class="os-list">
-          <li class="os-chromium"><strong>Chrome and Edge</strong> on Windows, Mac, Linux and Chromebook: use the button above, or the install icon in the address bar.</li>
-          <li class="os-safari"><strong>Safari on a Mac:</strong> File &gt; Add to Dock.</li>
-          <li class="os-ios"><strong>iPhone and iPad:</strong> Share &gt; Add to Home Screen. Then open the ZIP from the patient portal, since a phone cannot read a disc.</li>
-          <li class="os-android"><strong>Android:</strong> menu &gt; Install app.</li>
-          <li class="os-firefox"><strong>Firefox on Windows</strong> (version 143 or newer; 150 or newer if Firefox came from the Microsoft Store): use the web apps button that appears in the address bar. Firefox then adds the app to your taskbar and Start menu. On other systems Firefox can use the site in a tab, and Chrome, Edge or Safari can install it as an app.</li>
-        </ul>
-        <p>After the first visit it works with no internet. To check, turn off Wi-Fi and open a scan.</p>
 
-        <h2>For researchers</h2>
-        <p>Clone the repository, then run the launcher from its root. It serves the site on 127.0.0.1 and lists the research models.</p>
-        <pre><code>git clone https://github.com/LunarWerxs/rAidiology.git
-cd rAidiology
-python reading/local/launcher.py</code></pre>
-        <p>The model cards and readers are on <a href="https://github.com/LunarWerxs/rAidiology">GitHub</a>. The weights are not released yet. See the <a href="models.html">research results</a>.</p>
+    <section class="sec" id="install" aria-labelledby="install-h">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2 id="install-h">Install the app</h2>
+          <p>Chrome, Edge, Safari and Firefox install it from the address bar or a menu. There is no installer to download.</p>
+          <p class="run-install"><button id="install-app" class="btn" type="button" hidden>Install the app</button></p>
+        </div>
+        <ul class="os-list">
+          <li class="os-chromium">
+            <div class="os-who">
+              <h3 class="os-name">Chrome and Edge</h3>
+              <p class="os-where">Windows, Mac, Linux and Chromebook</p>
+              <span class="chip os-you">Your browser</span>
+            </div>
+            <div class="os-how">
+              <p>The install icon at the right of the address bar.</p>
+            </div>
+          </li>
+          <li class="os-safari">
+            <div class="os-who">
+              <h3 class="os-name">Safari</h3>
+              <p class="os-where">Mac</p>
+              <span class="chip os-you">Your browser</span>
+            </div>
+            <div class="os-how">
+              <p><kbd>File</kbd> &rsaquo; <kbd>Add to Dock</kbd></p>
+            </div>
+          </li>
+          <li class="os-ios">
+            <div class="os-who">
+              <h3 class="os-name">iPhone and iPad</h3>
+              <p class="os-where">Safari</p>
+              <span class="chip os-you">Your device</span>
+            </div>
+            <div class="os-how">
+              <p><kbd>Share</kbd> &rsaquo; <kbd>Add to Home Screen</kbd></p>
+              <p class="fine">A phone cannot read a disc, so open the ZIP from your patient portal.</p>
+            </div>
+          </li>
+          <li class="os-android">
+            <div class="os-who">
+              <h3 class="os-name">Android</h3>
+              <p class="os-where">Chrome, Edge or Firefox</p>
+              <span class="chip os-you">Your device</span>
+            </div>
+            <div class="os-how">
+              <p><kbd>Menu</kbd> &rsaquo; <kbd>Install app</kbd></p>
+              <p class="fine">A phone cannot read a disc, so open the ZIP from your patient portal.</p>
+            </div>
+          </li>
+          <li class="os-firefox">
+            <div class="os-who">
+              <h3 class="os-name">Firefox</h3>
+              <p class="os-where">Windows, version 143 or newer (150 or newer from the Microsoft Store)</p>
+              <span class="chip os-you">Your browser</span>
+            </div>
+            <div class="os-how">
+              <p>The web apps button in the address bar. Firefox adds the app to your taskbar and Start menu.</p>
+              <p class="fine">On other systems Firefox opens it in a tab; Chrome, Edge or Safari can install it as an app.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="sec soft" aria-labelledby="after-h">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2 id="after-h">Once it is installed</h2>
+        </div>
+        <ul class="card-grid three-up">
+          <li class="card feature">
+            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9h18"/><path d="M6.5 6.5h.01M9 6.5h.01"/></svg></span>
+            <h3>Its own window</h3>
+            <p>It opens from your taskbar, Dock or home screen, apart from your browser tabs.</p>
+          </li>
+          <li class="card feature">
+            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 8.5a15 15 0 0 1 20 0"/><path d="M5.5 12.2a10 10 0 0 1 13 0"/><path d="M9 15.8a5 5 0 0 1 6 0"/><path d="M12 19.5h.01"/><path d="M3 3l18 18"/></svg></span>
+            <h3>Works offline</h3>
+            <p>After the first visit it needs no internet. Turn off Wi-Fi and it still opens a scan.</p>
+          </li>
+          <li class="card feature">
+            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v4.5h-4.5"/><path d="M9 12.5l2 2 4-4.5"/></svg></span>
+            <h3>No account, no updates to run</h3>
+            <p>Nothing to sign up for. A new version takes over by itself the next time you open it.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="sec" id="researchers" aria-labelledby="dev-h">
+      <div class="wrap split run-dev">
+        <div class="sec-head">
+          <p class="eyebrow">For researchers</p>
+          <h2 id="dev-h">Run it from the code</h2>
+          <p>The launcher serves the site on 127.0.0.1 and lists the research models. It needs Git and Python 3.9 or newer, and nothing else to install.</p>
+          <div class="actions">
+            <a class="btn secondary" href="https://github.com/LunarWerxs/rAidiology">Model cards on GitHub</a>
+            <a class="btn secondary" href="models.html">Research results</a>
+          </div>
+        </div>
+        <ol class="steps">
+          <li>
+            <h3>Clone the repository</h3>
+            <pre class="cmd"><code>git clone https://github.com/LunarWerxs/rAidiology.git</code></pre>
+          </li>
+          <li>
+            <h3>Go to its root</h3>
+            <pre class="cmd"><code>cd rAidiology</code></pre>
+          </li>
+          <li>
+            <h3>Start the launcher</h3>
+            <pre class="cmd"><code>python reading/local/launcher.py</code></pre>
+          </li>
+        </ol>
       </div>
     </section>
   </main>
   <footer class="site-foot">
     <div class="site-foot-in">
-      <p class="disclaim">Not a medical device. For education and research.</p>
-      <nav aria-label="Footer"><a href="health-data-privacy.html">Privacy</a><a href="pricing.html">Pricing</a><a href="support.html">Support</a><a href="https://github.com/LunarWerxs/rAidiology">GitHub</a><a href="https://lunarwerx.com/discord/raidiology">Discord</a><a href="donation.html">See or delete a donation</a></nav>
-      <p class="meta">&copy; 2026 LunarWerx</p>
+      <div class="foot-brand">
+        <a class="brand" href="index.html"><img src="img/logo.svg" width="28" height="28" alt=""><span class="brand-name">rAidiology</span></a>
+        <p class="disclaim">Not a medical device. For education and research.</p>
+        <p class="foot-legal">LunarWerx LLC is a for-profit company. Payments are not charitable donations and are not tax-deductible.</p>
+      </div>
+      <nav class="foot-cols" aria-label="Footer">
+        <div><h2>Product</h2><ul><li><a href="open.html">Open a scan</a></li><li><a href="index.html#scans">Scans we cover</a></li><li><a href="models.html">Research results</a></li><li><a href="run.html">Run it on your computer</a></li></ul></div>
+        <div><h2>Money</h2><ul><li><a href="pricing.html">Pricing</a></li><li><a href="support.html">Support the research</a></li></ul></div>
+        <div><h2>Project</h2><ul><li><a href="https://github.com/LunarWerxs/rAidiology">GitHub</a></li><li><a href="https://lunarwerx.com/discord/raidiology">Discord</a></li><li><a href="health-data-privacy.html">Privacy</a></li><li><a href="donation.html">See or delete a donation</a></li></ul></div>
+      </nav>
+      <div class="foot-base">
+        <p>&copy; 2026 LunarWerx LLC</p>
+      </div>
     </div>
   </footer>
 </body>

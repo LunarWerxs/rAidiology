@@ -48,7 +48,7 @@ body {
 .pane { scroll-margin-block-start: 80px; }
 
 .pane { width: min(var(--wrap), 100%); margin: 0 auto; padding: clamp(24px, 5vw, 48px) clamp(18px, 5vw, 32px); }
-h1, h2, h3 { color: var(--ink); font-family: var(--serif); }
+h1, h2, h3 { color: var(--ink); }
 h1 { margin: 0 0 14px; font-size: clamp(1.75rem, 4.2vw, 2.4rem); line-height: 1.15; letter-spacing: -0.02em; font-weight: 700; }
 h2 { margin: 0 0 12px; font-size: clamp(1.2rem, 3vw, 1.5rem); font-weight: 700; }
 p { max-width: 68ch; }

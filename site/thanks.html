@@ -11,7 +11,8 @@
   <meta property="og:type" content="website">
   <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
   <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
-  <meta name="theme-color" content="#08131f">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="preload" href="fonts/Inter-Variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/brand.css">
   <link rel="stylesheet" href="css/money.css">
   <script defer src="js/nav.js"></script>
@@ -24,60 +25,77 @@
   <a class="skip" href="#main">Skip to the content</a>
   <header class="site-head">
     <div class="site-head-in">
-      <a class="brand" href="index.html" aria-label="rAidiology home"><img src="img/logo.svg" width="32" height="32" alt="">rAidiology</a>
-      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <a class="brand" href="index.html" aria-label="rAidiology home"><img src="img/logo.svg" width="32" height="32" alt=""><span class="brand-name">rAidiology</span></a>
       <nav id="site-nav" class="site-nav" aria-label="Main">
-        <a href="index.html#scans">Scans we cover</a>
-        <a href="models.html">Research results</a>
-        <a href="run.html">Run it on your computer</a>
+        <a href="index.html#scans">Scans</a>
+        <a href="models.html">Research</a>
         <a href="pricing.html">Pricing</a>
         <a href="support.html">Support</a>
-        <a href="https://github.com/LunarWerxs/rAidiology">GitHub</a>
-        <a href="https://lunarwerx.com/discord/raidiology">Discord</a>
-        <a class="btn" href="open.html">Open a scan</a>
+        <a class="nav-extra" href="https://github.com/LunarWerxs/rAidiology">GitHub</a>
+        <a class="nav-extra" href="https://lunarwerx.com/discord/raidiology">Discord</a>
       </nav>
+      <div class="head-actions">
+        <a class="gh-link" href="https://github.com/LunarWerxs/rAidiology" aria-label="rAidiology on GitHub"><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+        <a class="btn small" href="open.html">Open a scan</a>
+        <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu"><svg class="i-menu" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><svg class="i-close" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </div>
     </div>
   </header>
 
   <main id="main">
-    <section class="hero small-hero dark">
-      <div class="wrap narrow">
+    <section class="page-head">
+      <div class="wrap">
         <h1>Thank you</h1>
-        <p class="lede">Your payment went through. Here is what happens next.</p>
+        <p class="lede">Your payment went through. Here's what happens next.</p>
       </div>
     </section>
-    <section class="sec" id="support" aria-labelledby="s-h">
-      <div class="wrap narrow">
-        <h2 id="s-h">Thank you for supporting the research</h2>
-        <p>The app stays free either way. Your money pays for graphics-card time.</p>
-        <h3>How to get the perks</h3>
-        <p>Perks are for monthly members. A one-time payment carries none beyond our thanks. If you pay monthly, email <a href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a> with your receipt number and your Discord username. For the supporters list or the README, also send the name or logo you want shown. Never post a receipt or an email address on Discord.</p>
-        <h3>Cancel any time</h3>
-        <p>At <a href="https://link.com">link.com</a>, or with the <a href="mailto:contact@lunarwerx.com?subject=Cancel%20my%20rAidiology%20support&amp;body=Please%20cancel%20my%20rAidiology%20supporter%20subscription.%20Email%20I%20paid%20with%3A%20">ready-made cancel email</a>.</p>
-        <h3>Refunds</h3>
-        <p>For supporter payments, ask within 14 days at <a href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a>, or through Link's support.</p>
-        <p class="fine">LunarWerx LLC is a for-profit company. Payments are not charitable donations and are not tax-deductible.</p>
-      </div>
-    </section>
-    <section class="sec" id="licence" aria-labelledby="l-h">
-      <div class="wrap narrow">
-        <h2 id="l-h">Your commercial licence</h2>
-        <ol class="short-list">
-          <li>Keep your receipt.</li>
-          <li>Email your company's legal name and the receipt number to <a href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a>. We reply by email with your marked copy of the weights and the documentation pack.</li>
-          <li>Your licence is <a href="https://github.com/LunarWerxs/rAidiology/blob/main/COMMERCIAL-LICENSE.md">COMMERCIAL-LICENSE.md</a>.</li>
-          <li>Send a count-only study report each quarter.</li>
-          <li>Invoices, purchase orders and W-9: email <a href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a>.</li>
-        </ol>
-        <p class="fine">Not for diagnosis or treatment. Not cleared by the FDA or any regulator. Manage or cancel a subscription at <a href="https://link.com">link.com</a>.</p>
+
+    <section class="sec">
+      <div class="wrap">
+        <div class="card-grid two-up thanks plans r6">
+          <section class="card plan thanks-card" id="support" aria-labelledby="s-h">
+            <p class="tag">Supporters</p>
+            <h2 id="s-h">Your supporter perks</h2>
+            <p>Your money pays for graphics-card time, and the app stays free either way.</p>
+            <ol class="steps">
+              <li>Keep your receipt. Perks are for monthly members; a one-time payment carries none beyond our thanks.</li>
+              <li>Email your receipt number and your Discord username to <a href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a>. For the supporters list or the README, add the name or logo you want shown.</li>
+              <li>Never post a receipt or an email address on Discord.</li>
+            </ol>
+            <div class="card-foot"><a class="btn" href="mailto:contact@lunarwerx.com?subject=My%20rAidiology%20supporter%20perks">Email your receipt</a></div>
+            <p class="fine">Cancel any time at <a href="https://link.com">link.com</a> or with the <a href="mailto:contact@lunarwerx.com?subject=Cancel%20my%20rAidiology%20support&amp;body=Please%20cancel%20my%20rAidiology%20supporter%20subscription.%20Email%20I%20paid%20with%3A%20">ready-made cancel email</a>. For supporter payments, ask for a refund within 14 days. LunarWerx LLC is a for-profit company. Payments are not charitable donations and are not tax-deductible.</p>
+          </section>
+          <section class="card plan thanks-card" id="licence" aria-labelledby="l-h">
+            <p class="tag">Companies</p>
+            <h2 id="l-h">Your commercial licence</h2>
+            <p>Your licence is the rAidiology Commercial Licence, <a href="https://github.com/LunarWerxs/rAidiology/blob/main/COMMERCIAL-LICENSE.md">COMMERCIAL-LICENSE.md</a>.</p>
+            <ol class="steps">
+              <li>Keep your receipt.</li>
+              <li>Email your company's legal name and the receipt number to <a href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a>. We reply by email with your marked copy of the weights and the documentation pack.</li>
+              <li>Send a count-only study report each quarter.</li>
+            </ol>
+            <div class="card-foot"><a class="btn" href="mailto:contact@lunarwerx.com?subject=My%20rAidiology%20commercial%20licence">Email your receipt</a></div>
+            <p class="fine">Invoices, purchase orders and W-9: email <a href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a>. Manage or cancel at <a href="https://link.com">link.com</a>. Not for diagnosis or treatment. Not cleared by the FDA or any regulator.</p>
+          </section>
+        </div>
       </div>
     </section>
   </main>
   <footer class="site-foot">
     <div class="site-foot-in">
-      <p class="disclaim">Not a medical device. For education and research.</p>
-      <nav aria-label="Footer"><a href="health-data-privacy.html">Privacy</a><a href="pricing.html">Pricing</a><a href="support.html">Support</a><a href="https://github.com/LunarWerxs/rAidiology">GitHub</a><a href="https://lunarwerx.com/discord/raidiology">Discord</a><a href="donation.html">See or delete a donation</a></nav>
-      <p class="meta">&copy; 2026 LunarWerx</p>
+      <div class="foot-brand">
+        <a class="brand" href="index.html"><img src="img/logo.svg" width="28" height="28" alt=""><span class="brand-name">rAidiology</span></a>
+        <p class="disclaim">Not a medical device. For education and research.</p>
+        <p class="foot-legal">LunarWerx LLC is a for-profit company. Payments are not charitable donations and are not tax-deductible.</p>
+      </div>
+      <nav class="foot-cols" aria-label="Footer">
+        <div><h2>Product</h2><ul><li><a href="open.html">Open a scan</a></li><li><a href="index.html#scans">Scans we cover</a></li><li><a href="models.html">Research results</a></li><li><a href="run.html">Run it on your computer</a></li></ul></div>
+        <div><h2>Money</h2><ul><li><a href="pricing.html">Pricing</a></li><li><a href="support.html">Support the research</a></li></ul></div>
+        <div><h2>Project</h2><ul><li><a href="https://github.com/LunarWerxs/rAidiology">GitHub</a></li><li><a href="https://lunarwerx.com/discord/raidiology">Discord</a></li><li><a href="health-data-privacy.html">Privacy</a></li><li><a href="donation.html">See or delete a donation</a></li></ul></div>
+      </nav>
+      <div class="foot-base">
+        <p>&copy; 2026 LunarWerx LLC</p>
+      </div>
     </div>
   </footer>
 </body>

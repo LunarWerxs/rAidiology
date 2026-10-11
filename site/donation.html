@@ -13,9 +13,11 @@
   <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
   <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
   <meta name="robots" content="noindex">
-  <meta name="theme-color" content="#08131f">
-    <link rel="stylesheet" href="css/open.css">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="preload" href="fonts/Inter-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/open.css">
   <link rel="stylesheet" href="css/brand.css">
+  <link rel="stylesheet" href="css/pages.css">
   <script defer src="js/nav.js"></script>
   <script type="module" src="js/donation.js"></script>
   <link rel="manifest" href="manifest.webmanifest">
@@ -27,54 +29,112 @@
   <a class="skip" href="#main">Skip to the content</a>
   <header class="site-head">
     <div class="site-head-in">
-      <a class="brand" href="index.html" aria-label="rAidiology home"><img src="img/logo.svg" width="32" height="32" alt="">rAidiology</a>
-      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <a class="brand" href="index.html" aria-label="rAidiology home"><img src="img/logo.svg" width="32" height="32" alt=""><span class="brand-name">rAidiology</span></a>
       <nav id="site-nav" class="site-nav" aria-label="Main">
-        <a href="index.html#scans">Scans we cover</a>
-        <a href="models.html">Research results</a>
-        <a href="run.html">Run it on your computer</a>
+        <a href="index.html#scans">Scans</a>
+        <a href="models.html">Research</a>
         <a href="pricing.html">Pricing</a>
         <a href="support.html">Support</a>
-        <a href="https://github.com/LunarWerxs/rAidiology">GitHub</a>
-        <a href="https://lunarwerx.com/discord/raidiology">Discord</a>
-        <a class="btn" href="open.html">Open a scan</a>
+        <a class="nav-extra" href="https://github.com/LunarWerxs/rAidiology">GitHub</a>
+        <a class="nav-extra" href="https://lunarwerx.com/discord/raidiology">Discord</a>
       </nav>
+      <div class="head-actions">
+        <a class="gh-link" href="https://github.com/LunarWerxs/rAidiology" aria-label="rAidiology on GitHub"><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+        <a class="btn small" href="open.html">Open a scan</a>
+        <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu"><svg class="i-menu" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><svg class="i-close" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </div>
     </div>
   </header>
 
   <main id="main">
-    <section id="with-number" class="pane" aria-labelledby="with-h">
-      <h1 id="with-h">See or delete your donation</h1>
-      <p class="lede">Type the donation number you were shown when you donated. Your browser asks our
-        storage for the locked files and opens them here, on this device. No account, no name.</p>
-      <form id="number-form">
-        <p><label for="number">Your donation number</label><br>
-          <input class="number-input" id="number" autocomplete="off" spellcheck="false" placeholder="ABCD-EF12-…"></p>
-        <p><button class="cta" type="submit" id="number-go">Look it up</button></p>
-      </form>
-      <div id="found" hidden></div>
-      <p id="number-msg" class="fine" role="status"></p>
+    <section class="page-head">
+      <div class="wrap">
+        <h1>See or delete your donation</h1>
+        <p class="lede">Open, save or delete a scan you donated. No account, no name.</p>
+      </div>
     </section>
 
-    <section id="no-number" class="pane" aria-labelledby="without-h">
-      <h2 id="without-h">Lost your number?</h2>
-      <p class="fine">Open the same scan here. Your browser makes a short code from the pictures, on
-        this device. Email us the code and we can find and delete the donation. Nothing is sent from
-        this page.</p>
-      <div class="pickers">
-        <button class="ghost" type="button" id="pick-folder">Choose the disc or a folder</button>
-        <button class="ghost" type="button" id="pick-zip">Choose a ZIP file</button>
+    <section class="sec">
+      <div class="wrap">
+        <div class="card-grid two-up don-grid">
+          <section id="with-number" class="card don-card" aria-labelledby="with-h">
+            <p class="tag">With your number</p>
+            <h2 id="with-h">Open your donation</h2>
+            <p>Use the number you were shown when you donated. Your browser asks our storage for the locked files and unlocks them here, on this device.</p>
+            <form id="number-form">
+              <p><label class="num-label" for="number">Your donation number</label></p>
+              <div class="num-row">
+                <input class="number-input" id="number" autocomplete="off" spellcheck="false" placeholder="ABCD-EF12-&hellip;">
+                <button class="btn" type="submit" id="number-go">Look it up</button>
+              </div>
+            </form>
+            <p id="number-msg" class="fine" role="status"></p>
+            <div id="found" hidden></div>
+          </section>
+
+          <section id="no-number" class="card don-card" aria-labelledby="without-h">
+            <p class="tag">Without it</p>
+            <h2 id="without-h">Lost your number?</h2>
+            <p>Open the same scan here. Your browser makes a short code from the pictures, on this device. Email us the code and we can find and delete the donation. Nothing is sent from this page.</p>
+            <div class="pickers">
+              <button class="btn secondary" type="button" id="pick-folder">Choose the disc or a folder</button>
+              <button class="btn secondary" type="button" id="pick-zip">Choose a ZIP file</button>
+            </div>
+            <div class="progress" id="code-progress" hidden role="status"><p id="code-progress-text"></p><div class="track"><div class="fill" id="code-progress-fill"></div></div></div>
+            <ul class="series-list" id="codes"></ul>
+          </section>
+        </div>
       </div>
-      <div class="progress" id="code-progress" hidden role="status"><p id="code-progress-text"></p><div class="track"><div class="fill" id="code-progress-fill"></div></div></div>
-      <ul class="series-list" id="codes"></ul>
+    </section>
+
+    <section class="sec soft" aria-labelledby="can-h">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2 id="can-h">What your number lets you do</h2>
+          <p>There is no account and no name on file, so the number is how we know the donation is yours.</p>
+        </div>
+        <ul class="card-grid four-up">
+          <li class="card feature">
+            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg></span>
+            <h3>Open a copy</h3>
+            <p>See the pictures as they were sent, in this browser.</p>
+          </li>
+          <li class="card feature">
+            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4v11"/><path d="M7.5 10.5L12 15l4.5-4.5"/><path d="M4.5 19.5h15"/></svg></span>
+            <h3>Save a copy</h3>
+            <p>A ZIP of the DICOM files, exactly as they were sent.</p>
+          </li>
+          <li class="card feature">
+            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 3.5H7a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8.5z"/><path d="M14 3.5v5h5"/><path d="M9 13.5l2 2 4-4"/></svg></span>
+            <h3>Save the permission</h3>
+            <p>Keep a copy of the permission you gave when you donated.</p>
+          </li>
+          <li class="card feature danger-card">
+            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6.5h16"/><path d="M9.5 6.5V4.5h5v2"/><path d="M6.5 6.5l1 13h9l1-13"/><path d="M10.5 10.5v6M13.5 10.5v6"/></svg></span>
+            <h3>Delete it</h3>
+            <p>Removes the scan and withdraws your permission. The number then stops working.</p>
+          </li>
+        </ul>
+        <p class="sec-more"><a class="btn secondary" href="health-data-privacy.html">How we handle donated scans</a></p>
+      </div>
     </section>
   </main>
 
   <footer class="site-foot">
     <div class="site-foot-in">
-      <p class="disclaim">Not a medical device. For education and research.</p>
-      <nav aria-label="Footer"><a href="health-data-privacy.html">Privacy</a><a href="pricing.html">Pricing</a><a href="support.html">Support</a><a href="https://github.com/LunarWerxs/rAidiology">GitHub</a><a href="https://lunarwerx.com/discord/raidiology">Discord</a><a href="donation.html">See or delete a donation</a></nav>
-      <p class="meta">&copy; 2026 LunarWerx</p>
+      <div class="foot-brand">
+        <a class="brand" href="index.html"><img src="img/logo.svg" width="28" height="28" alt=""><span class="brand-name">rAidiology</span></a>
+        <p class="disclaim">Not a medical device. For education and research.</p>
+        <p class="foot-legal">LunarWerx LLC is a for-profit company. Payments are not charitable donations and are not tax-deductible.</p>
+      </div>
+      <nav class="foot-cols" aria-label="Footer">
+        <div><h2>Product</h2><ul><li><a href="open.html">Open a scan</a></li><li><a href="index.html#scans">Scans we cover</a></li><li><a href="models.html">Research results</a></li><li><a href="run.html">Run it on your computer</a></li></ul></div>
+        <div><h2>Money</h2><ul><li><a href="pricing.html">Pricing</a></li><li><a href="support.html">Support the research</a></li></ul></div>
+        <div><h2>Project</h2><ul><li><a href="https://github.com/LunarWerxs/rAidiology">GitHub</a></li><li><a href="https://lunarwerx.com/discord/raidiology">Discord</a></li><li><a href="health-data-privacy.html">Privacy</a></li><li><a href="donation.html">See or delete a donation</a></li></ul></div>
+      </nav>
+      <div class="foot-base">
+        <p>&copy; 2026 LunarWerx LLC</p>
+      </div>
     </div>
   </footer>
 

@@ -1,0 +1,189 @@
+/* Research results: the result tiles (home and models.html), the dot-and-interval charts and the
+   "Show the numbers" tables built by release/site/build_charts.py, and the model sections of models.html
+   (release/site/build_models.py). Loaded after brand.css. Chart text is HTML at fixed sizes: only the
+   tracks that carry the dot and its interval stretch with the card. */
+
+.nb { white-space: nowrap; }
+
+/* Filled dot: held-out test. Hollow dot: development. The same key in the charts and on the tiles. */
+.dot-key { flex: none; display: block; width: 11px; height: 11px; }
+.dot-key circle { fill: var(--teal); stroke: var(--teal); stroke-width: 1.6; }
+.dot-key.hollow circle { fill: #fff; }
+
+/* Result tiles: one per model, picture in a black frame, the headline score in teal.
+   Phone: the picture beside the text. Tablet: two columns. Desktop: four over three, every row filled. */
+.result-tiles { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; margin: 0; }
+.result-tile { position: relative; display: grid; grid-template-columns: 84px minmax(0, 1fr); column-gap: 16px; align-content: start; align-items: start; padding: 14px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); color: var(--text); text-decoration: none; transition: border-color .15s, box-shadow .15s; }
+.result-tile:hover { color: var(--text); border-color: var(--primary); box-shadow: 0 1px 2px rgba(15, 27, 42, 0.05), 0 12px 32px rgba(15, 27, 42, 0.09); }
+.result-tile > img { grid-row: 1 / span 6; display: block; width: 84px; height: 84px; object-fit: cover; background: var(--lightbox); border-radius: 10px; }
+.result-tile > .pic-chip { display: none; }
+.result-tile > :not(img):not(.pic-chip) { grid-column: 2; }
+.result-tile h3 { margin: 0 0 4px; font-size: 1.0625rem; font-weight: 650; line-height: 1.3; letter-spacing: -0.01em; color: var(--ink); text-wrap: balance; }
+.result-tile:hover h3 { color: var(--primary-dark); }
+.result-tile .score { margin: 0; color: var(--teal); font-size: 1.375rem; font-weight: 700; line-height: 1.25; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+.result-tile .interval { color: var(--muted); font-size: 0.875rem; font-weight: 500; letter-spacing: 0; white-space: nowrap; }
+.result-tile .what { margin: 6px 0 0; color: var(--text); font-size: 0.875rem; line-height: 1.45; }
+.result-tile .test { margin: 4px 0 0; color: var(--muted); font-size: 0.8125rem; line-height: 1.45; }
+.result-tile .tag { justify-self: start; display: inline-flex; align-items: center; gap: 6px; margin: 10px 0 0; padding: 3px 10px 3px 7px; border-radius: 999px; background: var(--teal-soft); color: #07615e; font-size: 0.75rem; font-weight: 650; line-height: 1.4; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+.result-tile .tag.dev { background: #eef1f4; color: var(--muted); }
+@media (min-width: 640px) and (max-width: 899px) {
+  .result-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .result-tiles > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
+@media (min-width: 900px) {
+  .result-tiles { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 20px; }
+  .result-tile { grid-column: span 3; display: flex; flex-direction: column; padding: 0 0 20px; overflow: hidden; }
+  .result-tile:nth-child(n+5) { grid-column: span 4; }
+  .result-tile > img { width: 100%; height: 176px; padding: 10px 0; object-fit: contain; border-radius: 0; }
+  .result-tile > .pic-chip { display: block; top: 12px; bottom: auto; left: 12px; }
+  .result-tile > :not(img):not(.pic-chip) { margin-inline: 20px; }
+  .result-tile h3 { margin-top: 18px; }
+  .result-tile .tag { align-self: flex-start; margin-top: auto; }
+  .result-tile .test { margin-bottom: 14px; }
+}
+
+/* Charts: one card per chart, one grid per metric. Desktop: label | track | score.
+   Phone: the label above its track, the score and its interval beside the track. */
+.rc { margin: 0; padding: clamp(18px, 2vw, 24px); background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+.rc-cap { margin: 0 0 14px; }
+.rc-cap h3 { margin: 0; font-size: 1.0625rem; line-height: 1.35; }
+.rc-cap p { margin: 2px 0 0; max-width: 80ch; color: var(--muted); font-size: 0.875rem; line-height: 1.5; }
+.rc-grid { display: grid; grid-template-columns: fit-content(20rem) minmax(9rem, 1fr) max-content; column-gap: 24px; font-size: 0.9375rem; line-height: 1.4; }
+.rc-grid + .rc-grid { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+.rc-hd, .rc-row { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: center; }
+.rc-hd { padding-bottom: 8px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 0.8125rem; line-height: 1.45; }
+.rc-hd p { margin: 0; max-width: none; }
+/* The scale note wraps inside the label column and never widens it (contain: inline-size) */
+.rc-scale { grid-column: 1; contain: inline-size; }
+.rc-scale strong { color: var(--ink); font-weight: 650; }
+.rc-ax { position: relative; align-self: end; height: 1.45em; margin: 0 12px !important; font-variant-numeric: tabular-nums; }
+.rc-ax span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
+.rc-vh { align-self: end; white-space: nowrap; }
+.rc-grp { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; margin: 12px 0 2px !important; max-width: none !important; color: var(--muted); font-size: 0.75rem; font-weight: 650; line-height: 1.4; letter-spacing: 0.06em; text-transform: uppercase; }
+.rc-row { border-radius: 8px; }
+.rc-row:hover { background: var(--bg-soft); }
+.rc-l { margin: 0 !important; max-width: none !important; padding: 6px 0; color: var(--ink); }
+.rc-set { display: block; margin-top: 1px; color: var(--muted); font-size: 0.8125rem; line-height: 1.45; }
+.rc-n { color: var(--muted); font-size: 0.8125rem; white-space: nowrap; }
+.rc-n::before { content: " \00b7  "; white-space: pre; }
+.rc-v { margin: 0 !important; max-width: none !important; color: var(--muted); font-size: 0.875rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rc-v strong { color: var(--ink); font-size: 0.9375rem; font-weight: 650; }
+/* The track: hairline axis, tick lines (dashed at chance), the 95% interval with end caps, and the dot.
+   The interval keeps at least 7px either side of the dot so its caps stay visible; the printed numbers stay exact. */
+.rc-t { position: relative; align-self: stretch; min-height: 30px; margin: 0 12px; background: linear-gradient(var(--line-strong), var(--line-strong)) center / 100% 1px no-repeat; }
+.rc-t i { position: absolute; top: 0; bottom: 0; width: 1px; transform: translateX(-50%); background: #dde4ec; }
+.rc-t i.c { background: repeating-linear-gradient(to bottom, #b9c5d2 0 3px, transparent 3px 7px); }
+.rc-t::before { content: ""; position: absolute; top: 50%; height: 14px; margin-top: -7px; left: min(calc(var(--lo) * 1%), calc(var(--v) * 1% - 7px)); right: min(calc(100% - var(--hi) * 1%), calc(100% - var(--v) * 1% - 7px)); border-inline: 2px solid var(--teal); background: linear-gradient(var(--teal), var(--teal)) center / 100% 2px no-repeat; }
+.no-iv .rc-t::before { content: none; }
+.rc-t::after { content: ""; position: absolute; top: 50%; left: calc(var(--v) * 1%); width: 11px; height: 11px; margin: -5.5px 0 0 -5.5px; border: 2px solid var(--teal); border-radius: 50%; background: var(--teal); }
+.dev .rc-t::after { background: #fff; }
+@media (max-width: 639px) {
+  .rc { padding: 16px 14px; border-radius: 12px; }
+  .rc-grid { grid-template-columns: minmax(0, 1fr) max-content; column-gap: 14px; }
+  .rc-scale { grid-column: 1 / -1; contain: none; margin-bottom: 8px !important; }
+  /* label | score on the first line, track | interval on the second */
+  .rc-l { grid-column: 1; grid-row: 1; padding: 9px 0 2px; }
+  .rc-v { display: contents; }
+  .rc-v strong { grid-column: 2; grid-row: 1; align-self: start; padding-top: 9px; text-align: right; }
+  .rc-v span { grid-column: 2; grid-row: 2; align-self: center; font-size: 0.8125rem; text-align: right; }
+  .rc-t { grid-column: 1; grid-row: 2; min-height: 24px; }
+  .rc-row:hover { background: none; }
+  .rc-vh { text-align: right; }
+  .rc-vh span { display: block; }
+}
+
+/* Show the numbers */
+.rnums { margin-top: 20px; }
+.rnums summary { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 6px 16px; background: #fff; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--ink); font-size: var(--fs-s); font-weight: 600; list-style: none; }
+.rnums summary::-webkit-details-marker { display: none; }
+.rnums summary::after { content: ""; width: 7px; height: 7px; margin: -3px 2px 0 2px; border-right: 2px solid var(--primary); border-bottom: 2px solid var(--primary); transform: rotate(45deg); }
+.rnums[open] summary::after { margin-top: 3px; transform: rotate(-135deg); }
+.rnums summary:hover { border-color: var(--primary); color: var(--primary-dark); }
+.rnums[open] summary { margin-bottom: 12px; }
+.rnums-wrap { overflow-x: auto; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-s); }
+.rnums table { width: 100%; border-collapse: collapse; font-size: var(--fs-s); line-height: 1.45; font-variant-numeric: tabular-nums; }
+.rnums th, .rnums td { padding: 8px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.rnums thead th { color: var(--muted); font-weight: 600; white-space: nowrap; }
+.rnums tbody th { color: var(--ink); font-weight: 600; }
+.rnums tr.grp th { padding-top: 14px; background: var(--bg-soft); color: var(--muted); font-size: 0.75rem; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase; }
+.rnums td:nth-child(3), .rnums td:nth-child(4) { white-space: nowrap; }
+.rnums td:last-child { min-width: 16rem; }
+.rnums tbody:last-child tr:last-child > * { border-bottom: 0; }
+
+/* models.html: the page head ends with the seven tiles as the page's index (picture, name, score, kind);
+   each model's section below carries the rest. */
+.results-head .result-tiles { margin-top: clamp(32px, 4vw, 44px); }
+.results-head .result-tile .what, .results-head .result-tile .test { display: none; }
+.results-head .result-tile .interval { display: block; margin-top: 2px; }
+@media (max-width: 639px) {
+  .results-head .result-tile { grid-template-columns: 64px minmax(0, 1fr); padding: 12px; }
+  .results-head .result-tile > img { grid-row: 1 / span 4; width: 64px; height: 64px; }
+  .results-head .result-tile .score { font-size: 1.25rem; }
+  .results-head .result-tile .interval { display: inline; margin-left: 4px; }
+  .results-head .result-tile .tag { margin-top: 6px; }
+}
+@media (min-width: 900px) {
+  .results-head .result-tile > img { height: 150px; }
+  .results-head .result-tile h3 { margin-top: 14px; font-size: 1rem; }
+  .results-head .result-tile .score { font-size: 1.25rem; }
+  .results-head .result-tile .interval { margin-bottom: 12px; }
+}
+@media (min-width: 1180px) {
+  .results-head .result-tiles { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 14px; }
+  .results-head .result-tile, .results-head .result-tile:nth-child(n+5) { grid-column: auto; padding-bottom: 16px; }
+  .results-head .result-tile > img { height: 128px; }
+  .results-head .result-tile > :not(img):not(.pic-chip) { margin-inline: 14px; }
+  .results-head .result-tile h3 { font-size: 0.9375rem; }
+  .results-head .result-tile .score { font-size: 1.1875rem; }
+  .results-head .result-tile .interval { font-size: 0.75rem; }
+  .results-head .result-tile .tag { padding: 2px 8px 2px 6px; font-size: 0.6875rem; letter-spacing: 0.04em; }
+}
+
+/* A model section. Desktop: picture | name, summary and main results; then the breakdowns with the facts
+   beside them; then the numbers. Phone: name, picture, summary, charts, facts, numbers. */
+.model-sec { padding-block: clamp(48px, 6vw, 80px); border-top: 1px solid var(--line); scroll-margin-top: var(--head-h); }
+.model-sec.soft { background: var(--bg-soft); }
+.results-head + .model-sec { border-top: 0; }
+.model-top { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "name" "pic" "main"; gap: 20px 48px; }
+.model-name { grid-area: name; }
+.model-name h2 { margin: 0; }
+.model-name .eyebrow { margin-bottom: 8px; }
+.model-pic { grid-area: pic; align-self: start; }
+.model-pic > img { width: 100%; height: 200px; object-fit: contain; background: #000; }
+.model-pic > .pic-chip { top: 20px; bottom: auto; }
+.model-pic figcaption { margin-top: 10px; font-size: 0.75rem; line-height: 1.45; }
+.model-main { grid-area: main; min-width: 0; }
+.model-sum { margin: 0 0 20px; max-width: 68ch; font-size: var(--fs-m); line-height: 1.6; color: var(--text); }
+.model-more { display: grid; gap: 24px 40px; margin-top: 24px; }
+.model-bd { display: grid; gap: 20px; min-width: 0; align-content: start; }
+.model-facts { display: grid; gap: 24px 40px; align-content: start; min-width: 0; padding-top: 8px; }
+.model-facts h3 { margin: 0 0 10px; font-size: 1rem; line-height: 1.4; }
+.model-facts .short-list { margin: 0; padding-left: 1.1em; max-width: 68ch; font-size: 0.9375rem; line-height: 1.55; }
+.model-facts .short-list li { margin-bottom: 8px; }
+.model-facts .short-list li:last-child { margin-bottom: 0; }
+.model-facts .short-list li::marker { color: var(--muted); }
+.data-list { margin: 0; padding: 0; list-style: none; font-size: 0.9375rem; line-height: 1.45; }
+.data-list li { margin-bottom: 6px; }
+.data-list .lic { color: var(--muted); font-size: 0.8125rem; }
+.data-list .lic::before { content: "\00b7  "; white-space: pre; }
+.model-card { margin: 16px 0 0; }
+/* Phone: a small picture beside the name, its credit under them */
+@media (max-width: 639px) {
+  .model-top { grid-template-columns: 88px minmax(0, 1fr); grid-template-areas: "pic name" "cap cap" "main main"; gap: 12px 16px; align-items: center; }
+  .model-pic { display: contents; }
+  .model-pic > img { grid-area: pic; width: 88px; height: 88px; padding: 4px; object-fit: contain; background: var(--lightbox); border-radius: 10px; }
+  .model-pic > .pic-chip { display: none; }
+  .model-pic.lightbox figcaption { grid-area: cap; margin: 0; color: var(--muted); }
+  .model-pic figcaption a { color: var(--primary); }
+  .model-name h2 { font-size: 1.625rem; }
+  .model-main { margin-top: 8px; }
+}
+@media (min-width: 640px) { .model-more:not(.has-bd) .model-facts { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); } }
+@media (min-width: 900px) {
+  .model-top { grid-template-columns: 280px minmax(0, 1fr); grid-template-areas: "pic name" "pic main"; grid-template-rows: auto 1fr; row-gap: 14px; }
+  .model-pic > img { height: auto; }
+  .model-sum { font-size: var(--fs-l); line-height: 1.55; }
+}
+@media (min-width: 1100px) {
+  .model-more.has-bd { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+}

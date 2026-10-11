@@ -12,10 +12,11 @@
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
   <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
-  <meta name="theme-color" content="#08131f">
+  <meta name="theme-color" content="#ffffff">
   <link rel="preload" href="fonts/Inter-Variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/brand.css">
   <link rel="stylesheet" href="css/open.css">
+  <link rel="stylesheet" href="css/pages.css">
   <script defer src="js/nav.js"></script>
   <script type="module" src="js/open/viewer.js"></script>
   <script type="module" src="js/open/sample.js"></script>
@@ -28,69 +29,81 @@
   <a class="skip" href="#main">Skip to the content</a>
   <header class="site-head">
     <div class="site-head-in">
-      <a class="brand" href="index.html" aria-label="rAidiology home"><img src="img/logo.svg" width="32" height="32" alt="">rAidiology</a>
-      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <a class="brand" href="index.html" aria-label="rAidiology home"><img src="img/logo.svg" width="32" height="32" alt=""><span class="brand-name">rAidiology</span></a>
       <nav id="site-nav" class="site-nav" aria-label="Main">
-        <a href="index.html#scans">Scans we cover</a>
-        <a href="models.html">Research results</a>
-        <a href="run.html">Run it on your computer</a>
+        <a href="index.html#scans">Scans</a>
+        <a href="models.html">Research</a>
         <a href="pricing.html">Pricing</a>
         <a href="support.html">Support</a>
-        <a href="https://github.com/LunarWerxs/rAidiology">GitHub</a>
-        <a href="https://lunarwerx.com/discord/raidiology">Discord</a>
-        <a class="btn" href="open.html">Open a scan</a>
+        <a class="nav-extra" href="https://github.com/LunarWerxs/rAidiology">GitHub</a>
+        <a class="nav-extra" href="https://lunarwerx.com/discord/raidiology">Discord</a>
       </nav>
+      <div class="head-actions">
+        <a class="gh-link" href="https://github.com/LunarWerxs/rAidiology" aria-label="rAidiology on GitHub"><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+        <a class="btn small" href="open.html" aria-current="page">Open a scan</a>
+        <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu"><svg class="i-menu" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><svg class="i-close" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </div>
     </div>
   </header>
   <div class="start-over-row"><button class="btn quiet small" type="button" id="start-over" hidden>Open a different scan</button></div>
 
   <main id="main">
-    <section id="intake" class="pane">
-      <h1>Open your own scan</h1>
-      <p class="lede">Choose the disc or the ZIP your hospital gave you. Your browser opens it on
-        this device. Nothing is uploaded, and there is no account.</p>
-
-      <div class="drop" id="drop" tabindex="0" role="button" aria-describedby="drop-help">
-        <svg viewBox="0 0 24 24" aria-hidden="true" class="drop-icon"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-        <strong>Drop your scan folder or ZIP here</strong>
-        <span id="drop-help">or use a button below.</span>
-        <div class="pickers">
-          <button class="btn" type="button" id="pick-folder">Choose the disc or a folder</button>
-          <button class="btn quiet" type="button" id="pick-zip">Choose a ZIP file</button>
+    <section id="intake" class="pane intake">
+      <div class="page-head">
+        <div class="wrap">
+          <h1>Open your own scan</h1>
+          <p class="lede">Choose the disc or the ZIP your hospital gave you. Your browser opens it on this device. Nothing is uploaded, and there is no account.</p>
         </div>
       </div>
-
-      <p class="fine browser-asks">Your browser will ask whether this page may read the files.
-        Allowing it only lets the page read them.</p>
-
-      <p class="try">No scan to hand?
-        <button class="btn quiet" type="button" id="pick-sample">Try a sample scan</button></p>
-      <p class="try">Not at your computer? Open this page there, with your disc:
-        <a class="btn quiet small" id="send-self" href="mailto:">Email this page to yourself</a></p>
-
-      <details class="help">
-        <summary>Where is my scan? Step by step</summary>
-        <ol>
-          <li>Put the hospital's CD or DVD in this computer. A phone cannot read a disc.</li>
-          <li>Press <strong>Choose the disc or a folder</strong>, above.</li>
-          <li>In the window that opens, click the disc. It is often called D: or E:, or carries the
-            hospital's name. Then press the button at the bottom of that window.</li>
-          <li class="browser-asks">Your browser will ask whether this page may read the files. Say yes.
-            They stay on this computer.</li>
-        </ol>
-        <p>Got a ZIP from a patient portal instead? Press <strong>Choose a ZIP file</strong> and
-          pick it from your downloads.</p>
-        <p><strong>To check, turn off Wi-Fi and open your scan.</strong> It
-          still works, because the scan is read on this device.</p>
-      </details>
-
-      <p class="aside">This page shows you your pictures. It can also name each part of
-        the body you point at. It never says whether anything is wrong, and it is not a diagnosis.</p>
-
-      <div class="progress" id="progress" hidden role="status" aria-live="polite">
-        <p id="progress-text">Reading&hellip;</p>
-        <div class="track"><div class="fill" id="progress-fill"></div></div>
-        <button class="btn quiet small" type="button" id="cancel">Stop</button>
+      <div class="wrap intake-body">
+        <div class="intake-main">
+          <div class="drop" id="drop" tabindex="0" role="button" aria-describedby="drop-help">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="drop-icon"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            <strong>Drop your scan folder or ZIP here</strong>
+            <span id="drop-help">or use a button below.</span>
+            <div class="pickers">
+              <button class="btn" type="button" id="pick-folder">Choose the disc or a folder</button>
+              <button class="btn quiet" type="button" id="pick-zip">Choose a ZIP file</button>
+            </div>
+          </div>
+          <p class="fine browser-asks">Your browser will ask whether this page may read the files.
+            Allowing it only lets the page read them.</p>
+          <details class="help">
+            <summary>Where is my scan? Step by step</summary>
+            <ol>
+              <li>Put the hospital's CD or DVD in this computer. A phone cannot read a disc.</li>
+              <li>Press <strong>Choose the disc or a folder</strong>, above.</li>
+              <li>In the window that opens, click the disc. It is often called D: or E:, or carries the
+                hospital's name. Then press the button at the bottom of that window.</li>
+              <li class="browser-asks">Your browser will ask whether this page may read the files. Say yes.
+                They stay on this computer.</li>
+            </ol>
+            <p>Got a ZIP from a patient portal instead? Press <strong>Choose a ZIP file</strong> and
+              pick it from your downloads.</p>
+            <p><strong>To check, turn off Wi-Fi and open your scan.</strong> It
+              still works, because the scan is read on this device.</p>
+          </details>
+          <div class="progress" id="progress" hidden role="status" aria-live="polite">
+            <p id="progress-text">Reading&hellip;</p>
+            <div class="track"><div class="fill" id="progress-fill"></div></div>
+            <button class="btn quiet small" type="button" id="cancel">Stop</button>
+          </div>
+        </div>
+        <div class="intake-side">
+          <div class="card sample-card">
+            <figure class="lightbox">
+              <img src="img/sample-slice.webp" width="560" height="560" alt="One picture from the sample CT scan: a slice across the upper belly." loading="lazy">
+              <figcaption class="pic-chip">Sample CT</figcaption>
+            </figure>
+            <p class="try">No scan to hand? <button class="btn quiet" type="button" id="pick-sample">Try a sample scan</button></p>
+          </div>
+          <div class="card send-card">
+            <p class="try">Not at your computer? Open this page there, with your disc:
+              <!--email_off--><a class="btn quiet small" id="send-self" href="mailto:">Email this page to yourself</a><!--/email_off--></p>
+          </div>
+          <p class="aside">This page shows you your pictures. It can also name each part of
+            the body you point at. It never says whether anything is wrong, and it is not a diagnosis.</p>
+        </div>
       </div>
     </section>
 
@@ -172,9 +185,19 @@
 
   <footer class="site-foot">
     <div class="site-foot-in">
-      <p class="disclaim">Not a medical device. For education and research.</p>
-      <nav aria-label="Footer"><a href="health-data-privacy.html">Privacy</a><a href="pricing.html">Pricing</a><a href="support.html">Support</a><a href="https://github.com/LunarWerxs/rAidiology">GitHub</a><a href="https://lunarwerx.com/discord/raidiology">Discord</a><a href="donation.html">See or delete a donation</a></nav>
-      <p class="meta">&copy; 2026 LunarWerx</p>
+      <div class="foot-brand">
+        <a class="brand" href="index.html"><img src="img/logo.svg" width="28" height="28" alt=""><span class="brand-name">rAidiology</span></a>
+        <p class="disclaim">Not a medical device. For education and research.</p>
+        <p class="foot-legal">LunarWerx LLC is a for-profit company. Payments are not charitable donations and are not tax-deductible.</p>
+      </div>
+      <nav class="foot-cols" aria-label="Footer">
+        <div><h2>Product</h2><ul><li><a href="open.html">Open a scan</a></li><li><a href="index.html#scans">Scans we cover</a></li><li><a href="models.html">Research results</a></li><li><a href="run.html">Run it on your computer</a></li></ul></div>
+        <div><h2>Money</h2><ul><li><a href="pricing.html">Pricing</a></li><li><a href="support.html">Support the research</a></li></ul></div>
+        <div><h2>Project</h2><ul><li><a href="https://github.com/LunarWerxs/rAidiology">GitHub</a></li><li><a href="https://lunarwerx.com/discord/raidiology">Discord</a></li><li><a href="health-data-privacy.html">Privacy</a></li><li><a href="donation.html">See or delete a donation</a></li></ul></div>
+      </nav>
+      <div class="foot-base">
+        <p>&copy; 2026 LunarWerx LLC</p>
+      </div>
     </div>
   </footer>
 

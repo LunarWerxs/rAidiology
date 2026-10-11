@@ -35,32 +35,15 @@ document.addEventListener('click', (e) => {
   ev.userChoice.finally(() => setHidden(true));
 });
 
-function notice(worker) {
-  if (document.getElementById('update-ready')) return;
-  const bar = document.createElement('div');
-  bar.id = 'update-ready';
-  bar.setAttribute('role', 'status');
-  bar.style.cssText = 'position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:9999;background:#0b1a2b;color:#fff;padding:10px 14px;border-radius:8px;font:14px/1.3 system-ui,sans-serif;display:flex;gap:12px;align-items:center';
-  const t = document.createElement('span');
-  t.textContent = 'A new version is ready';
-  const btn = document.createElement('button');
-  btn.type = 'button';
-  btn.textContent = 'Reload';
-  btn.style.cssText = 'background:#fff;color:#0b1a2b;border:0;border-radius:6px;padding:6px 10px;font:inherit;cursor:pointer';
-  btn.addEventListener('click', () => {
-    navigator.serviceWorker.addEventListener('controllerchange', () => location.reload(), { once: true });
-    worker.postMessage('skip-waiting');
-  });
-  bar.append(t, btn);
-  document.body.appendChild(bar);
-}
-
+// A new version takes over by itself (sw.js skips waiting). A page opened a moment ago reloads once so
+// it and its styles come from the same version; a page in use (an open scan) is never reloaded.
 if ('serviceWorker' in navigator && window.isSecureContext) {
-  navigator.serviceWorker.register('sw.js').then((reg) => {
-    const watch = (w) => w.addEventListener('statechange', () => {
-      if (w.state === 'installed' && navigator.serviceWorker.controller) notice(w);
-    });
-    if (reg.waiting && navigator.serviceWorker.controller) notice(reg.waiting);
-    reg.addEventListener('updatefound', () => { if (reg.installing) watch(reg.installing); });
-  }).catch(() => {});
+  const updating = Boolean(navigator.serviceWorker.controller);
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!updating || performance.now() > 15000 || /open(\.html)?$/.test(location.pathname)) return;
+    if (sessionStorage.getItem('raidiology-reloaded')) return;
+    sessionStorage.setItem('raidiology-reloaded', '1');
+    location.reload();
+  });
+  navigator.serviceWorker.register('sw.js').catch(() => {});
 }

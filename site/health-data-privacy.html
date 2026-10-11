@@ -12,9 +12,10 @@
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
   <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
-  <meta name="theme-color" content="#08131f">
-    <link rel="stylesheet" href="css/open.css">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="preload" href="fonts/Inter-Variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/brand.css">
+  <link rel="stylesheet" href="css/pages.css">
   <script defer src="js/nav.js"></script>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="mobile-web-app-capable" content="yes">
@@ -25,123 +26,182 @@
   <a class="skip" href="#main">Skip to the content</a>
   <header class="site-head">
     <div class="site-head-in">
-      <a class="brand" href="index.html" aria-label="rAidiology home"><img src="img/logo.svg" width="32" height="32" alt="">rAidiology</a>
-      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <a class="brand" href="index.html" aria-label="rAidiology home"><img src="img/logo.svg" width="32" height="32" alt=""><span class="brand-name">rAidiology</span></a>
       <nav id="site-nav" class="site-nav" aria-label="Main">
-        <a href="index.html#scans">Scans we cover</a>
-        <a href="models.html">Research results</a>
-        <a href="run.html">Run it on your computer</a>
+        <a href="index.html#scans">Scans</a>
+        <a href="models.html">Research</a>
         <a href="pricing.html">Pricing</a>
         <a href="support.html">Support</a>
-        <a href="https://github.com/LunarWerxs/rAidiology">GitHub</a>
-        <a href="https://lunarwerx.com/discord/raidiology">Discord</a>
-        <a class="btn" href="open.html">Open a scan</a>
+        <a class="nav-extra" href="https://github.com/LunarWerxs/rAidiology">GitHub</a>
+        <a class="nav-extra" href="https://lunarwerx.com/discord/raidiology">Discord</a>
       </nav>
+      <div class="head-actions">
+        <a class="gh-link" href="https://github.com/LunarWerxs/rAidiology" aria-label="rAidiology on GitHub"><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+        <a class="btn small" href="open.html">Open a scan</a>
+        <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu"><svg class="i-menu" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><svg class="i-close" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </div>
     </div>
   </header>
 
   <main id="main">
-    <article class="pane">
-      <h1>Consumer Health Data Privacy Policy</h1>
-      <p class="fine">Version 1. Effective 4 October 2026. Last updated: October 2026.</p>
-
-      <h2>1. Who we are</h2>
-      <p>rAidiology, made by LunarWerx LLC (LunarWerx Studios). Contact: <a href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a>.
-        This is version 1 of this policy, effective 4 October 2026, last updated October 2026.</p>
-
-      <h2>2. What we collect and why</h2>
-      <p>Only if you choose to donate a scan, we collect:</p>
-      <ul>
-        <li>a de-identified medical scan you chose to send: the pictures and a few technical details
-          (body part, pixel size, slice positions, scanner make and model);</li>
-        <li>your sex and your age in years;</li>
-        <li>a consent record: the terms version, a hash of the panel's text, the month and year, a code
-          made from your donation number, and the list of series and tags sent.</li>
-      </ul>
-      <p>We use it to train and test rAidiology's scan-reading models, which are in products that may be
-        sold. Nothing else.</p>
-
-      <h2>3. Where it comes from</h2>
-      <p>Only from you, through your own browser.</p>
-
-      <h2>4. What we share and with whom</h2>
-      <p>No one but Connections Global LLC (a company with the same owner as rAidiology), which stores the encrypted files and runs the upload service
-        for us on Amazon Web Services, under a written processing agreement that lets it use them for
-        nothing else, and has no key to the files. Nevada's law counts even that as sharing, so the
-        donation panel asks for it in a box of its own. Cloudflare, Inc. serves these pages and receives
-        no donation.</p>
-
-      <h2>5. No sale, no advertising, no language models</h2>
-      <ul>
-        <li>We sell no personal data, to anyone, and so have no categories of it sold or buyers to list.</li>
-        <li>We process none for targeted advertising.</li>
-        <li>We profile no one.</li>
-        <li>We do not collect, use or sell personal data to train large language models. Donated scans
-          train only models that read medical images.</li>
-      </ul>
-
-      <h2>6. How it is processed</h2>
-      <p>Kept locked in storage, and unlocked only on the maintainer's own computer to train and test models.
-        Unlocked copies are never uploaded anywhere and never shown to an AI assistant or outside
-        service. Access is limited to the people who train the models, each under a duty of
-        confidentiality.</p>
-
-      <h2>7. Tracking</h2>
-      <p>No third party collects anything over time or across sites from our pages: no analytics, no
-        advertising, no trackers.</p>
-
-      <h2>8. Your rights and how to use them</h2>
-      <p>No account is needed. With your donation number, at <a href="donation.html">the donation page</a>, you can:</p>
-      <ul>
-        <li>confirm we hold your scan, and open or save a copy of it in a usable format (the DICOM files
-          as sent);</li>
-        <li>save a copy of the permission you gave;</li>
-        <li>delete it, which also withdraws your consent;</li>
-        <li>get a list of anyone we shared it with (always only Connections Global LLC and Amazon Web
-          Services, as above).</li>
-      </ul>
-      <p>Without the number, open the same scan on that page; it makes a code from the pictures to send
-        us, and we search the locked donations for it. Or write to
-        <a href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a>.</p>
-      <ul>
-        <li><strong>Timing:</strong> we answer within 45 days (once extendable by 45 with notice) and
-          delete within 30. Requests are free, twice a year or more.</li>
-        <li><strong>Email requests:</strong> the thread is deleted once the request is closed. We never
-          send a scan by email.</li>
-        <li><strong>Reviewing and changing your data:</strong> you review it by opening the copy above.
-          There is no process to change a donated scan, since it is what the hospital made; to correct
-          anything, delete it and, if you like, donate again.</li>
-      </ul>
-
-      <h2>9. Appeals</h2>
-      <p>If we refuse a request, reply "appeal"; we answer in writing within 45 days, and if we still
-        refuse, we give the attorney general's complaint page (Washington: atg.wa.gov; Nevada: ag.nv.gov;
-        Connecticut: portal.ct.gov/ag; any other state: its attorney general).</p>
-
-      <h2>10. Changes</h2>
-      <p>A new version is posted here with its date. We cannot tell donors one by one, since we hold no
-        way to reach them. A change in how donated scans are used applies only to scans donated after it;
-        scans already given stay under the terms they were given under.</p>
-
-      <h2>11. Sale of the business</h2>
-      <p>If rAidiology changes hands, donated scans go only to a buyer who keeps these terms.</p>
-
-      <h2>12. Never re-identified</h2>
-      <p>We commit publicly to process donated scans only in de-identified form and never to try to
-        identify anyone; anyone we ever pass them to (today, no one) must promise the same.</p>
-
-      <h2>13. Texas notice</h2>
-      <p>The only electronic disclosure of donated health information is to Connections Global LLC for
-        storage on Amazon Web Services, under
-        the separate permission each donor gives in the donation panel's third box.</p>
+    <article>
+      <header class="page-head">
+        <div class="wrap">
+          <h1>Consumer Health Data Privacy Policy</h1>
+          <p class="fine policy-meta">Version 1. Effective 4 October 2026. Last updated: October 2026.</p>
+        </div>
+      </header>
+      <div class="sec">
+        <div class="wrap">
+          <section class="policy-sec" id="who">
+            <h2>1. Who we are</h2>
+            <div class="policy-body">
+              <p>rAidiology, made by LunarWerx LLC (LunarWerx Studios). Contact: <!--email_off--><a href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a><!--/email_off-->.
+                This is version 1 of this policy, effective 4 October 2026, last updated October 2026.</p>
+            </div>
+          </section>
+          <section class="policy-sec" id="collect">
+            <h2>2. What we collect and why</h2>
+            <div class="policy-body">
+              <p>Only if you choose to donate a scan, we collect:</p>
+              <ul>
+                <li>a de-identified medical scan you chose to send: the pictures and a few technical details
+                  (body part, pixel size, slice positions, scanner make and model);</li>
+                <li>your sex and your age in years;</li>
+                <li>a consent record: the terms version, a hash of the panel's text, the month and year, a code
+                  made from your donation number, and the list of series and tags sent.</li>
+              </ul>
+              <p>We use it to train and test rAidiology's scan-reading models, which are in products that may be
+                sold. Nothing else.</p>
+            </div>
+          </section>
+          <section class="policy-sec" id="source">
+            <h2>3. Where it comes from</h2>
+            <div class="policy-body">
+              <p>Only from you, through your own browser.</p>
+            </div>
+          </section>
+          <section class="policy-sec" id="share">
+            <h2>4. What we share and with whom</h2>
+            <div class="policy-body">
+              <p>No one but Connections Global LLC (a company with the same owner as rAidiology), which stores the encrypted files and runs the upload service
+                for us on Amazon Web Services, under a written processing agreement that lets it use them for
+                nothing else, and has no key to the files. Nevada's law counts even that as sharing, so the
+                donation panel asks for it in a box of its own. Cloudflare, Inc. serves these pages and receives
+                no donation.</p>
+            </div>
+          </section>
+          <section class="policy-sec" id="no-sale">
+            <h2>5. No sale, no advertising, no language models</h2>
+            <div class="policy-body">
+              <ul>
+                <li>We sell no personal data, to anyone, and so have no categories of it sold or buyers to list.</li>
+                <li>We process none for targeted advertising.</li>
+                <li>We profile no one.</li>
+                <li>We do not collect, use or sell personal data to train large language models. Donated scans
+                  train only models that read medical images.</li>
+              </ul>
+            </div>
+          </section>
+          <section class="policy-sec" id="processing">
+            <h2>6. How it is processed</h2>
+            <div class="policy-body">
+              <p>Kept locked in storage, and unlocked only on the maintainer's own computer to train and test models.
+                Unlocked copies are never uploaded anywhere and never shown to an AI assistant or outside
+                service. Access is limited to the people who train the models, each under a duty of
+                confidentiality.</p>
+            </div>
+          </section>
+          <section class="policy-sec" id="tracking">
+            <h2>7. Tracking</h2>
+            <div class="policy-body">
+              <p>No third party collects anything over time or across sites from our pages: no analytics, no
+                advertising, no trackers.</p>
+            </div>
+          </section>
+          <section class="policy-sec" id="rights">
+            <h2>8. Your rights and how to use them</h2>
+            <div class="policy-body">
+              <p>No account is needed. With your donation number, at <a href="donation.html">the donation page</a>, you can:</p>
+              <ul>
+                <li>confirm we hold your scan, and open or save a copy of it in a usable format (the DICOM files
+                  as sent);</li>
+                <li>save a copy of the permission you gave;</li>
+                <li>delete it, which also withdraws your consent;</li>
+                <li>get a list of anyone we shared it with (always only Connections Global LLC and Amazon Web
+                  Services, as above).</li>
+              </ul>
+              <p>Without the number, open the same scan on that page; it makes a code from the pictures to send
+                us, and we search the locked donations for it. Or write to
+                <!--email_off--><a href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a><!--/email_off-->.</p>
+              <ul>
+                <li><strong>Timing:</strong> we answer within 45 days (once extendable by 45 with notice) and
+                  delete within 30. Requests are free, twice a year or more.</li>
+                <li><strong>Email requests:</strong> the thread is deleted once the request is closed. We never
+                  send a scan by email.</li>
+                <li><strong>Reviewing and changing your data:</strong> you review it by opening the copy above.
+                  There is no process to change a donated scan, since it is what the hospital made; to correct
+                  anything, delete it and, if you like, donate again.</li>
+              </ul>
+            </div>
+          </section>
+          <section class="policy-sec" id="appeals">
+            <h2>9. Appeals</h2>
+            <div class="policy-body">
+              <p>If we refuse a request, reply "appeal"; we answer in writing within 45 days, and if we still
+                refuse, we give the attorney general's complaint page (Washington: atg.wa.gov; Nevada: ag.nv.gov;
+                Connecticut: portal.ct.gov/ag; any other state: its attorney general).</p>
+            </div>
+          </section>
+          <section class="policy-sec" id="changes">
+            <h2>10. Changes</h2>
+            <div class="policy-body">
+              <p>A new version is posted here with its date. We cannot tell donors one by one, since we hold no
+                way to reach them. A change in how donated scans are used applies only to scans donated after it;
+                scans already given stay under the terms they were given under.</p>
+            </div>
+          </section>
+          <section class="policy-sec" id="sale-of-business">
+            <h2>11. Sale of the business</h2>
+            <div class="policy-body">
+              <p>If rAidiology changes hands, donated scans go only to a buyer who keeps these terms.</p>
+            </div>
+          </section>
+          <section class="policy-sec" id="re-identification">
+            <h2>12. Never re-identified</h2>
+            <div class="policy-body">
+              <p>We commit publicly to process donated scans only in de-identified form and never to try to
+                identify anyone; anyone we ever pass them to (today, no one) must promise the same.</p>
+            </div>
+          </section>
+          <section class="policy-sec" id="texas">
+            <h2>13. Texas notice</h2>
+            <div class="policy-body">
+              <p>The only electronic disclosure of donated health information is to Connections Global LLC for
+                storage on Amazon Web Services, under
+                the separate permission each donor gives in the donation panel's third box.</p>
+            </div>
+          </section>
+        </div>
+      </div>
     </article>
   </main>
 
   <footer class="site-foot">
     <div class="site-foot-in">
-      <p class="disclaim">Not a medical device. For education and research.</p>
-      <nav aria-label="Footer"><a href="health-data-privacy.html">Privacy</a><a href="pricing.html">Pricing</a><a href="support.html">Support</a><a href="https://github.com/LunarWerxs/rAidiology">GitHub</a><a href="https://lunarwerx.com/discord/raidiology">Discord</a><a href="donation.html">See or delete a donation</a></nav>
-      <p class="meta">&copy; 2026 LunarWerx</p>
+      <div class="foot-brand">
+        <a class="brand" href="index.html"><img src="img/logo.svg" width="28" height="28" alt=""><span class="brand-name">rAidiology</span></a>
+        <p class="disclaim">Not a medical device. For education and research.</p>
+        <p class="foot-legal">LunarWerx LLC is a for-profit company. Payments are not charitable donations and are not tax-deductible.</p>
+      </div>
+      <nav class="foot-cols" aria-label="Footer">
+        <div><h2>Product</h2><ul><li><a href="open.html">Open a scan</a></li><li><a href="index.html#scans">Scans we cover</a></li><li><a href="models.html">Research results</a></li><li><a href="run.html">Run it on your computer</a></li></ul></div>
+        <div><h2>Money</h2><ul><li><a href="pricing.html">Pricing</a></li><li><a href="support.html">Support the research</a></li></ul></div>
+        <div><h2>Project</h2><ul><li><a href="https://github.com/LunarWerxs/rAidiology">GitHub</a></li><li><a href="https://lunarwerx.com/discord/raidiology">Discord</a></li><li><a href="health-data-privacy.html">Privacy</a></li><li><a href="donation.html">See or delete a donation</a></li></ul></div>
+      </nav>
+      <div class="foot-base">
+        <p>&copy; 2026 LunarWerx LLC</p>
+      </div>
     </div>
   </footer>
 </body>

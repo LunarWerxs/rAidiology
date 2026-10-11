@@ -1,11 +1,13 @@
 // rAidiology service worker. The precache list and version are written by release/site/build_sw.py.
 // precache:start
-const VERSION = 'cb108d6bd771';
+const VERSION = '3c69ab866017';
 const PRECACHE = [
   './css/brand.css',
   './css/home.css',
   './css/money.css',
   './css/open.css',
+  './css/pages.css',
+  './css/results.css',
   './css/style.css',
   './data/models/skeleton.glb',
   './data/models/skeleton.json',
@@ -14,9 +16,7 @@ const PRECACHE = [
   './donation.html',
   './fonts/Inter-Variable.woff2',
   './fonts/OFL-Inter.txt',
-  './fonts/OFL-SourceSerif4.txt',
   './fonts/SOURCES.json',
-  './fonts/SourceSerif4-Variable.woff2',
   './health-data-privacy.html',
   './img/apple-touch-icon.png',
   './img/favicon.svg',
@@ -78,12 +78,24 @@ const PRECACHE = [
 const CACHE = 'raidiology-' + VERSION;
 const BYPASS = ['/api/', '/report', '/data/report', '/data/meshes/', '/data/stacks/', '/launcher/'];
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(PRECACHE)));
-});
+const FRESH = /\.(?:html|css|js|mjs|json|webmanifest)$/;
 
-self.addEventListener('message', (event) => {
-  if (event.data === 'skip-waiting') self.skipWaiting();
+function networkFirst(request, fallback) {
+  return fetch(request).then((res) => {
+    if (res.ok && res.type === 'basic' && !res.redirected) {
+      const copy = res.clone();
+      caches.open(CACHE).then((c) => c.put(request, copy));
+    }
+    return res;
+  }).catch(() => caches.match(request, { ignoreSearch: true })
+    .then((hit) => hit || (fallback ? caches.match(fallback) : Response.error())));
+}
+
+// A new version takes over at once. Waiting for a click left an open page with the new HTML and the old
+// cached stylesheets and scripts, which is a broken page.
+self.addEventListener('install', (event) => {
+  self.skipWaiting();
+  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(PRECACHE)));
 });
 
 self.addEventListener('activate', (event) => {
@@ -103,10 +115,14 @@ self.addEventListener('fetch', (event) => {
   const rel = '/' + url.pathname.slice(scope.length);
   if (BYPASS.some((p) => rel.startsWith(p))) return;
 
+  // Pages and the code and data that draw them come from the network first, so a deploy never meets an
+  // older stylesheet or script; the cache answers only when the network does not (offline).
   if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request).catch(() => caches.match(request, { ignoreSearch: true }).then((r) => r || caches.match('./index.html')))
-    );
+    event.respondWith(networkFirst(request, './index.html'));
+    return;
+  }
+  if (FRESH.test(url.pathname)) {
+    event.respondWith(networkFirst(request, null));
     return;
   }
   if (rel.startsWith('/sample/')) {

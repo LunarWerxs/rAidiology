@@ -12,11 +12,11 @@
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
   <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
-  <meta name="theme-color" content="#08131f">
+  <meta name="theme-color" content="#ffffff">
   <link rel="preload" href="fonts/Inter-Variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/brand.css">
   <link rel="stylesheet" href="css/home.css">
-  <link rel="stylesheet" href="css/money.css">
+  <link rel="stylesheet" href="css/results.css">
   <script defer src="js/nav.js"></script>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="mobile-web-app-capable" content="yes">
@@ -27,33 +27,40 @@
   <a class="skip" href="#main">Skip to the content</a>
   <header class="site-head">
     <div class="site-head-in">
-      <a class="brand" href="index.html" aria-label="rAidiology home"><img src="img/logo.svg" width="32" height="32" alt="">rAidiology</a>
-      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <a class="brand" href="index.html" aria-label="rAidiology home" aria-current="page"><img src="img/logo.svg" width="32" height="32" alt=""><span class="brand-name">rAidiology</span></a>
       <nav id="site-nav" class="site-nav" aria-label="Main">
-        <a href="index.html#scans">Scans we cover</a>
-        <a href="models.html">Research results</a>
-        <a href="run.html">Run it on your computer</a>
+        <a href="index.html#scans">Scans</a>
+        <a href="models.html">Research</a>
         <a href="pricing.html">Pricing</a>
         <a href="support.html">Support</a>
-        <a href="https://github.com/LunarWerxs/rAidiology">GitHub</a>
-        <a href="https://lunarwerx.com/discord/raidiology">Discord</a>
-        <a class="btn" href="open.html">Open a scan</a>
+        <a class="nav-extra" href="https://github.com/LunarWerxs/rAidiology">GitHub</a>
+        <a class="nav-extra" href="https://lunarwerx.com/discord/raidiology">Discord</a>
       </nav>
+      <div class="head-actions">
+        <a class="gh-link" href="https://github.com/LunarWerxs/rAidiology" aria-label="rAidiology on GitHub"><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+        <a class="btn small" href="open.html">Open a scan</a>
+        <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menu"><svg class="i-menu" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><svg class="i-close" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </div>
     </div>
   </header>
 
   <main id="main">
-    <section class="hero dark" id="top">
+    <section class="hero" id="top">
       <div class="wrap hero-grid">
-        <div>
+        <div class="hero-copy">
           <p class="eyebrow">Open source, for education and research</p>
           <h1>Open your own scans in your browser.</h1>
           <p class="lede">CT, MRI and X-ray pictures from your own disc or ZIP, shown on your device, next to seven open research models for X-ray, CT, MRI and mammogram pictures. Nothing is uploaded.</p>
           <p class="actions"><a class="btn" href="open.html">Open a scan</a>
-            <a class="btn quiet" href="open.html?sample=1">Try the sample scan</a></p>
+            <a class="btn secondary" href="open.html?sample=1">Try the sample scan</a></p>
+          <ul class="hero-facts">
+            <li>Free for personal use</li>
+            <li>Works offline</li>
+            <li>No account</li>
+          </ul>
         </div>
         <div class="hero-mosaic">
-          <div class="mosaic">
+          <div class="lightbox"><div class="mosaic">
             <figure class="tile m-organs"><img src="img/scans/ct-organs.webp" width="720" height="900" alt="Coronal CT slice through the chest and abdomen with the lungs, heart, liver, kidneys, spleen, spine and pelvis coloured by organ." loading="eager"><figcaption>CT · organs</figcaption></figure>
             <figure class="tile m-mri"><img src="img/scans/mri-spine.webp" width="640" height="900" alt="Side-on MRI of the lower spine with each vertebra and disc coloured separately." loading="eager"><figcaption>MRI · spine</figcaption></figure>
             <figure class="tile m-chest"><img src="img/scans/xray-chest.webp" width="800" height="800" alt="Front-view chest X-ray showing both lungs, the heart and the ribs." loading="eager"><figcaption>X-ray · chest</figcaption></figure>
@@ -61,13 +68,13 @@
             <figure class="tile m-wrist"><img src="img/scans/xray-wrist.webp" width="720" height="900" alt="X-ray of a child&#x27;s wrist and forearm bones." loading="lazy"><figcaption>X-ray · wrist</figcaption></figure>
             <figure class="tile m-mammo"><img src="img/scans/mammogram.webp" width="720" height="900" alt="Mammogram picture showing the tissue of one breast." loading="lazy"><figcaption>Mammogram</figcaption></figure>
             <figure class="tile m-spine"><img src="img/scans/xray-spine.webp" width="640" height="900" alt="Side-view X-ray of the lower spine." loading="lazy"><figcaption>X-ray · spine</figcaption></figure>
-          </div>
+          </div></div>
           <p class="credit">Pictures from public datasets under CC BY and similar licences. <a href="#credits" id="credits-link">Picture credits</a></p>
         </div>
       </div>
     </section>
 
-    <section class="sec dark alt band" id="numbers" aria-labelledby="numbers-h">
+    <section class="numbers soft" id="numbers" aria-labelledby="numbers-h">
       <div class="wrap">
         <h2 id="numbers-h" class="sr">What was built, in numbers</h2>
         <!-- chart:band -->
@@ -80,101 +87,87 @@
       <div class="wrap">
         <div class="sec-head">
           <p class="eyebrow">Scans we cover</p>
-          <h2 id="scans-h">X-ray, CT, MRI and mammogram, in one place.</h2>
-          <p class="lede">Each kind of scan has a viewer and open research models trained on public data. Pick one to see what the models do and how they scored.</p>
+          <h2 id="scans-h">X-ray, CT, MRI and mammogram.</h2>
+          <p>Each kind of scan opens in the viewer, and each has open research models trained on public data.</p>
         </div>
-        <ul class="card-grid two-up">
+        <ul class="card-grid two-up scan-grid">
         <li class="card scan-card">
-          <div class="scan-pics"><figure class="tile "><img src="img/scans/xray-chest.webp" width="800" height="800" alt="Front-view chest X-ray showing both lungs, the heart and the ribs." loading="lazy"><figcaption>X-ray · chest</figcaption></figure><figure class="tile "><img src="img/scans/xray-wrist.webp" width="720" height="900" alt="X-ray of a child&#x27;s wrist and forearm bones." loading="lazy"><figcaption>X-ray · wrist</figcaption></figure><figure class="tile "><img src="img/scans/xray-spine.webp" width="640" height="900" alt="Side-view X-ray of the lower spine." loading="lazy"><figcaption>X-ray · spine</figcaption></figure></div>
+          <div class="scan-pics"><figure class="tile"><img src="img/scans/xray-chest.webp" width="800" height="800" alt="Front-view chest X-ray showing both lungs, the heart and the ribs." loading="lazy"><figcaption>Chest</figcaption></figure><figure class="tile"><img src="img/scans/xray-wrist.webp" width="720" height="900" alt="X-ray of a child&#x27;s wrist and forearm bones." loading="lazy"><figcaption>Wrist</figcaption></figure><figure class="tile"><img src="img/scans/xray-spine.webp" width="640" height="900" alt="Side-view X-ray of the lower spine." loading="lazy"><figcaption>Spine</figcaption></figure></div>
           <div class="scan-body">
             <h3>X-ray</h3>
-            <p class="label">What the viewer shows</p>
-            <p>Single pictures and series: zoom and brightness. Chest, wrist and spine pictures are shown here.</p>
-            <p class="label">Research models</p>
-            <ul class="model-links"><li><a href="models.html#chest-xray">Chest X-ray research model</a></li><li><a href="models.html#fracture-detector">Fracture research model (X-ray)</a></li><li><a href="models.html#spine-xray-corners">Lumbar spine X-ray corner reader</a></li></ul>
+            <p>The viewer opens single pictures and series, with zoom and brightness.</p>
+            <div class="scan-models">
+              <p class="label">Research models</p>
+              <ul class="chips"><li><a class="chip" href="models.html#chest-xray">Chest X-ray research model</a></li><li><a class="chip" href="models.html#fracture-detector">Fracture research model (X-ray)</a></li><li><a class="chip" href="models.html#spine-xray-corners">Lumbar spine X-ray corner reader</a></li></ul>
+            </div>
           </div>
         </li>
         <li class="card scan-card">
-          <div class="scan-pics"><figure class="tile "><img src="img/scans/ct-organs.webp" width="720" height="900" alt="Coronal CT slice through the chest and abdomen with the lungs, heart, liver, kidneys, spleen, spine and pelvis coloured by organ." loading="lazy"><figcaption>CT · organs</figcaption></figure><figure class="tile "><img src="img/scans/ct-lungs.webp" width="800" height="800" alt="CT slice across the chest in a lung window, showing both lungs and the heart." loading="lazy"><figcaption>CT · lungs</figcaption></figure></div>
+          <div class="scan-pics"><figure class="tile"><img src="img/scans/ct-organs.webp" width="720" height="900" alt="Coronal CT slice through the chest and abdomen with the lungs, heart, liver, kidneys, spleen, spine and pelvis coloured by organ." loading="lazy"><figcaption>Organs</figcaption></figure><figure class="tile"><img src="img/scans/ct-lungs.webp" width="800" height="800" alt="CT slice across the chest in a lung window, showing both lungs and the heart." loading="lazy"><figcaption>Lungs</figcaption></figure></div>
           <div class="scan-body">
             <h3>CT</h3>
-            <p class="label">What the viewer shows</p>
             <p>Scroll through the slices, change the brightness window and zoom. The 3D sample shows the organs and bones as coloured shapes.</p>
-            <p class="label">Research models</p>
-            <ul class="model-links"><li><a href="models.html#ct-segmenter">CT organ outliner</a></li><li><a href="models.html#lung-nodules">Lung nodule research model (CT)</a></li></ul>
+            <div class="scan-models">
+              <p class="label">Research models</p>
+              <ul class="chips"><li><a class="chip" href="models.html#ct-segmenter">CT organ outliner</a></li><li><a class="chip" href="models.html#lung-nodules">Lung nodule research model (CT)</a></li></ul>
+            </div>
           </div>
         </li>
         <li class="card scan-card">
-          <div class="scan-pics single"><figure class="tile "><img src="img/scans/mri-spine.webp" width="640" height="900" alt="Side-on MRI of the lower spine with each vertebra and disc coloured separately." loading="lazy"><figcaption>MRI · spine</figcaption></figure></div>
+          <div class="scan-pics single"><figure class="tile"><img src="img/scans/mri-spine.webp" width="640" height="900" alt="Side-on MRI of the lower spine with each vertebra and disc coloured separately." loading="lazy"><figcaption>Lower spine</figcaption></figure></div>
           <div class="scan-body">
             <h3>MRI</h3>
-            <p class="label">What the viewer shows</p>
             <p>Scroll through the slices of a spine MRI, with zoom and brightness. Discs and vertebrae can be coloured by name.</p>
-            <p class="label">Research models</p>
-            <ul class="model-links"><li><a href="models.html#disc-grader">Disc grading research model (MRI)</a></li></ul>
+            <div class="scan-models">
+              <p class="label">Research models</p>
+              <ul class="chips"><li><a class="chip" href="models.html#disc-grader">Disc grading research model (MRI)</a></li></ul>
+            </div>
           </div>
         </li>
         <li class="card scan-card">
-          <div class="scan-pics single"><figure class="tile "><img src="img/scans/mammogram.webp" width="720" height="900" alt="Mammogram picture showing the tissue of one breast." loading="lazy"><figcaption>Mammogram</figcaption></figure></div>
+          <div class="scan-pics single"><figure class="tile"><img src="img/scans/mammogram.webp" width="720" height="900" alt="Mammogram picture showing the tissue of one breast." loading="lazy"><figcaption>One view</figcaption></figure></div>
           <div class="scan-body">
             <h3>Mammogram</h3>
-            <p class="label">What the viewer shows</p>
             <p>Opens the picture for zoom and brightness, like any other X-ray style picture.</p>
-            <p class="label">Research models</p>
-            <ul class="model-links"><li><a href="models.html#mammography">Mammogram research model</a></li></ul>
+            <div class="scan-models">
+              <p class="label">Research models</p>
+              <ul class="chips"><li><a class="chip" href="models.html#mammography">Mammogram research model</a></li></ul>
+            </div>
           </div>
         </li>
         </ul>
       </div>
     </section>
 
-    <section class="sec" id="results" aria-labelledby="results-h">
-      <div class="wrap results-grid">
+    <section class="sec soft" id="results" aria-labelledby="results-h">
+      <div class="wrap">
         <div class="sec-head">
           <p class="eyebrow">Research results</p>
           <h2 id="results-h">One result from each research model.</h2>
-          <p class="how-to">Each row is one result: the dot is the score and the line is its 95% interval, the range the score would most likely fall in on new data.<br>
-            A filled dot is a held-out test, data the model never saw while training. A hollow dot is development data.</p>
           <p class="callout">Research results on public test data. They say nothing about your own scan.</p>
         </div>
-        <!-- chart:home-headlines -->
-<figure class="chart chart-n4"><div class="chart-panel"><svg class="dc-n" viewBox="0 0 400 637" role="img" aria-labelledby="home-auroc-t home-auroc-d" xmlns="http://www.w3.org/2000/svg" font-family="Inter, system-ui, sans-serif"><title id="home-auroc-t">AUROC, 0.5 to 1</title><desc id="home-auroc-d">Dot and interval chart. Filled dot: held-out test. Hollow dot: development. Chest X-ray research model: Agreement with ChestX-ray14&#x27;s labels, mean over its 14 label types: 0.818 (95% interval 0.811 to 0.823); Fracture research model (X-ray): Agreement with GRAZPEDWRI-DX&#x27;s fracture labels, children&#x27;s wrists: 0.979 (95% interval 0.974 to 0.984); Mammogram research model: Agreement with CMMD&#x27;s benign/malignant labels, per picture: 0.793 (95% interval 0.774 to 0.811). Research results on public test data.</desc><text x="18" y="21" font-size="19" font-weight="700" fill="#0b1a2b">AUROC, 0.5 to 1</text><line x1="44.0" y1="34" x2="44.0" y2="571" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="4 4"/><line x1="200.0" y1="34" x2="200.0" y2="571" stroke="#cbd5e1" stroke-width="1"/><line x1="356.0" y1="34" x2="356.0" y2="571" stroke="#cbd5e1" stroke-width="1"/><text x="18" y="63" font-size="19" font-weight="700" fill="#536274">Held-out test</text><text x="18" y="94" font-size="19" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">Chest X-ray research model:</text><text x="18" y="119" font-size="19" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">Agreement with ChestX-ray14&#x27;s</text><text x="18" y="144" font-size="19" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">labels, mean over its 14 label</text><text x="18" y="169" font-size="19" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">types</text><text x="18" y="194" font-size="19" font-weight="600" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">0.818<tspan font-weight="400" fill="#536274"> (0.811 to 0.823)</tspan></text><line x1="44" y1="214" x2="356" y2="214" stroke="#e2e8f0" stroke-width="1"/><line x1="233.1" y1="214" x2="251.1" y2="214" stroke="#0e8f8f" stroke-width="2.5"/><line x1="233.1" y1="206" x2="233.1" y2="222" stroke="#0e8f8f" stroke-width="2.5"/><line x1="251.1" y1="206" x2="251.1" y2="222" stroke="#0e8f8f" stroke-width="2.5"/><circle cx="242.1" cy="214" r="3.2" fill="#0e8f8f" stroke="#0e8f8f" stroke-width="2"/><text x="18" y="249" font-size="19" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">Fracture research model (X-ray):</text><text x="18" y="274" font-size="19" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">Agreement with GRAZPEDWRI-DX&#x27;s</text><text x="18" y="299" font-size="19" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">fracture labels, children&#x27;s</text><text x="18" y="324" font-size="19" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">wrists</text><text x="18" y="349" font-size="19" font-weight="600" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">0.979<tspan font-weight="400" fill="#536274"> (0.974 to 0.984)</tspan></text><line x1="44" y1="369" x2="356" y2="369" stroke="#e2e8f0" stroke-width="1"/><line x1="333.9" y1="369" x2="351.9" y2="369" stroke="#0e8f8f" stroke-width="2.5"/><line x1="333.9" y1="361" x2="333.9" y2="377" stroke="#0e8f8f" stroke-width="2.5"/><line x1="351.9" y1="361" x2="351.9" y2="377" stroke="#0e8f8f" stroke-width="2.5"/><circle cx="342.9" cy="369" r="3.2" fill="#0e8f8f" stroke="#0e8f8f" stroke-width="2"/><text x="18" y="404" font-size="19" font-weight="700" fill="#536274">Development</text><text x="18" y="435" font-size="19" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">Mammogram research model:</text><text x="18" y="460" font-size="19" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">Agreement with CMMD&#x27;s</text><text x="18" y="485" font-size="19" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">benign/malignant labels, per</text><text x="18" y="510" font-size="19" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">picture</text><text x="18" y="535" font-size="19" font-weight="600" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">0.793<tspan font-weight="400" fill="#536274"> (0.774 to 0.811)</tspan></text><line x1="44" y1="555" x2="356" y2="555" stroke="#e2e8f0" stroke-width="1"/><line x1="215.0" y1="555" x2="238.1" y2="555" stroke="#0e8f8f" stroke-width="2.5"/><line x1="215.0" y1="547" x2="215.0" y2="563" stroke="#0e8f8f" stroke-width="2.5"/><line x1="238.1" y1="547" x2="238.1" y2="563" stroke="#0e8f8f" stroke-width="2.5"/><circle cx="226.8" cy="555" r="3.2" fill="#ffffff" stroke="#0e8f8f" stroke-width="2"/><line x1="18" y1="577" x2="382" y2="577" stroke="#536274" stroke-width="1"/><text x="44.0" y="600" font-size="19" fill="#536274" text-anchor="middle">0.5</text><text x="200.0" y="600" font-size="19" fill="#536274" text-anchor="middle">0.75</text><text x="356.0" y="600" font-size="19" fill="#536274" text-anchor="middle">1</text><text x="18" y="625" font-size="19" fill="#536274">coin toss (0.5)</text></svg><svg class="dc-w" viewBox="0 0 760 634" role="img" aria-labelledby="home-auroc-w-t home-auroc-w-d" xmlns="http://www.w3.org/2000/svg" font-family="Inter, system-ui, sans-serif"><title id="home-auroc-w-t">AUROC, 0.5 to 1</title><desc id="home-auroc-w-d">Dot and interval chart. Filled dot: held-out test. Hollow dot: development. Chest X-ray research model: Agreement with ChestX-ray14&#x27;s labels, mean over its 14 label types: 0.818 (95% interval 0.811 to 0.823); Fracture research model (X-ray): Agreement with GRAZPEDWRI-DX&#x27;s fracture labels, children&#x27;s wrists: 0.979 (95% interval 0.974 to 0.984); Mammogram research model: Agreement with CMMD&#x27;s benign/malignant labels, per picture: 0.793 (95% interval 0.774 to 0.811). Research results on public test data.</desc><text x="0" y="22" font-size="20" font-weight="700" fill="#0b1a2b">AUROC, 0.5 to 1</text><line x1="262.0" y1="34" x2="262.0" y2="566" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="4 4"/><line x1="362.0" y1="34" x2="362.0" y2="566" stroke="#cbd5e1" stroke-width="1"/><line x1="462.0" y1="34" x2="462.0" y2="566" stroke="#cbd5e1" stroke-width="1"/><text x="0" y="64" font-size="20" font-weight="700" fill="#536274">Held-out test</text><text x="0" y="96" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">Chest X-ray research</text><text x="0" y="122" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">model: Agreement with</text><text x="0" y="148" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">ChestX-ray14&#x27;s labels,</text><text x="0" y="174" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">mean over its 14 label</text><text x="0" y="200" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">types</text><text x="498" y="102" font-size="20" font-weight="600" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">0.818<tspan font-weight="400" fill="#536274"> (0.811 to 0.823)</tspan></text><line x1="262" y1="96" x2="462" y2="96" stroke="#e2e8f0" stroke-width="1"/><line x1="380.0" y1="96" x2="398.0" y2="96" stroke="#0e8f8f" stroke-width="2.5"/><line x1="380.0" y1="88" x2="380.0" y2="104" stroke="#0e8f8f" stroke-width="2.5"/><line x1="398.0" y1="88" x2="398.0" y2="104" stroke="#0e8f8f" stroke-width="2.5"/><circle cx="389.0" cy="96" r="3.2" fill="#0e8f8f" stroke="#0e8f8f" stroke-width="2"/><text x="0" y="240" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">Fracture research</text><text x="0" y="266" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">model (X-ray):</text><text x="0" y="292" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">Agreement with</text><text x="0" y="318" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">GRAZPEDWRI-DX&#x27;s</text><text x="0" y="344" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">fracture labels,</text><text x="0" y="370" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">children&#x27;s wrists</text><text x="498" y="246" font-size="20" font-weight="600" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">0.979<tspan font-weight="400" fill="#536274"> (0.974 to 0.984)</tspan></text><line x1="262" y1="240" x2="462" y2="240" stroke="#e2e8f0" stroke-width="1"/><line x1="444.6" y1="240" x2="462.6" y2="240" stroke="#0e8f8f" stroke-width="2.5"/><line x1="444.6" y1="232" x2="444.6" y2="248" stroke="#0e8f8f" stroke-width="2.5"/><line x1="462.6" y1="232" x2="462.6" y2="248" stroke="#0e8f8f" stroke-width="2.5"/><circle cx="453.6" cy="240" r="3.2" fill="#0e8f8f" stroke="#0e8f8f" stroke-width="2"/><text x="0" y="410" font-size="20" font-weight="700" fill="#536274">Development</text><text x="0" y="442" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">Mammogram research</text><text x="0" y="468" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">model: Agreement with</text><text x="0" y="494" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">CMMD&#x27;s</text><text x="0" y="520" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">benign/malignant</text><text x="0" y="546" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">labels, per picture</text><text x="498" y="448" font-size="20" font-weight="600" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">0.793<tspan font-weight="400" fill="#536274"> (0.774 to 0.811)</tspan></text><line x1="262" y1="442" x2="462" y2="442" stroke="#e2e8f0" stroke-width="1"/><line x1="370.2" y1="442" x2="388.2" y2="442" stroke="#0e8f8f" stroke-width="2.5"/><line x1="370.2" y1="434" x2="370.2" y2="450" stroke="#0e8f8f" stroke-width="2.5"/><line x1="388.2" y1="434" x2="388.2" y2="450" stroke="#0e8f8f" stroke-width="2.5"/><circle cx="379.2" cy="442" r="3.2" fill="#ffffff" stroke="#0e8f8f" stroke-width="2"/><line x1="240" y1="572" x2="484" y2="572" stroke="#536274" stroke-width="1"/><text x="262.0" y="596" font-size="20" fill="#536274" text-anchor="middle">0.5</text><text x="362.0" y="596" font-size="20" fill="#536274" text-anchor="middle">0.75</text><text x="462.0" y="596" font-size="20" fill="#536274" text-anchor="middle">1</text><text x="0" y="622" font-size="20" fill="#536274">coin toss (0.5)</text></svg></div><div class="chart-panel"><svg class="dc-n" viewBox="0 0 400 221" role="img" aria-labelledby="home-dice-t home-dice-d" xmlns="http://www.w3.org/2000/svg" font-family="Inter, system-ui, sans-serif"><title id="home-dice-t">Dice overlap, 0 to 1</title><desc id="home-dice-d">Dot and interval chart. Filled dot: held-out test. Hollow dot: development. CT organ outliner: Mean over 115 structures: 0.867 (95% interval 0.854 to 0.878). Research results on public test data.</desc><text x="18" y="21" font-size="19" font-weight="700" fill="#0b1a2b">Dice overlap, 0 to 1</text><line x1="44.0" y1="34" x2="44.0" y2="180" stroke="#cbd5e1" stroke-width="1"/><line x1="200.0" y1="34" x2="200.0" y2="180" stroke="#cbd5e1" stroke-width="1"/><line x1="356.0" y1="34" x2="356.0" y2="180" stroke="#cbd5e1" stroke-width="1"/><text x="18" y="63" font-size="19" font-weight="700" fill="#536274">Held-out test</text><text x="18" y="94" font-size="19" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">CT organ outliner: Mean over 115</text><text x="18" y="119" font-size="19" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">structures</text><text x="18" y="144" font-size="19" font-weight="600" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">0.867<tspan font-weight="400" fill="#536274"> (0.854 to 0.878)</tspan></text><line x1="44" y1="164" x2="356" y2="164" stroke="#e2e8f0" stroke-width="1"/><line x1="305.4" y1="164" x2="323.4" y2="164" stroke="#0e8f8f" stroke-width="2.5"/><line x1="305.4" y1="156" x2="305.4" y2="172" stroke="#0e8f8f" stroke-width="2.5"/><line x1="323.4" y1="156" x2="323.4" y2="172" stroke="#0e8f8f" stroke-width="2.5"/><circle cx="314.4" cy="164" r="3.2" fill="#0e8f8f" stroke="#0e8f8f" stroke-width="2"/><line x1="18" y1="186" x2="382" y2="186" stroke="#536274" stroke-width="1"/><text x="44.0" y="209" font-size="19" fill="#536274" text-anchor="middle">0</text><text x="200.0" y="209" font-size="19" fill="#536274" text-anchor="middle">0.5</text><text x="356.0" y="209" font-size="19" fill="#536274" text-anchor="middle">1</text></svg><svg class="dc-w" viewBox="0 0 760 210" role="img" aria-labelledby="home-dice-w-t home-dice-w-d" xmlns="http://www.w3.org/2000/svg" font-family="Inter, system-ui, sans-serif"><title id="home-dice-w-t">Dice overlap, 0 to 1</title><desc id="home-dice-w-d">Dot and interval chart. Filled dot: held-out test. Hollow dot: development. CT organ outliner: Mean over 115 structures: 0.867 (95% interval 0.854 to 0.878). Research results on public test data.</desc><text x="0" y="22" font-size="20" font-weight="700" fill="#0b1a2b">Dice overlap, 0 to 1</text><line x1="262.0" y1="34" x2="262.0" y2="168" stroke="#cbd5e1" stroke-width="1"/><line x1="362.0" y1="34" x2="362.0" y2="168" stroke="#cbd5e1" stroke-width="1"/><line x1="462.0" y1="34" x2="462.0" y2="168" stroke="#cbd5e1" stroke-width="1"/><text x="0" y="64" font-size="20" font-weight="700" fill="#536274">Held-out test</text><text x="0" y="96" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">CT organ outliner:</text><text x="0" y="122" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">Mean over 115</text><text x="0" y="148" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">structures</text><text x="498" y="102" font-size="20" font-weight="600" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">0.867<tspan font-weight="400" fill="#536274"> (0.854 to 0.878)</tspan></text><line x1="262" y1="96" x2="462" y2="96" stroke="#e2e8f0" stroke-width="1"/><line x1="426.4" y1="96" x2="444.4" y2="96" stroke="#0e8f8f" stroke-width="2.5"/><line x1="426.4" y1="88" x2="426.4" y2="104" stroke="#0e8f8f" stroke-width="2.5"/><line x1="444.4" y1="88" x2="444.4" y2="104" stroke="#0e8f8f" stroke-width="2.5"/><circle cx="435.4" cy="96" r="3.2" fill="#0e8f8f" stroke="#0e8f8f" stroke-width="2"/><line x1="240" y1="174" x2="484" y2="174" stroke="#536274" stroke-width="1"/><text x="262.0" y="198" font-size="20" fill="#536274" text-anchor="middle">0</text><text x="362.0" y="198" font-size="20" fill="#536274" text-anchor="middle">0.5</text><text x="462.0" y="198" font-size="20" fill="#536274" text-anchor="middle">1</text></svg></div><div class="chart-panel"><svg class="dc-n" viewBox="0 0 400 271" role="img" aria-labelledby="home-kappa-t home-kappa-d" xmlns="http://www.w3.org/2000/svg" font-family="Inter, system-ui, sans-serif"><title id="home-kappa-t">Kappa agreement, 0 to 1</title><desc id="home-kappa-d">Dot and interval chart. Filled dot: held-out test. Hollow dot: development. Disc grading research model (MRI): Agreement with SPIDER&#x27;s Pfirrmann grades, held-out test: 0.773 (95% interval 0.664 to 0.853). Research results on public test data.</desc><text x="18" y="21" font-size="19" font-weight="700" fill="#0b1a2b">Kappa agreement, 0 to 1</text><line x1="44.0" y1="34" x2="44.0" y2="205" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="4 4"/><line x1="200.0" y1="34" x2="200.0" y2="205" stroke="#cbd5e1" stroke-width="1"/><line x1="356.0" y1="34" x2="356.0" y2="205" stroke="#cbd5e1" stroke-width="1"/><text x="18" y="63" font-size="19" font-weight="700" fill="#536274">Held-out test</text><text x="18" y="94" font-size="19" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">Disc grading research model</text><text x="18" y="119" font-size="19" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">(MRI): Agreement with SPIDER&#x27;s</text><text x="18" y="144" font-size="19" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">Pfirrmann grades, held-out test</text><text x="18" y="169" font-size="19" font-weight="600" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">0.773<tspan font-weight="400" fill="#536274"> (0.664 to 0.853)</tspan></text><line x1="44" y1="189" x2="356" y2="189" stroke="#e2e8f0" stroke-width="1"/><line x1="251.2" y1="189" x2="310.1" y2="189" stroke="#0e8f8f" stroke-width="2.5"/><line x1="251.2" y1="181" x2="251.2" y2="197" stroke="#0e8f8f" stroke-width="2.5"/><line x1="310.1" y1="181" x2="310.1" y2="197" stroke="#0e8f8f" stroke-width="2.5"/><circle cx="285.2" cy="189" r="3.2" fill="#0e8f8f" stroke="#0e8f8f" stroke-width="2"/><line x1="18" y1="211" x2="382" y2="211" stroke="#536274" stroke-width="1"/><text x="44.0" y="234" font-size="19" fill="#536274" text-anchor="middle">0</text><text x="200.0" y="234" font-size="19" fill="#536274" text-anchor="middle">0.5</text><text x="356.0" y="234" font-size="19" fill="#536274" text-anchor="middle">1</text><text x="18" y="259" font-size="19" fill="#536274">0 = chance agreement</text></svg><svg class="dc-w" viewBox="0 0 760 288" role="img" aria-labelledby="home-kappa-w-t home-kappa-w-d" xmlns="http://www.w3.org/2000/svg" font-family="Inter, system-ui, sans-serif"><title id="home-kappa-w-t">Kappa agreement, 0 to 1</title><desc id="home-kappa-w-d">Dot and interval chart. Filled dot: held-out test. Hollow dot: development. Disc grading research model (MRI): Agreement with SPIDER&#x27;s Pfirrmann grades, held-out test: 0.773 (95% interval 0.664 to 0.853). Research results on public test data.</desc><text x="0" y="22" font-size="20" font-weight="700" fill="#0b1a2b">Kappa agreement, 0 to 1</text><line x1="262.0" y1="34" x2="262.0" y2="220" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="4 4"/><line x1="362.0" y1="34" x2="362.0" y2="220" stroke="#cbd5e1" stroke-width="1"/><line x1="462.0" y1="34" x2="462.0" y2="220" stroke="#cbd5e1" stroke-width="1"/><text x="0" y="64" font-size="20" font-weight="700" fill="#536274">Held-out test</text><text x="0" y="96" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">Disc grading research</text><text x="0" y="122" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">model (MRI): Agreement</text><text x="0" y="148" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">with SPIDER&#x27;s</text><text x="0" y="174" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">Pfirrmann grades,</text><text x="0" y="200" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">held-out test</text><text x="498" y="102" font-size="20" font-weight="600" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">0.773<tspan font-weight="400" fill="#536274"> (0.664 to 0.853)</tspan></text><line x1="262" y1="96" x2="462" y2="96" stroke="#e2e8f0" stroke-width="1"/><line x1="394.8" y1="96" x2="432.6" y2="96" stroke="#0e8f8f" stroke-width="2.5"/><line x1="394.8" y1="88" x2="394.8" y2="104" stroke="#0e8f8f" stroke-width="2.5"/><line x1="432.6" y1="88" x2="432.6" y2="104" stroke="#0e8f8f" stroke-width="2.5"/><circle cx="416.6" cy="96" r="3.2" fill="#0e8f8f" stroke="#0e8f8f" stroke-width="2"/><line x1="240" y1="226" x2="484" y2="226" stroke="#536274" stroke-width="1"/><text x="262.0" y="250" font-size="20" fill="#536274" text-anchor="middle">0</text><text x="362.0" y="250" font-size="20" fill="#536274" text-anchor="middle">0.5</text><text x="462.0" y="250" font-size="20" fill="#536274" text-anchor="middle">1</text><text x="0" y="276" font-size="20" fill="#536274">0 = chance agreement</text></svg></div><div class="chart-panel"><svg class="dc-n" viewBox="0 0 400 426" role="img" aria-labelledby="home-percent-t home-percent-d" xmlns="http://www.w3.org/2000/svg" font-family="Inter, system-ui, sans-serif"><title id="home-percent-t">Percent, 0 to 100</title><desc id="home-percent-d">Dot and interval chart. Filled dot: held-out test. Hollow dot: development. Lung nodule research model (CT): Share of LUNA16&#x27;s marked nodules matched, averaged over seven false-alarm allowances: 88.0 (95% interval 86.0 to 89.6); Lumbar spine X-ray corner reader: Share of BUU-LSPINE&#x27;s marked vertebrae matched, side view (IoU 0.5): 97.9 (95% interval 97.3 to 98.4). Research results on public test data.</desc><text x="18" y="21" font-size="19" font-weight="700" fill="#0b1a2b">Percent, 0 to 100</text><line x1="44.0" y1="34" x2="44.0" y2="385" stroke="#cbd5e1" stroke-width="1"/><line x1="200.0" y1="34" x2="200.0" y2="385" stroke="#cbd5e1" stroke-width="1"/><line x1="356.0" y1="34" x2="356.0" y2="385" stroke="#cbd5e1" stroke-width="1"/><text x="18" y="63" font-size="19" font-weight="700" fill="#536274">Development</text><text x="18" y="94" font-size="19" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">Lung nodule research model (CT):</text><text x="18" y="119" font-size="19" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">Share of LUNA16&#x27;s marked nodules</text><text x="18" y="144" font-size="19" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">matched, averaged over seven</text><text x="18" y="169" font-size="19" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">false-alarm allowances</text><text x="18" y="194" font-size="19" font-weight="600" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">88.0%<tspan font-weight="400" fill="#536274"> (86.0 to 89.6%)</tspan></text><line x1="44" y1="214" x2="356" y2="214" stroke="#e2e8f0" stroke-width="1"/><line x1="309.6" y1="214" x2="327.6" y2="214" stroke="#0e8f8f" stroke-width="2.5"/><line x1="309.6" y1="206" x2="309.6" y2="222" stroke="#0e8f8f" stroke-width="2.5"/><line x1="327.6" y1="206" x2="327.6" y2="222" stroke="#0e8f8f" stroke-width="2.5"/><circle cx="318.6" cy="214" r="3.2" fill="#ffffff" stroke="#0e8f8f" stroke-width="2"/><text x="18" y="249" font-size="19" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">Lumbar spine X-ray corner reader:</text><text x="18" y="274" font-size="19" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">Share of BUU-LSPINE&#x27;s marked</text><text x="18" y="299" font-size="19" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">vertebrae matched, side view (IoU</text><text x="18" y="324" font-size="19" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">0.5)</text><text x="18" y="349" font-size="19" font-weight="600" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">97.9%<tspan font-weight="400" fill="#536274"> (97.3 to 98.4%)</tspan></text><line x1="44" y1="369" x2="356" y2="369" stroke="#e2e8f0" stroke-width="1"/><line x1="340.4" y1="369" x2="358.4" y2="369" stroke="#0e8f8f" stroke-width="2.5"/><line x1="340.4" y1="361" x2="340.4" y2="377" stroke="#0e8f8f" stroke-width="2.5"/><line x1="358.4" y1="361" x2="358.4" y2="377" stroke="#0e8f8f" stroke-width="2.5"/><circle cx="349.4" cy="369" r="3.2" fill="#ffffff" stroke="#0e8f8f" stroke-width="2"/><line x1="18" y1="391" x2="382" y2="391" stroke="#536274" stroke-width="1"/><text x="44.0" y="414" font-size="19" fill="#536274" text-anchor="middle">0</text><text x="200.0" y="414" font-size="19" fill="#536274" text-anchor="middle">50</text><text x="356.0" y="414" font-size="19" fill="#536274" text-anchor="middle">100</text></svg><svg class="dc-w" viewBox="0 0 760 432" role="img" aria-labelledby="home-percent-w-t home-percent-w-d" xmlns="http://www.w3.org/2000/svg" font-family="Inter, system-ui, sans-serif"><title id="home-percent-w-t">Percent, 0 to 100</title><desc id="home-percent-w-d">Dot and interval chart. Filled dot: held-out test. Hollow dot: development. Lung nodule research model (CT): Share of LUNA16&#x27;s marked nodules matched, averaged over seven false-alarm allowances: 88.0 (95% interval 86.0 to 89.6); Lumbar spine X-ray corner reader: Share of BUU-LSPINE&#x27;s marked vertebrae matched, side view (IoU 0.5): 97.9 (95% interval 97.3 to 98.4). Research results on public test data.</desc><text x="0" y="22" font-size="20" font-weight="700" fill="#0b1a2b">Percent, 0 to 100</text><line x1="262.0" y1="34" x2="262.0" y2="390" stroke="#cbd5e1" stroke-width="1"/><line x1="362.0" y1="34" x2="362.0" y2="390" stroke="#cbd5e1" stroke-width="1"/><line x1="462.0" y1="34" x2="462.0" y2="390" stroke="#cbd5e1" stroke-width="1"/><text x="0" y="64" font-size="20" font-weight="700" fill="#536274">Development</text><text x="0" y="96" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">Lung nodule research</text><text x="0" y="122" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">model (CT): Share of</text><text x="0" y="148" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">LUNA16&#x27;s marked</text><text x="0" y="174" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">nodules matched,</text><text x="0" y="200" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">averaged over seven</text><text x="0" y="226" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">false-alarm allowances</text><text x="498" y="102" font-size="20" font-weight="600" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">88.0%<tspan font-weight="400" fill="#536274"> (86.0 to 89.6%)</tspan></text><line x1="262" y1="96" x2="462" y2="96" stroke="#e2e8f0" stroke-width="1"/><line x1="429.0" y1="96" x2="447.0" y2="96" stroke="#0e8f8f" stroke-width="2.5"/><line x1="429.0" y1="88" x2="429.0" y2="104" stroke="#0e8f8f" stroke-width="2.5"/><line x1="447.0" y1="88" x2="447.0" y2="104" stroke="#0e8f8f" stroke-width="2.5"/><circle cx="438.0" cy="96" r="3.2" fill="#ffffff" stroke="#0e8f8f" stroke-width="2"/><text x="0" y="266" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">Lumbar spine X-ray</text><text x="0" y="292" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">corner reader: Share</text><text x="0" y="318" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">of BUU-LSPINE&#x27;s marked</text><text x="0" y="344" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">vertebrae matched,</text><text x="0" y="370" font-size="20" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">side view (IoU 0.5)</text><text x="498" y="272" font-size="20" font-weight="600" fill="#0b1a2b" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">97.9%<tspan font-weight="400" fill="#536274"> (97.3 to 98.4%)</tspan></text><line x1="262" y1="266" x2="462" y2="266" stroke="#e2e8f0" stroke-width="1"/><line x1="448.8" y1="266" x2="466.8" y2="266" stroke="#0e8f8f" stroke-width="2.5"/><line x1="448.8" y1="258" x2="448.8" y2="274" stroke="#0e8f8f" stroke-width="2.5"/><line x1="466.8" y1="258" x2="466.8" y2="274" stroke="#0e8f8f" stroke-width="2.5"/><circle cx="457.8" cy="266" r="3.2" fill="#ffffff" stroke="#0e8f8f" stroke-width="2"/><line x1="240" y1="396" x2="484" y2="396" stroke="#536274" stroke-width="1"/><text x="262.0" y="420" font-size="20" fill="#536274" text-anchor="middle">0</text><text x="362.0" y="420" font-size="20" fill="#536274" text-anchor="middle">50</text><text x="462.0" y="420" font-size="20" fill="#536274" text-anchor="middle">100</text></svg></div></figure><details class="chart-table"><summary>Show the numbers</summary><div class="chart-table-wrap"><table><thead><tr><th scope="col">Result</th><th scope="col">Metric</th><th scope="col">Score</th><th scope="col">95% interval</th><th scope="col">Test set</th><th scope="col">Kind</th></tr></thead><tbody><tr><th scope="row">Chest X-ray research model: Agreement with ChestX-ray14&#x27;s labels, mean over its 14 label types</th><td>AUROC</td><td>0.818</td><td>0.811 to 0.823</td><td>NIH&#x27;s official test list: 25,596 pictures of 2,797 patients</td><td>held-out test</td></tr><tr><th scope="row">CT organ outliner: Mean over 115 structures</th><td>Dice</td><td>0.867</td><td>0.854 to 0.878</td><td>Held-out test: 89 CT scans</td><td>held-out test</td></tr><tr><th scope="row">Disc grading research model (MRI): Agreement with SPIDER&#x27;s Pfirrmann grades, held-out test</th><td>kappa</td><td>0.773</td><td>0.664 to 0.853</td><td>SPIDER held-out test: 44 patients, 264 discs, opened once</td><td>held-out test</td></tr><tr><th scope="row">Fracture research model (X-ray): Agreement with GRAZPEDWRI-DX&#x27;s fracture labels, children&#x27;s wrists</th><td>AUROC</td><td>0.979</td><td>0.974 to 0.984</td><td>GRAZPEDWRI-DX held-out test: 4,067 pictures of 1,176 patients with a certain label</td><td>held-out test</td></tr><tr><th scope="row">Lung nodule research model (CT): Share of LUNA16&#x27;s marked nodules matched, averaged over seven false-alarm allowances</th><td>percent</td><td>88.0</td><td>86.0 to 89.6</td><td>LUNA16: 888 thin-slice LIDC-IDRI scans, five folds, each read by a model that never trained on it</td><td>development</td></tr><tr><th scope="row">Mammogram research model: Agreement with CMMD&#x27;s benign/malignant labels, per picture</th><td>AUROC</td><td>0.793</td><td>0.774 to 0.811</td><td>CMMD: 3,744 pictures of 1,775 patients, five folds split by patient</td><td>development</td></tr><tr><th scope="row">Lumbar spine X-ray corner reader: Share of BUU-LSPINE&#x27;s marked vertebrae matched, side view (IoU 0.5)</th><td>percent</td><td>97.9</td><td>97.3 to 98.4</td><td>All 2,000 BUU-LSPINE patients, out of fold</td><td>development</td></tr></tbody></table></div></details>
-<!-- /chart:home-headlines -->
-        <div>
-          <h3>Where the models fall short</h3>
-          <ul class="short-list"><li><strong>CT organ outliner.</strong> Both kidney cysts score 0.0000 on the test scans. Vertebra C6, the gallbladder, the portal and splenic veins and the adrenal glands are the next weakest.</li><li><strong>Disc grading research model (MRI).</strong> The three current versions have not been scored on held-out test patients; their results are development results.</li><li><strong>Lung nodule research model (CT).</strong> All the nodule-finding numbers are development scores from the same 888 scans used to choose between designs; there is no untouched test.</li><li><strong>Mammogram research model.</strong> Where no lesion outline exists the score is close to a coin toss: version 38 scores 0.5726 on those 1,002 pictures.</li></ul>
-          <p><a href="models.html">See every result</a></p>
+        <!-- chart:tiles -->
+<div class="result-tiles"><a class="result-tile" href="models.html#chest-xray"><img src="img/scans/xray-chest.webp" width="800" height="800" alt="" loading="lazy"><span class="pic-chip">X-ray</span><h3>Chest <span class="nb">X-ray</span> research model</h3><p class="score">0.8175 <span class="interval">(0.8110 to 0.8231)</span></p><p class="what">AUROC: Agreement with <span class="nb">ChestX-ray14's</span> labels, mean over its 14 label types</p><p class="test">NIH's official test list: 25,596 pictures of 2,797 patients</p><span class="tag"><svg class="dot-key" viewBox="0 0 12 12" width="12" height="12" role="img" aria-label="Filled dot"><circle cx="6" cy="6" r="4.5"/></svg>Held-out test</span></a><a class="result-tile" href="models.html#ct-segmenter"><img src="img/scans/ct-organs.webp" width="720" height="900" alt="" loading="lazy"><span class="pic-chip">CT</span><h3>CT organ outliner</h3><p class="score">0.8668 <span class="interval">(0.8538 to 0.8781)</span></p><p class="what">Dice: Mean over 115 structures</p><p class="test"><span class="nb">Held-out</span> test: 89 CT scans</p><span class="tag"><svg class="dot-key" viewBox="0 0 12 12" width="12" height="12" role="img" aria-label="Filled dot"><circle cx="6" cy="6" r="4.5"/></svg>Held-out test</span></a><a class="result-tile" href="models.html#disc-grader"><img src="img/scans/mri-spine.webp" width="640" height="900" alt="" loading="lazy"><span class="pic-chip">MRI</span><h3>Disc grading research model (MRI)</h3><p class="score">0.773 <span class="interval">(0.664 to 0.853)</span></p><p class="what">Kappa: Agreement with SPIDER's Pfirrmann grades, <span class="nb">held-out</span> test</p><p class="test">SPIDER <span class="nb">held-out</span> test: 44 patients, 264 discs, opened once</p><span class="tag"><svg class="dot-key" viewBox="0 0 12 12" width="12" height="12" role="img" aria-label="Filled dot"><circle cx="6" cy="6" r="4.5"/></svg>Held-out test</span></a><a class="result-tile" href="models.html#fracture-detector"><img src="img/scans/xray-wrist.webp" width="720" height="900" alt="" loading="lazy"><span class="pic-chip">X-ray</span><h3>Fracture research model (<span class="nb">X-ray</span>)</h3><p class="score">0.979 <span class="interval">(0.974 to 0.984)</span></p><p class="what">AUROC: Agreement with <span class="nb">GRAZPEDWRI-DX's</span> fracture labels, children's wrists</p><p class="test"><span class="nb">GRAZPEDWRI-DX</span> <span class="nb">held-out</span> test: 4,067 pictures of 1,176 patients with a certain label</p><span class="tag"><svg class="dot-key" viewBox="0 0 12 12" width="12" height="12" role="img" aria-label="Filled dot"><circle cx="6" cy="6" r="4.5"/></svg>Held-out test</span></a><a class="result-tile" href="models.html#lung-nodules"><img src="img/scans/ct-lungs.webp" width="800" height="800" alt="" loading="lazy"><span class="pic-chip">CT</span><h3>Lung nodule research model (CT)</h3><p class="score">88.0% <span class="interval">(86.0 to 89.6%)</span></p><p class="what">Share of LUNA16's marked nodules matched, averaged over seven <span class="nb">false-alarm</span> allowances</p><p class="test">LUNA16: 888 <span class="nb">thin-slice</span> <span class="nb">LIDC-IDRI</span> scans, five folds, each read by a model that never trained on it</p><span class="tag dev"><svg class="dot-key hollow" viewBox="0 0 12 12" width="12" height="12" role="img" aria-label="Hollow dot"><circle cx="6" cy="6" r="4.5"/></svg>Development</span></a><a class="result-tile" href="models.html#mammography"><img src="img/scans/mammogram.webp" width="720" height="900" alt="" loading="lazy"><span class="pic-chip">Mammogram</span><h3>Mammogram research model</h3><p class="score">0.793 <span class="interval">(0.774 to 0.811)</span></p><p class="what">AUROC: Agreement with CMMD's benign/malignant labels, per picture</p><p class="test">CMMD: 3,744 pictures of 1,775 patients, five folds split by patient</p><span class="tag dev"><svg class="dot-key hollow" viewBox="0 0 12 12" width="12" height="12" role="img" aria-label="Hollow dot"><circle cx="6" cy="6" r="4.5"/></svg>Development</span></a><a class="result-tile" href="models.html#spine-xray-corners"><img src="img/scans/xray-spine.webp" width="640" height="900" alt="" loading="lazy"><span class="pic-chip">X-ray</span><h3>Lumbar spine <span class="nb">X-ray</span> corner reader</h3><p class="score">97.9% <span class="interval">(97.3 to 98.4%)</span></p><p class="what">Share of <span class="nb">BUU-LSPINE's</span> marked vertebrae matched, side view (IoU 0.5)</p><p class="test">All 2,000 <span class="nb">BUU-LSPINE</span> patients, out of fold</p><span class="tag dev"><svg class="dot-key hollow" viewBox="0 0 12 12" width="12" height="12" role="img" aria-label="Hollow dot"><circle cx="6" cy="6" r="4.5"/></svg>Development</span></a></div>
+<!-- /chart:tiles -->
+        <div class="results-foot">
+          <dl class="tag-key">
+            <div><dt><svg class="dot-key" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.5"/></svg>Held-out test</dt><dd>data the model never saw while it was trained</dd></div>
+            <div><dt><svg class="dot-key hollow" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.5"/></svg>Development</dt><dd>data used while the model was built</dd></div>
+          </dl>
+          <a class="btn secondary" href="models.html">See every result</a>
         </div>
       </div>
     </section>
 
-    <section class="sec" id="viewer" aria-labelledby="viewer-h">
-      <div class="wrap">
-        <div class="sec-head"><h2 id="viewer-h">What the viewer does, and what it does not.</h2></div>
-        <div class="does">
-          <div class="card yes"><h3>It does</h3><ul>
-            <li>Open CT, MRI and X-ray discs and ZIPs on this device</li>
-            <li>Let you scroll through slices, zoom and change the brightness</li>
-            <li>Show the 3D sample scan with organs and bones named</li></ul></div>
-          <div class="card no"><h3>It does not</h3><ul>
-            <li>Upload your scan</li>
-            <li>Read your report</li>
-            <li>Tell you what is wrong</li>
-            <li>Replace your doctor</li></ul></div>
+    <section class="install-row" id="run" aria-labelledby="run-h">
+      <div class="wrap install">
+        <span class="app-icon"><img src="img/logo.svg" width="40" height="40" alt=""></span>
+        <div class="install-text">
+          <h2 id="run-h">Install it as an app</h2>
+          <ul class="chips"><li class="chip grey">Opens offline</li><li class="chip grey">No account</li><li class="chip grey">Computer or phone</li></ul>
         </div>
-      </div>
-    </section>
-
-    <section class="sec" id="run" aria-labelledby="run-h">
-      <div class="wrap">
-        <div class="card install">
-          <div>
-            <h2 id="run-h">Install it as an app</h2>
-            <p>Add rAidiology to your computer or phone from the browser. It then opens offline, with no account.</p>
-          </div>
-          <p class="actions"><button id="install-app" class="btn" hidden>Install the app</button>
-            <a class="btn quiet" href="run.html">How to install it</a></p>
-        </div>
+        <p class="actions"><button id="install-app" class="btn" hidden>Install the app</button>
+          <a class="btn secondary" href="run.html">How to install it</a></p>
       </div>
     </section>
 
@@ -182,51 +175,77 @@
       <div class="wrap">
         <div class="sec-head">
           <p class="eyebrow">Pricing</p>
-          <h2 id="pricing-h">Plain pricing.</h2>
+          <h2 id="pricing-h">Free to use. Paid for companies.</h2>
+          <p>Personal use, charities, schools, universities and public research are free under the licence.</p>
         </div>
-        <ul class="card-grid three-up">
-          <li class="card price"><span class="tag">Free</span><h3>Free viewer and licence</h3><p>Free, because it runs on your device and costs us nothing to run.</p></li>
-          <li class="card price"><span class="tag">Pay what you want</span><h3>Supporter licence</h3><p>Pay what you want, from $3. The app stays free.</p></li>
-          <li class="card price"><span class="tag">Paid</span><h3>Commercial licence</h3><p>For companies building products or internal tools. From $1,500 a year, with a free 60-day evaluation.</p><p class="fine">Not for diagnosis or treatment. Not cleared by the FDA or any regulator.</p></li>
-          <li class="card price"><span class="tag">Coming, paid</span><h3>Cloud anatomy labels (CT)</h3><p>Paid per scan. It uploads the scan to be read. Anatomy names only.</p></li>
+        <ul class="card-grid three-up price-grid">
+          <li class="card price">
+            <p class="tag">Free</p>
+            <h3>Free viewer and licence</h3>
+            <p class="price-amt">$0</p>
+            <p>Free, because it runs on your device and costs us nothing to run.</p>
+            <p class="card-foot"><a class="btn secondary" href="open.html">Open a scan</a></p>
+          </li>
+          <li class="card price">
+            <p class="tag">Pay what you want</p>
+            <h3>Supporter licence</h3>
+            <p class="price-amt">From $3</p>
+            <p>Pay what you want once, from $3, or monthly from $5. The app stays free.</p>
+            <p class="card-foot"><a class="btn" href="support.html">Become a supporter</a></p>
+          </li>
+          <li class="card price">
+            <p class="tag">Paid</p>
+            <h3>Commercial licence</h3>
+            <p class="price-amt">From $1,500 <span>a year</span></p>
+            <p>For companies building products or internal tools, with a free 60-day evaluation.</p>
+            <p class="fine">Not for diagnosis or treatment. Not cleared by the FDA or any regulator.</p>
+            <p class="card-foot"><a class="btn secondary" href="pricing.html">See the commercial tiers</a></p>
+          </li>
         </ul>
-        <p class="fine price-note">Personal use, charities, schools, universities and public research are free under the licence.</p>
-        <p class="price-note"><a href="pricing.html">See all pricing</a></p>
+        <p class="sec-more"><a class="more-link" href="pricing.html">See all pricing</a></p>
       </div>
     </section>
 
     <section class="sec" id="support" aria-labelledby="support-h">
       <div class="wrap">
-        <h2 id="support-h">Help train bigger research models.</h2>
-        <p>Your support pays for rented GPU time: an A100 80GB is $1.59 an hour, so $15 is about 9 hours. Today training runs on one home graphics card.</p>
-        <p><a class="btn" href="support.html">Support the research</a> <a class="btn" href="pricing.html">See pricing</a></p>
-        <p class="fine money-disclosure">LunarWerx LLC is a for-profit company. Payments are not charitable donations and are not tax-deductible.</p>
-      </div>
-    </section>
-
-    <section class="sec dark" id="privacy" aria-labelledby="privacy-h">
-      <div class="wrap">
-        <h2 id="privacy-h">Your scan stays on your device.</h2>
-        <p class="privacy-text">Nothing is uploaded when you open a scan. The pictures are read by your own browser and are gone when you close the tab. If you ever choose to donate a scan to help the research, you see everything first, and what could identify you is removed in your browser.</p>
-        <p class="privacy-text"><a href="health-data-privacy.html">Read the privacy policy</a> &middot; <a href="donation.html">See or delete a donation</a></p>
-      </div>
-    </section>
-
-    <section class="sec" id="community" aria-labelledby="community-h">
-      <div class="wrap open-source">
-        <div>
-          <h2 id="community-h">Open source, and open to questions.</h2>
-          <p>The code and the model cards are public. Ask, report a problem or follow the work on Discord.</p>
+        <div class="support-panel">
+          <div class="support-copy">
+            <p class="eyebrow">Support the research</p>
+            <h2 id="support-h">Help train bigger research models.</h2>
+            <p>Your support pays for rented GPU time: an A100 80GB is $1.59 an hour, so $15 is about 9 hours. Today training runs on one home graphics card.</p>
+            <p class="actions"><a class="btn" href="support.html">Support the research</a>
+              <a class="btn secondary" href="pricing.html">See pricing</a></p>
+            <p class="fine money-line">LunarWerx LLC is a for-profit company. Payments are not charitable donations and are not tax-deductible.</p>
+          </div>
+          <ul class="gpu-math">
+            <li><p class="gpu-n">$15</p><p class="gpu-l">one month as a Supporter</p></li>
+            <li class="gpu-eq" aria-hidden="true">=</li>
+            <li><p class="gpu-n">9 hours</p><p class="gpu-l">on an A100 80GB GPU, at RunPod&#x27;s $1.59 an hour</p></li>
+          </ul>
         </div>
-        <p class="actions"><a class="btn quiet" href="https://github.com/LunarWerxs/rAidiology">GitHub</a>
-          <a class="btn quiet" href="https://lunarwerx.com/discord/raidiology">Discord</a></p>
       </div>
     </section>
 
-    <section class="sec" id="credits-sec">
-      <div class="wrap">
+    <section class="sec soft" id="privacy" aria-labelledby="privacy-h">
+      <div class="wrap privacy-split">
+        <div class="privacy-copy">
+          <p class="eyebrow">Privacy</p>
+          <h2 id="privacy-h">Your scan stays on your device.</h2>
+          <p>Nothing is uploaded when you open a scan. The pictures are read by your own browser and are gone when you close the tab. If you ever choose to donate a scan to help the research, you see everything first, and what could identify you is removed in your browser.</p>
+          <p class="actions"><a class="btn secondary" href="health-data-privacy.html">Read the privacy policy</a>
+            <a class="btn secondary" href="donation.html">See or delete a donation</a></p>
+        </div>
+        <div class="card oss-card">
+          <p class="eyebrow">Open source</p>
+          <h3>The code and the model cards are public.</h3>
+          <p>Read the code, ask a question, report a problem or follow the work on Discord.</p>
+          <p class="actions card-foot"><a class="btn secondary" href="https://github.com/LunarWerxs/rAidiology"><svg class="btn-i" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
+            <a class="btn secondary" href="https://lunarwerx.com/discord/raidiology"><svg class="btn-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8l-5 4v-4H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Discord</a></p>
+        </div>
+      </div>
+      <div class="wrap credits-row">
         <details id="credits"><summary>Picture credits</summary>
-        <ul class="credits-list plainlist"><li><strong>CT, organs and bones coloured.</strong> TotalSegmentator dataset v2.0.1, CC BY 4.0. <a href="https://doi.org/10.5281/zenodo.10047292">Source</a>. Windowed (width 400, level 40), cropped and coloured by LunarWerx, using the dataset&#x27;s own masks.</li><li><strong>MRI of the lumbar spine, vertebrae and discs coloured.</strong> SPIDER lumbar spine MRI, CC BY 4.0. <a href="https://doi.org/10.5281/zenodo.10159290">Source</a>. Middle sagittal slice, contrast stretched, cropped and coloured by LunarWerx, using the dataset&#x27;s own masks.</li><li><strong>X-ray of a child&#x27;s wrist.</strong> GRAZPEDWRI-DX v2, CC BY 4.0. <a href="https://doi.org/10.6084/m9.figshare.14825193">Source</a>. 16-bit picture contrast stretched, cropped and resized by LunarWerx.</li><li><strong>Chest X-ray.</strong> NIH ChestX-ray14, No restrictions (NIH), attribution requested. <a href="https://nihcc.app.box.com/v/ChestXray-NIHCC">Source</a>. Contrast stretched, cropped and resized by LunarWerx.</li><li><strong>CT of the chest, lung window.</strong> LIDC-IDRI, CC BY 3.0. <a href="https://doi.org/10.7937/K9/TCIA.2015.LO9QL9SX">Source</a>. Windowed (width 1500, level -600), cropped and resized by LunarWerx.</li><li><strong>Mammogram.</strong> CMMD (Chinese Mammography Database), CC BY 4.0. <a href="https://doi.org/10.7937/tcia.eqde-4b16">Source</a>. Contrast stretched, cropped and resized by LunarWerx.</li><li><strong>Side X-ray of the lower spine.</strong> Spondylolisthesis Vertebral Landmark Dataset v1 (Reyes, VSB-TU Ostrava), CC BY 4.0. <a href="https://data.mendeley.com/datasets/5jdfdgp762/1">Source</a>. Contrast stretched, cropped and resized by LunarWerx.</li></ul>
+        <ul class="credits-list"><li><strong>CT, organs and bones coloured.</strong> TotalSegmentator dataset v2.0.1, CC BY 4.0. <a href="https://doi.org/10.5281/zenodo.10047292">Source</a>. Windowed (width 400, level 40), cropped and coloured by LunarWerx, using the dataset&#x27;s own masks.</li><li><strong>MRI of the lumbar spine, vertebrae and discs coloured.</strong> SPIDER lumbar spine MRI, CC BY 4.0. <a href="https://doi.org/10.5281/zenodo.10159290">Source</a>. Middle sagittal slice, contrast stretched, cropped and coloured by LunarWerx, using the dataset&#x27;s own masks.</li><li><strong>X-ray of a child&#x27;s wrist.</strong> GRAZPEDWRI-DX v2, CC BY 4.0. <a href="https://doi.org/10.6084/m9.figshare.14825193">Source</a>. 16-bit picture contrast stretched, cropped and resized by LunarWerx.</li><li><strong>Chest X-ray.</strong> NIH ChestX-ray14, No restrictions (NIH), attribution requested. <a href="https://nihcc.app.box.com/v/ChestXray-NIHCC">Source</a>. Contrast stretched, cropped and resized by LunarWerx.</li><li><strong>CT of the chest, lung window.</strong> LIDC-IDRI, CC BY 3.0. <a href="https://doi.org/10.7937/K9/TCIA.2015.LO9QL9SX">Source</a>. Windowed (width 1500, level -600), cropped and resized by LunarWerx.</li><li><strong>Mammogram.</strong> CMMD (Chinese Mammography Database), CC BY 4.0. <a href="https://doi.org/10.7937/tcia.eqde-4b16">Source</a>. Contrast stretched, cropped and resized by LunarWerx.</li><li><strong>Side X-ray of the lower spine.</strong> Spondylolisthesis Vertebral Landmark Dataset v1 (Reyes, VSB-TU Ostrava), CC BY 4.0. <a href="https://data.mendeley.com/datasets/5jdfdgp762/1">Source</a>. Contrast stretched, cropped and resized by LunarWerx.</li></ul>
         </details>
       </div>
     </section>
@@ -235,9 +254,19 @@
 
   <footer class="site-foot">
     <div class="site-foot-in">
-      <p class="disclaim">Not a medical device. For education and research.</p>
-      <nav aria-label="Footer"><a href="health-data-privacy.html">Privacy</a><a href="pricing.html">Pricing</a><a href="support.html">Support</a><a href="https://github.com/LunarWerxs/rAidiology">GitHub</a><a href="https://lunarwerx.com/discord/raidiology">Discord</a><a href="donation.html">See or delete a donation</a></nav>
-      <p class="meta">&copy; 2026 LunarWerx</p>
+      <div class="foot-brand">
+        <a class="brand" href="index.html"><img src="img/logo.svg" width="28" height="28" alt=""><span class="brand-name">rAidiology</span></a>
+        <p class="disclaim">Not a medical device. For education and research.</p>
+        <p class="foot-legal">LunarWerx LLC is a for-profit company. Payments are not charitable donations and are not tax-deductible.</p>
+      </div>
+      <nav class="foot-cols" aria-label="Footer">
+        <div><h2>Product</h2><ul><li><a href="open.html">Open a scan</a></li><li><a href="index.html#scans">Scans we cover</a></li><li><a href="models.html">Research results</a></li><li><a href="run.html">Run it on your computer</a></li></ul></div>
+        <div><h2>Money</h2><ul><li><a href="pricing.html">Pricing</a></li><li><a href="support.html">Support the research</a></li></ul></div>
+        <div><h2>Project</h2><ul><li><a href="https://github.com/LunarWerxs/rAidiology">GitHub</a></li><li><a href="https://lunarwerx.com/discord/raidiology">Discord</a></li><li><a href="health-data-privacy.html">Privacy</a></li><li><a href="donation.html">See or delete a donation</a></li></ul></div>
+      </nav>
+      <div class="foot-base">
+        <p>&copy; 2026 LunarWerx LLC</p>
+      </div>
     </div>
   </footer>
 </body>

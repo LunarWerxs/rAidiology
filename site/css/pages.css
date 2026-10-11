@@ -1,0 +1,151 @@
+/* Page layouts for run.html, donation.html, health-data-privacy.html and the head of open.html
+   (work/release-thread/run-2026-10-11/DESIGN_V3.md section 3). Loaded last, after brand.css and, where a
+   page has it, open.css. Tokens and shared classes come from brand.css; nothing here restyles the viewer. */
+
+/* ---------- Shared pieces ---------- */
+
+/* Numbered steps: a number badge per step, joined by a hairline */
+.steps { counter-reset: step; margin: 0; padding: 0; list-style: none; }
+.steps > li { counter-increment: step; position: relative; min-height: 40px; padding: 0 0 32px 60px; }
+.steps > li:last-child { padding-bottom: 0; }
+.steps > li::before { content: counter(step); position: absolute; left: 0; top: 0; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: var(--primary); color: #fff; font-size: 1rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.steps > li::after { content: ""; position: absolute; left: 19px; top: 52px; bottom: 12px; width: 2px; border-radius: 1px; background: var(--line); }
+.steps > li:last-child::after { display: none; }
+.steps h3 { margin: 7px 0 8px; }
+.steps p { margin: 0 0 12px; }
+.steps > li > :last-child { margin-bottom: 0; }
+@media (max-width: 599px) {
+  .steps > li { padding-left: 50px; }
+  .steps > li::before { width: 36px; height: 36px; font-size: 0.9375rem; }
+  .steps > li::after { left: 17px; top: 46px; }
+  .steps h3 { margin-top: 5px; }
+}
+
+/* A command to type: dark block, a prompt the copy leaves out, long lines wrap instead of scrolling */
+.cmd { position: relative; margin: 0; padding: 14px 18px 14px 38px; background: var(--lightbox); color: #e9eef4; border-radius: var(--radius-s); font-family: var(--mono); font-size: 0.9375rem; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
+.cmd::before { content: "$"; position: absolute; left: 18px; top: 14px; color: #7d8fa3; user-select: none; }
+@media (max-width: 599px) { .cmd { padding: 12px 14px 12px 32px; font-size: 0.875rem; } .cmd::before { left: 14px; top: 12px; } }
+.cmd code { font-size: inherit; }
+
+/* A menu path such as File > Add to Dock */
+kbd { display: inline-block; padding: 1px 8px; border: 1px solid var(--line-strong); border-bottom-width: 2px; border-radius: 6px; background: #fff; color: var(--ink); font-family: var(--font); font-size: 0.9375rem; font-weight: 600; line-height: 1.5; white-space: nowrap; }
+
+/* Small feature cards: an icon in a soft square, a short heading, one or two lines */
+.icon { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-bottom: 18px; border-radius: 12px; background: var(--primary-soft); color: var(--primary); }
+.icon svg { width: 24px; height: 24px; display: block; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.feature p { margin: 0; color: var(--text); }
+.feature.danger-card .icon { background: #fbeceb; color: #a8322b; }
+@media (max-width: 719px) {
+  .card.feature { display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 16px; align-items: start; padding: 20px; }
+  .feature .icon { grid-row: 1 / span 2; margin: 0; }
+  .feature h3 { margin: 10px 0 6px; }
+}
+
+/* ---------- Run it on your own computer ---------- */
+
+/* The browsers as one panel of rows; the visitor's own browser (class set on <html> by js/install.js)
+   moves to the top and is marked. */
+.os-list { display: flex; flex-direction: column; gap: 1px; margin: 0; padding: 0; list-style: none; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+.os-list > li { display: grid; gap: 10px 40px; padding: 22px clamp(20px, 2.4vw, 28px); background: var(--card); }
+@media (min-width: 760px) { .os-list > li { grid-template-columns: minmax(0, 17rem) minmax(0, 1fr); align-items: start; } }
+.os-name { margin: 0; font-size: 1.0625rem; font-weight: 650; line-height: 1.4; }
+.os-where { margin: 2px 0 0; color: var(--muted); font-size: var(--fs-s); line-height: 1.45; }
+.os-you { display: none; margin-top: 10px; }
+.os-how p { margin: 0; max-width: 60ch; }
+.os-how p + p { margin-top: 6px; }
+.os-how .fine { margin-top: 8px; }
+.install-hint-chromium .os-chromium, .install-hint-safari-mac .os-safari, .install-hint-firefox .os-firefox,
+.install-hint-ios .os-ios { order: -1; background: var(--primary-soft); box-shadow: inset 4px 0 0 var(--primary); }
+.install-hint-chromium .os-chromium .os-you, .install-hint-safari-mac .os-safari .os-you,
+.install-hint-firefox .os-firefox .os-you, .install-hint-ios .os-ios .os-you { display: inline-flex; background: #fff; }
+/* install.js names Chrome and Firefox on Android as their desktop selves; a touch-only screen is the tell */
+@media (hover: none) and (pointer: coarse) {
+  .install-hint-chromium .os-chromium, .install-hint-firefox .os-firefox { order: 0; background: var(--card); box-shadow: none; }
+  .install-hint-chromium .os-chromium .os-you, .install-hint-firefox .os-firefox .os-you { display: none; }
+  .install-hint-chromium .os-android, .install-hint-firefox .os-android { order: -1; background: var(--primary-soft); box-shadow: inset 4px 0 0 var(--primary); }
+  .install-hint-chromium .os-android .os-you, .install-hint-firefox .os-android .os-you { display: inline-flex; background: #fff; }
+}
+.run-install { margin-top: var(--sp-3); }
+.run-install:not(:has(.btn:not([hidden]))) { display: none; }
+
+/* For researchers: words on the left, the three commands on the right */
+.run-dev { align-items: start; }
+@media (min-width: 900px) { .run-dev { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); } }
+.run-dev .sec-head { margin-bottom: 0; }
+.run-dev .needs { margin-top: var(--sp-3); }
+
+/* ---------- See or delete your donation ---------- */
+
+.don-card h2 { margin: 0 0 10px; font-size: var(--fs-h3); font-weight: 650; letter-spacing: -0.01em; line-height: 1.3; }
+.don-card > p:not(.tag):not(.fine) { color: var(--text); }
+.don-card form, .don-card .pickers { margin-top: auto; padding-top: var(--sp-2); }
+.don-card form p { margin: 0; }
+.num-label { display: block; margin-bottom: 8px; color: var(--ink); font-size: 0.9375rem; font-weight: 600; }
+.num-row { display: flex; flex-wrap: wrap; gap: 12px; }
+.num-row .number-input { flex: 1 1 15rem; min-width: 0; min-height: 48px; padding: 0 14px; border: 1px solid var(--line-strong); border-radius: var(--radius-s); background: #fff; color: var(--ink); font-family: var(--mono); font-size: 1.0625rem; font-weight: 600; letter-spacing: 0.04em; }
+.num-row .number-input::placeholder { color: #93a2b2; font-weight: 500; }
+.num-row .number-input:focus { outline: 3px solid var(--primary-soft); border-color: var(--primary); }
+.don-card .pickers { justify-content: flex-start; gap: 12px; }
+#number-msg { margin: 12px 0 0; }
+#number-msg:empty, .don-card .series-list:empty { display: none; }
+.don-card .progress { margin-top: var(--sp-2); }
+.don-card .series-list { margin: var(--sp-2) 0 0; }
+.don-card #found { margin-top: var(--sp-3); padding-top: var(--sp-3); border-top: 1px solid var(--line); }
+.don-card #found h2 { font-size: var(--fs-h3); }
+/* Once a donation is open, its card takes the whole row so the pictures have room */
+.don-grid:has(#found:not([hidden])) { grid-template-columns: minmax(0, 1fr); }
+
+/* ---------- Consumer Health Data Privacy Policy ---------- */
+
+.policy-meta { margin: 0; }
+.policy-sec { display: grid; gap: 12px 56px; padding-block: 36px; border-top: 1px solid var(--line); }
+.policy-sec:first-child { padding-top: 0; border-top: 0; }
+.policy-sec:last-child { padding-bottom: 0; }
+.policy-sec h2 { margin: 0; font-size: var(--fs-h3); font-weight: 650; letter-spacing: -0.01em; line-height: 1.35; }
+.policy-body { max-width: 68ch; }
+.policy-body ul { margin: 0 0 var(--sp-2); padding-left: 1.25rem; }
+.policy-body > :last-child { margin-bottom: 0; }
+.policy-body li { margin-bottom: 10px; padding-left: 4px; }
+.policy-body li::marker { color: var(--primary); }
+@media (min-width: 960px) {
+  .policy-sec { grid-template-columns: minmax(0, 17rem) minmax(0, 68ch); }
+  .policy-sec h2 { position: sticky; top: calc(var(--head-h) + 24px); align-self: start; }
+}
+
+/* ---------- Open a scan: the intake's head on --bg-soft, its body on the shared grid ---------- */
+
+#intake.intake { width: auto; margin: 0; padding: 0; }
+.intake .page-head h1 { margin: 0 0 16px; font-size: var(--fs-xxl); font-weight: 700; letter-spacing: -0.025em; line-height: 1.08; }
+.intake .page-head .lede { margin: 0; color: var(--text); font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.1875rem); line-height: 1.55; }
+.start-over-row:has(> #start-over[hidden]) { display: none; }
+/* "Open a different scan" lines up with the pane under it: the list (open.css --wrap) or the wide viewer */
+.start-over-row:has(> #start-over) { max-width: var(--wrap); padding-inline: clamp(18px, 5vw, 32px); }
+@media (min-width: 1100px) { body:has(#viewer:not([hidden])) .start-over-row { max-width: 1360px; } }
+.intake-body { display: grid; gap: var(--sp-4); padding-block: clamp(40px, 5vw, 64px) clamp(64px, 8vw, 104px); }
+@media (min-width: 960px) { .intake-body { grid-template-columns: minmax(0, 1fr) minmax(0, 25rem); gap: 48px; align-items: start; } }
+.intake-main > .drop { margin-top: 0; }
+.intake-main > .help { margin-top: var(--sp-3); }
+.intake-side { display: grid; gap: var(--sp-3); align-content: start; }
+.intake-side .try { margin: 0; }
+.intake-side .aside { margin: 0; }
+.sample-card { padding: 0; overflow: hidden; }
+.sample-card .lightbox { padding: 10px; border-radius: 0; }
+.sample-card .lightbox img { aspect-ratio: 16 / 10; object-fit: cover; object-position: 50% 52%; }
+.sample-card .try { padding: 18px 20px 20px; justify-content: space-between; }
+.sample-card .try .btn { margin-left: auto; }
+.send-card { padding: 18px 20px 20px; }
+.send-card .try { margin: 0; }
+/* Phone: the sample first (a phone cannot read a disc), then the box for a ZIP */
+@media (max-width: 560px), (hover: none) and (pointer: coarse) {
+  .intake-body { display: flex; flex-direction: column; gap: 20px; }
+  .intake-main > *, .intake-main > .help { margin-top: 0; }
+  .intake-main > .browser-asks { margin-top: -8px; }
+  .intake-main, .intake-side { display: contents; }
+  .intake-side > .sample-card, .intake-side > .send-card { order: -1; }
+  .sample-card { display: grid; grid-template-columns: 112px minmax(0, 1fr); align-items: stretch; }
+  .sample-card .lightbox { padding: 6px; }
+  .sample-card .lightbox img { height: 100%; aspect-ratio: 1; }
+  .sample-card .pic-chip { display: none; }
+  .sample-card .try { padding: 14px 16px; }
+  .sample-card .try .btn { margin-left: 0; }
+}
