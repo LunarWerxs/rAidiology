@@ -17,7 +17,7 @@ export const VERSION = 1;
 async function unpack(bytes) {
   if (!(bytes[0] === 0x1f && bytes[1] === 0x8b)) return bytes;
   if (typeof DecompressionStream !== 'function') {
-    throw new Error('This browser cannot un-gzip the file. Open it in a current Chrome, Edge, Firefox or Safari.');
+    throw new Error('This browser can\'t unpack the outline file. Open this page in a current Chrome, Edge, Firefox or Safari.');
   }
   const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
   return new Uint8Array(await new Response(stream).arrayBuffer());
@@ -61,13 +61,13 @@ export async function parse(bytes) {
   try {
     doc = JSON.parse(text);
   } catch {
-    throw new Error('That file is not a rAidiology reading: it is not readable as JSON.');
+    throw new Error('That isn\'t a rAidiology outline file: it doesn\'t read as JSON. Choose the one ending in .raidiology.json.gz.');
   }
   if (doc.raidiology_findings !== VERSION) {
-    throw new Error(`That file says it is rAidiology file version ${doc.raidiology_findings}, and this page reads version ${VERSION}.`);
+    throw new Error(`That outline file is version ${doc.raidiology_findings}, and the viewer reads version ${VERSION}.`);
   }
   if (!doc.scan || !doc.outlines || !Array.isArray(doc.outlines.slices)) {
-    throw new Error('That file holds no anatomy outlines, so there is nothing to show.');
+    throw new Error('That file has no anatomy outlines, so there\'s nothing to show.');
   }
   return doc;
 }

@@ -31,7 +31,7 @@ GLYPH = {
     False: '<svg class="dot-key hollow" viewBox="0 0 12 12" width="12" height="12" role="img" aria-label="Hollow dot">'
            '<circle cx="6" cy="6" r="4.5"/></svg>',
 }
-KIND = {True: "Tested on new cases", False: "Development"}
+KIND = {True: "Held-out test", False: "Development"}
 
 
 def esc(s):
@@ -180,7 +180,7 @@ PLAIN = {
     "chest-xray": "Scores one chest X-ray for 14 kinds of label from a public dataset.",
     "ct-segmenter": "Outlines {n} body structures on CT and names each one.",
     "disc-grader": "Grades the discs of a spine MRI on a public five-step scale.",
-    "fracture-detector": "Looks at a child's wrist X-ray and scores whether it shows a fracture.",
+    "fracture-detector": "Scores a child's wrist X-ray for a fracture label from a public dataset.",
     "lung-nodules": "Marks small lung nodules on CT.",
     "mammography": "Scores one mammogram picture as benign or malignant against a public dataset.",
     "spine-xray-corners": "Marks the corners of the lower back's vertebrae on a side-view spine X-ray.",

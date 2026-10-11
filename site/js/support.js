@@ -10,13 +10,13 @@ const FIXED = {
 };
 const ONCE = 'https://buy.stripe.com/7sY9ATagDbjq5yC95l9Zm01';
 const LEVELS = [
-  [50, 'Sponsor', 'the Supporter perks, plus your name or logo in the README sponsors section.'],
-  [15, 'Supporter', 'a supporter role on Discord, your name in the supporters list, a vote on what to train next.'],
+  [50, 'Sponsor', 'everything Supporters get, plus your name or logo in the sponsors section of the README.'],
+  [15, 'Supporter', 'a supporter role on Discord, your name in the supporters list and a vote on what we train next.'],
   [5, 'Backer', 'a supporter role on Discord.'],
 ];
 
 // Shown under Once, so the perks line never vanishes. Pricing says perks are for monthly members.
-const ONCE_NOTE = 'A one-time payment buys GPU time. The app stays free. Perks such as the Discord supporter role are for monthly members.';
+const ONCE_NOTE = 'A one-time payment buys training time, and the app stays free either way. Perks such as the Discord supporter role are for monthly members.';
 
 const $ = (id) => document.getElementById(id);
 const box = $('give-amt');
@@ -58,7 +58,7 @@ if (box) {
     if (state.amount < MIN) return 'The smallest amount is $3.';
     if (state.amount > MAX[state.freq]) {
       return state.freq === 'month'
-        ? 'A month tops out at $1,000. For more, pick Once (up to $5,000) or email us.'
+        ? 'Monthly support tops out at $1,000. For more, pick Once (up to $5,000) or email us.'
         : 'One payment tops out at $5,000. For more, email us.';
     }
     return '';
@@ -81,19 +81,19 @@ if (box) {
     box.setAttribute('aria-invalid', String(showBad));
     if (showBad) show(note, bad); else hide(note);
     next.textContent = monthly
-      ? 'Next: a secure Stripe checkout page, then a receipt by email. Cancel any time.'
-      : 'Next: a secure Stripe checkout page, then a receipt by email.';
+      ? 'You\'ll go to a secure Stripe checkout page, then get a receipt by email. Cancel any time.'
+      : 'You\'ll go to a secure Stripe checkout page, then get a receipt by email.';
     const low = n > 0 && n < MIN || (state.custom && box.value.trim() !== '' && n < MIN);
     if (minHelp) minHelp.hidden = showBad && n < MIN;
     if (bad) {
-      hours.textContent = low ? 'Enter $3 or more to see the GPU time it buys' : 'Pick an amount to see the GPU time it buys';
+      hours.textContent = low ? 'Enter $3 or more to see the training time it buys' : 'Pick an amount to see the training time it buys';
       level.textContent = '';
       go.textContent = low ? 'Enter $3 or more' : 'Choose an amount';
     } else {
-      hours.textContent = `About ${Math.floor(n / RATE)} hours of A100 GPU training${monthly ? ' a month' : ''}`;
+      hours.textContent = `That's about ${Math.floor(n / RATE)} hours of GPU training${monthly ? ' a month' : ''}`;
       const lv = LEVELS.find((l) => n >= l[0]);
-      level.textContent = !monthly ? ONCE_NOTE : lv ? `${lv[1]}: ${lv[2]}` : 'Levels: Backer at $5+, Supporter at $15+, Sponsor at $50+.';
-      go.textContent = `Give ${money(n)} ${monthly ? 'a month' : 'once'}`;
+      level.textContent = !monthly ? ONCE_NOTE : lv ? `${lv[1]}: ${lv[2]}` : 'Perks start with Backer at $5 a month, then Supporter from $15 and Sponsor from $50.';
+      go.textContent = `Pay ${money(n)} ${monthly ? 'a month' : 'once'}`;
     }
     go.setAttribute('aria-disabled', String(Boolean(bad) || state.busy));
     go.href = target();
@@ -127,11 +127,11 @@ if (box) {
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.url) { location.href = data.url; return; }
-      throw new Error(data.error || 'Checkout could not start. Please try again.');
+      throw new Error(data.error || 'Checkout didn\'t open. Try again in a moment.');
     } catch (x) {
       state.busy = false;
       render();
-      show(err, x.message || 'Checkout could not start. Please try again.');
+      show(err, x.message || 'Checkout didn\'t open. Try again in a moment.');
     }
   });
 

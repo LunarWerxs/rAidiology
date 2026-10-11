@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>rAidiology · Your spine MRI, explained</title>
   <link rel="canonical" href="/report.html">
-  <meta name="description" content="A calm, plain-English 3D walkthrough of a spine MRI reading.">
+  <meta name="description" content="A spine MRI report, explained in plain words and shown in 3D.">
   <meta name="theme-color" content="#0d0d0c">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%231c1b18'/%3E%3Cg fill='%23e9dfc9'%3E%3Crect x='11' y='5' width='10' height='4' rx='2'/%3E%3Crect x='10' y='11' width='12' height='4' rx='2'/%3E%3Crect x='10' y='17' width='12' height='4' rx='2'/%3E%3Crect x='11' y='23' width='10' height='4' rx='2'/%3E%3C/g%3E%3C/svg%3E">
@@ -16,10 +16,10 @@
   <script type="module" src="js/main.js"></script>
 </head>
 <body>
-  <canvas id="scene" aria-label="Interactive 3D model of the body and spine. Drag to rotate, scroll or pinch to zoom."></canvas>
+  <canvas id="scene" aria-label="A 3D model of the body and spine. Drag to turn it, and scroll or pinch to zoom."></canvas>
   <div id="labels" aria-hidden="true"></div>
   <div id="scene-fallback" class="scene-fallback" hidden>
-    <p><strong>The 3D view could not start on this device.</strong><br>Everything in the panel still works.</p>
+    <p><strong>The 3D view didn't start on this device.</strong><br>Everything in the panel still works.</p>
   </div>
 
   <header class="topbar glass">
@@ -29,7 +29,7 @@
       <span class="brand-name">rAidiology</span>
     </div>
     <div class="meta" id="meta"></div>
-    <span class="sample-badge" id="sample-badge" hidden title="This page is showing made-up demo data, not a real scan.">Sample data</span>
+    <span class="sample-badge" id="sample-badge" hidden title="This is made-up sample data, not a real scan.">Sample data</span>
   </header>
 
   <nav class="dock glass" aria-label="3D view controls">
@@ -59,13 +59,13 @@
   <p class="rings-legend glass" id="rings-legend" aria-label="3D colour key" hidden></p>
 
   <div class="model-menu glass" id="model-menu" role="menu" aria-label="3D model" hidden>
-    <button type="button" role="menuitemradio" aria-checked="false" data-model="glass"><strong>Glass body</strong><span>See-through body outline with a spine model</span></button>
+    <button type="button" role="menuitemradio" aria-checked="false" data-model="glass"><strong>Glass body</strong><span>A see-through body with the spine model inside</span></button>
     <button type="button" role="menuitemradio" aria-checked="true" data-model="skeleton"><strong>Skeleton</strong><span>A general skeleton model</span></button>
-    <button type="button" role="menuitemradio" aria-checked="false" data-model="xray"><strong>X-ray</strong><span>Skeleton highlighted inside a faint body outline</span></button>
+    <button type="button" role="menuitemradio" aria-checked="false" data-model="xray"><strong>X-ray</strong><span>The skeleton, highlighted inside a faint body shape</span></button>
     <button type="button" role="menuitemradio" aria-checked="false" data-model="spine"><strong>Spine only</strong><span>The spine model only</span></button>
     <hr class="menu-sep">
     <button type="button" role="menuitemcheckbox" aria-checked="true" data-toggle="ghost"><strong>Ghost spine</strong><span>The rest of the spine, faint</span></button>
-    <button type="button" role="menuitemcheckbox" aria-checked="true" data-toggle="labels"><strong>Labels</strong><span>Level names when zoomed in</span></button>
+    <button type="button" role="menuitemcheckbox" aria-checked="true" data-toggle="labels"><strong>Level names</strong><span>Shown when you zoom in</span></button>
     <p class="model-credit">Skeleton: BodyParts3D, © The Database Center for Life Science, licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC Attribution 4.0 International</a>; modified (parts merged and simplified) by LunarWerx</p>
   </div>
 
@@ -78,8 +78,8 @@
       <span class="sr-only">Tuck the results panel away</span>
     </button>
     <div class="mode-switch" id="mode-switch" role="group" aria-label="Which report to read" hidden>
-      <button type="button" class="mode-btn" data-mode="ai" aria-pressed="true">AI report</button>
-      <button type="button" class="mode-btn" data-mode="radiologist" aria-pressed="false">Radiologist</button>
+      <button type="button" class="mode-btn" data-mode="ai" aria-pressed="true">Model's report</button>
+      <button type="button" class="mode-btn" data-mode="radiologist" aria-pressed="false">Doctor's report</button>
       <button type="button" class="mode-btn" data-mode="compare" aria-pressed="false">Good &amp; bad</button>
     </div>
     <div class="tabs" role="tablist" aria-label="Sections">
@@ -99,7 +99,7 @@
   <footer class="disclaimer" id="disclaimer">
     <button type="button" id="disclaimer-btn" aria-expanded="false">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>
-      <span id="disclaimer-text">Not a medical device, not a diagnosis. Always talk to a doctor about your results.</span>
+      <span id="disclaimer-text">Not a medical device, and nothing here is a diagnosis. Always talk to a doctor about your results.</span>
     </button>
   </footer>
 
@@ -108,6 +108,6 @@
     <p>Preparing your 3D spine&hellip;</p>
   </div>
 
-  <noscript><div class="noscript">This page needs JavaScript to show your results.</div></noscript>
+  <noscript><div class="noscript">Turn on JavaScript to see your report.</div></noscript>
 </body>
 </html>

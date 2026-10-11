@@ -132,7 +132,7 @@ async function decodeSlice(slice) {
   }
   const parsed = parseBytes(bytes);
   // Its head parsed when it was opened; the whole of it can still be damaged past the head.
-  if (!parsed.ds) return { unreadable: 'it is damaged after its first few kilobytes' };
+  if (!parsed.ds) return { unreadable: 'it\'s damaged past its first few kilobytes' };
   try {
     return await decodeFrame(parsed.ds, 0);
   } catch {
@@ -217,7 +217,7 @@ async function handleFiles(entries, credit = null, readingFile = null) {
 
   let late = null;
   if (readingFile && series.length === 1) {
-    progress('Outlining parts…', 0, 0);
+    progress('Adding the outlines…', 0, 0);
     const got = await Promise.race([readingFile, new Promise((r) => setTimeout(r, READING_WAIT_MS, LATE))]);
     if (got === LATE) late = readingFile;
     else if (got) await loadReading(got);
@@ -249,7 +249,7 @@ async function sortIntoSeries(read) {
     try {
       header = await readHeader(f);
     } catch (err) {
-      problem(f.path, `could not be read: ${String(err && err.message ? err.message : err).replace(/\.$/, '')}.`);
+      problem(f.path, `wouldn't open: ${String(err && err.message ? err.message : err).replace(/\.$/, '')}.`);
       continue;
     }
     const picked = pictureOf(f, header);
@@ -266,28 +266,28 @@ async function sortIntoSeries(read) {
 
 // The picture's header and description, or null after saying why the file was left out.
 function pictureOf(f, header) {
-  if (header.notDicom) { problem(f.path, 'is not a scan picture, so it was skipped.'); return null; }
-  if (header.broken) { problem(f.path, 'looks like a scan picture but could not be read.'); return null; }
+  if (header.notDicom) { problem(f.path, 'isn\'t a DICOM file, so it was skipped.'); return null; }
+  if (header.broken) { problem(f.path, 'looks like a DICOM file but wouldn\'t open.'); return null; }
   const { ds } = header;
   const info = describe(ds);
-  if (!info.rows || !info.cols) { problem(f.path, 'has no image in it (it may be a report or an index).'); return null; }
+  if (!info.rows || !info.cols) { problem(f.path, 'holds no picture. It may be a report or an index.'); return null; }
   return { ds, info };
 }
 
 // Order each series' slices and decode its first picture. Series that cannot be opened are reported.
 async function buildSeries(bySeries, read) {
-  progress('Sorting the series…', read.files.length, read.files.length);
+  progress('Sorting the pictures into sets…', read.files.length, read.files.length);
   const series = [];
   for (const s of bySeries.values()) {
     s.orderedBy = orderSlices(s.slices);
     const frame = await decodeSlice(s.slices[0]);
     if (frame.unreadable) {
-      problem(s.slices[0].path, `could not be read when its picture was wanted: ${frame.unreadable}.`);
+      problem(s.slices[0].path, `wouldn't open: ${frame.unreadable}.`);
       continue;
     }
     if (frame.unsupported) {
-      problem(`${s.info.modality || 'A'} series “${s.info.seriesDescription || 'untitled'}” (${s.slices.length} images)`,
-        `could not be opened: this disc stores its images as ${frame.unsupported}, which this page cannot open yet.`);
+      problem(`${s.info.modality || 'A'} set “${s.info.seriesDescription || 'untitled'}” (${s.slices.length} pictures)`,
+        `didn't open, because this disc stores them as ${frame.unsupported}, which the viewer can't read yet.`);
       continue;
     }
     s.firstFrame = frame;
@@ -309,10 +309,10 @@ function renderSeries(read) {
   const cards = el('series-cards');
   cards.replaceChildren();
   const total = state.series.reduce((n, s) => n + s.slices.length, 0);
-  const sets = state.series.length === 1 ? '1 set of pictures' : `${state.series.length} sets of pictures`;
+  const sets = state.series.length === 1 ? '1 set' : `${state.series.length} sets`;
   el('series-summary').textContent = state.series.length
-    ? `${sets}, ${total} images, read from ${(read.bytes / 1e6).toFixed(0)} MB on this device. Nothing was uploaded.`
-    : 'No images on this disc could be opened. What went wrong is listed below.';
+    ? `${total} pictures in ${sets}, read from ${(read.bytes / 1e6).toFixed(0)} MB on this device.`
+    : 'None of the pictures on this disc would open. Here\'s what went wrong.';
   state.series.forEach((s, i) => {
     const card = document.createElement('button');
     card.type = 'button';
@@ -326,7 +326,7 @@ function renderSeries(read) {
     title.textContent = `${s.info.modality || 'Scan'} · ${s.info.seriesDescription || 'untitled'}`;
     const sub = document.createElement('div');
     sub.className = 'sub';
-    sub.textContent = `${s.slices.length} image${s.slices.length === 1 ? '' : 's'} · ${s.info.cols}x${s.info.rows}`
+    sub.textContent = `${s.slices.length} picture${s.slices.length === 1 ? '' : 's'} · ${s.info.cols}x${s.info.rows}`
       + (s.info.acquisitionDate ? ` · ${s.info.acquisitionDate}` : '');
     card.append(canvas, title, sub);
     card.addEventListener('click', () => openSeries(i));
@@ -404,7 +404,7 @@ async function loadReading(file) {
 async function attachFile(file) {
   const series = state.series;
   if (!series.length) {
-    readingProblem('Open the scan itself first, then add the reading: the reading on its own has no pictures in it.');
+    readingProblem('Open the scan first, then add its outline file. The file holds the outlines but none of the pictures.');
     return;
   }
   let doc;
@@ -417,7 +417,7 @@ async function attachFile(file) {
   const { seriesIndex, outlines } = await attachReading(doc, series);
   if (state.series !== series) return;            // another scan was opened while this was read
   if (seriesIndex < 0) {
-    readingProblem('That reading is about a different scan from the one open here. Open the scan it was written from, or open a different reading.');
+    readingProblem('That outline file belongs to a different scan. Open the one it was made from, or choose another file.');
     return;
   }
   state.reading = doc;
@@ -450,8 +450,8 @@ function renderReading() {
   const p = document.createElement('p');
   p.className = 'reading-note';
   p.textContent = state.outlines.size
-    ? `${state.outlines.size} image${state.outlines.size === 1 ? '' : 's'} outlined, naming ${names.length} part${names.length === 1 ? '' : 's'} of the body. Tap or hover an outline on a picture to see its name.`
-    : 'This file holds no outlines for the pictures open here.';
+    ? `${names.length} structure${names.length === 1 ? '' : 's'} outlined across ${state.outlines.size} slice${state.outlines.size === 1 ? '' : 's'}. Tap or point at one to see its name.`
+    : 'This file has no outlines for the slices open here.';
   out.append(p);
   out.hidden = false;
   showReadingBox();
@@ -466,7 +466,7 @@ function renderSeriesMarks() {
     const flag = document.createElement('div');
     flag.className = 'series-flag';
     const outlined = state.outlines.size;
-    flag.textContent = `${outlined} image${outlined === 1 ? '' : 's'} outlined`;
+    flag.textContent = `Outlines on ${outlined} slice${outlined === 1 ? '' : 's'}`;
     cards[i].append(flag);
   }
 }
@@ -691,8 +691,8 @@ function describeOutlines(note, drawn) {
   note.classList.toggle('marked', drawn.length > 0);
   if (!drawn.length) {
     note.dataset.sig = '';
-    note.textContent = state.showMarks ? 'Nothing is outlined on this image.'
-      : 'The outlines are hidden. Press Show the outlines to see the parts.';
+    note.textContent = state.showMarks ? 'No outlines on this slice.'
+      : 'The outlines are hidden. Press Show the outlines to bring them back.';
     return;
   }
   const sig = drawn.join(',');
@@ -700,14 +700,14 @@ function describeOutlines(note, drawn) {
     note.dataset.sig = sig;
     note.replaceChildren();
     const how = document.createElement('p');
-    how.textContent = 'Tap a part below to find it on the picture. You can also tap or hover an outline.';
+    how.textContent = 'Tap a name to light it up on the slice.';
     const all = document.createElement('details');
     all.className = 'outline-all';
     all.open = state.keyOpen;
     all.addEventListener('toggle', () => { state.keyOpen = all.open; });
     const summary = document.createElement('summary');
-    summary.textContent = drawn.length === 1 ? 'The one part outlined on this picture'
-      : `${drawn.length} parts outlined on this picture`;
+    summary.textContent = drawn.length === 1 ? 'Named on this slice (1)'
+      : `Named on this slice (${drawn.length})`;
     const list = document.createElement('ul');
     list.className = 'parts';
     const about = state.reading.outlines.about;
@@ -1021,9 +1021,9 @@ function draw() {
     // Which picture, and nothing else. The brightness and contrast numbers and the sort order were
     // on here too; they are a radiographer's units, and a visitor read them as things to understand.
     // The how-to is a chip under the picture, never on it, and it goes after the first change.
-    el('hud').textContent = `Picture ${state.slice + 1} of ${s.slices.length}`;
+    el('hud').textContent = `${state.slice + 1} of ${s.slices.length}`;
     // The slider is what a screen reader hears on each move, so it says the picture and the outline count.
-    const parts = el('finding').hidden || !drawn.length ? '' : `, ${drawn.length} part${drawn.length === 1 ? '' : 's'} outlined`;
+    const parts = el('finding').hidden || !drawn.length ? '' : `, ${drawn.length} structure${drawn.length === 1 ? '' : 's'} outlined`;
     el('slice').setAttribute('aria-valuetext', `Picture ${state.slice + 1} of ${s.slices.length}${parts}`);
     el('hint-chip').hidden = state.moved || s.slices.length < 2;
     const spacing = s.info.pixelSpacing;
@@ -1071,10 +1071,10 @@ function sideOf(v) {
 // What is true of every picture of this kind, and nothing about this one. It says which way up the
 // picture is and what white and black usually are; it does not say what anything on it means.
 const SHADES = {
-  CT: 'On a CT picture, white is bone, grey is organs and muscle, and black is air.',
+  CT: 'On a CT, white is bone, grey is organs and muscle, and black is air.',
   CR: 'On an X-ray, white is bone and anything dense, and black is air.',
   DX: 'On an X-ray, white is bone and anything dense, and black is air.',
-  MR: 'On an MRI, what shows up bright depends on the kind of picture, so there is no simple rule for white and black.',
+  MR: 'On an MRI, what looks bright depends on how the scan was taken, so there\'s no simple rule for white and black.',
 };
 
 function describeView(info) {
@@ -1096,13 +1096,13 @@ function describeView(info) {
     const axes = [across.axis, down.axis].sort().join('');
     if (axes === '01') {
       parts.push(across.away === SIDES[0][0] && down.away === 'front'
-        ? 'This is a slice across the body, seen as if looking up from the feet.'
-        : 'This is a slice across the body.');
+        ? 'This slice cuts across the body, and you\'re looking up at it from the feet.'
+        : 'This slice cuts across the body.');
     } else if (axes === '02') {
       const facing = across.axis !== 0 ? '' : across.away === SIDES[0][0] ? ', seen from the front' : ', seen from behind';
-      parts.push(`This is a slice through the body from side to side${facing}.`);
+      parts.push(`This slice runs from side to side through the body${facing}.`);
     } else {
-      parts.push('This is a slice through the body from front to back, seen from the side.');
+      parts.push('This slice runs from front to back through the body, seen from the side.');
     }
     parts.push('The words at the edges say which side is which.');
   }
@@ -1233,8 +1233,8 @@ function wireIntake() {
   // It is said twice, beside the button that triggers the question and in the step-by-step help: a
   // visitor who met the browser's question without having opened the help had been told nothing.
   const asks = viewPicker
-    ? 'Your browser will ask whether this page may read the files. Allowing it only lets the page read them, and nothing is sent.'
-    : 'Your browser may ask "Upload files to this site?". That is its own wording for letting a page read them. Nothing is sent: you can switch your Wi-Fi off first and it still works.';
+    ? 'Your browser will ask first. Saying yes only lets this page read the files, here on this device.'
+    : 'Your browser may ask "Upload files to this site?". That\'s its own wording for letting a page read the files. Nothing is sent: you can switch your Wi-Fi off first, and it still works.';
   for (const line of document.querySelectorAll('.browser-asks')) line.textContent = asks;
   // The page's own address, put into a message the visitor sends to themselves from their own mail
   // app. Taken from the address bar rather than written here, and nothing is sent by this page.
@@ -1263,7 +1263,7 @@ function wireIntake() {
     let handle;
     // The browser's own window can open behind this one, or slowly; a visitor in round four pressed
     // the button, saw nothing change and thought it had not worked.
-    help.textContent = 'A window has opened for you to choose the disc or the folder. If you cannot see it, it may be behind this one.';
+    help.textContent = 'A window has opened so you can choose the disc or folder. If you can\'t see it, check behind this one.';
     try {
       handle = await window.showDirectoryPicker({ mode: 'read' });
     } catch (err) {
@@ -1416,7 +1416,7 @@ export function start() {
   wireIntake();
   wireStage();
   if (!window.DecompressionStream) {
-    problem('This browser', 'cannot unzip a file on its own, so a ZIP will not open here. A folder still works, and any up-to-date browser can do both.');
+    problem('This browser', 'can\'t unzip files, so a ZIP won\'t open here. A folder still works, and any up-to-date browser can do both.');
     renderProblems();
   }
   if (new URLSearchParams(window.location.search).has('reading')) el('reading-box').hidden = false;

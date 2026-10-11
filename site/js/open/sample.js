@@ -16,12 +16,12 @@ const SAMPLE_READING = 'sample/sample-ct.raidiology.json.gz';
 // `source` is the attribution the licence asks for, changes included. Three visitors read it as
 // something they were supposed to understand, so the viewer draws it smaller, on its own line.
 const CREDIT = {
-  text: 'This is a sample, not your scan. It is a real CT of an adult\'s chest and abdomen, shared for '
-    + 'research, with nothing in it that identifies anyone. An MRI or an X-ray from your own disc '
-    + 'opens the same way.',
-  short: 'Sample, not your scan. TotalSegmentator sample, CC BY 4.0.',
-  source: 'Where the sample comes from, for the record: TotalSegmentator dataset, Wasserthal and '
-    + 'others, 2023, licence CC BY 4.0; every second picture left out.',
+  text: 'This is a sample, not your scan. It\'s a real CT of an adult\'s chest and belly, shared for '
+    + 'research with nothing in it that identifies anyone. A CT is a stack of thin slices through the '
+    + 'body, and you can step through them one by one. Your own CT, MRI or X-ray opens the same way.',
+  short: 'A sample CT from TotalSegmentator (CC BY 4.0), not your scan.',
+  source: 'Where the sample comes from, for the record: the TotalSegmentator dataset by Wasserthal and '
+    + 'others, 2023, under licence CC BY 4.0. We left out every second slice.',
 };
 
 // The reading is fetched at the same moment as the pictures, not after them. It is 48 KB beside a
@@ -41,7 +41,7 @@ async function loadSample() {
   const button = document.getElementById('pick-sample');
   const label = button.textContent;
   button.disabled = true;
-  button.textContent = 'Fetching the sample…';
+  button.textContent = 'Loading the sample CT…';
   try {
     const reading = fetchReading();
     const res = await fetch(SAMPLE);
@@ -52,7 +52,7 @@ async function loadSample() {
     if (outlined) showSampleReading();
     button.textContent = label;
   } catch {
-    button.textContent = 'The sample could not be fetched. Try again';
+    button.textContent = 'The sample didn\'t load. Try again';
     // Back to the ordinary page, where that message and the button are.
     document.documentElement.classList.remove('is-sample');
   }

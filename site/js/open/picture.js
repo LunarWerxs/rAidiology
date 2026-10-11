@@ -6,7 +6,7 @@ import { readDataset, decodeFrame, autoWindow, rescale } from './dicom.js';
 
 async function frameOf(bytes) {
   const ds = readDataset(bytes);
-  if (!ds) throw new Error('not a picture');
+  if (!ds) throw new Error('it isn\'t a DICOM file');
   const frame = await decodeFrame(ds, 0);
   if (frame.unsupported) throw new Error(frame.unsupported);
   return frame;
@@ -84,7 +84,7 @@ export function mountPreview(container, images) {
     at = Math.max(0, Math.min(images.length - 1, i));
     slider.value = String(at);
     const mine = ++seq;
-    label.textContent = `Picture ${at + 1} of ${images.length}`;
+    label.textContent = `${at + 1} of ${images.length}`;
     try {
       if (!frames.has(at)) {
         frames.set(at, await frameOf(images[at].bytes));
@@ -94,7 +94,7 @@ export function mountPreview(container, images) {
       message.textContent = '';
       paintFull(canvas, frames.get(at), fullBox.checked);
     } catch (e) {
-      if (mine === seq) message.textContent = `This picture could not be drawn (${e.message}).`;
+      if (mine === seq) message.textContent = `This picture can't be shown (${e.message}).`;
     }
   };
   prev.addEventListener('click', () => show(at - 1));

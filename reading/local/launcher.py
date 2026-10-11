@@ -135,6 +135,11 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         threading.Thread(target=self.server.shutdown, daemon=True).start()
 
 
+class Server(http.server.ThreadingHTTPServer):
+    # A browser opens many connections at once; the default listen queue of 5 refuses some of them on Windows.
+    request_queue_size = 64
+
+
 def main():
     ap = argparse.ArgumentParser(description="Run rAidiology on this computer.")
     ap.add_argument("--port", type=int, default=None)
@@ -145,7 +150,7 @@ def main():
     srv = None
     for p in ports:
         try:
-            srv = http.server.ThreadingHTTPServer(("127.0.0.1", p), Handler)
+            srv = Server(("127.0.0.1", p), Handler)
             break
         except OSError:
             continue

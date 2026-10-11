@@ -45,20 +45,18 @@
 .demo-ph { position: relative; overflow: hidden; aspect-ratio: 1 / 1; background: var(--lightbox); }
 .demo-ph img { display: block; width: 100%; height: 100%; object-fit: contain; }
 /* the space the controls will take, drawn as two dark bars so the card does not jump when the viewer mounts */
-.demo-sk { height: 167px; padding-top: 8px; }
+.demo-sk { height: 136px; padding-top: 8px; }
 .demo-sk span { position: relative; display: block; overflow: hidden; background: var(--skeleton-fill); }
-.demo-sk span:first-child { height: 44px; border-radius: 10px; }
-.demo-sk span:last-child { width: 46%; height: 10px; margin: 22px auto 0; border-radius: 5px; }
+.demo-sk span:first-child { height: 44px; border-radius: 22px; }
+.demo-sk span:last-child { width: 46%; height: 12px; margin: 18px auto 0; border-radius: 6px; }
 .stage-credit { display: none; }
 @media (min-width: 600px) and (max-width: 959px) { .hero-stage .ctdemo { max-width: 440px; margin-inline: auto; } }
 @media (min-width: 960px) {
   /* docked inside the 3D card's frame, 16px in from its bottom and inline-start edges */
   .hero-stage .ctdemo { position: absolute; z-index: 2; inset-inline-start: 16px; inset-block-end: 16px; width: clamp(200px, 36%, 260px); padding: 6px; }
-  .hero-stage .ctdemo .ctdemo__credit { margin-top: 0; }
   /* the credit moves under the stage so the card stays short */
-  .hero-stage .ctdemo .ctdemo__line { display: none; }
-  .hero-stage .ctdemo .ctdemo__link { min-height: 48px; }
-  .demo-sk { height: 113px; }
+  .hero-stage .ctdemo .ctdemo__credit { display: none; }
+  .demo-sk { height: 96px; }
   /* the CT card sits on the stage's lower-left corner, so the view chips move to the lower-right */
   .hero-stage .hero3d .hero3d__modes { left: auto; right: 14px; transform: none; }
   .stage-credit { display: block; max-width: none; margin: 0; color: var(--muted); font-size: var(--fs-s); line-height: 1.45; text-align: end; }

@@ -33,7 +33,7 @@ function demoFailed() {
     const a = document.createElement('a');
     a.className = 'ctdemo__link';
     a.href = 'open.html?sample=1';
-    a.textContent = 'Open the full viewer';
+    a.textContent = 'Open in the viewer';
     demo.append(a);
   }
 }
@@ -69,8 +69,8 @@ if (chooser) {
     const monthly = state.freq === 'month';
     segs.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.freq === state.freq)));
     amts.forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.amt) === state.amount)));
-    hours.textContent = `About ${Math.floor(state.amount / RATE)} hours of GPU training${monthly ? ' a month' : ''}`;
-    go.textContent = `Give $${state.amount} ${monthly ? 'a month' : 'once'}`;
+    hours.textContent = `Pays for about ${Math.floor(state.amount / RATE)} hours of model training${monthly ? ' a month' : ''}`;
+    go.textContent = `Pay $${state.amount} ${monthly ? 'a month' : 'once'}`;
     go.href = `support.html?amount=${state.amount}&freq=${state.freq}`;
   };
 

@@ -20,6 +20,13 @@ function svgEl(tag, attrs) {
   return e;
 }
 
+// A 24 x 24 icon drawn in currentColor; `line` icons are strokes, the rest are fills.
+function icon(cls, shapes) {
+  const s = svgEl('svg', { class: `ctdemo__i ${cls}`, viewBox: '0 0 24 24', 'aria-hidden': 'true', focusable: 'false' });
+  for (const [tag, attrs] of shapes) s.append(svgEl(tag, attrs));
+  return s;
+}
+
 export function mountCtDemo(box, opts = {}) {
   const ac = new AbortController();
   const on = (t, type, fn, o) => t.addEventListener(type, fn, { signal: ac.signal, ...o });
@@ -41,50 +48,59 @@ export function mountCtDemo(box, opts = {}) {
   const phSrc = box.querySelector('.demo-ph img');
   box.replaceChildren();
 
+  // The picture, with two quiet pills over it: the slice count (top right) and the named part (bottom left).
   const lightbox = make('div', 'ctdemo__lightbox');
-  const img = make('img', 'ctdemo__img', { alt: 'A slice of the sample CT', draggable: 'false' });
+  const img = make('img', 'ctdemo__img', { alt: 'A slice of the sample CT scan', draggable: 'false' });
   const svg = svgEl('svg', { class: 'ctdemo__svg', 'aria-hidden': 'true' });
-  const chip = make('p', 'ctdemo__cap');
-  chip.setAttribute('aria-live', 'polite');
+  const count = make('p', 'ctdemo__count', { role: 'img' });
+  const chip = make('p', 'ctdemo__cap', { 'aria-live': 'polite' });
   // The placeholder frame from the HTML stays under the live picture until it paints, so nothing shifts and no text shows.
   const ph = phSrc ? phSrc.cloneNode() : null;
   if (ph) { ph.classList.add('ctdemo__ph'); ph.alt = ''; ph.setAttribute('aria-hidden', 'true'); }
-  lightbox.append(...(ph ? [ph] : []), img, svg);
+  lightbox.append(...(ph ? [ph] : []), img, svg, count, chip);
 
+  // One player row: play or pause, then the slider between its step arrows (the arrows hide on a narrow card).
   const bar = make('div', 'ctdemo__bar');
-  const prev = make('button', 'ctdemo__step', { type: 'button', 'aria-label': 'Previous slice' });
-  prev.textContent = '‹';
-  const next = make('button', 'ctdemo__step', { type: 'button', 'aria-label': 'Next slice' });
-  next.textContent = '›';
-  const range = make('input', 'ctdemo__range', { type: 'range', min: '0', max: '0', step: '1', value: '0', 'aria-label': 'Picture' });
-  bar.append(prev, range, next);
-  const count = make('p', 'ctdemo__count');
-  count.setAttribute('aria-live', 'off');
-  const credit = make('p', 'ctdemo__credit');
-  const link = make('a', 'btn tonal ctdemo__link', { href: 'open.html?sample=1' });
-  link.textContent = 'Open the full viewer';
-  const foot = make('div', 'ctdemo__foot');
-  const playBtn = make('button', 'ctdemo__play', { type: 'button', 'aria-label': 'Autoplay', 'aria-pressed': 'false' });
-  const playTxt = make('span', 'ctdemo__play-t');
-  playBtn.append(playTxt);
+  const playBtn = make('button', 'ctdemo__play', { type: 'button', 'aria-pressed': 'false' });
+  playBtn.append(
+    icon('ctdemo__i--play', [['path', { d: 'M8 5.14v13.72a1 1 0 0 0 1.52.85l11.04-6.86a1 1 0 0 0 0-1.7L9.52 4.29A1 1 0 0 0 8 5.14z' }]]),
+    icon('ctdemo__i--pause', [['rect', { x: '6', y: '5', width: '4.5', height: '14', rx: '1.25' }], ['rect', { x: '13.5', y: '5', width: '4.5', height: '14', rx: '1.25' }]]),
+  );
   const setPlayUi = () => {
     playBtn.setAttribute('aria-pressed', String(playing));
-    playTxt.textContent = playing ? '❚❚ Pause' : '▶ Play';
+    playBtn.setAttribute('aria-label', playing ? 'Pause' : 'Play the slices');
   };
-  foot.append(playBtn, count);
-  box.append(lightbox, chip, bar, foot, credit);
-  const line = make('span', 'ctdemo__line');
-  line.textContent = 'Sample CT from TotalSegmentator (CC BY 4.0). Outlines by an open research model.';
-  credit.append(line, link);
+  const prev = make('button', 'ctdemo__step', { type: 'button', 'aria-label': 'Previous slice' });
+  prev.append(icon('ctdemo__i--line', [['path', { d: 'M14.5 6.5 9 12l5.5 5.5' }]]));
+  const next = make('button', 'ctdemo__step', { type: 'button', 'aria-label': 'Next slice' });
+  next.append(icon('ctdemo__i--line', [['path', { d: 'M9.5 6.5 15 12l-5.5 5.5' }]]));
+  const range = make('input', 'ctdemo__range', { type: 'range', min: '0', max: '0', step: '1', value: '0', 'aria-label': 'Slice' });
+  bar.append(playBtn, prev, range, next);
+
+  // The way into the full viewer: a small text link, with a shorter label on the narrow docked card.
+  const link = make('a', 'ctdemo__link', { href: 'open.html?sample=1' });
+  const linkLong = make('span', 'ctdemo__link-long');
+  linkLong.textContent = 'Open in the viewer';
+  const linkShort = make('span', 'ctdemo__link-short');
+  linkShort.textContent = 'Open the viewer';
+  link.append(linkLong, linkShort, icon('ctdemo__i--line ctdemo__i--go', [['path', { d: 'M5 12h13M13 7l5 5-5 5' }]]));
+  // Two sentences that each wrap as a whole, so the licence never breaks across lines.
+  const credit = make('p', 'ctdemo__credit');
+  for (const t of ['Sample CT from TotalSegmentator (CC BY 4.0).', 'Outlines by the CT organ outliner, one of our research models.']) {
+    const s = make('span');
+    s.textContent = t;
+    credit.append(s, ' ');
+  }
+  box.append(lightbox, bar, link, credit);
   box.tabIndex = 0;
   box.setAttribute('role', 'group');
-  box.setAttribute('aria-label', 'Sample CT viewer. Arrow keys change the slice.');
+  box.setAttribute('aria-label', 'Sample CT scan. Use the arrow keys to move through the slices.');
 
   function failed() {
     box.classList.remove('is-loading');
     box.classList.add('is-failed');
     box.removeAttribute('aria-busy');
-    credit.replaceChildren(link); // the full viewer is still one tap away
+    credit.remove(); // the full viewer is still one tap away
   }
   on(img, 'load', () => {
     box.classList.remove('is-loading');
@@ -125,8 +141,9 @@ export function mountCtDemo(box, opts = {}) {
     for (const p of svg.children) p.classList.toggle('is-active', Number(p.dataset.id) === activeId);
     const el = [...svg.children].find((p) => Number(p.dataset.id) === activeId);
     if (!el) { chip.textContent = ''; return; }
-    const nm = demo.byId.get(activeId).name;
-    chip.textContent = nm.charAt(0).toUpperCase() + nm.slice(1);
+    const meta = demo.byId.get(activeId);
+    chip.style.setProperty('--dot', meta.color);
+    chip.textContent = meta.name.charAt(0).toUpperCase() + meta.name.slice(1);
   }
 
   function setActive(id) {
@@ -147,8 +164,11 @@ export function mountCtDemo(box, opts = {}) {
     index = i;
     img.src = frameUrl(i);
     range.value = String(i);
-    count.textContent = `Picture ${i + 1} of ${demo.count}`;
-    range.setAttribute('aria-valuetext', count.textContent);
+    range.style.setProperty('--p', String(demo.count > 1 ? i / (demo.count - 1) : 0));
+    const said = `Slice ${i + 1} of ${demo.count}`;
+    count.textContent = `${i + 1} / ${demo.count}`;
+    count.setAttribute('aria-label', said);
+    range.setAttribute('aria-valuetext', said);
     drawOutlines();
     window.dispatchEvent(new CustomEvent('raidiology:slice', {
       detail: { index: i, count: demo.count, level: demo.slices[i].level || null },
@@ -238,7 +258,7 @@ export function mountCtDemo(box, opts = {}) {
   on(lightbox, 'pointercancel', endDrag);
   on(lightbox, 'click', () => { if (!moved) clear(); });
   on(lightbox, 'pointerleave', (e) => { if (e.pointerType === 'mouse' && !pinned && !drag) clear(); });
-  // Any touch, drag, key or click on the card ends autoplay for good; the Play button below starts it again on request.
+  // Any touch, drag, key or click on the card ends autoplay for good; the play button starts it again on request.
   const stopAuto = (e) => { if (!playBtn.contains(e.target)) { auto = false; stopPlay(); } };
   on(box, 'touchstart', stopAuto, { passive: true });
   on(box, 'pointerdown', stopAuto);

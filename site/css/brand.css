@@ -47,6 +47,7 @@
   --track-tick: #dde4ec; --track-chance: #b9c5d2;
   --shadow-btn: 0 1px 2px rgba(15, 27, 42, 0.06);
   --shadow-menu: 0 24px 40px -16px rgba(15, 27, 42, 0.22);
+  --menu-scrim: rgba(15, 27, 42, 0.5);   /* dims the page behind the open phone menu */
   --shadow-tile-hover: 0 1px 2px rgba(15, 27, 42, 0.05), 0 12px 32px rgba(15, 27, 42, 0.09);
   --shadow-seg-on: 0 1px 3px rgba(15, 27, 42, 0.14);
   --shadow-seg-on-primary: 0 1px 3px rgba(15, 27, 42, 0.25);
@@ -236,12 +237,17 @@ a.chip:hover { background: var(--primary); color: var(--on-primary); }
   .menu-btn { display: inline-flex; }
   .site-nav { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; max-height: calc(100dvh - var(--head-h)); overflow-y: auto; padding: 8px var(--gutter) 20px; background: var(--bg); border-bottom: 1px solid var(--line); box-shadow: var(--shadow-menu); }
   .site-nav.open { display: flex; }
+  /* While the menu is open the page behind it dims: a fixed layer above the page and just under the header
+     (z-index 50), which holds the menu, so the menu is never covered. A tap on it lands outside the header,
+     which closes the menu (nav.js). Only while the menu is open; no other page changes. */
+  body:has(.site-nav.open)::after { content: ""; position: fixed; inset: 0; z-index: 49; background: var(--menu-scrim); animation: menu-scrim-in 0.15s ease-out; }
   .site-nav a { padding: 15px 4px; border-radius: 0; border-bottom: 1px solid var(--line); font-size: 1.0625rem; }
   .site-nav a:last-child { border-bottom: 0; }
   .site-nav a:hover { background: transparent; }
   .site-nav a[aria-current="page"]::after { left: -12px; right: auto; top: 14px; bottom: 14px; width: 3px; height: auto; }
   .site-nav .nav-extra { display: block; color: var(--text); }
 }
+@keyframes menu-scrim-in { from { opacity: 0; } }
 @media (max-width: 359px) { .site-head .brand-name { display: none; } }
 
 .start-over-row { max-width: calc(var(--content) + 2 * var(--gutter)); margin: 8px auto 0; padding: 0 var(--gutter); }

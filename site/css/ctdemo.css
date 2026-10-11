@@ -1,42 +1,70 @@
-/* The sample CT viewer on the home page. Every rule is under .ctdemo; fits 300 px to 560 px wide. */
-.ctdemo { display: block; width: 100%; max-width: 560px; margin-inline: auto; font-family: var(--font, system-ui, sans-serif); color: var(--text, #2a3a4d); outline: none; }
+/* The sample CT viewer on the home page. Every rule is under .ctdemo; fits 200 px to 560 px wide.
+   Under 300 px (the card docked on the desktop stage) the step arrows hide and the link uses its short label. */
+.ctdemo { container: ctdemo / inline-size; display: block; width: 100%; max-width: 560px; margin-inline: auto; font-family: var(--font, system-ui, sans-serif); color: var(--text, #2a3a4d); outline: none; }
 .ctdemo:focus-visible { outline: 2px solid var(--primary, #1660c4); outline-offset: 4px; border-radius: 12px; }
 .ctdemo__lightbox { position: relative; width: 100%; aspect-ratio: 1 / 1; background: var(--lightbox, #05090e); border-radius: var(--radius-pic, 12px); overflow: hidden; touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: ew-resize; }
 .ctdemo .ctdemo__img, .ctdemo .ctdemo__ph { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
 .ctdemo .ctdemo__svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .ctdemo .ctdemo__outline { fill: transparent; stroke-width: 1.5; stroke-linejoin: round; vector-effect: non-scaling-stroke; pointer-events: all; cursor: pointer; transition: fill 0.12s; }
 .ctdemo .ctdemo__outline.is-active { fill: var(--line-dark); stroke-width: 2.25; }
-.ctdemo .ctdemo__cap { min-height: 1.6em; margin: 6px 0 0; color: var(--ink, #0f1b2a); font-size: 0.9375rem; font-weight: 600; line-height: 1.6; text-align: center; }
-.ctdemo .ctdemo__bar { display: flex; align-items: center; gap: 4px; margin-top: 8px; }
-.ctdemo .ctdemo__play { flex: none; min-width: 96px; min-height: 44px; margin-inline-end: 12px; padding: 0 16px; border: 0; border-radius: 10px; background: var(--primary-soft); color: var(--primary-dark); font: 600 0.9375rem/1 var(--font, system-ui, sans-serif); cursor: pointer; }
-.ctdemo .ctdemo__play:hover { background: var(--primary-soft-hover); }
-.ctdemo .ctdemo__play:focus-visible { outline: 2px solid var(--primary, #1660c4); outline-offset: 2px; }
-.ctdemo .ctdemo__step { flex: none; width: 44px; height: 44px; padding: 0 0 4px; border: 0; border-radius: 10px; background: var(--primary-soft); color: var(--primary-dark); font: 600 1.5rem/1 var(--font, system-ui, sans-serif); cursor: pointer; }
-.ctdemo .ctdemo__step:hover { background: var(--primary-soft-hover); }
-.ctdemo .ctdemo__step:focus-visible { outline: 2px solid var(--primary, #1660c4); outline-offset: 2px; }
-.ctdemo .ctdemo__range { flex: 1 1 auto; min-width: 0; height: 44px; margin: 0; background: transparent; cursor: pointer; -webkit-appearance: none; appearance: none; touch-action: pan-y; }
+
+/* Quiet pills over the picture's dark corners: the slice count top right, the named part bottom left. */
+.ctdemo .ctdemo__count, .ctdemo .ctdemo__cap { position: absolute; z-index: 1; margin: 0; padding: 2px 9px; border-radius: 999px; background: rgba(5, 9, 14, 0.74); box-shadow: inset 0 0 0 1px var(--line-dark-ring, rgba(255, 255, 255, 0.16)); color: var(--on-dark, #e9eef4); font-size: 0.75rem; font-weight: 600; line-height: 1.5; pointer-events: none; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+.ctdemo .ctdemo__count { inset-block-start: 8px; inset-inline-end: 8px; font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+.ctdemo .ctdemo__cap { inset-block-end: 8px; inset-inline-start: 8px; display: flex; align-items: flex-start; gap: 6px; max-width: calc(100% - 16px); padding-inline-start: 8px; border-radius: 11px; transition: opacity 0.15s; }
+.ctdemo .ctdemo__cap::before { content: ""; flex: none; width: 8px; height: 8px; margin-top: 5px; border-radius: 50%; background: var(--dot, currentColor); }
+.ctdemo .ctdemo__cap:empty { opacity: 0; }
+
+/* The player row: a round play button, then the slider between two quiet step arrows. */
+.ctdemo .ctdemo__bar { display: flex; align-items: center; gap: 2px; margin-top: 8px; }
+.ctdemo .ctdemo__i { display: block; width: 20px; height: 20px; fill: currentColor; }
+.ctdemo .ctdemo__i--line { fill: none; stroke: currentColor; stroke-width: 2.25; stroke-linecap: round; stroke-linejoin: round; }
+.ctdemo .ctdemo__play { flex: none; display: grid; place-items: center; width: 44px; height: 44px; margin-inline-end: 8px; padding: 0; border: 0; border-radius: 50%; background: var(--primary, #1660c4); color: var(--on-primary, #fff); box-shadow: 0 1px 3px rgba(15, 27, 42, 0.22); cursor: pointer; transition: background-color 0.15s; }
+.ctdemo .ctdemo__play:hover { background: var(--primary-dark, #0f4c9e); }
+.ctdemo .ctdemo__play .ctdemo__i { width: 18px; height: 18px; }
+.ctdemo .ctdemo__play[aria-pressed="true"] .ctdemo__i--play, .ctdemo .ctdemo__play:not([aria-pressed="true"]) .ctdemo__i--pause { display: none; }
+.ctdemo .ctdemo__step { flex: none; display: none; place-items: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--primary-dark, #0f4c9e); cursor: pointer; transition: background-color 0.15s; }
+.ctdemo .ctdemo__step:hover { background: var(--primary-soft, #e8f0fb); }
+.ctdemo .ctdemo__play:focus-visible, .ctdemo .ctdemo__step:focus-visible, .ctdemo .ctdemo__link:focus-visible { outline: 2px solid var(--primary, #1660c4); outline-offset: 2px; }
+
+/* The slider fills up to its thumb: --p (0 to 1) is set by ctdemo.js on every slice change. */
+.ctdemo .ctdemo__range { --p: 0.5; --thumb: 20px; flex: 1 1 auto; min-width: 0; height: 40px; margin: 0 4px; padding: 0; background: transparent; cursor: pointer; -webkit-appearance: none; appearance: none; touch-action: pan-y; }
 .ctdemo .ctdemo__range:focus-visible { outline: 2px solid var(--primary, #1660c4); outline-offset: 2px; border-radius: 8px; }
-.ctdemo .ctdemo__range::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: var(--line-strong, #cdd6e0); }
-.ctdemo .ctdemo__range::-moz-range-track { height: 6px; border-radius: 3px; background: var(--line-strong, #cdd6e0); }
-.ctdemo .ctdemo__range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 28px; height: 28px; margin-top: -11px; border-radius: 50%; background: var(--primary, #1660c4); border: 3px solid var(--card); box-shadow: var(--shadow-thumb); }
-.ctdemo .ctdemo__range::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: var(--primary, #1660c4); border: 3px solid var(--card); box-shadow: var(--shadow-thumb); }
-.ctdemo .ctdemo__foot { display: flex; justify-content: center; margin-top: 8px; align-items: center; min-height: 22px; margin-top: 0; }
-.ctdemo .ctdemo__count { margin: 0; font-size: 0.875rem; color: var(--muted, #5b6b7d); font-variant-numeric: tabular-nums; }
-.ctdemo .ctdemo__credit { margin: 8px 0 0; font-size: 0.875rem; line-height: 1.45; color: var(--muted, #5b6b7d); text-align: center; }
-.ctdemo .ctdemo__link { display: flex; width: fit-content; min-height: 48px; margin: 8px auto 0; padding: 12px 22px; color: var(--primary-dark); background: var(--primary-soft); border: 1px solid var(--primary-line); border-radius: var(--radius-s, 10px); font-weight: 600; text-decoration: none; white-space: nowrap; }
-.ctdemo .ctdemo__link:hover { color: var(--primary-dark); background: var(--primary-soft-hover); border-color: var(--primary); }
-.ctdemo .ctdemo__line { display: block; }
-@media (max-width: 340px) { .ctdemo .ctdemo__step { width: 44px; } }
-@media (prefers-reduced-motion: reduce) { .ctdemo .ctdemo__outline { transition: none; } }
+.ctdemo .ctdemo__range::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(var(--primary, #1660c4), var(--primary, #1660c4)) 0 0 / calc(var(--thumb) / 2 + (100% - var(--thumb)) * var(--p)) 100% no-repeat, var(--line-strong, #cdd6e0); }
+.ctdemo .ctdemo__range::-moz-range-track { height: 4px; border-radius: 2px; background: var(--line-strong, #cdd6e0); }
+.ctdemo .ctdemo__range::-moz-range-progress { height: 4px; border-radius: 2px; background: var(--primary, #1660c4); }
+.ctdemo .ctdemo__range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: var(--thumb); height: var(--thumb); margin-top: calc((4px - var(--thumb)) / 2); border-radius: 50%; background: var(--primary, #1660c4); border: 3px solid var(--card, #fff); box-shadow: var(--shadow-thumb); }
+.ctdemo .ctdemo__range::-moz-range-thumb { box-sizing: border-box; width: var(--thumb); height: var(--thumb); border-radius: 50%; background: var(--primary, #1660c4); border: 3px solid var(--card, #fff); box-shadow: var(--shadow-thumb); }
+
+/* The way into the full viewer: a small text link with an arrow, then the credit in fine print. */
+.ctdemo .ctdemo__link { display: flex; align-items: center; gap: 6px; width: fit-content; max-width: 100%; min-height: 40px; margin: 4px auto 0; padding: 0 8px; border-radius: 8px; color: var(--primary-dark, #0f4c9e); font-size: 0.875rem; font-weight: 600; line-height: 1.3; text-decoration: none; white-space: nowrap; transition: background-color 0.15s; }
+.ctdemo .ctdemo__link:hover { color: var(--primary-dark, #0f4c9e); background: var(--primary-soft, #e8f0fb); }
+.ctdemo .ctdemo__i--go { width: 16px; height: 16px; stroke-width: 2.25; transition: transform 0.15s; }
+.ctdemo .ctdemo__link:hover .ctdemo__i--go { transform: translateX(2px); }
+.ctdemo .ctdemo__link-long { display: none; }
+.ctdemo .ctdemo__credit { margin: 2px 0; color: var(--muted, #526173); font-size: 0.75rem; line-height: 1.5; text-align: center; }
+.ctdemo .ctdemo__credit span { display: inline-block; }
+@container ctdemo (min-width: 300px) {
+  .ctdemo .ctdemo__step { display: grid; }
+  .ctdemo .ctdemo__play { margin-inline-end: 6px; }
+  .ctdemo .ctdemo__range { margin: 0; }
+  .ctdemo .ctdemo__link-long { display: inline; }
+  .ctdemo .ctdemo__link-short { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .ctdemo .ctdemo__outline, .ctdemo .ctdemo__i--go, .ctdemo .ctdemo__cap { transition: none; } }
 
 /* Loading: dark (the colour of the loaded picture) until the first frame paints, with a short line saying so.
    The sweep is the only motion; it stops for reduced motion. .is-failed keeps the dark box but stops the sweep. */
 .ctdemo .ctdemo__img:not([src]) { visibility: hidden; }
-.ctdemo.is-loading .ctdemo__bar { position: relative; overflow: hidden; border-radius: 10px; background: var(--skeleton-fill); }
-.ctdemo.is-loading .ctdemo__bar > *, .ctdemo.is-loading .ctdemo__foot, .ctdemo.is-loading .ctdemo__credit { visibility: hidden; }
+.ctdemo.is-loading .ctdemo__bar { position: relative; overflow: hidden; border-radius: 22px; background: var(--skeleton-fill); }
+.ctdemo.is-loading .ctdemo__bar > *, .ctdemo.is-loading .ctdemo__count, .ctdemo.is-loading .ctdemo__cap, .ctdemo.is-loading .ctdemo__link, .ctdemo.is-loading .ctdemo__credit { visibility: hidden; }
+.ctdemo.is-loading .ctdemo__link { position: relative; }
+.ctdemo.is-loading .ctdemo__link::after { content: ""; position: absolute; inset: 14px 8px; visibility: visible; border-radius: 6px; background: var(--skeleton-fill); }
 .ctdemo .demo-ph::before, .ctdemo .demo-sk span::before, .ctdemo.is-loading .ctdemo__lightbox::before, .ctdemo.is-loading .ctdemo__bar::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(100deg, transparent 20%, var(--skeleton-sweep) 50%, transparent 80%); transform: translateX(-100%); animation: ctdemo-sweep 1.8s ease-in-out infinite; pointer-events: none; }
 .ctdemo.is-failed *::before { animation: none; }
-.ctdemo.is-failed .ctdemo__bar, .ctdemo.is-failed .ctdemo__foot { display: none; }
+.ctdemo.is-failed .ctdemo__bar, .ctdemo.is-failed .ctdemo__count, .ctdemo.is-failed .ctdemo__cap { display: none; }
+.ctdemo.is-failed .ctdemo__link { color: var(--on-dark, #e9eef4); }
+.ctdemo.is-failed .ctdemo__link:hover { background: var(--line-dark, rgba(255, 255, 255, 0.12)); }
 @keyframes ctdemo-sweep { to { transform: translateX(100%); } }
 @media (prefers-reduced-motion: reduce) {
   .ctdemo .demo-ph::before, .ctdemo .demo-sk span::before, .ctdemo.is-loading .ctdemo__lightbox::before, .ctdemo.is-loading .ctdemo__bar::before { animation: none; }

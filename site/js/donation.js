@@ -22,8 +22,8 @@ function wireNumber() {
     found.hidden = true;
     found.replaceChildren();
     const hex = parseDonationNumber(el('number').value);
-    if (!hex) { msg.textContent = 'That does not look like a donation number. Check it and try again.'; return; }
-    if (!donationConfigured()) { msg.textContent = 'Donations are not open yet.'; return; }
+    if (!hex) { msg.textContent = 'That doesn\'t look like a donation number. Check it and try again.'; return; }
+    if (!donationConfigured()) { msg.textContent = 'Donations aren\'t open yet.'; return; }
     busy = true;
     msg.textContent = 'Looking it up and unlocking it on this device…';
     try {
@@ -32,7 +32,7 @@ function wireNumber() {
       showRecord(found, opened, hex);
     } catch (e) {
       msg.textContent = e.status === 404
-        ? 'No donation is held under that number. It may have been deleted, or the number may be wrong.'
+        ? 'There\'s no donation stored under that number. Check it for a typo. If it\'s correct, the donation may have been deleted.'
         : explainError(e);
     } finally {
       busy = false;
@@ -70,14 +70,14 @@ function showRecord(root, opened, hex) {
   const perm = h('button', { type: 'button', className: 'ghost' }, 'Save the permission copy');
   if (!hasTerms(consent.terms)) {
     perm.disabled = true;
-    perm.title = `This site does not hold the words of terms version ${consent.terms}.`;
+    perm.title = `We don't have the wording of terms version ${consent.terms} on this site.`;
   }
   perm.onclick = () => saveFile('rAidiology-my-permission.html', recordedPermissionHtml({ consent, numberDisplay: display }), 'text/html');
   const del = h('button', { type: 'button', className: 'ghost danger' }, 'Delete my donation');
   const confirmBox = h('div', { className: 'warn-note', hidden: true });
   const yes = h('button', { type: 'button', className: 'cta' }, 'Yes, delete it');
   const keep = h('button', { type: 'button', className: 'ghost' }, 'No, keep it');
-  confirmBox.append(h('p', {}, 'Delete this donation? This also withdraws your permission. It cannot be undone, and the number will stop working.'), h('div', { className: 'actions' }, yes, keep));
+  confirmBox.append(h('p', {}, 'Delete this donation? That also withdraws your permission. You can\'t undo it, and the number will stop working.'), h('div', { className: 'actions' }, yes, keep));
   del.onclick = () => { confirmBox.hidden = false; };
   keep.onclick = () => { confirmBox.hidden = true; };
   yes.onclick = async () => {
@@ -86,11 +86,11 @@ function showRecord(root, opened, hex) {
       await deleteDonation({ baseUrl: DONATION_BASE, fetch: donationFetch, id });
       root.replaceChildren(
         h('h2', {}, 'Your donation is deleted'),
-        h('p', {}, 'It is gone from our storage, and your permission is withdrawn. The daily pull removes our local copies within a day. A model that has already learnt from it cannot unlearn it.'),
+        h('p', {}, 'It\'s gone from our storage, and your permission is withdrawn. We delete our own copies within a day. A model that has already learnt from it can\'t unlearn it.'),
       );
     } catch (e) {
       yes.disabled = false;
-      confirmBox.append(h('p', {}, `It could not be deleted: ${explainError(e)}`));
+      confirmBox.append(h('p', {}, `We couldn't delete it: ${explainError(e)}`));
     }
   };
   root.append(h('div', { className: 'actions' }, open, save, perm, del), confirmBox, view);
@@ -111,20 +111,20 @@ async function codesFrom(entries) {
     const read = await expand(entries, (done, total) => set(`Reading ${done} of ${total}…`, done / Math.max(total, 1)));
     const files = [];
     for (const f of read.files) files.push({ name: f.path, bytes: await f.load() });
-    const judged = await judgeScan(files, { onProgress: (d, t) => set(`Checking pictures ${d} of ${t}…`, d / Math.max(t, 1)) });
+    const judged = await judgeScan(files, { onProgress: (d, t) => set(`Checking the pictures, ${d} of ${t}…`, d / Math.max(t, 1)) });
     const out = await codesOf(judged);
-    if (!out.length) list.append(h('li', {}, 'No scan pictures were found.'));
+    if (!out.length) list.append(h('li', {}, 'No pictures turned up in these files.'));
     for (const { series: s, code } of out) {
       const name = `${s.modality || 'Scan'}${s.description ? ' · ' + s.description : ''} · ${s.count} picture${s.count === 1 ? '' : 's'}`;
       if (code) {
         list.append(h('li', {}, h('strong', {}, name), h('br'), 'Code: ', h('code', {}, code), h('br'),
           'To have a donation removed, email this code to ', h('a', { href: `mailto:contact@lunarwerx.com?subject=${encodeURIComponent('Delete my donation')}&body=${encodeURIComponent(`Please find and delete the donation with this code: ${code}`)}` }, 'contact@lunarwerx.com'), '.'));
       } else {
-        list.append(h('li', { className: 'refused' }, h('strong', {}, name), h('br'), `No code: ${s.reason || 'this set would not have been sent.'}`));
+        list.append(h('li', { className: 'refused' }, h('strong', {}, name), h('br'), `No code: ${s.reason || 'this set wouldn\'t have been sent.'}`));
       }
     }
   } catch (e) {
-    list.append(h('li', {}, `This could not be read: ${e.message}`));
+    list.append(h('li', {}, `Your browser couldn't read these files: ${e.message}`));
   } finally {
     prog.hidden = true;
   }

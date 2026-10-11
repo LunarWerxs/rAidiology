@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>rAidiology · Open your own scan</title>
-  <meta name="description" content="Open the disc or ZIP from your hospital in your own browser and look at your pictures. Nothing is uploaded.">
+  <meta name="description" content="Look through the disc or ZIP your hospital gave you, right in your browser. The scan stays on your device.">
   <meta property="og:title" content="rAidiology · Open your own scan">
-  <meta property="og:description" content="Open the disc or ZIP from your hospital in your own browser and look at your pictures. Nothing is uploaded.">
+  <meta property="og:description" content="Look through the disc or ZIP your hospital gave you, right in your browser. The scan stays on your device.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://raw.githubusercontent.com/LunarWerxs/rAidiology/main/site/img/og.png">
   <meta name="twitter:card" content="summary_large_image">
@@ -56,10 +56,10 @@
 
   <main id="main">
     <section id="sample-loading" class="pane sample-loading" aria-labelledby="sample-loading-h">
-      <h1 id="sample-loading-h">Opening the sample scan</h1>
+      <h1 id="sample-loading-h">Opening the sample CT</h1>
       <div class="sample-ph" aria-hidden="true"></div>
       <div class="sample-bar" role="status">
-        <p>Fetching the pictures. They stay in this tab.</p>
+        <p>Loading the slices. They stay in this tab.</p>
         <div class="track"><div class="fill"></div></div>
       </div>
     </section>
@@ -68,7 +68,7 @@
       <div class="page-head">
         <div class="wrap">
           <h1>Open your own scan</h1>
-          <p class="lede">Choose the disc, folder or ZIP of DICOM files your hospital gave you. Your browser opens it on this device. Nothing is uploaded, and there is no account.</p>
+          <p class="lede">Choose the disc, folder or ZIP of DICOM files your hospital gave you, and your browser opens it on this device. Nothing is uploaded, and there's no account to make.</p>
         </div>
       </div>
       <div class="wrap intake-body">
@@ -82,14 +82,14 @@
               <button class="btn quiet" type="button" id="pick-zip">Choose a ZIP file</button>
             </div>
           </div>
-          <p class="fine browser-asks">Your browser will ask whether this page may read the files.
-            Allowing it only lets the page read them.</p>
+          <p class="fine browser-asks">Your browser will ask first.
+            Saying yes only lets this page read the files, here on this device.</p>
           <details class="help">
-            <summary>Where is my scan? Step by step</summary>
+            <summary>Where's my scan? Here's how to find it</summary>
             <ol>
-              <li>Put the hospital's CD or DVD in this computer. A phone cannot read a disc.</li>
+              <li>Put the hospital's CD or DVD in this computer. A phone can't read a disc.</li>
               <li>Press <strong>Choose the disc or a folder</strong>, above.</li>
-              <li>In the window that opens, click the disc. It is often called D: or E:, or carries the
+              <li>In the window that opens, click the disc. It's often called D: or E:, or has the
                 hospital's name. Then press the button at the bottom of that window.</li>
               <li class="browser-asks">Your browser will ask whether this page may read the files. Say yes.
                 They stay on this computer.</li>
@@ -97,7 +97,7 @@
             <p>Got a ZIP from a patient portal instead? Press <strong>Choose a ZIP file</strong> and
               pick it from your downloads.</p>
             <p><strong>To check, turn off Wi-Fi and open your scan.</strong> It
-              still works, because the scan is read on this device.</p>
+              still works, because your browser reads it on this device.</p>
           </details>
           <div class="progress" id="progress" hidden role="status" aria-live="polite">
             <p id="progress-text">Reading&hellip;</p>
@@ -108,34 +108,34 @@
         <div class="intake-side">
           <div class="card sample-card">
             <figure class="lightbox">
-              <img src="img/sample-slice.webp" width="560" height="560" alt="One picture from the sample CT scan: a slice across the upper belly." loading="lazy">
+              <img src="img/sample-slice.webp" width="560" height="560" alt="A slice across the upper belly, from the sample CT." loading="lazy">
               <figcaption class="pic-chip">Sample CT</figcaption>
             </figure>
-            <p class="try">No scan to hand? <button class="btn quiet" type="button" id="pick-sample">Try a sample scan</button></p>
+            <p class="try">No scan to hand? <button class="btn quiet" type="button" id="pick-sample">Try the sample CT</button></p>
           </div>
           <div class="card send-card">
             <p class="try">Not at your computer? Open this page there, with your disc:
-              <!--email_off--><a class="btn quiet small" id="send-self" href="mailto:">Email this page to yourself</a><!--/email_off--></p>
+              <!--email_off--><a class="btn quiet small" id="send-self" href="mailto:">Email yourself the link</a><!--/email_off--></p>
           </div>
-          <p class="aside">This page shows you your pictures. It can also name each part of
-            the body you point at. It never says whether anything is wrong, and it is not a diagnosis.</p>
+          <p class="aside">Look through your pictures here. On the sample CT, or a CT with an outline file, point at
+            an outline to see its name. The viewer shows anatomy only, never whether anything is wrong.</p>
         </div>
       </div>
     </section>
 
     <section id="series" class="pane" hidden aria-labelledby="series-h">
-      <h2 id="series-h">What is on your disc</h2>
+      <h2 id="series-h">What's on your disc</h2>
       <p class="fine" id="series-summary"></p>
       <p class="fine" id="sample-credit" hidden></p>
-      <p class="fine">Each box is one set of pictures. Click one to look through it.</p>
+      <p class="fine">Pick a set below to look through it.</p>
       <div class="cards" id="series-cards"></div>
 
       <details class="reading" id="reading-box" hidden>
-        <summary>Anatomy outlines from your own computer</summary>
-        <p class="fine">If you ran rAidiology's CT outliner on your own computer, it saved a small file ending in <code>.raidiology.json.gz</code>.
-          Add it here to see the organs and bones it outlined, named on your own pictures. It shows anatomy only: which part is which, never whether anything is wrong.</p>
-        <p class="fine">The file holds no name, patient number or date of birth. This tab reads it, and
-          it goes nowhere.</p>
+        <summary>Anatomy outlines made on your computer</summary>
+        <p class="fine">If you ran our CT organ outliner on your computer, it saved a small file ending in <code>.raidiology.json.gz</code>.
+          Add that outline file here to see the organs and bones named on your CT. It shows anatomy only, never whether anything is wrong.</p>
+        <p class="fine">The file holds no name, patient number or date of birth, and it never leaves
+          this tab.</p>
         <div class="drop small" id="reading-drop" tabindex="0" role="button">
           <strong>Drop the file here</strong>
           <span>or <button class="btn quiet small" type="button" id="pick-reading">choose the file</button></span>
@@ -152,16 +152,16 @@
       <div class="stage-wrap">
       <div class="pic-pin">
       <div class="stage" id="stage">
-        <canvas id="canvas" aria-label="One picture of the chosen set. Drag up and down to move through the pictures, left and right to change the brightness."></canvas>
+        <canvas id="canvas" aria-label="A picture from the set you chose. Drag up or down to step through the set, or sideways to change the brightness."></canvas>
         <div class="hud" id="hud" aria-live="off"></div>
         <span class="edge edge-top" id="edge-top" hidden></span>
         <span class="edge edge-bottom" id="edge-bottom" hidden></span>
         <span class="edge edge-left" id="edge-left" hidden></span>
         <span class="edge edge-right" id="edge-right" hidden></span>
         <div class="scalebar" id="scalebar" hidden><span id="scalebar-label">1 cm</span></div>
-        <div class="stage-status" id="stage-status" hidden role="status" aria-live="polite"><span class="spinner" aria-hidden="true"></span>Outlining parts…</div>
+        <div class="stage-status" id="stage-status" hidden role="status" aria-live="polite"><span class="spinner" aria-hidden="true"></span>Adding the outlines…</div>
       </div>
-      <div class="stage-caption"><div class="name-tip" id="name-tip" hidden role="status"></div><p class="caption-empty">Tap an outline or a listed part to name it.</p></div>
+      <div class="stage-caption"><div class="name-tip" id="name-tip" hidden role="status"></div><p class="caption-empty">Tap an outline to see its name here.</p></div>
       </div>
       <div class="pic-controls">
         <button class="btn quiet tonal" type="button" id="toggle-marks" aria-pressed="false" hidden>Hide the outlines</button>
@@ -173,7 +173,7 @@
       </div>
       </div>
       <div class="stage-tools">
-        <p class="hint-chip" id="hint-chip" hidden><span class="on-touch">Swipe up or down on the picture</span><span class="on-mouse">Drag up or down on the picture, or press the arrow keys,</span> for the other pictures</p>
+        <p class="hint-chip" id="hint-chip" hidden><span class="on-touch">Swipe up or down</span><span class="on-mouse">Drag up or down, or use the arrow keys,</span> to step through the pictures</p>
       </div>
       <div class="finding" id="finding" hidden></div>
       <details class="adjust">
@@ -184,36 +184,36 @@
           <button class="btn quiet small" type="button" id="reset-window">Reset brightness</button>
         </div>
       </details>
-      <p class="fine">Use Previous and Next, drag up and down on the picture, or press the arrow keys
-        to move through the pictures. Scroll or pinch to zoom in.</p>
+      <p class="fine">To step through the pictures, use Previous and Next, the arrow keys,
+        or drag up or down. Scroll or pinch to zoom in.</p>
       <p class="what" id="what" hidden></p>
       <details class="about-sample" id="sample-reading-about" hidden>
-        <summary>About this sample</summary>
+        <summary>About the sample CT</summary>
         <p class="fine" id="about-credit"></p>
-        <p class="fine">rAidiology's CT outliner drew these outlines on the sample. Your own scan opens
+        <p class="fine">Our CT organ outliner drew these outlines on the sample. Yours opens
           here as plain pictures, with nothing to install.</p>
-        <p class="fine">Anatomy outlines on your own CT are optional: an AI assistant such as Claude or ChatGPT can add them on your own computer after a one-time setup.</p>
+        <p class="fine">Want outlines on your CT too? After a one-time setup, an AI assistant such as Claude or ChatGPT can add them on your computer.</p>
       </details>
       <div class="card next-step" id="sample-next" hidden>
         <a class="btn" href="open.html">Open your own scan</a>
-        <p class="fine">It is free because people support it.</p>
+        <p class="fine">It's free because it runs on your device.</p>
         <a class="btn quiet" href="support.html">Support the next model</a>
       </div>
       <div class="footnote" id="viewer-footnote">
-        <p class="fine caption" id="outline-caption" hidden>Outlines by an open research model.</p>
+        <p class="fine caption" id="outline-caption" hidden>Outlines by the CT organ outliner, one of our research models.</p>
         <p class="fine" id="viewer-credit" hidden></p>
         <p class="fine"><a href="models.html#ct-segmenter">How these outlines are made</a></p>
       </div>
     </section>
 
     <section id="problems" class="pane" hidden aria-labelledby="problems-h">
-      <h2 id="problems-h">What could not be opened</h2>
+      <h2 id="problems-h">What didn't open</h2>
       <ul id="problems-list" class="plain"></ul>
     </section>
 
     <section id="donate-offer" class="pane" hidden>
-      <h2>Help train rAidiology (optional)</h2>
-      <p class="fine">You can donate this scan after your browser removes what could identify you. You see everything first. Nothing leaves your device until you say so.</p>
+      <h2>Want to help train rAidiology?</h2>
+      <p class="fine">You can donate this scan to the research. Your browser first removes anything that could identify you, and nothing leaves your device until you've seen it all and said yes.</p>
       <button class="btn" type="button" id="donate-start">Donate this scan</button>
     </section>
 
@@ -238,7 +238,7 @@
     </div>
   </footer>
 
-  <noscript><div class="pane"><p>This page needs JavaScript, because the whole point is that your
-    scan is read by your own browser and not by a server.</p></div></noscript>
+  <noscript><div class="pane"><p>The viewer needs JavaScript, because the whole point is that your
+    browser reads the scan, not a server.</p></div></noscript>
 </body>
 </html>

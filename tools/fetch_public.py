@@ -208,7 +208,9 @@ SETS = [
     S("spine-generic-multi", "Lumbar MRI", 1, "annex", None, ZR + "4299140", BY4, ids=[4299140],
       mirror="https://object-arbutus.alliancecan.ca/4f21233170e74c7d8653d790029d4ce2:def-jcohen-data-multi-subject"),
     S("lower-spine-t2-22304", "Lumbar MRI", 1, Z, 0.2, ZR + "22304", CC0, ids=[22304]),
-    S("osf-lumbar-seg", "Lumbar MRI", 1, "osf", None, "https://osf.io/qx5rt/", BY4, node="qx5rt"),
+    # osf-lumbar-seg, kub-stonex, dentiro and iugc-2025 were deleted on 2026-10-11 (decision D29): their own files limit
+    # them to research or non-commercial use and nothing used them. Their rows stay in LICENSING.md and their
+    # fetch.json in E:/rAidiology/archive, each file's address and checksum, should they ever be wanted again.
     S("tompei-cmmd", "Mammography", 4, T, 0.0, TA + "tompei-cmmd/", BY4, slug="tompei-cmmd", kind="analysis-result",
       skip_sources=True),
     S("mammo-mx", "Mammography", 3, Z, 74.6, ZR + "17740027", BY4, ids=[17740027]),
@@ -225,8 +227,6 @@ SETS = [
     S("lumbar-vcf-mri", "Other", 2, Z, 1.3, ZR + "13274445", BY4, ids=[13274445]),
     S("cpaisd", "Other", 2, Z, 5.6, ZR + "10892316", BY4, ids=[10892316]),
     S("wisdom-ds", "Other", 2, F, 0.1, FA + "Wisdom_DS/31989366", BY4, ids=[31989366]),
-    S("kub-stonex", "Other", 2, F, 20.8, FA + "_b_KUB-StoneX_b_Annotated_Kidney-Ureter-Bladder_X-ray_Dataset_with_Expert_"
-      "Stone_Segmentations_and_Radiomic_Features/32049369", BY4, ids=[32049369]),
     S("garden-femoral-neck", "Other", 2, Z, 4.3, ZR + "22807611", BY4, ids=[22807611]),
     S("pengwin-task1", "Other", 2, Z, 7.6, ZR + "10927452", BY4, ids=[10927452]),
     S("knee-xray-gornale", "Other", 2, M, None, MD + "t9ndx37v5h/1", BY4, ids=[("t9ndx37v5h", 1)]),
@@ -241,8 +241,6 @@ SETS = [
     S("dental-clinical", "Other", 1, F, 0.4, FA + "dental_clinical_dataset/32219928", BY4, ids=[32219928]),
     S("dental-panoramic-annotated", "Other", 1, F, 0.1, FA + "Annotated_Dental_Panoramic_Radiograph_Dataset/32846093", BY4,
       ids=[32846093]),
-    S("dentiro", "Other", 1, F, 0.7, FA + "_b_DentIRO_b_A_High-Quality_Multi-Class_Single-Tooth_Intraoral_Radiograph_"
-      "Dataset_for_Automated_Dental_Diagnosis/32086377", BY4, ids=[32086377]),
     S("dental-condition-panoramic", "Other", 1, Z, 1.4, ZR + "15487430", BY4, ids=[15487430]),
     S("spine-mets-ct-seg", "Other", 1, T, 20.4, TC + "spine-mets-ct-seg/", BY4, slug="spine-mets-ct-seg"),
     S("medpelvis3d", "Other", 1, Z, 31.4, ZR + "21757686", BY4, ids=[21757686]),
@@ -390,7 +388,6 @@ SETS = [
       approved=HUNT3),
     S("dental-rvg", "Other", 1, M, None, MD + "7pz9rrrr9n/1", BY4, ids=[("7pz9rrrr9n", 1)], approved=HUNT3),
     S("tat-det-us", "Other", 1, Z, None, ZR + "21861476", BY4, ids=[21861476], approved=HUNT3),
-    S("iugc-2025", "Other", 1, Z, None, ZR + "17355570", BY4, ids=[17355570], approved=HUNT3),
     S("t1-dark-rim-ms", "Other", 1, Z, None, ZR + "17940367", BY4, ids=[17940367], approved=HUNT3),
     S("deepcac2-nlst", "Lung CT", 1, Z, None, ZR + "19946683", BY4, ids=[19946683], approved=HUNT3),
     # The fourth hunt (2026-10-05, evening): prostate MRI in place of UCSF's, and breast ultrasound. Each download's

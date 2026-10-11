@@ -63,10 +63,10 @@ async function begin(mine) {
   let judged;
   try {
     const files = await provider();
-    judged = await judgeScan(files, { onProgress: (done, total) => prog.set(`Checking pictures ${done} of ${total}…`, done / Math.max(total, 1)) });
+    judged = await judgeScan(files, { onProgress: (done, total) => prog.set(`Checking the pictures, ${done} of ${total}…`, done / Math.max(total, 1)) });
   } catch (e) {
     prog.box.remove();
-    root.append(h('p', { className: 'warn-note' }, `This scan could not be checked: ${e.message}`), cancelButton(mine));
+    root.append(h('p', { className: 'warn-note' }, `Your browser couldn't check this scan: ${e.message}`), cancelButton(mine));
     return;
   }
   if (mine !== token) return;
@@ -80,7 +80,7 @@ function seriesName(s) {
 
 function chooseSeries(mine, root, judged) {
   const box = step('1. Which sets of pictures can be sent?');
-  box.append(h('p', { className: 'fine' }, 'Nothing has been sent. Your browser checked each set of pictures on this device. A set that is refused stays here.'));
+  box.append(h('p', { className: 'fine' }, 'Nothing has been sent. Your browser checked each set on this device, and any set it refused stays here.'));
   const list = h('ul', { className: 'series-list' });
   const boxes = [];
   for (const s of judged.series) {
@@ -91,11 +91,11 @@ function chooseSeries(mine, root, judged) {
       li.append(h('label', {}, cb, h('span', {}, h('strong', {}, 'Can be sent: '), seriesName(s))));
     } else {
       li.className = 'refused';
-      li.append(h('strong', {}, 'Refused: '), seriesName(s), h('br'), s.reason || 'This set cannot be sent.');
+      li.append(h('strong', {}, 'Refused: '), seriesName(s), h('br'), s.reason || 'This set can\'t be sent.');
     }
     list.append(li);
   }
-  if (!judged.series.length) list.append(h('li', {}, 'No scan pictures were found.'));
+  if (!judged.series.length) list.append(h('li', {}, 'No pictures turned up in these files.'));
   box.append(list);
   const go = h('button', { type: 'button', className: 'cta' }, 'Continue');
   const sync = () => { go.disabled = !boxes.some((b) => b.cb.checked); };
@@ -128,13 +128,13 @@ async function review(mine, root, chosen) {
 
   const total = built.images.length;
   const pics = step(`2. Look at every picture that will be sent (${total})`);
-  pics.append(h('p', { className: 'fine' }, 'This is exactly what would leave your browser, at full size. Look through all of them. If you see a name, a number or anything else about you, do not send it.'));
+  pics.append(h('p', { className: 'fine' }, 'This is exactly what would leave your browser, at full size. Look through all of them. If you see a name, a number or anything else about you, don\'t send it.'));
   const host = h('div');
   pics.append(host);
   mountPreview(host, built.images);
 
   const tags = step('3. The details that will be sent with them');
-  tags.append(h('p', { className: 'fine' }, 'For each set, these are the technical details kept, with the values from its first picture. Nothing else is sent.'));
+  tags.append(h('p', { className: 'fine' }, 'Each set keeps these technical details, shown with the values from its first picture. Nothing else is sent.'));
   built.list.forEach((s, i) => {
     tags.append(h('p', {}, h('strong', {}, `Set ${i + 1}: ${s.modality}, ${s.bodyPart}`)));
     const body = h('tbody');
@@ -146,9 +146,9 @@ async function review(mine, root, chosen) {
   const consent = step('4. Your permission');
   const panelHost = h('div', { className: 'donate-panel-host' });
   panelHost.innerHTML = fillPanel(dateText(new Date()), PRIVACY);   // the contract's own words, unchanged
-  const save = h('button', { type: 'button', className: 'ghost' }, 'Save a copy of what will be sent');
+  const save = h('button', { type: 'button', className: 'ghost' }, 'Save a copy');
   save.onclick = () => saveFile('rAidiology-what-will-be-sent.zip', sentZip(built), 'application/zip');
-  const note = h('p', { className: 'fine' }, 'You can keep a copy of exactly what would be sent. It is made on this device.');
+  const note = h('p', { className: 'fine' }, 'Your browser can make a copy of exactly what would be sent, here on this device.');
   const status = h('div', { role: 'status' });
   consent.append(note, h('div', { className: 'actions' }, save), panelHost, status);
   root.append(pics, tags, consent);
@@ -166,7 +166,7 @@ async function review(mine, root, chosen) {
 
 async function publicKey() {
   const res = await fetch(new URL('./donation_public_key.json', import.meta.url));
-  if (!res.ok) throw new Error('The public key could not be loaded.');
+  if (!res.ok) throw new Error('The key that locks your scan didn\'t load. Try again in a moment.');
   return res.json();
 }
 
@@ -194,13 +194,13 @@ async function doSend(mine, root, built, ui) {
 function success(root, done) {
   const box = step('Thank you. Your scan was sent.');
   box.append(
-    h('p', {}, 'This is your donation number. You need it to see, save or delete your scan.'),
+    h('p', {}, 'Here\'s your donation number. You\'ll need it to see, save or delete your scan.'),
     h('div', { className: 'number-big', id: 'donate-number' }, done.display),
-    h('p', { className: 'warn-note' }, 'We cannot show this number again. We do not keep it, so if you lose it we cannot recover it, and we cannot find your scan for you. Save it now.'),
+    h('p', { className: 'warn-note' }, 'We can\'t show this number again, and we don\'t keep it. If you lose it, we can\'t recover it or find your scan for you. Save it now.'),
   );
   const copy = h('button', { type: 'button', className: 'ghost' }, 'Copy the number');
   copy.onclick = async () => { try { await navigator.clipboard.writeText(done.display); copy.textContent = 'Copied'; } catch { copy.textContent = 'Select the number and copy it'; } };
-  const saveNum = h('button', { type: 'button', className: 'ghost' }, 'Save the number as a text file');
+  const saveNum = h('button', { type: 'button', className: 'ghost' }, 'Save the number');
   saveNum.onclick = () => saveFile('rAidiology-donation-number.txt', `rAidiology donation number: ${done.display}\nSee, save or delete it on this site's donation page (donation.html)\n`, 'text/plain');
   const perm = h('button', { type: 'button', className: 'cta' }, 'Save your permission copy');
   perm.onclick = () => saveFile('rAidiology-my-permission.html', done.permissionHtml, 'text/html');
