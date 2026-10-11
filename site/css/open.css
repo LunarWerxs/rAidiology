@@ -464,9 +464,10 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
 /* Phone landscape: the title row goes, the picture and its controls fill the left column at full
    height, and the parts list scrolls on the right. */
 @media (orientation: landscape) and (max-height: 500px) {
-  /* The site header scrolls away on this page so the picture gets the height. */
-  :root { --head-h: 0px; }
-  .site-head { position: static; }
+  /* While the viewer is open the picture gets the whole height: the site header is hidden (the back
+     button and the footer keep the way out). The file picker, and donation.html, keep their header. */
+  body:has(.pane.viewer:not([hidden])) .site-head { display: none; }
+  html:has(.pane.viewer:not([hidden])) { scroll-padding-top: 8px; }
   .pane.viewer:not([hidden]) {
     display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(240px, 1fr); column-gap: 16px; align-content: start;
   }
@@ -475,21 +476,29 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
   .pane.viewer .viewer-head h2 { display: none; }
   .pane.viewer .viewer-head .back-btn { min-height: 40px; }
   .pane.viewer > .stage-wrap {
-    display: block; grid-column: 1; grid-row: 1 / span 12; position: sticky; inset-block-start: calc(var(--head-h) + 4px); z-index: 3;
+    display: block; grid-column: 1; grid-row: 1 / span 12; position: sticky; inset-block-start: 4px; z-index: 3; align-self: start;
     padding: 0; background: none;
   }
   .pane.viewer .pic-controls { display: grid; inline-size: auto; }
   .pane.viewer .pic-pin { position: static; order: 0; padding: 0; }
-  .pane.viewer .stage { block-size: auto; aspect-ratio: auto; min-height: 0; max-height: none; inline-size: 100%; block-size: calc(100dvh - 2.4rem - 64px); }
+  .pane.viewer .stage { block-size: auto; aspect-ratio: auto; min-height: 0; max-height: none; inline-size: 100%; block-size: calc(100dvh - 2rem - 98px - env(safe-area-inset-bottom, 0px)); }
   .pane.viewer .pic-controls { grid-template-columns: auto minmax(0, 1fr); align-items: center; margin-block-start: 4px; }
   .pane.viewer { padding-block-start: 4px; }
   .pane.viewer #toggle-marks.btn.quiet { padding-inline: 10px; }
   .pane.viewer .stage-caption { inline-size: auto; min-block-size: 2rem; margin-block-start: 2px; }
   .pane.viewer #toggle-marks { order: 0; margin: 0; }
-  .pane.viewer .slice-bar { position: static; border: 0; padding: 0; }
+  .pane.viewer .slice-bar { position: static; border: 0; margin: 0; padding: 0 0 env(safe-area-inset-bottom, 0px); }
   .pane.viewer > .finding:not([hidden]) {
     position: static; max-block-size: none; overflow: visible;
   }
   .pane.viewer .footnote { order: 0; }
   .part-row { scroll-margin-block: 1rem; }
+}
+/* A small phone held sideways: Previous and Next show an arrow only (their aria-labels still say
+   "Previous picture" and "Next picture"), so the slider keeps a usable width beside the outline toggle. */
+@media (orientation: landscape) and (max-height: 500px) and (max-width: 767px) {
+  .pane.viewer #prev-picture, .pane.viewer #next-picture { font-size: 0; padding-inline: 0; }
+  .pane.viewer #prev-picture::before, .pane.viewer #next-picture::before { font-size: 1.5rem; line-height: 1; }
+  .pane.viewer #prev-picture::before { content: "\2039"; }
+  .pane.viewer #next-picture::before { content: "\203A"; }
 }

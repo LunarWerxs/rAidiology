@@ -31,7 +31,7 @@ GLYPH = {
     False: '<svg class="dot-key hollow" viewBox="0 0 12 12" width="12" height="12" role="img" aria-label="Hollow dot">'
            '<circle cx="6" cy="6" r="4.5"/></svg>',
 }
-KIND = {True: "Held-out test", False: "Development"}
+KIND = {True: "Tested on new cases", False: "Development"}
 
 
 def esc(s):
@@ -199,7 +199,7 @@ def tiles():
         what = PLAIN[m["key"]].format(n=n.group(0) if n else "")
         size = SET_SIZE.search(h["set"])
         head = f"Measured on {size.group(1)} {size.group(2)}" if size else m["scan"]
-        tag = (f'<span class="tag">{GLYPH[True]}Held-out test</span>' if h["held_out"]
+        tag = (f'<span class="tag">{GLYPH[True]}{KIND[True]}</span>' if h["held_out"]
                else f'<span class="tag dev">{GLYPH[False]}Development</span>')
         w, h_ = webp_size(m["picture"])
         out.append(f'<a class="result-tile" href="models.html#{esc(m["key"])}">'
