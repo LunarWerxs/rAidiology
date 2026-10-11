@@ -1317,7 +1317,44 @@ def train_step(net, ema, opt, sched, scaler, ct, lab, cfg, gen, step, forward=No
 PROBE = {}   # the selftest reads what the last train_fold did: steps run, where it resumed, what it loaded
 
 
-def train_fold(fold, cfg, version, force=False):
+# The one-hour rule (owner, 2026-10-11: "Why do we not have scans that only run one hour? And then check the results
+# and see if they suck before wasting time"). `train --kill-ref V --kill-step S` judges the fold at its first learning-
+# curve point at step S or later, about an hour in, against version V's curve of the same fold on the same held-out
+# scans, and stops the fold there when it is behind by more than --kill-margin. A fold that starts from another
+# version's weights (init_from) has to reach V's finished curve by then; one trained from scratch, V's curve at the same
+# step. Measured before the rule: v130, which continued v121, was 0.011 to 0.025 ahead of v121's finished curve inside
+# the first hour of every fold, and then trained 2 to 6 hours more. The fold's last partial (300 s at most) is kept.
+def kill_reference(kill, fold, probe, cfg):
+    """The point fold `fold` has to reach by step kill["step"] ({step, mm, dice, end}), from version kill["ref"]'s
+    meta.json; None with no kill line. Refused when the two curves are not like for like."""
+    if not kill:
+        return None
+    meta = json.load(open(os.path.join(model_dir(kill["ref"]), "meta.json"), encoding="utf-8"))
+    got = {f["fold"]: f for f in meta.get("folds", [])}.get(fold)
+    if got is None or not got.get("curve"):
+        raise SystemExit("--kill-ref %d has no learning curve for fold %d" % (kill["ref"], fold))
+    if got.get("curve_scans") != probe:
+        raise SystemExit("--kill-ref %d drew fold %d's curve on other held-out scans: not like for like"
+                         % (kill["ref"], fold))
+    points = [p for p in got["curve"] if p["dice"] == p["dice"]]     # a lost look (NaN) is passed over
+    end = bool(cfg.get("init_from"))
+    at = points if end else [p for p in points if p["step"] <= kill["step"]]
+    if not at:
+        raise SystemExit("--kill-ref %d has no curve point at step %d or before for fold %d"
+                         % (kill["ref"], kill["step"], fold))
+    done, mm = 0, None
+    for ph in phases_of(cfg):
+        done += ph["steps"]
+        if kill["step"] <= done:
+            mm = ph["mm"]
+            break
+    if mm != at[-1]["mm"]:
+        raise SystemExit("--kill-step %d falls in a %s mm phase, but version %d's point is at %g mm: not like for like"
+                         % (kill["step"], mm, kill["ref"], at[-1]["mm"]))
+    return dict(at[-1], end=end)
+
+
+def train_fold(fold, cfg, version, force=False, kill=None):
     """Train fold `fold`. The model is fold{k}.pt, the EMA state dict as ever, and the fingerprint of its training
     settings sits in fold{k}.pt.fp: a fold whose file is there with a matching fingerprint (or with none, an old
     one) is not trained again; a different fingerprint, --force or RAIDIOLOGY_NO_RESUME=1 trains it. A partial
@@ -1343,7 +1380,7 @@ def train_fold(fold, cfg, version, force=False):
     seed = datasets.SEED + fold + 1000 * int(cfg.get("seed", 0))
     fp = foldck.digest({"cfg": cfg, "fold": fold, "seed": seed, "train": mine, "structures": names})
     PROBE.clear()
-    PROBE.update(steps_run=0, resumed_step=None, skipped=False)
+    PROBE.update(steps_run=0, resumed_step=None, skipped=False, killed=None)
     if os.path.exists(out) and not force and os.environ.get("RAIDIOLOGY_NO_RESUME") != "1" \
             and (foldck.fp_ok(out, fp) or not os.path.exists(out + ".fp")):
         print("fold %d is already trained (%s); --force trains it again" % (fold, out), flush=True)
@@ -1354,6 +1391,7 @@ def train_fold(fold, cfg, version, force=False):
     torch.manual_seed(seed)
     gen = torch.Generator(device=DEV).manual_seed(seed)
     probe = [held[int(i)] for i in np.random.default_rng(seed).permutation(len(held))[:cfg["curve_scans"]]]
+    line = kill_reference(kill, fold, probe, cfg)
 
     net = build(cfg, len(names) + 1).train()
     ema = copy.deepcopy(net)
@@ -1479,6 +1517,18 @@ def train_fold(fold, cfg, version, force=False):
                 led.point("dice_%gmm" % ph["mm"], step, dice)
                 print("  fold %d step %d (%g mm phase): %.4f mean Dice at %g mm on %d held-out scan(s)"
                       % (fold, step, ph["mm"], dice, ph["mm"], len(probe)), flush=True)
+                if line is not None and step >= kill["step"] and dice == dice:
+                    bar = line["dice"] - kill["margin"]
+                    said = ("fold %d at step %d (%.0f s): %.4f on the curve's scans, against %.4f (version %d's %s %.4f, "
+                            "less %g)" % (fold, step, time.time() - t0, dice, bar, kill["ref"],
+                                          "finished curve" if line["end"] else "curve at step %d" % line["step"],
+                                          line["dice"], kill["margin"]))
+                    led.number("kill_line_margin", dice - bar)
+                    if dice < bar:
+                        PROBE["killed"] = step
+                        raise SystemExit("KILLED by its kill line: " + said)
+                    print("  kill line passed: " + said, flush=True)
+                    line = None
                 block, block_waited = time.time(), 0.0   # the look is not training: it is not paced
             if step < total and every.due():
                 ckpt.save_partial(partial, {
@@ -1565,8 +1615,11 @@ def train(a):
     # The one-piece lists the reading needs, counted on the truth before any fold trains (35 s).
     one_piece = pieces.lists(load_split()) if cfg.get("keep_largest") == "one_piece" else None
     floors = pieces.floors(load_split(), cfg["floor"]) if cfg.get("floor", False) is not False else None
+    if (a.kill_ref is None) != (a.kill_step is None):
+        raise SystemExit("--kill-ref and --kill-step go together")
+    kill = None if a.kill_ref is None else {"ref": a.kill_ref, "step": a.kill_step, "margin": a.kill_margin}
     for fold in ([a.fold] if a.fold is not None else range(FOLDS)):
-        got = train_fold(fold, cfg, a.version, a.force)
+        got = train_fold(fold, cfg, a.version, a.force, kill)
         if got:
             print("fold %d: %.0f s, wrote %s" % (fold, got["seconds"], write_meta(a.version, cfg, [got], one_piece, floors)),
                   flush=True)
@@ -2204,6 +2257,22 @@ def selftest(a=None):
         resume_proof({**cfg, "net": "s2d", "patch": 32,
                       "phases": [{"mm": 1.5, "steps": 6, "lr": 1e-3, "batch": 2},
                                  {"mm": 1.5, "steps": 4, "lr": 5e-4, "batch": 1}]}, 100)
+        # the one-hour rule: behind the reference's curve at the judged step (0.5 against 0.9 less 0.01), the fold
+        # stops there; level within the margin (0.5 against 0.505), it trains on; a curve on other scans is refused
+        scans = run(60)["curve_scans"]
+        for ref, dice, curve_scans, killed, steps in ((61, 0.9, scans, 6, 6), (62, 0.505, scans, None, 10),
+                                                      (63, 0.1, ["elsewhere"], None, 0)):
+            os.makedirs(os.path.join(root, "v%d" % ref), exist_ok=True)
+            with open(os.path.join(root, "v%d" % ref, "meta.json"), "w", encoding="utf-8") as fh:
+                json.dump({"folds": [{"fold": 0, "curve": [{"step": 6, "mm": 6, "dice": dice}],
+                                      "curve_scans": curve_scans}]}, fh)
+            try:
+                train_fold(0, cfg, ref + 10, kill={"ref": ref, "step": 6, "margin": 0.01})
+                stop = ""
+            except SystemExit as e:
+                stop = str(e)
+            assert PROBE["killed"] == killed and PROBE["steps_run"] == steps, (ref, PROBE, stop)
+            assert ("KILLED" in stop) == bool(killed) and ("not like for like" in stop) == (ref == 63), stop
         m = {"cfg": {"patch": 96}, "structures": ["a", "b"]}
         check_pair(m, {"cfg": {"patch": 96}, "structures": ["a", "b"]}, 1, 2)
         for other in ({"cfg": {"patch": 64}, "structures": ["a", "b"]},
@@ -2623,6 +2692,12 @@ def main():
     t.add_argument("--fold", type=int)
     t.add_argument("--steps", type=int)
     t.add_argument("--force", action="store_true")
+    t.add_argument("--kill-ref", dest="kill_ref", type=int,
+                   help="the one-hour rule: stop each fold at --kill-step when its learning curve is behind this "
+                        "version's (its finished curve when the recipe has init_from, else at the same step)")
+    t.add_argument("--kill-step", dest="kill_step", type=int, help="the step to judge at, about an hour in")
+    t.add_argument("--kill-margin", dest="kill_margin", type=float, default=0.0,
+                   help="how far under the reference the curve may be and still go on (Dice, default 0)")
     for p in (b, t):
         p.add_argument("--patch", type=int)
         p.add_argument("--batch", type=int)

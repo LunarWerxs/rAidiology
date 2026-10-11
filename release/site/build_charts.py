@@ -176,23 +176,36 @@ def numbers(m):
             + "</table></div></details>")
 
 
+PLAIN = {
+    "chest-xray": ("Chest X-ray", "Scores one chest X-ray for 14 kinds of label from a public dataset."),
+    "ct-segmenter": ("Body CT", "Outlines {n} body structures on CT and names each one."),
+    "disc-grader": ("Spine MRI", "Grades the discs of a spine MRI on a public five-step scale."),
+    "fracture-detector": ("Children's wrist X-ray", "Looks at a child's wrist X-ray and scores whether it shows a fracture."),
+    "lung-nodules": ("Chest CT", "Marks small lung nodules on CT."),
+    "mammography": ("Mammogram", "Scores one mammogram picture as benign or malignant against a public dataset."),
+    "spine-xray-corners": ("Side-view spine X-ray", "Marks the corners of the lower back's vertebrae."),
+}
+
+
 def tiles():
-    """One tile per model with its first headline result; each opens that model's section on models.html."""
+    """One tile per model, in plain words (no metric names or intervals); each opens that model's section on models.html."""
     out = []
     for m in STATS["models"]:
         h = m["headline"][0]
-        main, iv = value_text(h["metric"], h)
-        what = text(h["label"]) if h["metric"] == "percent" else f"{esc(AXES[h['metric']][3])}: {text(h['label'])}"
+        head, what = PLAIN[m["key"]]
+        pct = f"{round(h['value'] * 100)}%" if h["metric"] != "percent" else f"{round(h['value'])}%"
+        n = re.search(r"\d+", h["label"])
+        head = head.format(pct=pct)
+        what = what.format(n=n.group(0) if n else "")
         tag = (f'<span class="tag">{GLYPH[True]}Held-out test</span>' if h["held_out"]
                else f'<span class="tag dev">{GLYPH[False]}Development</span>')
-        ivx = f' <span class="interval">{esc(iv)}</span>' if iv else ""
         w, h_ = webp_size(m["picture"])
         out.append(f'<a class="result-tile" href="models.html#{esc(m["key"])}">'
                    f'<img src="{esc(m["picture"])}" width="{w}" height="{h_}" alt="" loading="lazy">'
                    f'<span class="pic-chip">{esc(m["scan"])}</span>'
                    f'<h3>{text(m["name"])}</h3>'
-                   f'<p class="score">{esc(main)}{ivx}</p>'
-                   f'<p class="what">{what}</p><p class="test">{text(h["set"])}</p>{tag}</a>')
+                   f'<p class="score">{esc(head)}</p>'
+                   f'<p class="what">{text(what)}</p>{tag}</a>')
     return '<div class="result-tiles">' + "".join(out) + "</div>"
 
 

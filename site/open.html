@@ -14,6 +14,12 @@
   <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
   <meta name="theme-color" content="#ffffff">
   <link rel="preload" href="fonts/Inter-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <script>if (new URLSearchParams(location.search).has('sample')) {
+    const h = document.documentElement;
+    h.classList.add('is-sample');
+    // If the viewer's scripts never start (a failed download), give the ordinary page back, with its sample button.
+    setTimeout(() => { if (!h.classList.contains('sample-started')) h.classList.remove('is-sample'); }, 10000);
+  }</script>
   <link rel="stylesheet" href="css/brand.css">
   <link rel="stylesheet" href="css/open.css">
   <link rel="stylesheet" href="css/pages.css">
@@ -31,7 +37,7 @@
     <div class="site-head-in">
       <a class="brand" href="index.html" aria-label="rAidiology home"><img src="img/logo.svg" width="32" height="32" alt=""><span class="brand-name">rAidiology</span></a>
       <nav id="site-nav" class="site-nav" aria-label="Main">
-        <a href="index.html#scans">Scans</a>
+        <a href="index.html#scans">Scans we cover</a>
         <a href="models.html">Research</a>
         <a href="pricing.html">Pricing</a>
         <a href="support.html">Support</a>
@@ -48,6 +54,15 @@
   <div class="start-over-row"><button class="btn quiet small" type="button" id="start-over" hidden>Open a different scan</button></div>
 
   <main id="main">
+    <section id="sample-loading" class="pane sample-loading" aria-labelledby="sample-loading-h">
+      <h1 id="sample-loading-h">Opening the sample scan</h1>
+      <div class="sample-ph" aria-hidden="true"></div>
+      <div class="sample-bar" role="status">
+        <p>Fetching the pictures. They stay in this tab.</p>
+        <div class="track"><div class="fill"></div></div>
+      </div>
+    </section>
+
     <section id="intake" class="pane intake">
       <div class="page-head">
         <div class="wrap">
@@ -133,16 +148,18 @@
         <button class="btn quiet small back-btn" type="button" id="back">Open a different scan</button>
         <h2 id="viewer-h"></h2>
       </div>
+      <div class="stage-wrap">
       <div class="stage" id="stage">
         <canvas id="canvas" aria-label="One picture of the chosen set. Drag up and down to move through the pictures, left and right to change the brightness."></canvas>
         <div class="hud" id="hud" aria-live="off"></div>
-        <div class="name-tip" id="name-tip" hidden role="status"></div>
         <span class="edge edge-top" id="edge-top" hidden></span>
         <span class="edge edge-bottom" id="edge-bottom" hidden></span>
         <span class="edge edge-left" id="edge-left" hidden></span>
         <span class="edge edge-right" id="edge-right" hidden></span>
         <div class="scalebar" id="scalebar" hidden><span id="scalebar-label">1 cm</span></div>
         <div class="stage-status" id="stage-status" hidden role="status" aria-live="polite"><span class="spinner" aria-hidden="true"></span>Outlining parts…</div>
+      </div>
+      <div class="stage-caption"><div class="name-tip" id="name-tip" hidden role="status"></div></div>
       </div>
       <div class="stage-tools">
         <p class="hint-chip" id="hint-chip" hidden><span class="on-touch">Swipe up or down on the picture</span><span class="on-mouse">Drag up or down on the picture, or press the arrow keys,</span> for the other pictures</p>

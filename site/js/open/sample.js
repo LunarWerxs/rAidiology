@@ -37,6 +37,7 @@ function fetchReading() {
 }
 
 async function loadSample() {
+  document.documentElement.classList.add('sample-started');
   const button = document.getElementById('pick-sample');
   const label = button.textContent;
   button.disabled = true;
@@ -52,7 +53,10 @@ async function loadSample() {
     button.textContent = label;
   } catch {
     button.textContent = 'The sample could not be fetched. Try again';
+    // Back to the ordinary page, where that message and the button are.
+    document.documentElement.classList.remove('is-sample');
   }
+  document.documentElement.classList.add('sample-done');
   button.disabled = false;
 }
 

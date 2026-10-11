@@ -1260,7 +1260,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("command", choices=["plan", "fetch", "status", "unpack", "shrink", "record", "cold", "warm"])
     ap.add_argument("names", nargs="*")
-    ap.add_argument("--again", action="store_true", help="fetch a set again even if fetch.json says done")
+    ap.add_argument("--again", action="store_true", help="fetch a set again even if fetch.json says done; shrink: "
+                                                         "scan a set already re-encoded once more")
     ap.add_argument("--to", help="cold/warm: the drive to move to (D:), rather than the first of its kind with room; "
                                  "unpack: the drive the working copy moves to once unpacked and re-encoded")
     ap.add_argument("--staging", action="store_true", help="cold/warm with --to: the copy only passes through that "
@@ -1287,6 +1288,11 @@ def main():
         res = []
         for n in a.names:
             if n in BY_NAME:
+                done = Record(n).data.get("shrunk")
+                if done and not a.again:           # unpack re-encodes as it goes; 2026-10-11 the Zenodo chain's shrink
+                    log("%s: already re-encoded %s (shrink --again scans it once more)" % (n, done.get("at", "")[:16]))
+                    res.append({"name": n, "status": "done"})   # step re-read all of 38 such sets on G: for nothing
+                    continue
                 res.append(locked(BY_NAME[n], lambda s: (shrink_set(s["name"]), {"name": s["name"], "status": "done"})[1]))
             else:                                  # a folder of a set fetched some other way: its record sits beside it
                 out = shrink_tree(n, os.path.basename(n.rstrip("/\\")))

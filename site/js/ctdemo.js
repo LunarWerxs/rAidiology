@@ -37,6 +37,7 @@ export function mountCtDemo(box, opts = {}) {
 
   box.classList.add('ctdemo', 'is-loading');
   box.setAttribute('aria-busy', 'true');
+  const phSrc = box.querySelector('.demo-ph img');
   box.replaceChildren();
 
   const lightbox = make('div', 'ctdemo__lightbox');
@@ -44,17 +45,17 @@ export function mountCtDemo(box, opts = {}) {
   const svg = svgEl('svg', { class: 'ctdemo__svg', 'aria-hidden': 'true' });
   const chip = make('div', 'ctdemo__chip');
   chip.hidden = true;
-  // Dark skeleton with a short line until the first picture paints (css/ctdemo.css styles .is-loading).
-  const loading = make('p', 'ctdemo__loading', { role: 'status' });
-  loading.textContent = 'Loading the sample scan';
-  lightbox.append(img, svg, chip, loading);
+  // The placeholder frame from the HTML stays under the live picture until it paints, so nothing shifts and no text shows.
+  const ph = phSrc ? phSrc.cloneNode() : null;
+  if (ph) { ph.classList.add('ctdemo__ph'); ph.alt = ''; ph.setAttribute('aria-hidden', 'true'); }
+  lightbox.append(...(ph ? [ph] : []), img, svg, chip);
 
   const bar = make('div', 'ctdemo__bar');
   const prev = make('button', 'ctdemo__step', { type: 'button', 'aria-label': 'Previous slice' });
   prev.textContent = '‹';
   const next = make('button', 'ctdemo__step', { type: 'button', 'aria-label': 'Next slice' });
   next.textContent = '›';
-  const range = make('input', 'ctdemo__range', { type: 'range', min: '0', max: '0', step: '1', value: '0', 'aria-label': 'Slice' });
+  const range = make('input', 'ctdemo__range', { type: 'range', min: '0', max: '0', step: '1', value: '0', 'aria-label': 'Picture' });
   bar.append(prev, range, next);
   const count = make('p', 'ctdemo__count');
   count.setAttribute('aria-live', 'off');
@@ -75,13 +76,12 @@ export function mountCtDemo(box, opts = {}) {
     box.classList.remove('is-loading');
     box.classList.add('is-failed');
     box.removeAttribute('aria-busy');
-    loading.textContent = 'The sample scan could not load.';
     credit.replaceChildren(link); // the full viewer is still one tap away
   }
   on(img, 'load', () => {
     box.classList.remove('is-loading');
     box.removeAttribute('aria-busy');
-    loading.remove();
+    if (ph) ph.remove();
   }, { once: true });
   on(img, 'error', failed, { once: true });
 
@@ -147,7 +147,8 @@ export function mountCtDemo(box, opts = {}) {
     index = i;
     img.src = frameUrl(i);
     range.value = String(i);
-    count.textContent = `Slice ${i + 1} of ${demo.count}`;
+    count.textContent = `Picture ${i + 1} of ${demo.count}`;
+    range.setAttribute('aria-valuetext', count.textContent);
     drawOutlines();
     window.dispatchEvent(new CustomEvent('raidiology:slice', {
       detail: { index: i, count: demo.count, level: demo.slices[i].level || null },

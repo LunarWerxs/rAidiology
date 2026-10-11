@@ -17,7 +17,7 @@
   .hero-actions { flex-wrap: nowrap; gap: 8px; margin-top: 20px; }
   .hero-actions .btn { flex: 1 1 0; min-width: 0; padding-inline: 8px; font-size: 0.875rem; white-space: nowrap; }
   .proof { margin-top: 16px; gap: 6px; }
-  .proof li { padding: 5px 10px; font-size: 0.75rem; }
+  .proof li { padding: 5px 10px; font-size: var(--fs-s); }
   .proof-x { display: none; }
 }
 @media (max-width: 359px) { .hero-actions { flex-wrap: wrap; } .hero-actions .btn { flex: 1 1 100%; } }
@@ -59,12 +59,12 @@
   .demo-sk { height: 113px; }
   /* the CT card sits on the stage's lower-left corner, so the view chips move to the lower-right */
   .hero-stage .hero3d .hero3d__modes { left: auto; right: 14px; transform: none; }
-  .stage-credit { display: block; max-width: none; margin: 0; padding-inline-start: 46%; color: var(--muted); font-size: 0.8125rem; line-height: 1.45; text-align: end; }
+  .stage-credit { display: block; max-width: none; margin: 0; padding-inline-start: 46%; color: var(--muted); font-size: var(--fs-s); line-height: 1.45; text-align: end; }
 }
 
 /* Nothing on this page reads under 12px: hero3d.css sets the stage's picture credit and its view labels at 11px,
    so this page lifts them (it does not edit that stylesheet). */
-.hero-stage .hero3d .hero3d__credit, .hero-stage .hero3d .hero3d__ref { font-size: 0.75rem; }
+.hero-stage .hero3d .hero3d__credit, .hero-stage .hero3d .hero3d__ref { font-size: var(--fs-s); }
 
 /* 2a. Why back this: three plain facts, who builds it, and the ask. Sits straight under the hero (and its sample CT). */
 .why { padding-block: clamp(48px, 6vw, 80px); }
@@ -111,11 +111,12 @@
 .scan-body h3 { margin-bottom: 6px; }
 .scan-body > p { margin: 0; color: var(--text); }
 .scan-models { margin-top: auto; padding-top: 20px; }
-.scan-body .label { margin: 0 0 10px; color: var(--muted); font-size: 0.75rem; font-weight: 650; letter-spacing: 0.08em; text-transform: uppercase; }
+.scan-body .label { margin: 0 0 10px; color: var(--muted); font-size: 0.8125rem; font-weight: 650; letter-spacing: 0.08em; text-transform: uppercase; }
 .scan-body .chips { gap: 8px; }
 .scan-body .chip { white-space: normal; }
 @media (max-width: 599px) { .scan-body { padding: 20px 20px 24px; } }
-#scans .credit { margin: 20px 0 0; max-width: none; color: var(--muted); font-size: 0.8125rem; }
+#scans .credit { margin: 20px 0 0; max-width: none; color: var(--muted); font-size: var(--fs-s); }
+.edu-line { margin: 12px 0 0; color: var(--text); font-size: 0.9375rem; line-height: 1.5; }
 
 /* 4. Research results. The seven tiles come from release/site/build_charts.py and are styled by results.css,
    shared with models.html; this page lines up the first row's scores and adds the key and "See every result". */

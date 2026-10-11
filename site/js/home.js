@@ -29,8 +29,13 @@ function demoFailed() {
   demo.classList.remove('is-loading');
   demo.classList.add('is-failed');
   demo.removeAttribute('aria-busy');
-  const msg = demo.querySelector('.ctdemo__loading');
-  if (msg) msg.textContent = 'The sample scan could not load.';
+  if (!demo.querySelector('.ctdemo__link')) {
+    const a = document.createElement('a');
+    a.className = 'ctdemo__link';
+    a.href = 'open.html?sample=1';
+    a.textContent = 'Open the full viewer';
+    demo.append(a);
+  }
 }
 
 function mountCt() {

@@ -38,6 +38,7 @@ const state = {
   readingSeries: -1,                // which loaded series it turned out to be about
   outlines: new Map(),              // slice index -> [structure, path] pairs, for a labeller's reading
   pointedAt: -1,                    // the outlined structure under the pointer, or -1
+  ribsOpen: false,                  // whether the Ribs row of the list shows each rib
   keyOpen: true,                    // whether the list of outlined parts is open (it starts open)
   chosen: -1,                       // the part whose row the visitor tapped, or -1
   view: null,                       // where the last picture was drawn: { x0, y0, fit, dpr }
@@ -469,9 +470,15 @@ function renderSeriesMarks() {
   }
 }
 
+// Neighbours that share the aqua hue by the golden angle get their own, well apart: green, blue, violet.
+const HUE_APART = [['food pipe', 140], ['inferior vena cava', 222], ['superior vena cava', 268]];
+
 /** A colour for structure `s`, the same every time: hues a golden angle apart, so neighbours in
  * the list (the left and right of one organ, one rib and the next) never share a colour. */
 function colourOf(s) {
+  const name = (state.reading && state.reading.outlines && state.reading.outlines.structures[s]) || '';
+  const apart = HUE_APART.find(([n]) => name.includes(n));
+  if (apart) return `hsl(${apart[1]} 80% 58%)`;
   // Round five's visitors could not tell the liver, the stomach and the food pipe apart: three teals.
   // A lightness step as well as a hue step keeps more of the structures on one picture apart.
   return `hsl(${Math.round((s * 137.508) % 360)} 85% ${[60, 44, 74][s % 3]}%)`;
@@ -539,11 +546,11 @@ function pointAt(clientX, clientY, above = false) {
   if (s < 0 && above) s = nearestStructure(x, y, (FINGER_PX * v.dpr) / v.fit);
   if (s !== state.pointedAt) { state.pointedAt = s; state.chosen = -1; draw(); }
   if (s < 0) { tip.hidden = true; return; }
-  nameTip(s, clientX - rect.left, clientY - rect.top, rect, above);
+  nameTip(s);
 }
 
-/** Write structure `s`'s name (and what it is) into the tip and put it at (x, y) on the picture. */
-function nameTip(s, x, y, rect, above) {
+/** Write structure `s`'s name (and what it is) into the caption strip under the picture. */
+function nameTip(s) {
   const tip = el('name-tip');
   const o = state.reading.outlines;
   const name = document.createElement('strong');
@@ -551,7 +558,6 @@ function nameTip(s, x, y, rect, above) {
   tip.replaceChildren(name);
   if (o.about && o.about[s]) tip.append(document.createTextNode(`: ${o.about[s]}`));
   tip.hidden = false;
-  placeTip(tip, x, y, rect, above);
 }
 
 /** A point inside structure `s` on this picture, near the middle of its outline, in image pixels; or
@@ -587,6 +593,7 @@ function interiorPoint(s) {
 /** Point at structure `s` from its row in the list: outline it on the picture and put its name beside
  * a point inside it, the same way a tap on the picture does. */
 function namePart(s) {
+  if (RIB.test((state.reading?.outlines?.structures || [])[s] || '')) state.ribsOpen = true;
   const v = state.view;
   if (!v || !state.reading || !state.reading.outlines) return;
   const at = interiorPoint(s);
@@ -594,8 +601,16 @@ function namePart(s) {
   state.pointedAt = s;
   state.chosen = s;
   draw();
-  const rect = el('canvas').getBoundingClientRect();
-  nameTip(s, (at[0] * v.fit + v.x0) / v.dpr, (at[1] * v.fit + v.y0) / v.dpr, rect, false);
+  nameTip(s);
+  pulsePart();
+}
+
+/** A tap on a row: the outline swells for a moment, so the eye finds it on the sticky picture. */
+function pulsePart() {
+  state.pulse = true;
+  draw();
+  clearTimeout(state.pulseTimer);
+  state.pulseTimer = setTimeout(() => { state.pulse = false; draw(); }, 1100);
 }
 
 /** A tap on a row of the list: name that part on the picture, or let go of it when it already is. */
@@ -610,33 +625,7 @@ function choosePart(s) {
   namePart(s);
 }
 
-/** Put the name next to the point, on whichever side keeps all of it inside the picture. Round seven:
- * one visitor hunted for a name the picture's edge had cut off, another found it covering half the
- * picture. */
-function placeTip(tip, x, y, rect, above) {
-  const gap = 14;
-  const w = tip.offsetWidth;
-  const h = tip.offsetHeight;
-  const clamp = (v, lo, hi) => Math.max(lo, Math.min(v, hi));
-  const centred = clamp(x - w / 2, 4, rect.width - w - 4);
-  const right = x + gap + w <= rect.width;
-  const left = x - gap - w >= 0;
-  let at;
-  if (above) {
-    // After a tap: above the point, clear of the fingertip when there is room, since the hand
-    // covers the point and what is below it; below it only when the point is too near the top.
-    const top = [2 * FINGER_PX, gap].map((g) => y - g - h).find((t) => t >= 4);
-    at = [centred, top !== undefined ? top : clamp(y + 2 * FINGER_PX, 4, rect.height - h - 4)];
-  } else if (right || left) {
-    at = [right ? x + gap : x - gap - w, clamp(y + gap, 4, rect.height - h - 4)];
-  } else {
-    // Too wide for either side: centred over the point, so it never covers it.
-    at = [centred, y - gap - h >= 4 ? y - gap - h : clamp(y + gap, 4, rect.height - h - 4)];
-  }
-  tip.style.left = `${at[0]}px`;
-  tip.style.top = `${at[1]}px`;
-}
-
+const RIB = /^(left|right) rib \d+$/;
 const pathCache = new Map();               // path text -> its points, decoded once
 
 function outlinesForSlice() {
@@ -661,14 +650,14 @@ function overlayOutlines(canvas, frame, fit, panX, panY, paths, dpr) {
     if (p.length < 4) continue;
     const pointed = s === state.pointedAt;
     ctx.strokeStyle = colourOf(s);
-    ctx.lineWidth = Math.max(1, (pointed ? 3 : 1.25) * dpr);
+    ctx.lineWidth = Math.max(1, (pointed ? (state.pulse && s === state.chosen ? 5 : 3) : 1.25) * dpr);
     ctx.beginPath();
     ctx.moveTo(x0 + p[0] * fit, y0 + p[1] * fit);
     for (let i = 2; i < p.length; i += 2) ctx.lineTo(x0 + p[i] * fit, y0 + p[i + 1] * fit);
     ctx.closePath();
     ctx.stroke();
     if (pointed) {
-      ctx.globalAlpha = 0.25;
+      ctx.globalAlpha = state.pulse && s === state.chosen ? 0.5 : 0.25;
       ctx.fillStyle = colourOf(s);
       ctx.fill('evenodd');
       ctx.globalAlpha = 1;
@@ -714,7 +703,7 @@ function describeOutlines(note, drawn) {
     const list = document.createElement('ul');
     list.className = 'parts';
     const about = state.reading.outlines.about;
-    for (const s of drawn) {
+    const makeRow = (s) => {
       const item = document.createElement('li');
       const row = document.createElement('button');
       row.type = 'button';
@@ -745,7 +734,42 @@ function describeOutlines(note, drawn) {
         draw();
       });
       item.append(row);
-      list.append(item);
+      return item;
+    };
+    // The eight or more rib rows become one, "Ribs (8)", that opens to show each rib.
+    const ribs = drawn.filter((s) => RIB.test(names[s] || ''));
+    const grouped = ribs.length > 1;
+    let ribsAdded = false;
+    for (const s of drawn) {
+      if (grouped && ribs.includes(s)) {
+        if (ribsAdded) continue;
+        ribsAdded = true;
+        const item = document.createElement('li');
+        const head = document.createElement('button');
+        head.type = 'button';
+        head.className = 'part-row rib-group';
+        head.setAttribute('aria-expanded', String(state.ribsOpen));
+        const chev = document.createElement('span');
+        chev.className = 'rib-chevron';
+        chev.setAttribute('aria-hidden', 'true');
+        const text = document.createElement('span');
+        text.className = 'part-name';
+        text.textContent = `Ribs (${ribs.length})`;
+        head.append(chev, text);
+        const sub = document.createElement('ul');
+        sub.className = 'parts rib-parts';
+        sub.hidden = !state.ribsOpen;
+        for (const r of ribs) sub.append(makeRow(r));
+        head.addEventListener('click', () => {
+          state.ribsOpen = !state.ribsOpen;
+          head.setAttribute('aria-expanded', String(state.ribsOpen));
+          sub.hidden = !state.ribsOpen;
+        });
+        item.append(head, sub);
+        list.append(item);
+      } else {
+        list.append(makeRow(s));
+      }
     }
     all.append(summary, list);
     note.append(how, all);
@@ -754,6 +778,11 @@ function describeOutlines(note, drawn) {
     const s = Number(row.dataset.part);
     row.classList.toggle('is-pointed', s === state.pointedAt);
     row.setAttribute('aria-pressed', String(s === state.chosen));
+  }
+  const group = note.querySelector('.rib-group');
+  if (group) {
+    group.setAttribute('aria-expanded', String(state.ribsOpen));
+    group.nextElementSibling.hidden = !state.ribsOpen;
   }
 }
 

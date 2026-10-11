@@ -128,7 +128,7 @@ details > summary { cursor: pointer; }
 .eyebrow { margin: 0 0 12px; font-size: 0.8125rem; font-weight: 650; line-height: 1.4; letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary); }
 .lede { font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.1875rem); line-height: 1.55; color: var(--text); max-width: 60ch; }
 .fine { font-size: var(--fs-s); line-height: 1.55; color: var(--muted); }
-.tag { margin: 0 0 6px; font-size: 0.75rem; font-weight: 650; line-height: 1.4; letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary); }
+.tag { margin: 0 0 6px; font-size: 0.8125rem; font-weight: 650; line-height: 1.4; letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary); }
 .callout { margin: var(--sp-3) 0 0; padding: 14px 18px; max-width: 68ch; border-inline-start: 3px solid var(--primary); background: var(--primary-soft); border-radius: 0 var(--radius-s) var(--radius-s) 0; color: var(--ink); font-weight: 500; }
 
 /* Buttons: one filled primary; a secondary is a white button with a hairline, never a bare link */
@@ -211,6 +211,7 @@ a.chip:hover { background: var(--primary); color: var(--on-primary); }
 .site-nav a[aria-current="page"] { color: var(--primary); }
 .site-nav a[aria-current="page"]::after { content: ""; position: absolute; left: 14px; right: 14px; bottom: 2px; height: 2px; border-radius: 2px; background: var(--primary); }
 .site-nav .nav-extra { display: none; }
+.site-nav .nav-extra::after { content: "97"; content: "97" / " opens another site"; margin-inline-start: 4px; font-size: 0.85em; }
 .head-actions { grid-column: 3; justify-self: end; display: flex; align-items: center; gap: 8px; }
 .gh-link { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 8px; color: var(--ink); }
 .gh-link:hover { color: var(--primary); background: var(--bg-soft); }
@@ -235,7 +236,7 @@ a.chip:hover { background: var(--primary); color: var(--on-primary); }
   .site-nav a:last-child { border-bottom: 0; }
   .site-nav a:hover { background: transparent; }
   .site-nav a[aria-current="page"]::after { left: -12px; right: auto; top: 14px; bottom: 14px; width: 3px; height: auto; }
-  .site-nav .nav-extra { display: block; color: var(--muted); }
+  .site-nav .nav-extra { display: block; color: var(--text); }
 }
 @media (max-width: 359px) { .site-head .brand-name { display: none; } }
 
@@ -248,9 +249,9 @@ a.chip:hover { background: var(--primary); color: var(--on-primary); }
 .site-foot .brand { display: inline-flex; padding: 0; color: var(--on-dark-strong); font-size: 1.125rem; text-decoration: none; }
 .site-foot .brand img { width: 28px; height: 28px; border-radius: 7px; box-shadow: 0 0 0 1px var(--line-dark-ring); }
 .site-foot .disclaim { margin: 16px 0 0; max-width: 34ch; text-wrap: balance; color: var(--on-dark-strong); font-size: 1rem; font-weight: 600; line-height: 1.5; }
-.site-foot .foot-legal { margin: 12px 0 0; max-width: 44ch; color: var(--foot-text-muted); font-size: 0.8125rem; line-height: 1.55; }
+.site-foot .foot-legal { margin: 12px 0 0; max-width: 44ch; color: var(--foot-text-muted); font-size: var(--fs-s); line-height: 1.55; }
 .foot-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-3); }
-.site-foot h2 { margin: 0 0 12px; color: var(--foot-head); font-size: 0.75rem; font-weight: 650; letter-spacing: 0.08em; line-height: 1.4; text-transform: uppercase; }
+.site-foot h2 { margin: 0 0 12px; color: var(--foot-head); font-size: 0.8125rem; font-weight: 650; letter-spacing: 0.08em; line-height: 1.4; text-transform: uppercase; }
 .foot-cols ul { margin: 0; padding: 0; list-style: none; }
 .foot-cols li { margin: 0; }
 .site-foot a { display: inline-block; padding: 5px 0; color: var(--foot-link); text-decoration: none; line-height: 1.45; }

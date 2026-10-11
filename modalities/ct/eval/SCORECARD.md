@@ -426,3 +426,22 @@ The reference is still **bone-window**, fixed at the first look.
 The independent recomputation (`recompute.py`) agrees on all 216 test cells and 216 development cells of this look.
 
 Files: `eval/ct/look4-v121`.
+
+## Second look, version 130 (look 5 of the test)
+
+This is look 5 of the CT test split. The first look (version 1, opened 2026-10-02 00:58:17) is above, unchanged; this one is labelled a second look, and the result is reported whether it is higher or lower.
+
+This read is at **1.5 mm**: each test scan was read from its own 1.5 mm cache, with version 127's 3 mm coarse map as the prior.
+
+**Development gate**, passed before the test was touched: version 130 minus version 121 on 1139 development scans, paired, per-scan mean Dice: +0.0435 (95% CI +0.0423 to +0.0448, 2000 resamples), passing only with a low end above noise 0.0037. version 130: 0.8606. version 121: 0.8171.
+
+The reference is still **bone-window**, fixed at the first look.
+
+| | test mean Dice | minus bone-window |
+|---|---|---|
+| version 130 (look 5) | 0.9006 (95% CI 0.8896 to 0.9102) | +0.7230 (95% CI +0.7066 to +0.7398) |
+| version 1 (look 1, from its scorecard) | 0.7667 (95% CI 0.7517 to 0.7811) | +0.5891 (95% CI +0.5728 to +0.6055) |
+
+The independent recomputation (`recompute.py`) agrees on all 216 test cells and 216 development cells of this look.
+
+Files: `eval/ct/look5-v130`.

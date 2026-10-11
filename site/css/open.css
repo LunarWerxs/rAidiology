@@ -27,6 +27,7 @@
   --r-sm: 10px;
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   --wrap: 1040px;
+  --ctl-edge: var(--muted);         /* slider tracks and the borders of the pale buttons: 3:1 or better on their background */
 }
 
 * { box-sizing: border-box; }
@@ -123,15 +124,16 @@ p { max-width: 68ch; }
 }
 .stage canvas { display: block; width: 100%; height: 100%; }
 .hud {
-  position: absolute; inset-inline-start: 10px; inset-block-start: 10px; padding: 5px 9px; border-radius: 8px;
-  background: var(--shade-a55); color: var(--on-picture); font-size: 0.95rem;
+  position: absolute; inset-inline-start: 10px; inset-block-start: 10px; padding: 2px 8px; border-radius: 8px;
+  background: var(--shade-a55); color: var(--on-picture); font-size: 0.875rem; line-height: 1.3;
   font-variant-numeric: tabular-nums; pointer-events: none; white-space: pre-line;
 }
-/* The name of what the visitor is pointing at, beside the pointer. */
+/* The name of what the visitor is pointing at, in a solid strip directly under the picture, never over it.
+   The strip keeps its height when empty, so the list under it does not jump when a name appears. */
+.stage-caption { min-block-size: 3.4rem; margin-block-start: 8px; }
 .name-tip {
-  position: absolute; max-inline-size: min(18rem, 70%); padding: 6px 10px; border-radius: 8px;
-  background: var(--scrim); color: var(--on-picture); font-size: 0.95rem; line-height: 1.4;
-  pointer-events: none;
+  padding: 8px 12px; border-radius: var(--r-sm); background: var(--ink); color: var(--on-dark-strong, var(--on-picture));
+  font-size: 1rem; line-height: 1.4;
 }
 .name-tip strong { font-weight: 700; color: inherit; }
 /* Which side of the body each edge of the picture is. Drawn over the image, so like the scale bar
@@ -143,9 +145,9 @@ p { max-width: 68ch; }
   background: var(--edge-bg); color: var(--edge-ink); font-size: 0.75rem; line-height: 1.3; white-space: nowrap;
 }
 .edge-left, .edge-right { white-space: normal; max-inline-size: 7em; text-align: center; border-radius: 10px; line-height: 1.25; }
-/* arkitect-allow: css-logical-direction-properties - a side of the picture, not of a sentence. */
-.edge-top { top: 8px; left: 50%; transform: translateX(-50%); }
-.edge-bottom { bottom: 8px; left: 50%; transform: translateX(-50%); }
+/* Top corner opposite the picture count, bottom corner opposite the scale bar: the four never meet. */
+.edge-top { inset-block-start: 8px; inset-inline-end: 8px; }
+.edge-bottom { inset-block-end: 8px; inset-inline-start: 8px; }
 /* arkitect-allow: css-logical-direction-properties - a side of the picture, not of a sentence. */
 .edge-left { left: 8px; top: 50%; transform: translateY(-50%); }
 /* arkitect-allow: css-logical-direction-properties - a side of the picture, not of a sentence. */
@@ -187,14 +189,14 @@ p { max-width: 68ch; }
 .stage-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 10px 0 0; }
 /* A plain caption, not a pill: the pill read as a button (design review 2026-10-11). It names the gesture the
    device has: a swipe on a touch screen, a drag or the arrow keys with a mouse. */
-.hint-chip { margin: 0; font-size: 0.86rem; color: var(--text-2); }
+.hint-chip { margin: 0; font-size: 0.9rem; color: var(--text-2); }
 .hint-chip .on-mouse { display: none; }
 @media (hover: hover) and (pointer: fine) {
   .hint-chip .on-touch { display: none; }
   .hint-chip .on-mouse { display: inline; }
 }
 .caption { margin: 8px 0 4px; }
-#viewer-credit { margin: 0 0 10px; font-size: 0.86rem; }
+#viewer-credit { margin: 0 0 10px; font-size: 0.9rem; }
 .about-sample { margin: 0 0 14px; color: var(--text-2); }
 .about-sample summary { cursor: pointer; font-weight: 600; padding: 6px 0; min-height: 44px; display: list-item; }
 .card.next-step {
@@ -207,8 +209,8 @@ p { max-width: 68ch; }
 /* The picture slider is the viewer's main control: the same 28px thumb as the home demo and the support amount. */
 .slice-bar input[type="range"] { height: 44px; margin: 0; background: transparent; cursor: pointer; -webkit-appearance: none; appearance: none; }
 .slice-bar input[type="range"]:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: 8px; }
-.slice-bar input[type="range"]::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: var(--line-strong); }
-.slice-bar input[type="range"]::-moz-range-track { height: 6px; border-radius: 3px; background: var(--line-strong); }
+.slice-bar input[type="range"]::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: var(--ctl-edge); }
+.slice-bar input[type="range"]::-moz-range-track { height: 6px; border-radius: 3px; background: var(--ctl-edge); }
 .slice-bar input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 28px; height: 28px; margin-top: -11px; border-radius: 50%; background: var(--primary); border: 3px solid var(--card); box-shadow: var(--shadow-thumb); }
 .slice-bar input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: var(--primary); border: 3px solid var(--card); box-shadow: var(--shadow-thumb); }
 .lbl { margin-inline-end: 6px; }
@@ -244,7 +246,7 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
 }
 /* Phones: Previous, the slider and Next sit in one bar pinned to the bottom of the viewer area. It
    comes after the picture in the page, so it never covers the image. */
-@media (max-width: 600px) {
+@media (max-width: 767px) {
   .slice-bar {
     position: sticky; bottom: 0; z-index: 5; gap: 8px; margin: 10px -4px 10px;
     padding: 8px 8px calc(8px + env(safe-area-inset-bottom)); background: var(--bg, #fff);
@@ -262,7 +264,6 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
   #pick-folder { display: none; }
   #pick-zip { background: var(--accent); color: var(--on-accent); border: 0; box-shadow: var(--lift); }
   /* Round eight: on a phone the name after a tap read as "small, easy to miss". */
-  .name-tip { font-size: 1.05rem; padding: 8px 12px; max-inline-size: 92%; }
 }
 
 /* The picture and the slider under it fit one laptop screen, so nobody takes it for one still picture. */
@@ -355,7 +356,7 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
    focus ring), not underlined links; the one primary button stays the one that starts something. */
 .viewer .btn.quiet {
   text-decoration: none; background: var(--primary-soft); color: var(--primary-dark);
-  border: 2px solid var(--line-strong); padding-inline: 18px;
+  border: 2px solid var(--ctl-edge); padding-inline: 18px;
 }
 .viewer .btn.quiet:hover { background: var(--card); border-color: var(--primary); color: var(--primary-dark); }
 .viewer .btn.quiet:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
@@ -370,7 +371,42 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
   }
   .pane.viewer > * { grid-column: 2; min-width: 0; }
   .pane.viewer > .viewer-head { grid-column: 1 / -1; }
-  .pane.viewer > .stage { grid-column: 1; grid-row: 2 / span 12; max-height: 80vh; align-self: start; position: sticky; top: calc(var(--head-h) + 12px); }
+  .pane.viewer > .stage-wrap { grid-column: 1; grid-row: 2 / span 12; align-self: start; position: sticky; top: calc(var(--head-h) + 12px); }
+  .pane.viewer .stage { max-height: 68vh; }
+  .pane.viewer .stage-caption { inline-size: calc(68vh * 4 / 3); max-inline-size: 100%; }
   /* The parts list sits high in this column; a long one scrolls inside itself. */
   .finding .parts { max-block-size: min(26rem, 52vh); overflow-y: auto; overscroll-behavior: contain; }
+}
+
+/* Parts list: the ribs fold into one row. */
+.rib-group { grid-template-columns: 16px minmax(0, 1fr); font-weight: 600; }
+.rib-chevron { inline-size: 8px; block-size: 8px; border-inline-end: 2px solid var(--ink); border-block-end: 2px solid var(--ink); transform: rotate(-45deg); transition: transform 160ms var(--ease); justify-self: center; }
+.rib-group[aria-expanded="true"] .rib-chevron { transform: rotate(45deg); }
+.rib-parts { margin-inline-start: 14px; border-inline-start: 1px solid var(--line); }
+
+/* The sample route: from the first paint, a viewer-shaped wait instead of the open-your-own-scan page. */
+.sample-loading { display: none; }
+.is-sample:not(.sample-done) .sample-loading { display: block; }
+.is-sample:not(.sample-done) .start-over-row { display: none; }
+.is-sample:not(.sample-done) main > .pane:not(.sample-loading) { display: none; }
+.sample-loading h1 { font-size: clamp(1.2rem, 3vw, 1.5rem); margin-block-end: 12px; }
+.sample-ph { background: var(--black); border: 1px solid var(--line); border-radius: var(--r-lg); aspect-ratio: 1 / 1; max-height: 60vh; min-height: 240px; inline-size: 100%; }
+.sample-bar { margin-block-start: 12px; display: grid; gap: 8px; }
+.sample-bar p { margin: 0; color: var(--text-2); font-size: 1rem; }
+.sample-bar .track { block-size: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.sample-bar .fill { block-size: 100%; inline-size: 40%; background: var(--accent); border-radius: 3px; animation: sample-slide 1.4s ease-in-out infinite alternate; }
+@keyframes sample-slide { from { transform: translateX(0); } to { transform: translateX(150%); } }
+@media (min-width: 720px) { .sample-ph { aspect-ratio: 4 / 3; } }
+
+/* Phones: the picture stays under the site header while the parts list scrolls beneath it. */
+@media (max-width: 767px) {
+  .pane.viewer .stage-wrap { position: sticky; inset-block-start: var(--head-h); z-index: 4; background: var(--bg); padding-block: 6px 2px; }
+  .pane.viewer .stage { aspect-ratio: auto; block-size: 40dvh; max-height: none; min-height: 200px; }
+  .stage-caption { min-block-size: 3.2rem; margin-block-start: 6px; }
+  /* The slice bar goes after the parts list, so its pinned-to-the-bottom position holds while the list scrolls. */
+  .pane.viewer:not([hidden]) { display: flex; flex-direction: column; }
+  .pane.viewer .slice-bar { order: 9; }
+  .name-tip { font-size: 1rem; padding: 6px 10px; }
+  /* A row scrolled to (keyboard focus) lands below the pinned picture, not behind it. */
+  .part-row { scroll-margin-block: calc(var(--head-h) + 40dvh + 4.5rem) 5rem; }
 }

@@ -27,7 +27,7 @@
     <div class="site-head-in">
       <a class="brand" href="index.html" aria-label="rAidiology home"><img src="img/logo.svg" width="32" height="32" alt=""><span class="brand-name">rAidiology</span></a>
       <nav id="site-nav" class="site-nav" aria-label="Main">
-        <a href="index.html#scans">Scans</a>
+        <a href="index.html#scans">Scans we cover</a>
         <a href="models.html">Research</a>
         <a href="pricing.html">Pricing</a>
         <a href="support.html" aria-current="page">Support</a>
@@ -46,29 +46,14 @@
     <section class="page-head">
       <div class="wrap">
         <h1>Fund the next model</h1>
-        <p class="lede">Your money buys GPU time to train the open research models. The app stays free for everyone.</p>
+        <p class="lede">Your support pays for training the open research models. The app stays free for everyone.</p>
         <p class="diff">Support is pay what you want. Companies need a <a href="pricing.html#companies">commercial licence</a> from Pricing.</p>
+        <p class="diff">Investing or partnering? <a href="#invest">Read the investor notes.</a></p>
       </div>
     </section>
 
     <section class="sec" aria-labelledby="give-h">
       <div class="wrap give-grid">
-        <div class="vision">
-          <h2 id="vision-h">Where your money goes</h2>
-          <dl class="vision-list">
-            <div><dt>It pays for</dt><dd>GPU time to train the next research models. Today training runs on one home graphics card.</dd></div>
-            <div><dt>What is next</dt><dd>Bigger research models on rented data-centre GPUs. Supporters at $15 a month or more vote on what to train.</dd></div>
-            <div><dt>Who builds it</dt><dd>LunarWerx LLC, a for-profit company. It builds in the open, and every training run is written down.</dd></div>
-          </dl>
-          <!-- tools/build_momentum.py writes every data-log count on this page from the same ledger as the home page. -->
-          <ul class="stats vis-stats" aria-label="Progress so far">
-            <li class="stat"><p class="stat-n">7</p><p class="stat-l">research models</p></li>
-            <li class="stat"><p class="stat-n" data-log="runs">1,615</p><p class="stat-l">runs recorded</p></li>
-            <li class="stat"><p class="stat-n" data-log="hours">382</p><p class="stat-l">hours of recorded runs</p></li>
-          </ul>
-          <p class="fine">Counts come from the training log on the home page. No paid perk gives early or private access to a research model.</p>
-        </div>
-
         <div class="give" id="give">
           <h2 id="give-h" class="give-title">Choose your amount</h2>
           <div class="seg" role="group" aria-label="How often">
@@ -76,10 +61,10 @@
             <button type="button" class="seg-b" data-freq="once" aria-pressed="false">Once</button>
           </div>
           <div class="chips" role="group" aria-label="Amount">
-            <button type="button" class="chip" data-amt="5" aria-pressed="false">$5</button>
-            <button type="button" class="chip" data-amt="15" aria-pressed="true">$15</button>
+            <button type="button" class="chip" data-amt="5" aria-pressed="false">$5 Backer</button>
+            <button type="button" class="chip" data-amt="15" aria-pressed="true">$15 Supporter</button>
             <button type="button" class="chip" data-amt="30" aria-pressed="false">$30</button>
-            <button type="button" class="chip" data-amt="50" aria-pressed="false">$50</button>
+            <button type="button" class="chip" data-amt="50" aria-pressed="false">$50 Sponsor</button>
             <button type="button" class="chip" data-amt="100" aria-pressed="false">$100</button>
           </div>
           <div class="amt-row">
@@ -90,34 +75,48 @@
           <p class="amt-note" id="give-note" hidden></p>
           <div class="readout" aria-live="polite" aria-atomic="true">
             <p class="r-hours" id="give-hours">About 9 hours of A100 GPU training a month</p>
-            <p class="r-rate">$1.59 an hour at RunPod</p>
             <p class="r-level" id="give-level">Supporter: a supporter role on Discord, your name in the supporters list, a vote on what to train next.</p>
           </div>
           <div class="give-cta">
             <a class="btn give-btn" id="give-go" href="https://buy.stripe.com/bJeeVdewTgDK6CG95l9Zm02">Give $15 a month</a>
             <p class="give-err" id="give-err" role="alert" hidden></p>
+            <p class="give-next">Next: a secure Link checkout page, then a receipt by email.</p>
           </div>
           <p class="fine give-fine">Not tax-deductible. We are a for-profit company.</p>
           <details class="pay-details">
             <summary>Payment details</summary>
             <ul class="pay-list">
-              <li>Checkout is secure with Link. Connections Global LLC sells it as merchant of record.</li>
+              <li>Checkout shows Connections Global LLC: it sells for LunarWerx LLC as authorised reseller. Link, from Stripe, takes the payment as merchant of record.</li>
               <li>The money goes to LunarWerx LLC, a for-profit company, so payments are not donations and are not tax-deductible.</li>
               <li>Cancel any time at <a href="https://link.com">link.com</a> or <a href="mailto:contact@lunarwerx.com?subject=Cancel%20my%20rAidiology%20support&amp;body=Please%20cancel%20my%20rAidiology%20supporter%20subscription.%20Email%20I%20paid%20with%3A%20">by email</a>.</li>
               <li>Refunds: for supporter payments, ask within 14 days at <a href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a>, or through Link's support.</li>
               <li>Max $1,000 a month or $5,000 once.</li>
+              <li>Direct checkout links:
+                <ul class="pay-links">
+                  <li><a href="https://buy.stripe.com/7sY9ATagDbjq5yC95l9Zm01">Once, $3 to $5,000</a></li>
+                  <li><a href="https://buy.stripe.com/dRm14nbkHfzG8KOftJ9Zm00">Backer, $5 a month</a></li>
+                  <li><a href="https://buy.stripe.com/bJeeVdewTgDK6CG95l9Zm02">Supporter, $15 a month</a></li>
+                  <li><a href="https://buy.stripe.com/fZu9AT60n9bi6CGftJ9Zm03">Sponsor, $50 a month</a></li>
+                </ul>
+              </li>
             </ul>
           </details>
         </div>
 
-        <div class="plans-alt">
-          <h3 class="plans-h" id="plans-h">Or choose a fixed plan</h3>
-          <ul class="plan-rows" aria-labelledby="plans-h">
-            <li><a class="plan-row" href="https://buy.stripe.com/7sY9ATagDbjq5yC95l9Zm01"><span class="pr-name">Pay what you want, once</span><span class="pr-price">$3 to $5,000</span></a></li>
-            <li><a class="plan-row" href="https://buy.stripe.com/dRm14nbkHfzG8KOftJ9Zm00"><span class="pr-name">Backer</span><span class="pr-price">$5 a month</span></a></li>
-            <li><a class="plan-row" href="https://buy.stripe.com/bJeeVdewTgDK6CG95l9Zm02"><span class="pr-name">Supporter</span><span class="pr-price">$15 a month</span></a></li>
-            <li><a class="plan-row" href="https://buy.stripe.com/fZu9AT60n9bi6CGftJ9Zm03"><span class="pr-name">Sponsor</span><span class="pr-price">$50 a month</span></a></li>
+        <div class="vision">
+          <h2 id="vision-h">Where your money goes</h2>
+          <dl class="vision-list">
+            <div><dt>It pays for</dt><dd>Training the next research models. Today that runs on one home graphics card.</dd></div>
+            <div><dt>What is next</dt><dd>Bigger research models on rented data-centre GPUs. Supporters at $15 a month or more vote on what to train.</dd></div>
+            <div><dt>Who builds it</dt><dd>LunarWerx LLC, a for-profit company. It builds in the open, and every training run is written down.</dd></div>
+          </dl>
+          <!-- tools/build_momentum.py writes every data-log count on this page from the same ledger as the home page. -->
+          <ul class="stats vis-stats" aria-label="Progress so far">
+            <li class="stat"><p class="stat-n">7</p><p class="stat-l">research models</p></li>
+            <li class="stat"><p class="stat-n" data-log="runs">1,615</p><p class="stat-l">runs recorded</p></li>
+            <li class="stat"><p class="stat-n" data-log="hours">382</p><p class="stat-l">hours of recorded runs</p></li>
           </ul>
+          <p class="fine">Counts come from the training log on the home page. No paid perk gives early or private access to a research model.</p>
         </div>
       </div>
     </section>
@@ -166,9 +165,9 @@
         <ul class="card-grid three-up after">
           <li class="card">
             <h3>Get your perks</h3>
-            <p>Email <a href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a> with your receipt number and your Discord username. For the supporters list or the README, add the name or logo you want shown.</p>
+            <p>The button opens a ready-made email to <a href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a>. Fill in your receipt number and your Discord username. For the supporters list or the README, add the name or logo you want shown.</p>
             <p class="fine">Never post a receipt or an email address on Discord.</p>
-            <div class="card-foot"><a class="btn secondary" href="mailto:contact@lunarwerx.com?subject=My%20rAidiology%20supporter%20perks">Email your receipt</a></div>
+            <div class="card-foot"><a class="btn secondary" href="mailto:contact@lunarwerx.com?subject=My%20rAidiology%20supporter%20perks&amp;body=Receipt%20number%3A%0ADiscord%20username%3A%0AName%20for%20the%20supporters%20list%20(optional)%3A%0A">Email your receipt</a></div>
           </li>
           <li class="card">
             <h3>Cancel any time</h3>
