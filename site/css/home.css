@@ -3,28 +3,56 @@
 
 /* The scan pictures carry a baked-in dark frame of #04101c; picture frames on this page use the same colour
    so a picture never shows a box inside its frame. */
-.hero .lightbox, .hero .tile, .scan-pics, .scan-pics .tile, #results .result-tile > img { background: #04101c; }
+.scan-pics, .scan-pics .tile, #results .result-tile > img { background: #04101c; }
 
-/* 1. Hero */
-.hero { padding-block: clamp(40px, 6vw, 88px) clamp(56px, 7vw, 96px); background: var(--bg); }
-.hero-grid { display: grid; gap: 40px; align-items: center; }
-@media (min-width: 940px) { .hero-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 64px; } }
-.hero h1 { margin-bottom: 20px; }
+/* 1. Hero: copy on the left, the live 3D on the right with the sample CT card on its lower-left corner.
+   On a phone the copy comes first, then the 3D, then the CT card directly under it. */
+.hero { padding-block: clamp(20px, 3vw, 40px) clamp(48px, 6vw, 80px); background: var(--bg); }
+.hero-grid { display: grid; gap: 24px; align-items: center; }
+@media (min-width: 960px) { .hero-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 64px; } }
+.hero h1 { margin-bottom: 16px; }
 .hero .lede { margin: 0; }
-.hero .actions { margin-top: 32px; }
-.hero-facts { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 28px 0 0; padding: 0; list-style: none; color: var(--muted); font-size: var(--fs-s); font-weight: 500; }
-.hero-facts li { display: inline-flex; align-items: center; gap: 8px; }
-.hero-facts li::before { content: ""; width: 16px; height: 16px; flex: none; border-radius: 50%; background: var(--teal-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 8.2l2.3 2.3 4.7-4.9' fill='none' stroke='%230c8a86' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 16px no-repeat; }
-.hero .credit { margin: 12px 0 0; color: var(--muted); font-size: 0.8125rem; }
-.hero-mosaic .lightbox { padding: 10px; box-shadow: 0 24px 48px -20px rgba(15, 27, 42, 0.35); }
-.hero-mosaic .mosaic { grid-auto-rows: clamp(74px, 12.5vw, 124px); gap: 6px; }
-.m-organs { grid-column: 1; grid-row: 1 / span 3; }
-.m-lungs { grid-column: 1; grid-row: 4; }
-.m-mri { grid-column: 2; grid-row: 1 / span 2; }
-.m-chest { grid-column: 3; grid-row: 1 / span 2; }
-.m-wrist { grid-column: 2; grid-row: 3 / span 2; }
-.m-mammo { grid-column: 3; grid-row: 3; }
-.m-spine { grid-column: 3; grid-row: 4; }
+.hero-actions { margin-top: 24px; flex-wrap: wrap; }
+@media (max-width: 599px) {
+  .hero-actions { flex-wrap: nowrap; gap: 8px; margin-top: 20px; }
+  .hero-actions .btn { flex: 1 1 0; min-width: 0; padding-inline: 8px; font-size: 0.875rem; white-space: nowrap; }
+  .proof { margin-top: 16px; gap: 6px; }
+  .proof li { padding: 5px 10px; font-size: 0.75rem; }
+  .proof-x { display: none; }
+}
+@media (max-width: 359px) { .hero-actions { flex-wrap: wrap; } .hero-actions .btn { flex: 1 1 100%; } }
+.proof { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+.proof li { display: inline-flex; align-items: baseline; gap: 5px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg-soft); color: var(--text); font-size: 0.8125rem; font-weight: 550; line-height: 1.35; white-space: nowrap; }
+.proof strong { color: #087470; font-size: 0.9375rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+.hero-stage { display: grid; gap: 12px; min-width: 0; }
+.stage-wrap { position: relative; display: grid; gap: 12px; min-width: 0; }
+.stage-box { position: relative; height: clamp(300px, 52vh, 560px); height: clamp(300px, 52svh, 560px); overflow: hidden; border-radius: var(--radius); background: var(--lightbox); box-shadow: 0 28px 56px -28px rgba(5, 9, 14, 0.6); }
+/* The poster shows from first paint and until the 3D draws its first frame. hero3d.js fits its camera the way
+   "contain" fits a poster, and uses the phone poster on stages under 600 px wide (about 650 px of screen). */
+.stage-box > .hero3d { position: absolute; inset: 0; width: 100%; height: 100%; background: var(--lightbox) url("../img/hero-poster.webp") center / contain no-repeat; }
+@media (max-width: 649px) { .stage-box > .hero3d { background-image: url("../img/hero-poster-phone.webp"); } }
+@media (min-width: 960px) { .stage-box { height: min(78vh, 680px); height: min(78svh, 680px); } }
+
+/* The sample CT card: a white card with a thin edge, so the black picture inside it reads against the black stage */
+.hero-stage .ctdemo { max-width: none; margin: 0; padding: 8px; border: 1px solid var(--line-strong); border-radius: var(--radius); background: #fff; box-shadow: 0 2px 6px rgba(5, 9, 14, 0.12), 0 22px 44px -16px rgba(5, 9, 14, 0.5); }
+.hero-stage .ctdemo:focus-visible { outline-offset: 3px; }
+.hero-stage .ctdemo .ctdemo__lightbox, .demo-ph { border-radius: 8px; }
+.demo-ph { position: relative; overflow: hidden; aspect-ratio: 1 / 1; background: var(--lightbox); }
+.demo-ph img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.demo-ph { margin-bottom: 166px; }
+.stage-credit { display: none; }
+@media (min-width: 600px) and (max-width: 959px) { .hero-stage .ctdemo { max-width: 440px; margin-inline: auto; } }
+@media (min-width: 960px) {
+  .hero-stage .ctdemo { position: absolute; z-index: 2; left: -56px; bottom: -44px; width: clamp(248px, min(24vw, 40vh), 336px); width: clamp(248px, min(24vw, 40svh), 336px); }
+  /* the credit moves under the stage so the card stays short */
+  .hero-stage .ctdemo .ctdemo__line { display: none; }
+  .hero-stage .ctdemo .ctdemo__link { padding: 8px 0 2px; }
+  .demo-ph { margin-bottom: 104px; }
+  /* the CT card sits on the stage's lower-left corner, so the view chips move to the lower-right */
+  .hero-stage .hero3d .hero3d__modes { left: auto; right: 14px; transform: none; }
+  .stage-credit { display: block; max-width: none; margin: 0; padding-left: 46%; color: var(--muted); font-size: 0.8125rem; line-height: 1.45; text-align: right; }
+}
 
 /* 2. Numbers: one light band; number, label, note and source line up across the row */
 .numbers { padding-block: clamp(48px, 6vw, 72px); border-block: 1px solid var(--line); }
@@ -51,6 +79,7 @@
 .scan-body .chips { gap: 8px; }
 .scan-body .chip { white-space: normal; }
 @media (max-width: 599px) { .scan-body { padding: 20px 20px 24px; } }
+#scans .credit { margin: 20px 0 0; max-width: none; color: var(--muted); font-size: 0.8125rem; }
 
 /* 4. Research results. The seven tiles come from release/site/build_charts.py and are styled by results.css,
    shared with models.html; this page lines up the first row's scores and adds the key and "See every result". */
@@ -93,26 +122,46 @@
 .more-link:hover { text-decoration: underline; }
 #pricing .sec-more { margin-top: 28px; }
 
-/* 7. Support the research: a soft panel, the words on the left and the GPU sum on the right */
-.support-panel { display: grid; gap: 32px; align-items: center; padding: clamp(28px, 5vw, 56px); border: 1px solid #d6e3f5; border-radius: 20px; background: var(--primary-soft); }
-@media (min-width: 900px) { .support-panel { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 56px; } }
-.support-copy > :last-child { margin-bottom: 0; }
-.support-copy .actions { margin-top: 24px; }
-.support-copy .money-line { margin: 20px 0 0; color: #4d5e71; }
-.gpu-math { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: stretch; gap: 12px; margin: 0; padding: 0; list-style: none; }
-.gpu-math > li:not(.gpu-eq) { padding: 24px 22px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; box-shadow: var(--shadow); }
-.gpu-math p { margin: 0; }
-.gpu-n { color: var(--teal); font-size: var(--fs-stat); font-weight: 700; letter-spacing: -0.02em; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.gpu-l { margin-top: 10px !important; color: var(--muted); font-size: var(--fs-s); line-height: 1.45; }
-.gpu-eq { align-self: center; color: var(--muted); font-size: 1.5rem; font-weight: 600; }
-@media (min-width: 900px) and (max-width: 1199px) { .gpu-n { font-size: 2rem; } .gpu-math > li:not(.gpu-eq) { padding: 20px 18px; } }
-@media (max-width: 599px) {
-  .gpu-math { grid-template-columns: minmax(0, 1fr); gap: 0; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; box-shadow: var(--shadow); }
-  .gpu-math > li:not(.gpu-eq) { padding: 20px; border: 0; border-radius: 0; box-shadow: none; background: none; }
-  .gpu-math > li:last-child { border-top: 1px solid var(--line); }
-  .gpu-eq { display: none; }
-  .gpu-n { font-size: 2.25rem; }
+/* 7. Support the research: a soft panel, the words on the left and a small chooser on the right */
+.support-panel { display: grid; gap: 28px; align-items: start; padding: clamp(24px, 5vw, 56px); border: 1px solid #d6e3f5; border-radius: 20px; background: var(--primary-soft); }
+.support-head > :last-child, .support-foot > :last-child { margin-bottom: 0; }
+.support-foot .invest { margin: 0; color: var(--ink); font-weight: 550; }
+.support-foot .actions { margin-top: 20px; }
+.support-foot .money-line { margin: 20px 0 0; color: #4d5e71; }
+@media (min-width: 900px) {
+  .support-panel { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); grid-template-areas: "head chooser" "foot chooser"; gap: 28px 56px; align-content: center; }
+  .support-head { grid-area: head; align-self: end; }
+  .support-foot { grid-area: foot; align-self: start; }
+  .chooser { grid-area: chooser; align-self: center; }
 }
+.chooser { padding: clamp(16px, 3vw, 28px); border: 1px solid var(--line); border-radius: var(--radius); background: #fff; box-shadow: var(--shadow); }
+.chooser h3 { margin: 0 0 16px; }
+.chooser button { font: inherit; text-align: center; }
+.chooser .seg { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; margin-bottom: 16px; background: var(--bg-soft); border: 1px solid var(--line); border-radius: 12px; }
+.chooser .seg-b { min-height: 44px; border: 0; border-radius: 9px; background: transparent; color: var(--muted); font-weight: 600; cursor: pointer; }
+.chooser .seg-b[aria-pressed="true"] { background: #fff; color: var(--primary-dark); box-shadow: 0 1px 3px rgba(15, 27, 42, 0.14); }
+.chooser .amts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.chooser .amt { min-height: 52px; border: 1px solid var(--line-strong); border-radius: var(--radius-s); background: #fff; color: var(--ink); font-size: 1.125rem; font-weight: 650; font-variant-numeric: tabular-nums; cursor: pointer; transition: border-color .15s, background-color .15s, color .15s; }
+.chooser .amt:hover { border-color: var(--primary); }
+.chooser .amt[aria-pressed="true"] { border-color: var(--primary); background: var(--primary-soft); color: var(--primary-dark); box-shadow: inset 0 0 0 1px var(--primary); }
+.chooser .seg-b:focus-visible, .chooser .amt:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+.gm-line { margin: 16px 0; color: #07615e; font-weight: 600; line-height: 1.4; text-wrap: balance; }
+.chooser-go { width: 100%; min-height: 52px; }
+@media (max-width: 599px) { .gm-line { font-size: 0.875rem; } }
+
+/* Built in the open: four numbers from the run ledger (tools/build_momentum.py writes the list) */
+.momentum { padding-block: clamp(40px, 5vw, 64px); background: var(--bg); border-bottom: 1px solid var(--line); }
+.momentum-in { display: grid; gap: 28px; align-items: center; }
+@media (min-width: 900px) { .momentum-in { grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: 56px; } }
+.momentum h2 { margin-bottom: 8px; font-size: 1.5rem; }
+.momentum-copy > p:last-child { margin: 0; color: var(--muted); }
+.momentum-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 16px; margin: 0; padding: 0; list-style: none; }
+@media (min-width: 600px) { .momentum-list { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.momentum-list li { padding-top: 14px; border-top: 2px solid var(--line); }
+.momentum-list p { margin: 0; }
+.m-n { color: var(--teal); font-size: var(--fs-stat); font-weight: 700; letter-spacing: -0.02em; line-height: 1; font-variant-numeric: tabular-nums; }
+.m-n time { display: block; font-size: 1.25rem; line-height: 1.5; letter-spacing: -0.01em; white-space: nowrap; }
+.m-l { margin-top: 8px !important; color: var(--text); font-size: var(--fs-s); font-weight: 550; line-height: 1.4; }
 
 /* 8. Privacy and open source: one two-column section on the soft background, picture credits under it */
 .privacy-split { display: grid; gap: 40px; align-items: center; }

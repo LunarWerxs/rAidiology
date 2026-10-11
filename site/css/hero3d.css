@@ -1,0 +1,159 @@
+/* hero3d.css: the home page's live 3D stage (js/hero3d.js). Every rule is scoped under .hero3d.
+   Sizes in :where() carry no weight, so the page's own CSS sizes the stage. */
+:where(.hero3d) {
+  aspect-ratio: 640 / 550;
+  border-radius: var(--radius-pic, 12px);
+}
+.hero3d {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--lightbox, #05090e) center / contain no-repeat;
+  color: var(--on-dark, #e9eef4);
+  font-family: var(--font, "Inter", system-ui, sans-serif);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.hero3d [hidden] { display: none !important; }
+
+.hero3d .hero3d__canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+  opacity: 0;
+  transition: opacity 0.7s ease;
+  cursor: grab;
+  outline: none;
+}
+.hero3d.is-live .hero3d__canvas { opacity: 1; }
+.hero3d.is-dragging .hero3d__canvas { cursor: grabbing; }
+.hero3d.is-pointing:not(.is-dragging) .hero3d__canvas { cursor: pointer; }
+
+/* Mode chips: one segmented control at the bottom of the stage. */
+.hero3d .hero3d__modes {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  z-index: 3;
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 999px;
+  background: rgba(13, 20, 30, 0.72);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+.hero3d .hero3d__mode {
+  min-width: 84px;
+  min-height: 44px;
+  margin: 0;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #b4c2d2;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.005em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.hero3d .hero3d__mode:hover { color: #fff; }
+.hero3d .hero3d__mode[aria-pressed="true"] {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+.hero3d .hero3d__mode:focus-visible { outline: 2px solid var(--primary-light, #8fb8ea); outline-offset: 2px; border-radius: 999px; }
+.hero3d.hero3d--narrow .hero3d__mode { min-width: 78px; padding: 0 12px; }
+.hero3d.hero3d--static .hero3d__modes,
+.hero3d.hero3d--static .hero3d__turn,
+.hero3d.hero3d--static .hero3d__label { display: none; }
+
+/* The name of a tapped or hovered bone, pinned to the spot. */
+.hero3d .hero3d__label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+  will-change: transform;
+}
+.hero3d .hero3d__label.is-left { flex-direction: row-reverse; }
+.hero3d .hero3d__dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(79, 224, 210, 0.35), 0 0 14px rgba(79, 224, 210, 0.75);
+}
+.hero3d .hero3d__pill {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 12px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  background: rgba(8, 14, 22, 0.88);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  white-space: nowrap;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.hero3d .hero3d__name { color: #fff; font-size: 0.9375rem; font-weight: 650; line-height: 1.2; letter-spacing: -0.005em; }
+.hero3d .hero3d__ref { color: #7fe3d8; font-size: 0.6875rem; font-weight: 600; line-height: 1.2; letter-spacing: 0.07em; text-transform: uppercase; }
+
+/* A small turn mark in the corner; it goes once the body has been turned by hand. */
+.hero3d .hero3d__turn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(220, 230, 240, 0.75);
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.hero3d.is-turned .hero3d__turn { opacity: 0; }
+
+/* Credit for the reference skeleton (CC BY 4.0). */
+.hero3d .hero3d__credit {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  z-index: 2;
+  max-width: min(44%, 260px);
+  margin: 0;
+  color: rgba(196, 209, 223, 0.6);
+  font-size: 0.6875rem;
+  line-height: 1.4;
+}
+.hero3d .hero3d__credit-short { display: none; }
+.hero3d.hero3d--narrow .hero3d__credit { max-width: calc(50% - 64px); }
+.hero3d.hero3d--narrow .hero3d__credit-long { display: none; }
+.hero3d.hero3d--narrow .hero3d__credit-short { display: inline; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero3d .hero3d__canvas,
+  .hero3d .hero3d__turn { transition: none; }
+}

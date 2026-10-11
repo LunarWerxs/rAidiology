@@ -1,0 +1,81 @@
+// Home page: wakes the live 3D and the sample CT after first paint, runs the "Try the sample scan" button and the
+// small support chooser. The stage keeps its poster until the 3D is running, and keeps it if an import fails.
+
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const stage = document.querySelector('.hero3d');
+const demo = document.getElementById('demo');
+
+// The CT demo announces every slice on window; the 3D may mount after the first one, so keep the latest.
+let lastSlice = null;
+addEventListener('raidiology:slice', (e) => { lastSlice = e.detail; });
+
+let heroJob = null;
+let ctJob = null;
+
+function mountHero() {
+  if (!stage) return null;
+  heroJob ||= import('./hero3d.js')
+    .then((m) => {
+      const hero = m.mountHero3D(stage);
+      if (lastSlice && hero && typeof hero.setSlice === 'function') hero.setSlice(lastSlice);
+      return hero;
+    })
+    .catch(() => null);
+  return heroJob;
+}
+
+function mountCt() {
+  if (!demo) return null;
+  ctJob ||= import('./ctdemo.js').then((m) => m.mountCtDemo(demo)).catch(() => null);
+  return ctJob;
+}
+
+function afterLoadAndIdle(fn) {
+  const idle = () => ('requestIdleCallback' in window ? requestIdleCallback(fn, { timeout: 1500 }) : setTimeout(fn, 300));
+  if (document.readyState === 'complete') idle();
+  else addEventListener('load', idle, { once: true });
+}
+
+afterLoadAndIdle(() => {
+  mountHero();
+  mountCt();
+});
+
+// "Try the sample scan": bring the CT card into view only when it is not already there, then focus it.
+const trySample = document.getElementById('try-sample');
+if (trySample && demo) {
+  trySample.addEventListener('click', (e) => {
+    e.preventDefault();
+    const head = document.querySelector('.site-head')?.offsetHeight || 64;
+    const r = demo.getBoundingClientRect();
+    if (r.top < head || r.bottom > innerHeight) {
+      demo.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+    }
+    history.replaceState(null, '', '#demo');
+    Promise.resolve(mountCt()).then(() => demo.focus({ preventScroll: true }));
+  });
+}
+
+// Support chooser: Monthly or Once, three amounts, the GPU hours they buy, and a link that carries the choice.
+const RATE = 1.59;
+const chooser = document.getElementById('chooser');
+if (chooser) {
+  const segs = [...chooser.querySelectorAll('.seg-b')];
+  const amts = [...chooser.querySelectorAll('.amt')];
+  const hours = document.getElementById('chooser-hours');
+  const go = document.getElementById('chooser-go');
+  const state = { amount: 15, freq: 'month' };
+
+  const render = () => {
+    const monthly = state.freq === 'month';
+    segs.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.freq === state.freq)));
+    amts.forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.amt) === state.amount)));
+    hours.textContent = `About ${Math.floor(state.amount / RATE)} hours of GPU training${monthly ? ' a month' : ''}`;
+    go.textContent = `Give $${state.amount} ${monthly ? 'a month' : 'once'}`;
+    go.href = `support.html?amount=${state.amount}&freq=${state.freq}`;
+  };
+
+  segs.forEach((b) => b.addEventListener('click', () => { state.freq = b.dataset.freq; render(); }));
+  amts.forEach((b) => b.addEventListener('click', () => { state.amount = Number(b.dataset.amt); render(); }));
+  render();
+}

@@ -17,8 +17,6 @@ const MAX_CACHED_BYTES = 96 * 1024 * 1024;
 const MIN_CACHED_FRAMES = 8;
 // Slices decoded ahead of the visitor, in the direction they are moving, plus one behind.
 const PREFETCH_AHEAD = 3;
-// The same test the stylesheet uses for a touch-only screen, which has no arrow keys to mention.
-const TOUCH = window.matchMedia('(hover: none) and (pointer: coarse)');
 
 const el = (id) => document.getElementById(id);
 const state = {
@@ -157,7 +155,12 @@ function resetForOpen(credit) {
   forgetFrames();
   clearReading();
   el('sample-reading-about').hidden = true;     // sample.js shows it once the sample's reading is open
-  for (const id of ['sample-credit', 'viewer-credit']) setCreditLine(el(id), credit);
+  setCreditLine(el('sample-credit'), credit);
+  setCreditLine(el('about-credit'), credit);
+  el('viewer-credit').textContent = credit ? credit.short : '';
+  el('viewer-credit').hidden = !credit;
+  el('outline-caption').hidden = true;
+  el('sample-next').hidden = true;
   show('progress', true);
   show('series', false);
   show('viewer', false);
@@ -404,7 +407,7 @@ function renderReading() {
   const p = document.createElement('p');
   p.className = 'reading-note';
   p.textContent = state.outlines.size
-    ? `${state.outlines.size} image${state.outlines.size === 1 ? '' : 's'} outlined, naming ${names.length} part${names.length === 1 ? '' : 's'} of the body. Point at an outline on a picture to see its name.`
+    ? `${state.outlines.size} image${state.outlines.size === 1 ? '' : 's'} outlined, naming ${names.length} part${names.length === 1 ? '' : 's'} of the body. Tap or hover an outline on a picture to see its name.`
     : 'This file holds no outlines for the pictures open here.';
   out.append(p);
   out.hidden = false;
@@ -591,7 +594,7 @@ function describeOutlines(note, drawn) {
     return;
   }
   const how = document.createElement('p');
-  how.textContent = 'Point at an outline on the picture to see what that part of the body is.';
+  how.textContent = 'Tap or hover an outline on the picture to see what that part of the body is.';
   const all = document.createElement('details');
   all.className = 'outline-all';
   all.open = state.keyOpen;
@@ -833,10 +836,9 @@ function draw() {
         describeView(s.info);
     // Which picture, and nothing else. The brightness and contrast numbers and the sort order were
     // on here too; they are a radiographer's units, and a visitor read them as things to understand.
-    // Until the visitor first moves, the picture also says how to: a doctor in round four took the
-    // sample for one still picture, because the slider sat below the fold on a laptop.
-    el('hud').textContent = `Picture ${state.slice + 1} of ${s.slices.length}` +
-      (state.moved ? '' : `\nDrag up or down, or ${TOUCH.matches ? 'press Next' : 'use the arrow keys'}, to see the others`);
+    // The how-to is a chip under the picture, never on it, and it goes after the first change.
+    el('hud').textContent = `Picture ${state.slice + 1} of ${s.slices.length}`;
+    el('hint-chip').hidden = state.moved || s.slices.length < 2;
     const spacing = s.info.pixelSpacing;
     const bar = el('scalebar');
     if (spacing && spacing[0] > 0) {

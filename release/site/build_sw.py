@@ -8,7 +8,9 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 SITE = ROOT / "site"
 PAGES = ["index.html", "open.html", "run.html", "donation.html", "health-data-privacy.html", "models.html", "support.html", "pricing.html", "thanks.html"]
 # Source Serif stays in the repo (the share images use it) but no page loads it since site v3.
-SKIP = {"img/og.png", "img/screenshot-home.png", "fonts/SourceSerif4-Variable.woff2", "fonts/OFL-SourceSerif4.txt"}
+# data/models/skeleton.glb is 2.7 MB and only report.html loads it, from the network; the hero loads skeleton-hero.glb.
+SKIP = {"img/og.png", "img/screenshot-home.png", "fonts/SourceSerif4-Variable.woff2", "fonts/OFL-SourceSerif4.txt",
+        "data/models/skeleton.glb"}
 DIRS = ["css", "js", "fonts", "img", "data/models"]
 FILES = ["manifest.webmanifest", "data/stats.json", "data/scan-pictures.json"]
 NEVER = ("data/meshes/", "data/stacks/", "data/report", "report", "api/", "launcher/", "sample/")

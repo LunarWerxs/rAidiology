@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>rAidiology · Support the research</title>
-  <meta name="description" content="Support the research behind rAidiology. The app stays free. Pay what you want or choose a monthly tier.">
+  <meta name="description" content="Support the research behind rAidiology. The app stays free. Choose an amount, once or monthly.">
   <meta property="og:title" content="rAidiology · Support the research">
-  <meta property="og:description" content="Support the research behind rAidiology. The app stays free. Pay what you want or choose a monthly tier.">
+  <meta property="og:description" content="Support the research behind rAidiology. The app stays free. Choose an amount, once or monthly.">
   <meta property="og:type" content="website">
   <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
   <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
@@ -19,6 +19,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <script type="module" src="js/install.js"></script>
+  <script type="module" src="js/support.js"></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to the content</a>
@@ -44,71 +45,50 @@
   <main id="main">
     <section class="page-head">
       <div class="wrap">
-        <h1>Support the research</h1>
-        <p class="lede">Your money pays for graphics-card time to train the research models. The app stays free either way.</p>
+        <h1>Fund the next model</h1>
+        <p class="lede">Your money buys GPU time to train the open research models. The app stays free for everyone.</p>
       </div>
     </section>
 
-    <section class="sec" aria-labelledby="tiers-h">
+    <section class="sec" aria-labelledby="give-h">
       <div class="wrap">
-        <div class="sec-head">
-          <p class="eyebrow">Supporter licence</p>
-          <h2 id="tiers-h">Ways to support</h2>
-          <p>A supporter licence is a personal licence for rAidiology. It adds nothing to the free licence except the perks below.</p>
-        </div>
-        <ul class="card-grid four-up plans r5">
-          <li class="card plan">
-            <p class="tag">One time</p>
-            <h3>Pay what you want</h3>
-            <p class="price"><span class="amt">From $3</span><span class="alt">$20 suggested</span></p>
-            <ul class="ticks">
-              <li>A single payment of any amount from $3</li>
-              <li>Our thanks. Perks are for monthly members.</li>
-            </ul>
-            <div class="plan-cta"><a class="btn" href="https://buy.stripe.com/7sY9ATagDbjq5yC95l9Zm01">Pay what you want</a></div>
-          </li>
-          <li class="card plan">
-            <p class="tag">Monthly</p>
-            <h3>Backer</h3>
-            <p class="price"><span class="amt">$5</span> <span class="per">a month</span><span class="alt gpu">About 3 hours of A100 time</span></p>
-            <ul class="ticks">
-              <li>A supporter role on Discord</li>
-            </ul>
-            <div class="plan-cta"><a class="btn" href="https://buy.stripe.com/dRm14nbkHfzG8KOftJ9Zm00">Become a Backer</a></div>
-          </li>
-          <li class="card plan">
-            <p class="tag">Monthly</p>
-            <h3>Supporter</h3>
-            <p class="price"><span class="amt">$15</span> <span class="per">a month</span><span class="alt gpu">About 9 hours of A100 time</span></p>
-            <ul class="ticks">
-              <li>The Backer perk</li>
-              <li>Your name in the supporters list, if you want it</li>
-              <li>A vote on what to train next, in a supporters' poll on Discord</li>
-            </ul>
-            <div class="plan-cta"><a class="btn" href="https://buy.stripe.com/bJeeVdewTgDK6CG95l9Zm02">Become a Supporter</a></div>
-          </li>
-          <li class="card plan">
-            <p class="tag">Monthly</p>
-            <h3>Sponsor</h3>
-            <p class="price"><span class="amt">$50</span> <span class="per">a month</span><span class="alt gpu">About 31 hours of A100 time</span></p>
-            <ul class="ticks">
-              <li>The Supporter perks</li>
-              <li>Your name or logo in the README's sponsors section, if you want it</li>
-            </ul>
-            <div class="plan-cta"><a class="btn" href="https://buy.stripe.com/fZu9AT60n9bi6CGftJ9Zm03">Become a Sponsor</a></div>
-          </li>
-        </ul>
-        <div class="card plan-wide">
-          <div class="pw-main">
-            <p class="tag">Companies</p>
-            <div class="pw-title"><h3>Company sponsorship</h3><p class="price"><span class="amt">From $5,000</span> <span class="per">a year</span></p></div>
-            <p>Your company's name or logo on the supporters list. It is support, not a <a href="pricing.html#companies">commercial licence</a>.</p>
+        <div class="give" id="give">
+          <h2 id="give-h" class="give-title">Choose your amount</h2>
+          <div class="seg" role="group" aria-label="How often">
+            <button type="button" class="seg-b" data-freq="month" aria-pressed="true">Monthly</button>
+            <button type="button" class="seg-b" data-freq="once" aria-pressed="false">Once</button>
           </div>
-          <div class="pw-cta">
-            <a class="btn secondary" href="mailto:contact@lunarwerx.com?subject=rAidiology%20company%20sponsorship">Email us</a>
+          <div class="chips" role="group" aria-label="Amount">
+            <button type="button" class="chip" data-amt="5" aria-pressed="false">$5</button>
+            <button type="button" class="chip" data-amt="15" aria-pressed="true">$15</button>
+            <button type="button" class="chip" data-amt="30" aria-pressed="false">$30</button>
+            <button type="button" class="chip" data-amt="50" aria-pressed="false">$50</button>
+            <button type="button" class="chip" data-amt="100" aria-pressed="false">$100</button>
           </div>
+          <div class="amt-row">
+            <label class="amt-box" for="give-amt"><span class="sr-only">Amount in dollars</span><span class="amt-pre" aria-hidden="true">$</span><input id="give-amt" type="text" inputmode="numeric" autocomplete="off" value="15" aria-describedby="give-note"></label>
+            <p class="amt-min" id="give-min">Minimum $3</p>
+          </div>
+          <p class="amt-note" id="give-note" hidden></p>
+          <input class="amt-range" id="give-range" type="range" min="3" max="200" step="1" value="15" aria-label="Amount slider, 3 to 200 dollars">
+          <div class="readout" aria-live="polite" aria-atomic="true">
+            <p class="r-hours" id="give-hours">About 9 hours of A100 GPU training a month</p>
+            <p class="r-rate">$1.59 an hour at RunPod</p>
+            <p class="r-level" id="give-level">Supporter: a supporter role on Discord, your name in the supporters list, a vote on what to train next.</p>
+          </div>
+          <div class="give-cta">
+            <a class="btn give-btn" id="give-go" href="https://buy.stripe.com/bJeeVdewTgDK6CG95l9Zm02">Give $15 a month</a>
+            <p class="give-err" id="give-err" role="alert" hidden></p>
+          </div>
+          <p class="fine give-fine">Checkout is secure with Link. Connections Global LLC sells it as merchant of record. The money goes to LunarWerx LLC, a for-profit company, so payments are not donations and are not tax-deductible. Cancel any time at <a href="https://link.com">link.com</a> or <a href="mailto:contact@lunarwerx.com?subject=Cancel%20my%20rAidiology%20support&amp;body=Please%20cancel%20my%20rAidiology%20supporter%20subscription.%20Email%20I%20paid%20with%3A%20">by email</a>. Max $1,000 a month or $5,000 once.</p>
         </div>
-        <p class="fine plans-note">No paid perk gives early or private access to a research model. LunarWerx LLC is a for-profit company. Payments are not charitable donations and are not tax-deductible.</p>
+        <p class="fixed-plans fine">Or pick a fixed plan:
+          <a href="https://buy.stripe.com/7sY9ATagDbjq5yC95l9Zm01">Pay what you want, once ($3 to $5,000)</a> ·
+          <a href="https://buy.stripe.com/dRm14nbkHfzG8KOftJ9Zm00">Backer, $5 a month</a> ·
+          <a href="https://buy.stripe.com/bJeeVdewTgDK6CG95l9Zm02">Supporter, $15 a month</a> ·
+          <a href="https://buy.stripe.com/fZu9AT60n9bi6CGftJ9Zm03">Sponsor, $50 a month</a>
+        </p>
+        <p class="invest">Investing or partnering? <a href="mailto:contact@lunarwerx.com?subject=Investing%20in%20rAidiology">Email us</a>. No paid perk gives early or private access to a research model.</p>
       </div>
     </section>
 

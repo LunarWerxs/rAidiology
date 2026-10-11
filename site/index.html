@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>rAidiology · Open your own scans in your browser</title>
+  <title>rAidiology · See inside a scan, right in your browser</title>
   <meta name="description" content="Open CT, MRI and X-ray discs and ZIPs in your own browser, and see the seven open research models that cover X-ray, CT, MRI and mammogram pictures. For education and research.">
-  <meta property="og:title" content="rAidiology · Open your own scans in your browser">
+  <meta property="og:title" content="rAidiology · See inside a scan, right in your browser">
   <meta property="og:description" content="Open CT, MRI and X-ray discs and ZIPs in your own browser, plus seven open research models. For education and research.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://raw.githubusercontent.com/LunarWerxs/rAidiology/main/site/img/og.png">
@@ -14,14 +14,20 @@
   <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
   <meta name="theme-color" content="#ffffff">
   <link rel="preload" href="fonts/Inter-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="img/hero-poster.webp" as="image" type="image/webp" media="(min-width: 650px)" fetchpriority="high">
+  <link rel="preload" href="img/hero-poster-phone.webp" as="image" type="image/webp" media="(max-width: 649px)" fetchpriority="high">
   <link rel="stylesheet" href="css/brand.css">
   <link rel="stylesheet" href="css/home.css">
   <link rel="stylesheet" href="css/results.css">
+  <link rel="stylesheet" href="css/hero3d.css">
+  <link rel="stylesheet" href="css/ctdemo.css">
   <script defer src="js/nav.js"></script>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <script type="importmap">{"imports":{"three":"./js/vendor/three/three.module.min.js","three/addons/":"./js/vendor/three/addons/"}}</script>
   <script type="module" src="js/install.js"></script>
+  <script type="module" src="js/home.js"></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to the content</a>
@@ -48,28 +54,24 @@
     <section class="hero" id="top">
       <div class="wrap hero-grid">
         <div class="hero-copy">
-          <p class="eyebrow">Open source, for education and research</p>
-          <h1>Open your own scans in your browser.</h1>
-          <p class="lede">CT, MRI and X-ray pictures from your own disc or ZIP, shown on your device, next to seven open research models for X-ray, CT, MRI and mammogram pictures. Nothing is uploaded.</p>
-          <p class="actions"><a class="btn" href="open.html">Open a scan</a>
-            <a class="btn secondary" href="open.html?sample=1">Try the sample scan</a></p>
-          <ul class="hero-facts">
-            <li>Free for personal use</li>
-            <li>Works offline</li>
-            <li>No account</li>
+          <p class="eyebrow">Free and open source</p>
+          <h1>See inside a scan, right in your browser.</h1>
+          <p class="lede">Your own CT, MRI or X-ray opens on this device, research models outline the parts and name them, and nothing is uploaded.</p>
+          <p class="actions hero-actions"><a class="btn" id="try-sample" href="#demo">Try the sample scan</a>
+            <a class="btn secondary" href="open.html">Open your own scan</a></p>
+          <ul class="proof">
+            <!-- 54 = the structures listed in site/sample/demo/demo.json -->
+            <li><strong>54</strong> named parts<span class="proof-x"> on the sample</span></li>
+            <li><strong>7</strong> research models</li>
+            <li>Runs on your device</li>
           </ul>
         </div>
-        <div class="hero-mosaic">
-          <div class="lightbox"><div class="mosaic">
-            <figure class="tile m-organs"><img src="img/scans/ct-organs.webp" width="720" height="900" alt="Coronal CT slice through the chest and abdomen with the lungs, heart, liver, kidneys, spleen, spine and pelvis coloured by organ." loading="eager"><figcaption>CT · organs</figcaption></figure>
-            <figure class="tile m-mri"><img src="img/scans/mri-spine.webp" width="640" height="900" alt="Side-on MRI of the lower spine with each vertebra and disc coloured separately." loading="eager"><figcaption>MRI · spine</figcaption></figure>
-            <figure class="tile m-chest"><img src="img/scans/xray-chest.webp" width="800" height="800" alt="Front-view chest X-ray showing both lungs, the heart and the ribs." loading="eager"><figcaption>X-ray · chest</figcaption></figure>
-            <figure class="tile m-lungs"><img src="img/scans/ct-lungs.webp" width="800" height="800" alt="CT slice across the chest in a lung window, showing both lungs and the heart." loading="lazy"><figcaption>CT · lungs</figcaption></figure>
-            <figure class="tile m-wrist"><img src="img/scans/xray-wrist.webp" width="720" height="900" alt="X-ray of a child&#x27;s wrist and forearm bones." loading="lazy"><figcaption>X-ray · wrist</figcaption></figure>
-            <figure class="tile m-mammo"><img src="img/scans/mammogram.webp" width="720" height="900" alt="Mammogram picture showing the tissue of one breast." loading="lazy"><figcaption>Mammogram</figcaption></figure>
-            <figure class="tile m-spine"><img src="img/scans/xray-spine.webp" width="640" height="900" alt="Side-view X-ray of the lower spine." loading="lazy"><figcaption>X-ray · spine</figcaption></figure>
-          </div></div>
-          <p class="credit">Pictures from public datasets under CC BY and similar licences. <a href="#credits" id="credits-link">Picture credits</a></p>
+        <div class="hero-stage">
+          <div class="stage-wrap">
+            <div class="stage-box"><div class="hero3d" data-poster="img/hero-poster.webp" data-poster-phone="img/hero-poster-phone.webp"></div></div>
+            <div class="ctdemo" id="demo" data-src="sample/demo/demo.json"><div class="demo-ph"><img src="sample/demo/s22.webp" width="384" height="384" alt="A slice of the sample CT scan." decoding="async"></div></div>
+          </div>
+          <p class="stage-credit">Sample CT from TotalSegmentator (CC BY 4.0). Outlines by an open research model.</p>
         </div>
       </div>
     </section>
@@ -95,7 +97,7 @@
           <div class="scan-pics"><figure class="tile"><img src="img/scans/xray-chest.webp" width="800" height="800" alt="Front-view chest X-ray showing both lungs, the heart and the ribs." loading="lazy"><figcaption>Chest</figcaption></figure><figure class="tile"><img src="img/scans/xray-wrist.webp" width="720" height="900" alt="X-ray of a child&#x27;s wrist and forearm bones." loading="lazy"><figcaption>Wrist</figcaption></figure><figure class="tile"><img src="img/scans/xray-spine.webp" width="640" height="900" alt="Side-view X-ray of the lower spine." loading="lazy"><figcaption>Spine</figcaption></figure></div>
           <div class="scan-body">
             <h3>X-ray</h3>
-            <p>The viewer opens single pictures and series, with zoom and brightness.</p>
+            <p>The viewer opens single pictures and whole series, with zoom and brightness.</p>
             <div class="scan-models">
               <p class="label">Research models</p>
               <ul class="chips"><li><a class="chip" href="models.html#chest-xray">Chest X-ray research model</a></li><li><a class="chip" href="models.html#fracture-detector">Fracture research model (X-ray)</a></li><li><a class="chip" href="models.html#spine-xray-corners">Lumbar spine X-ray corner reader</a></li></ul>
@@ -106,7 +108,7 @@
           <div class="scan-pics"><figure class="tile"><img src="img/scans/ct-organs.webp" width="720" height="900" alt="Coronal CT slice through the chest and abdomen with the lungs, heart, liver, kidneys, spleen, spine and pelvis coloured by organ." loading="lazy"><figcaption>Organs</figcaption></figure><figure class="tile"><img src="img/scans/ct-lungs.webp" width="800" height="800" alt="CT slice across the chest in a lung window, showing both lungs and the heart." loading="lazy"><figcaption>Lungs</figcaption></figure></div>
           <div class="scan-body">
             <h3>CT</h3>
-            <p>Scroll through the slices, change the brightness window and zoom. The 3D sample shows the organs and bones as coloured shapes.</p>
+            <p>The viewer steps through every slice, with a brightness window and zoom. A 3D view shows the organs and bones as coloured shapes.</p>
             <div class="scan-models">
               <p class="label">Research models</p>
               <ul class="chips"><li><a class="chip" href="models.html#ct-segmenter">CT organ outliner</a></li><li><a class="chip" href="models.html#lung-nodules">Lung nodule research model (CT)</a></li></ul>
@@ -117,7 +119,7 @@
           <div class="scan-pics single"><figure class="tile"><img src="img/scans/mri-spine.webp" width="640" height="900" alt="Side-on MRI of the lower spine with each vertebra and disc coloured separately." loading="lazy"><figcaption>Lower spine</figcaption></figure></div>
           <div class="scan-body">
             <h3>MRI</h3>
-            <p>Scroll through the slices of a spine MRI, with zoom and brightness. Discs and vertebrae can be coloured by name.</p>
+            <p>Spine MRI slices open the same way, with zoom and brightness. Discs and vertebrae can be coloured by name.</p>
             <div class="scan-models">
               <p class="label">Research models</p>
               <ul class="chips"><li><a class="chip" href="models.html#disc-grader">Disc grading research model (MRI)</a></li></ul>
@@ -136,6 +138,7 @@
           </div>
         </li>
         </ul>
+        <p class="credit">Pictures from public datasets under CC BY and similar licences. <a href="#credits" id="credits-link">Picture credits</a></p>
       </div>
     </section>
 
@@ -156,6 +159,24 @@
           </dl>
           <a class="btn secondary" href="models.html">See every result</a>
         </div>
+      </div>
+    </section>
+
+    <section class="momentum" id="momentum" aria-labelledby="momentum-h">
+      <div class="wrap momentum-in">
+        <div class="momentum-copy">
+          <p class="eyebrow">Built in the open</p>
+          <h2 id="momentum-h">Every training run is written down.</h2>
+          <p>Kept or dropped, each result goes in the log with the version of the code that made it.</p>
+        </div>
+        <!-- momentum -->
+        <ul class="momentum-list">
+          <li><p class="m-n">1,614</p><p class="m-l">runs recorded</p></li>
+          <li><p class="m-n">382</p><p class="m-l">hours of recorded runs</p></li>
+          <li><p class="m-n">74</p><p class="m-l">ideas tried</p></li>
+          <li><p class="m-n"><time datetime="2026-10-11">Oct 11, 2026</time></p><p class="m-l">newest entry</p></li>
+        </ul>
+        <!-- /momentum -->
       </div>
     </section>
 
@@ -209,19 +230,31 @@
     <section class="sec" id="support" aria-labelledby="support-h">
       <div class="wrap">
         <div class="support-panel">
-          <div class="support-copy">
+          <div class="support-head">
             <p class="eyebrow">Support the research</p>
             <h2 id="support-h">Help train bigger research models.</h2>
-            <p>Your support pays for rented GPU time: an A100 80GB is $1.59 an hour, so $15 is about 9 hours. Today training runs on one home graphics card.</p>
-            <p class="actions"><a class="btn" href="support.html">Support the research</a>
-              <a class="btn secondary" href="pricing.html">See pricing</a></p>
-            <p class="fine money-line">LunarWerx LLC is a for-profit company. Payments are not charitable donations and are not tax-deductible.</p>
+            <p>Your support pays for rented GPU time. Today training runs on one home graphics card; an A100 80GB costs $1.59 an hour to rent.</p>
           </div>
-          <ul class="gpu-math">
-            <li><p class="gpu-n">$15</p><p class="gpu-l">one month as a Supporter</p></li>
-            <li class="gpu-eq" aria-hidden="true">=</li>
-            <li><p class="gpu-n">9 hours</p><p class="gpu-l">on an A100 80GB GPU, at RunPod&#x27;s $1.59 an hour</p></li>
-          </ul>
+          <div class="chooser" id="chooser" role="group" aria-labelledby="chooser-h">
+            <h3 id="chooser-h">Choose an amount</h3>
+            <div class="seg" role="group" aria-label="How often">
+              <button class="seg-b" type="button" data-freq="month" aria-pressed="true">Monthly</button>
+              <button class="seg-b" type="button" data-freq="once" aria-pressed="false">Once</button>
+            </div>
+            <div class="amts" role="group" aria-label="Amount">
+              <button class="amt" type="button" data-amt="5" aria-pressed="false">$5</button>
+              <button class="amt" type="button" data-amt="15" aria-pressed="true">$15</button>
+              <button class="amt" type="button" data-amt="30" aria-pressed="false">$30</button>
+            </div>
+            <p class="gm-line" id="chooser-hours" aria-live="polite">About 9 hours of GPU training a month</p>
+            <a class="btn chooser-go" id="chooser-go" href="support.html?amount=15&amp;freq=month">Give $15 a month</a>
+          </div>
+          <div class="support-foot">
+            <p class="invest">Investing or partnering? <a href="mailto:contact@lunarwerx.com?subject=Investing%20in%20rAidiology">Email us</a></p>
+            <p class="actions"><a class="btn secondary" href="support.html">All the ways to give</a>
+              <a class="btn secondary" href="pricing.html">See pricing</a></p>
+            <p class="fine money-line">LunarWerx LLC is a for-profit company. Payments are not tax-deductible.</p>
+          </div>
         </div>
       </div>
     </section>

@@ -143,10 +143,15 @@
         <span class="edge edge-right" id="edge-right" hidden></span>
         <div class="scalebar" id="scalebar" hidden><span id="scalebar-label">1 cm</span></div>
       </div>
-      <div class="controls">
+      <div class="stage-tools">
+        <p class="hint-chip" id="hint-chip" hidden>Swipe up or down for the other pictures</p>
         <button class="btn quiet small" type="button" id="toggle-marks" hidden>Hide the outlines</button>
+      </div>
+      <p class="fine caption" id="outline-caption" hidden>Outlines by an open research model.</p>
+      <p class="fine" id="viewer-credit" hidden></p>
+      <div class="controls slice-bar">
         <button class="btn quiet small" type="button" id="prev-picture" aria-label="Previous picture">Previous</button>
-        <label class="slider">Picture <input type="range" id="slice" min="0" max="0" value="0"></label>
+        <label class="slider"><span class="lbl">Picture</span> <input type="range" id="slice" min="0" max="0" value="0" aria-label="Picture"></label>
         <button class="btn quiet small" type="button" id="next-picture" aria-label="Next picture">Next</button>
       </div>
       <details class="adjust">
@@ -161,11 +166,16 @@
         to move through the pictures. Scroll or pinch to zoom in.</p>
       <p class="what" id="what" hidden></p>
       <div class="finding" id="finding" hidden role="status" aria-live="polite"></div>
-      <p class="fine" id="viewer-credit" hidden></p>
-      <div id="sample-reading-about" hidden>
+      <details class="about-sample" id="sample-reading-about" hidden>
+        <summary>About this sample</summary>
+        <p class="fine" id="about-credit"></p>
         <p class="fine">rAidiology's CT outliner drew these outlines on the sample. Your own scan opens
           here as plain pictures, with nothing to install.</p>
         <p class="fine">Anatomy outlines on your own CT are optional: an AI assistant such as Claude or ChatGPT can add them on your own computer after a one-time setup.</p>
+      </details>
+      <div class="card next-step" id="sample-next" hidden>
+        <a class="btn" href="open.html">Open your own scan</a>
+        <p class="fine">It is free because people support it. <a href="support.html">See how</a></p>
       </div>
     </section>
 
