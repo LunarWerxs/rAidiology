@@ -102,7 +102,7 @@ The weights and the code are under the [PolyForm Noncommercial License 1.0.0](..
 
 Required Notice: Copyright (c) 2026 LunarWerx (https://github.com/LunarWerxs)
 
-That notice travels with every copy. The licence is free for noncommercial use. Commercial use needs a separate licence from LunarWerx. Contact LunarWerx at https://github.com/LunarWerxs.
+That notice travels with every copy. The licence is free for noncommercial use. This model is not covered by the commercial licence: it is for noncommercial use only. The reason: its dataset agreement does not say commercial use is allowed.
 
 Downloads are gated: you accept the licence before you download.
 

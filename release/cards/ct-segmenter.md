@@ -102,7 +102,7 @@ The weights and the code are under the [PolyForm Noncommercial License 1.0.0](..
 
 > Required Notice: Copyright (c) 2026 LunarWerx (https://github.com/LunarWerxs)
 
-You may use them for noncommercial purposes under that licence. **Commercial use needs a separate licence from LunarWerx.**
+You may use them for noncommercial purposes under that licence. Commercial use is available under the rAidiology Commercial Licence ([COMMERCIAL-LICENSE.md](../../COMMERCIAL-LICENSE.md)), with a free 60-day evaluation (500 studies, internal testing only, no customers, no patients' care), priced on the rAidiology site's pricing page. Not for diagnosis or treatment. Not cleared by the FDA or any regulator.
 
 The weights are not stored in this repository. Downloads are gated: you accept the licence before you download. Official weights are trained and published by LunarWerx only.
 

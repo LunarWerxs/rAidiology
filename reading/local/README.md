@@ -3,15 +3,15 @@
 `launcher.py` serves the `site/` pages and a small control page at `/launcher/` on this computer only
 (127.0.0.1). It uses only the Python standard library (3.9+) and never sends anything anywhere.
 
-## The three files
+## Start it
 
-Double-click the one for your system, in the folder you unzipped:
+For researchers. From the repository root:
 
-- `start-windows.bat`
-- `start-mac.command`
-- `start-linux.sh`
+```
+python reading/local/launcher.py
+```
 
-Each finds Python and runs `reading/local/launcher.py`. Your browser opens at the control page.
+It serves the site on 127.0.0.1 and lists the research models. Your browser opens at the control page.
 
 ## Flags
 

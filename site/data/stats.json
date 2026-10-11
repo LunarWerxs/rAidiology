@@ -1,0 +1,1131 @@
+{
+  "band": [
+    {
+      "value": "7",
+      "label": "research models",
+      "detail": "Seven models trained on public data, each described on its own card",
+      "computed": "models"
+    },
+    {
+      "value": "4",
+      "label": "kinds of scan",
+      "detail": "X-ray, CT, MRI and mammogram",
+      "computed": "scan_types"
+    },
+    {
+      "value": "115",
+      "label": "body structures outlined on CT, scored on held-out scans",
+      "detail": "Structures found in at least 10 of the 89 held-out CT scans",
+      "source": {
+        "file": "release/cards/ct-segmenter.md",
+        "line": 30
+      }
+    },
+    {
+      "value": "25,596",
+      "label": "chest X-rays in the held-out test",
+      "detail": "NIH's official test list, kept out of all training",
+      "source": {
+        "file": "release/cards/chest-xray.md",
+        "line": 26
+      }
+    },
+    {
+      "value": "4,067",
+      "label": "children's wrist X-rays in the held-out test",
+      "detail": "GRAZPEDWRI-DX held-out test pictures with a certain label",
+      "source": {
+        "file": "release/cards/fracture-detector.md",
+        "line": 50
+      }
+    }
+  ],
+  "models": [
+    {
+      "key": "chest-xray",
+      "name": "Chest X-ray research model",
+      "scan": "X-ray",
+      "picture": "img/scans/xray-chest.webp",
+      "summary": "A team of ten networks trained to give 15 scores for one frontal chest X-ray, one for each of the 14 NIH ChestX-ray14 label types and one for its abnormal label.",
+      "headline": [
+        {
+          "metric": "AUROC",
+          "label": "Agreement with ChestX-ray14's labels, mean over its 14 label types",
+          "value": 0.8175,
+          "low": 0.811,
+          "high": 0.8231,
+          "held_out": true,
+          "set": "NIH's official test list: 25,596 pictures of 2,797 patients",
+          "version": "v216",
+          "source": {
+            "file": "release/cards/chest-xray.md",
+            "line": 32
+          }
+        },
+        {
+          "metric": "AUROC",
+          "label": "Agreement with ChestX-ray14's abnormal label",
+          "value": 0.7363,
+          "low": 0.7241,
+          "high": 0.7477,
+          "held_out": true,
+          "set": "NIH's official test list: 25,596 pictures",
+          "version": "v216",
+          "source": {
+            "file": "release/cards/chest-xray.md",
+            "line": 35
+          }
+        }
+      ],
+      "breakdowns": [
+        {
+          "id": "chest-xray-findings",
+          "title": "Agreement with ChestX-ray14's labels, per label type",
+          "metric": "AUROC",
+          "held_out": true,
+          "set": "NIH's official test list, 25,596 pictures",
+          "rows": [
+            {
+              "label": "Atelectasis",
+              "value": 0.7747,
+              "low": 0.7622,
+              "high": 0.7878,
+              "n": "3,279 pictures",
+              "source": {
+                "file": "release/cards/chest-xray.md",
+                "line": 43
+              }
+            },
+            {
+              "label": "Cardiomegaly",
+              "value": 0.9016,
+              "low": 0.8864,
+              "high": 0.9142,
+              "n": "1,069 pictures",
+              "source": {
+                "file": "release/cards/chest-xray.md",
+                "line": 44
+              }
+            },
+            {
+              "label": "Effusion",
+              "value": 0.8388,
+              "low": 0.8282,
+              "high": 0.8487,
+              "n": "4,658 pictures",
+              "source": {
+                "file": "release/cards/chest-xray.md",
+                "line": 45
+              }
+            },
+            {
+              "label": "Infiltration",
+              "value": 0.7071,
+              "low": 0.6961,
+              "high": 0.7175,
+              "n": "6,112 pictures",
+              "source": {
+                "file": "release/cards/chest-xray.md",
+                "line": 46
+              }
+            },
+            {
+              "label": "Mass",
+              "value": 0.8235,
+              "low": 0.8032,
+              "high": 0.8424,
+              "n": "1,748 pictures",
+              "source": {
+                "file": "release/cards/chest-xray.md",
+                "line": 47
+              }
+            },
+            {
+              "label": "Nodule",
+              "value": 0.7544,
+              "low": 0.7333,
+              "high": 0.7743,
+              "n": "1,623 pictures",
+              "source": {
+                "file": "release/cards/chest-xray.md",
+                "line": 48
+              }
+            },
+            {
+              "label": "Pneumonia",
+              "value": 0.7267,
+              "low": 0.7021,
+              "high": 0.7497,
+              "n": "555 pictures",
+              "source": {
+                "file": "release/cards/chest-xray.md",
+                "line": 49
+              }
+            },
+            {
+              "label": "Pneumothorax",
+              "value": 0.8614,
+              "low": 0.8447,
+              "high": 0.8773,
+              "n": "2,665 pictures",
+              "source": {
+                "file": "release/cards/chest-xray.md",
+                "line": 50
+              }
+            },
+            {
+              "label": "Consolidation",
+              "value": 0.761,
+              "low": 0.7459,
+              "high": 0.775,
+              "n": "1,815 pictures",
+              "source": {
+                "file": "release/cards/chest-xray.md",
+                "line": 51
+              }
+            },
+            {
+              "label": "Edema",
+              "value": 0.8542,
+              "low": 0.8383,
+              "high": 0.8704,
+              "n": "925 pictures",
+              "source": {
+                "file": "release/cards/chest-xray.md",
+                "line": 52
+              }
+            },
+            {
+              "label": "Emphysema",
+              "value": 0.896,
+              "low": 0.8801,
+              "high": 0.9096,
+              "n": "1,093 pictures",
+              "source": {
+                "file": "release/cards/chest-xray.md",
+                "line": 53
+              }
+            },
+            {
+              "label": "Fibrosis",
+              "value": 0.8382,
+              "low": 0.8149,
+              "high": 0.8608,
+              "n": "435 pictures",
+              "source": {
+                "file": "release/cards/chest-xray.md",
+                "line": 54
+              }
+            },
+            {
+              "label": "Pleural thickening",
+              "value": 0.7845,
+              "low": 0.7661,
+              "high": 0.8036,
+              "n": "1,143 pictures",
+              "source": {
+                "file": "release/cards/chest-xray.md",
+                "line": 55
+              }
+            },
+            {
+              "label": "Hernia",
+              "value": 0.9232,
+              "low": 0.8776,
+              "high": 0.9574,
+              "n": "86 pictures",
+              "source": {
+                "file": "release/cards/chest-xray.md",
+                "line": 56
+              }
+            }
+          ]
+        }
+      ],
+      "struggles": [
+        {
+          "text": "Agreement is lower for some label types: infiltration scores 0.7071, pneumonia 0.7267 and nodule 0.7544.",
+          "source": {
+            "file": "release/cards/chest-xray.md",
+            "line": 104
+          }
+        },
+        {
+          "text": "Rare label types have wide intervals. Hernia has only 86 test pictures, and its interval runs from 0.8776 to 0.9574.",
+          "source": {
+            "file": "release/cards/chest-xray.md",
+            "line": 105
+          }
+        },
+        {
+          "text": "All the labelled pictures come from one hospital, so nothing shows how it behaves on other scanners, other patient groups or children.",
+          "source": {
+            "file": "release/cards/chest-xray.md",
+            "line": 111
+          }
+        }
+      ],
+      "datasets": [
+        {
+          "name": "NIH ChestX-ray14",
+          "licence": "NIH asks for credit; use is unrestricted",
+          "url": "https://nihcc.app.box.com/v/ChestXray-NIHCC"
+        },
+        {
+          "name": "TAIX-Ray (pre-training pictures only)",
+          "licence": "CC BY 4.0",
+          "url": "https://huggingface.co/datasets/TLAIM/TAIX-Ray"
+        },
+        {
+          "name": "COVID-19-NY-SBU (pre-training pictures only)",
+          "licence": "CC BY 4.0",
+          "url": "https://doi.org/10.7937/TCIA.BBAG-2923"
+        },
+        {
+          "name": "Tuberculosis chest X-ray sets, Kiran and Jabeen (pre-training pictures only)",
+          "licence": "CC BY 4.0",
+          "url": "https://doi.org/10.17632/8j2g3csprk.3"
+        },
+        {
+          "name": "BDCXR-3257 (pre-training pictures only)",
+          "licence": "CC BY 4.0",
+          "url": "https://doi.org/10.6084/m9.figshare.32086362.v1"
+        }
+      ],
+      "weights": "Not released yet.",
+      "card": "release/cards/chest-xray.md"
+    },
+    {
+      "key": "ct-segmenter",
+      "name": "CT organ outliner",
+      "scan": "CT",
+      "picture": "img/scans/ct-organs.webp",
+      "summary": "A two-step network trained to label each point of a 3D CT scan as one of 117 organs and bones, such as the liver, spleen, aorta, ribs and vertebrae, or as nothing.",
+      "headline": [
+        {
+          "metric": "Dice",
+          "label": "Mean over 115 structures",
+          "value": 0.8668,
+          "low": 0.8538,
+          "high": 0.8781,
+          "held_out": true,
+          "set": "Held-out test: 89 CT scans",
+          "version": "v121 at 1.5 mm",
+          "source": {
+            "file": "release/cards/ct-segmenter.md",
+            "line": 30
+          }
+        },
+        {
+          "metric": "Dice",
+          "label": "Mean over 115 structures, development scans",
+          "value": 0.8156,
+          "low": 0.8116,
+          "high": 0.8194,
+          "held_out": false,
+          "set": "1,139 development scans, each read by models that never saw it",
+          "version": "v121 at 1.5 mm",
+          "source": {
+            "file": "release/cards/ct-segmenter.md",
+            "line": 31
+          }
+        }
+      ],
+      "breakdowns": [
+        {
+          "id": "ct-segmenter-groups",
+          "title": "Mean Dice by group of scans",
+          "metric": "Dice",
+          "held_out": true,
+          "set": "Held-out test: 89 CT scans (a scan can sit in more than one group)",
+          "rows": [
+            {
+              "label": "All",
+              "value": 0.8668,
+              "low": 0.8538,
+              "high": 0.8781,
+              "n": "89 scans",
+              "source": {
+                "file": "release/cards/ct-segmenter.md",
+                "line": 45
+              }
+            },
+            {
+              "label": "Abdomen scans",
+              "value": 0.8802,
+              "low": 0.868,
+              "high": 0.8914,
+              "n": "47 scans",
+              "source": {
+                "file": "release/cards/ct-segmenter.md",
+                "line": 46
+              }
+            },
+            {
+              "label": "Thorax scans",
+              "value": 0.8883,
+              "low": 0.8759,
+              "high": 0.8986,
+              "n": "32 scans",
+              "source": {
+                "file": "release/cards/ct-segmenter.md",
+                "line": 47
+              }
+            },
+            {
+              "label": "Head or neck scans",
+              "value": 0.8766,
+              "low": 0.8554,
+              "high": 0.895,
+              "n": "19 scans",
+              "source": {
+                "file": "release/cards/ct-segmenter.md",
+                "line": 48
+              }
+            },
+            {
+              "label": "Siemens scanners",
+              "value": 0.8709,
+              "low": 0.8527,
+              "high": 0.8858,
+              "n": "58 scans",
+              "source": {
+                "file": "release/cards/ct-segmenter.md",
+                "line": 49
+              }
+            },
+            {
+              "label": "Other scanner makers",
+              "value": 0.8642,
+              "low": 0.8449,
+              "high": 0.8815,
+              "n": "31 scans",
+              "source": {
+                "file": "release/cards/ct-segmenter.md",
+                "line": 50
+              }
+            },
+            {
+              "label": "The dataset's main institute",
+              "value": 0.8573,
+              "low": 0.8362,
+              "high": 0.8737,
+              "n": "55 scans",
+              "source": {
+                "file": "release/cards/ct-segmenter.md",
+                "line": 51
+              }
+            },
+            {
+              "label": "All other institutes",
+              "value": 0.8866,
+              "low": 0.8733,
+              "high": 0.8981,
+              "n": "34 scans",
+              "source": {
+                "file": "release/cards/ct-segmenter.md",
+                "line": 52
+              }
+            },
+            {
+              "label": "Scans with marked pathology",
+              "value": 0.8663,
+              "low": 0.8514,
+              "high": 0.8793,
+              "n": "73 scans",
+              "source": {
+                "file": "release/cards/ct-segmenter.md",
+                "line": 53
+              }
+            }
+          ]
+        }
+      ],
+      "struggles": [
+        {
+          "text": "Both kidney cysts score 0.0000 on the test scans. Vertebra C6, the gallbladder, the portal and splenic veins and the adrenal glands are the next weakest.",
+          "source": {
+            "file": "release/cards/ct-segmenter.md",
+            "line": 59
+          }
+        },
+        {
+          "text": "It outlines a structure that is not in the scan about 4% of the time on the test scans and about 13% of the time on the development scans.",
+          "source": {
+            "file": "release/cards/ct-segmenter.md",
+            "line": 89
+          }
+        },
+        {
+          "text": "Most test scans come from one institute and one scanner maker, and the score is lower for that institute (0.8573) than for the others (0.8866).",
+          "source": {
+            "file": "release/cards/ct-segmenter.md",
+            "line": 91
+          }
+        }
+      ],
+      "datasets": [
+        {
+          "name": "TotalSegmentator dataset v2.0.1 (1,228 CT scans with masks of 117 structures)",
+          "licence": "CC BY 4.0",
+          "url": "https://zenodo.org/records/10047292"
+        }
+      ],
+      "weights": "Not released yet.",
+      "card": "release/cards/ct-segmenter.md"
+    },
+    {
+      "key": "disc-grader",
+      "name": "Disc grading research model (MRI)",
+      "scan": "MRI",
+      "picture": "img/scans/mri-spine.webp",
+      "summary": "Three networks trained to give each lower-spine disc on a sagittal MRI a Pfirrmann grade from 1 to 5 and a score for seven wear label types.",
+      "headline": [
+        {
+          "metric": "kappa",
+          "label": "Agreement with SPIDER's Pfirrmann grades, held-out test",
+          "value": 0.773,
+          "low": 0.664,
+          "high": 0.853,
+          "held_out": true,
+          "set": "SPIDER held-out test: 44 patients, 264 discs, opened once",
+          "version": "v1 (earlier version)",
+          "source": {
+            "file": "release/cards/disc-grader.md",
+            "line": 63
+          }
+        },
+        {
+          "metric": "percent",
+          "label": "Share of discs given SPIDER's exact grade, development patients",
+          "value": 59.6,
+          "low": 55.5,
+          "high": 63.4,
+          "held_out": false,
+          "set": "SPIDER development patients, out of fold: 168 patients, 1,004 discs",
+          "version": "v133 + v134 + v140 together",
+          "source": {
+            "file": "release/cards/disc-grader.md",
+            "line": 33
+          }
+        }
+      ],
+      "breakdowns": [
+        {
+          "id": "disc-grader-findings",
+          "title": "Agreement with SPIDER's labels, seven label types, earlier version 1",
+          "metric": "AUROC",
+          "held_out": true,
+          "set": "SPIDER held-out test: 44 patients, 264 discs, opened once",
+          "rows": [
+            {
+              "label": "Herniation (per disc)",
+              "value": 0.818,
+              "low": 0.71,
+              "high": 0.912,
+              "source": {
+                "file": "release/cards/disc-grader.md",
+                "line": 46
+              }
+            },
+            {
+              "label": "Narrowing",
+              "value": 0.956,
+              "low": 0.93,
+              "high": 0.98,
+              "source": {
+                "file": "release/cards/disc-grader.md",
+                "line": 47
+              }
+            },
+            {
+              "label": "Bulging",
+              "value": 0.874,
+              "low": 0.824,
+              "high": 0.919,
+              "source": {
+                "file": "release/cards/disc-grader.md",
+                "line": 48
+              }
+            },
+            {
+              "label": "Slipped vertebra",
+              "value": 0.887,
+              "low": 0.789,
+              "high": 0.964,
+              "source": {
+                "file": "release/cards/disc-grader.md",
+                "line": 49
+              }
+            },
+            {
+              "label": "Upper endplate change",
+              "value": 0.817,
+              "low": 0.734,
+              "high": 0.893,
+              "source": {
+                "file": "release/cards/disc-grader.md",
+                "line": 50
+              }
+            },
+            {
+              "label": "Lower endplate change",
+              "value": 0.85,
+              "low": 0.784,
+              "high": 0.908,
+              "source": {
+                "file": "release/cards/disc-grader.md",
+                "line": 51
+              }
+            },
+            {
+              "label": "Any Modic change",
+              "value": 0.832,
+              "low": 0.743,
+              "high": 0.911,
+              "source": {
+                "file": "release/cards/disc-grader.md",
+                "line": 52
+              }
+            }
+          ]
+        }
+      ],
+      "struggles": [
+        {
+          "text": "The three current versions have not been scored on held-out test patients; their results are development results.",
+          "source": {
+            "file": "release/cards/disc-grader.md",
+            "line": 105
+          }
+        },
+        {
+          "text": "Herniation is the weak spot: for the dataset's herniation label per patient, the three versions together agree on 53% (38% to 70%) of patients with one and 74% of patients without one.",
+          "source": {
+            "file": "release/cards/disc-grader.md",
+            "line": 100
+          }
+        },
+        {
+          "text": "A new hospital can cost it most of its skill: version 1 scored kappa 0.42 on a collection it had never seen, against 0.78 for the version trained on that collection's development discs.",
+          "source": {
+            "file": "release/cards/disc-grader.md",
+            "line": 99
+          }
+        }
+      ],
+      "datasets": [
+        {
+          "name": "SPIDER",
+          "licence": "CC BY 4.0",
+          "url": "https://doi.org/10.5281/zenodo.10159290"
+        },
+        {
+          "name": "LSMA-PQR v2",
+          "licence": "CC BY 4.0",
+          "url": "https://doi.org/10.17632/k57fr854j2.2"
+        },
+        {
+          "name": "Lumbar Spine MRI Dataset v2",
+          "licence": "CC BY 4.0",
+          "url": "https://doi.org/10.17632/k57fr854j2.2"
+        },
+        {
+          "name": "Multi-Disorder Annotations for Lumbar Spine Mid-Sagittal Images v1",
+          "licence": "CC BY 4.0",
+          "url": "https://doi.org/10.17632/9j9hmy8kbn.1"
+        }
+      ],
+      "weights": "Not released yet for versions 133, 134 and 140. Version 1 already has a download.",
+      "card": "release/cards/disc-grader.md"
+    },
+    {
+      "key": "fracture-detector",
+      "name": "Fracture research model (X-ray)",
+      "scan": "X-ray",
+      "picture": "img/scans/xray-wrist.webp",
+      "summary": "Two sets of five small networks trained to match a dataset's fracture labels on one wrist, hand, leg, hip or shoulder X-ray.",
+      "headline": [
+        {
+          "metric": "AUROC",
+          "label": "Agreement with GRAZPEDWRI-DX's fracture labels, children's wrists",
+          "value": 0.979,
+          "low": 0.974,
+          "high": 0.984,
+          "held_out": true,
+          "set": "GRAZPEDWRI-DX held-out test: 4,067 pictures of 1,176 patients with a certain label",
+          "version": "v140 + v141",
+          "source": {
+            "file": "release/cards/fracture-detector.md",
+            "line": 50
+          }
+        },
+        {
+          "metric": "AUROC",
+          "label": "Agreement with FracAtlas's fracture labels, mixed bones",
+          "value": 0.918,
+          "low": 0.888,
+          "high": 0.945,
+          "held_out": true,
+          "set": "FracAtlas held-out test: 798 pictures",
+          "version": "v140 + v141",
+          "source": {
+            "file": "release/cards/fracture-detector.md",
+            "line": 51
+          }
+        },
+        {
+          "metric": "AUROC",
+          "label": "Agreement with GRAZPEDWRI-DX's fracture labels, first visits only",
+          "value": 0.969,
+          "low": 0.96,
+          "high": 0.978,
+          "held_out": true,
+          "set": "GRAZPEDWRI-DX held-out test, first visits: 2,172 pictures of 990 patients",
+          "version": "v140 + v141",
+          "source": {
+            "file": "release/cards/fracture-detector.md",
+            "line": 70
+          }
+        }
+      ],
+      "breakdowns": [
+        {
+          "id": "fracture-detector-bodypart",
+          "title": "Agreement with FracAtlas's fracture labels, by body part",
+          "metric": "AUROC",
+          "held_out": true,
+          "set": "FracAtlas held-out test (hand not given with an interval in the card)",
+          "rows": [
+            {
+              "label": "Leg",
+              "value": 0.922,
+              "low": 0.877,
+              "high": 0.961,
+              "n": "445 pictures",
+              "source": {
+                "file": "release/cards/fracture-detector.md",
+                "line": 121
+              }
+            },
+            {
+              "label": "Hip",
+              "value": 0.933,
+              "low": 0.856,
+              "high": 0.988,
+              "n": "67 pictures",
+              "source": {
+                "file": "release/cards/fracture-detector.md",
+                "line": 121
+              }
+            },
+            {
+              "label": "Shoulder",
+              "value": 0.692,
+              "low": 0.494,
+              "high": 0.863,
+              "n": "65 pictures",
+              "source": {
+                "file": "release/cards/fracture-detector.md",
+                "line": 119
+              }
+            }
+          ]
+        }
+      ],
+      "struggles": [
+        {
+          "text": "Shoulders are weak: on 65 FracAtlas test pictures the AUROC is 0.692 (0.494 to 0.863), from very few pictures, so the true figure is uncertain.",
+          "source": {
+            "file": "release/cards/fracture-detector.md",
+            "line": 119
+          }
+        },
+        {
+          "text": "Hands raise many false alarms: on 299 FracAtlas hand pictures it agrees with the no-fracture label on 0.645 of them, so roughly a third disagree.",
+          "source": {
+            "file": "release/cards/fracture-detector.md",
+            "line": 120
+          }
+        },
+        {
+          "text": "It learned mostly from children's wrists (16,157 of 19,383 pictures) and started from a network trained on chest X-rays, not bones.",
+          "source": {
+            "file": "release/cards/fracture-detector.md",
+            "line": 118
+          }
+        }
+      ],
+      "datasets": [
+        {
+          "name": "GRAZPEDWRI-DX v2",
+          "licence": "CC BY 4.0",
+          "url": "https://doi.org/10.6084/m9.figshare.14825193"
+        },
+        {
+          "name": "FracAtlas v7",
+          "licence": "CC BY 4.0",
+          "url": "https://doi.org/10.6084/m9.figshare.22363012"
+        },
+        {
+          "name": "NIH ChestX-ray14 (pre-training only, through the chest X-ray research model)",
+          "licence": "NIH asks for credit; use is unrestricted",
+          "url": "https://nihcc.app.box.com/v/ChestXray-NIHCC"
+        }
+      ],
+      "weights": "Not released yet.",
+      "card": "release/cards/fracture-detector.md"
+    },
+    {
+      "key": "lung-nodules",
+      "name": "Lung nodule research model (CT)",
+      "scan": "CT",
+      "picture": "img/scans/ct-lungs.webp",
+      "summary": "A chain of 3D networks trained to list places in a chest CT scan that look like small round spots (nodules), plus one network trained on LIDC-IDRI's malignancy ratings of nodules.",
+      "headline": [
+        {
+          "metric": "percent",
+          "label": "Share of LUNA16's marked nodules matched, averaged over seven false-alarm allowances",
+          "value": 88.0,
+          "low": 86.0,
+          "high": 89.6,
+          "held_out": false,
+          "set": "LUNA16: 888 thin-slice LIDC-IDRI scans, five folds, each read by a model that never trained on it",
+          "version": "candidate chain + second look",
+          "source": {
+            "file": "release/cards/lung-nodules.md",
+            "line": 46
+          }
+        },
+        {
+          "metric": "AUROC",
+          "label": "Agreement with LIDC-IDRI's malignancy ratings, per patient",
+          "value": 0.717,
+          "low": 0.599,
+          "high": 0.827,
+          "held_out": false,
+          "set": "117 LIDC patients (86 cancers, 31 benign), out of fold",
+          "version": "v5",
+          "source": {
+            "file": "release/cards/lung-nodules.md",
+            "line": 51
+          }
+        },
+        {
+          "metric": "AUROC",
+          "label": "Agreement with LIDC-IDRI's malignancy ratings, per nodule",
+          "value": 0.9485,
+          "low": 0.93,
+          "high": 0.9652,
+          "held_out": false,
+          "set": "749 LIDC nodules, out of fold",
+          "version": "v5",
+          "source": {
+            "file": "release/cards/lung-nodules.md",
+            "line": 52
+          }
+        }
+      ],
+      "breakdowns": [],
+      "struggles": [
+        {
+          "text": "All the nodule-matching numbers are development scores from the same 888 scans used to choose between designs; there is no untouched test.",
+          "source": {
+            "file": "release/cards/lung-nodules.md",
+            "line": 84
+          }
+        },
+        {
+          "text": "Per patient, the largest nodule's diameter alone scores 0.755, higher than the model's 0.717.",
+          "source": {
+            "file": "release/cards/lung-nodules.md",
+            "line": 91
+          }
+        },
+        {
+          "text": "At one false alarm in eight scans it matches 70.5% of LUNA16's marked nodules under the strict reading.",
+          "source": {
+            "file": "release/cards/lung-nodules.md",
+            "line": 87
+          }
+        }
+      ],
+      "datasets": [
+        {
+          "name": "LIDC-IDRI",
+          "licence": "CC BY 3.0",
+          "url": "https://doi.org/10.7937/K9/TCIA.2015.LO9QL9SX"
+        },
+        {
+          "name": "LUNA16 (answer key and scoring script)",
+          "licence": "CC BY 4.0",
+          "url": "https://luna16.grand-challenge.org/"
+        },
+        {
+          "name": "LIDC-annot-NLST501",
+          "licence": "CC BY 4.0",
+          "url": "https://doi.org/10.7937/TCIA.HMQ8-J677"
+        },
+        {
+          "name": "NLST-Sybil (label corrections only)",
+          "licence": "CC BY 4.0",
+          "url": "https://zenodo.org/records/15643335"
+        },
+        {
+          "name": "SPIE-AAPM Lung CT Challenge (LUNGx), practice scans checked only",
+          "licence": "CC BY 3.0",
+          "url": "https://doi.org/10.7937/K9/TCIA.2015.UZLSU3FL"
+        }
+      ],
+      "weights": "Not released yet.",
+      "card": "release/cards/lung-nodules.md"
+    },
+    {
+      "key": "mammography",
+      "name": "Mammogram research model",
+      "scan": "Mammogram",
+      "picture": "img/scans/mammogram.webp",
+      "summary": "Five versions of a network trained to match a dataset's benign/malignant labels for a lesion already marked on a mammogram.",
+      "headline": [
+        {
+          "metric": "AUROC",
+          "label": "Agreement with CMMD's benign/malignant labels, per picture",
+          "value": 0.793,
+          "low": 0.774,
+          "high": 0.811,
+          "held_out": false,
+          "set": "CMMD: 3,744 pictures of 1,775 patients, five folds split by patient",
+          "version": "v29, v30, v34, v35 and v38 read together",
+          "source": {
+            "file": "release/cards/mammography.md",
+            "line": 37
+          }
+        },
+        {
+          "metric": "AUROC",
+          "label": "Agreement with CMMD's benign/malignant labels, per breast",
+          "value": 0.8147,
+          "low": 0.7945,
+          "high": 0.8346,
+          "held_out": false,
+          "set": "CMMD: 1,872 breasts, five folds split by patient",
+          "version": "v29, v30, v34, v35 and v38 read together",
+          "source": {
+            "file": "release/cards/mammography.md",
+            "line": 38
+          }
+        },
+        {
+          "metric": "AUROC",
+          "label": "Agreement with CBIS-DDSM's benign/malignant labels, masses, per lesion and view",
+          "value": 0.829,
+          "low": 0.775,
+          "high": 0.873,
+          "held_out": true,
+          "set": "CBIS-DDSM official test list: 378 masses, opened once",
+          "version": "separate mass model, v3",
+          "source": {
+            "file": "release/cards/mammography.md",
+            "line": 41
+          }
+        }
+      ],
+      "breakdowns": [],
+      "struggles": [
+        {
+          "text": "Masses are the weak spot: they score 0.7371 against 0.8424 for calcifications, and masses are 2,298 of the 3,744 pictures.",
+          "source": {
+            "file": "release/cards/mammography.md",
+            "line": 103
+          }
+        },
+        {
+          "text": "Where no lesion outline exists the score is close to a coin toss: version 38 scores 0.5726 on those 1,002 pictures.",
+          "source": {
+            "file": "release/cards/mammography.md",
+            "line": 104
+          }
+        },
+        {
+          "text": "Every CMMD number comes from CMMD itself. There is no held-out test and no second hospital, so the figure may be a little high for new pictures.",
+          "source": {
+            "file": "release/cards/mammography.md",
+            "line": 101
+          }
+        }
+      ],
+      "datasets": [
+        {
+          "name": "CMMD",
+          "licence": "CC BY 4.0",
+          "url": "https://www.cancerimagingarchive.net/collection/cmmd/"
+        },
+        {
+          "name": "TOMPEI-CMMD (lesion outlines, training only)",
+          "licence": "CC BY 4.0",
+          "url": "https://www.cancerimagingarchive.net/analysis-result/tompei-cmmd/"
+        },
+        {
+          "name": "CBIS-DDSM",
+          "licence": "CC BY 3.0",
+          "url": "https://www.cancerimagingarchive.net/collection/cbis-ddsm/"
+        },
+        {
+          "name": "OMAMA-DB",
+          "licence": "MIT",
+          "url": "https://doi.org/10.7910/DVN/KXJCIU"
+        },
+        {
+          "name": "NIH ChestX-ray14 (start of the training chain)",
+          "licence": "NIH asks for credit; use is unrestricted",
+          "url": "https://nihcc.app.box.com/v/ChestXray-NIHCC"
+        }
+      ],
+      "weights": "Not released yet.",
+      "card": "release/cards/mammography.md"
+    },
+    {
+      "key": "spine-xray-corners",
+      "name": "Lumbar spine X-ray corner reader",
+      "scan": "X-ray",
+      "picture": "img/scans/xray-spine.webp",
+      "summary": "Small networks trained to place the corners of the lower-back vertebrae L1 to L5 on a spine X-ray, one for the side view and one for the front view.",
+      "headline": [
+        {
+          "metric": "percent",
+          "label": "Share of BUU-LSPINE's marked vertebrae matched, side view (IoU 0.5)",
+          "value": 97.9,
+          "low": 97.3,
+          "high": 98.4,
+          "held_out": false,
+          "set": "All 2,000 BUU-LSPINE patients, out of fold",
+          "version": "side view v1 + v2",
+          "source": {
+            "file": "release/cards/spine-xray-corners.md",
+            "line": 49
+          }
+        },
+        {
+          "metric": "percent",
+          "label": "Share of BUU-LSPINE's marked vertebrae matched, front view (IoU 0.5)",
+          "value": 95.8,
+          "low": 95.0,
+          "high": 96.6,
+          "held_out": false,
+          "set": "All 2,000 BUU-LSPINE patients, out of fold",
+          "version": "front view v10",
+          "source": {
+            "file": "release/cards/spine-xray-corners.md",
+            "line": 51
+          }
+        },
+        {
+          "metric": "percent",
+          "label": "Share of the second set's marked corners within 5 pixels, side view",
+          "value": 64.3,
+          "low": 61.7,
+          "high": 66.9,
+          "held_out": true,
+          "set": "Outside set: 590 side-view pictures from the Spondylolisthesis Vertebral Landmark set, no network trained on it, scored once",
+          "version": "side view v1 + v2",
+          "source": {
+            "file": "release/cards/spine-xray-corners.md",
+            "line": 55
+          }
+        }
+      ],
+      "breakdowns": [
+        {
+          "id": "spine-xray-corners-found",
+          "title": "Share of BUU-LSPINE's marked vertebrae matched, development patients",
+          "metric": "percent",
+          "held_out": false,
+          "set": "All 2,000 BUU-LSPINE patients, out of fold",
+          "rows": [
+            {
+              "label": "Side view, IoU 0.5",
+              "value": 97.9,
+              "low": 97.3,
+              "high": 98.4,
+              "n": "2,000 patients",
+              "source": {
+                "file": "release/cards/spine-xray-corners.md",
+                "line": 49
+              }
+            },
+            {
+              "label": "Side view, stricter reading (0.50 to 0.95)",
+              "value": 89.4,
+              "low": 88.8,
+              "high": 89.9,
+              "n": "2,000 patients",
+              "source": {
+                "file": "release/cards/spine-xray-corners.md",
+                "line": 50
+              }
+            },
+            {
+              "label": "Front view, IoU 0.5",
+              "value": 95.8,
+              "low": 95.0,
+              "high": 96.6,
+              "n": "2,000 patients",
+              "source": {
+                "file": "release/cards/spine-xray-corners.md",
+                "line": 51
+              }
+            },
+            {
+              "label": "Front view, stricter reading (0.50 to 0.95)",
+              "value": 81.2,
+              "low": 80.4,
+              "high": 81.9,
+              "n": "2,000 patients",
+              "source": {
+                "file": "release/cards/spine-xray-corners.md",
+                "line": 52
+              }
+            }
+          ]
+        }
+      ],
+      "struggles": [
+        {
+          "text": "On the second set it places 64.3% of corners within 5 pixels; the pictures of the Burapha patients score 71.6% and those of the Honduran patients score 18.3%.",
+          "source": {
+            "file": "release/cards/spine-xray-corners.md",
+            "line": 62
+          }
+        },
+        {
+          "text": "Everything it learned from comes from one dataset collected in Thailand.",
+          "source": {
+            "file": "release/cards/spine-xray-corners.md",
+            "line": 90
+          }
+        },
+        {
+          "text": "The average miss is bigger than the typical miss: on the side view 11.78 pixels against a median patient of 7.10.",
+          "source": {
+            "file": "release/cards/spine-xray-corners.md",
+            "line": 89
+          }
+        }
+      ],
+      "datasets": [
+        {
+          "name": "BUU-LSPINE, 2,000-patient release (Burapha University, Thailand)",
+          "licence": "Burapha University End-User License Agreement, accepted before download",
+          "url": "https://services.informatics.buu.ac.th/spine/"
+        },
+        {
+          "name": "Spondylolisthesis Vertebral Landmark Dataset v1 (testing only)",
+          "licence": "CC BY 4.0",
+          "url": "https://data.mendeley.com/datasets/5jdfdgp762/1"
+        }
+      ],
+      "weights": "Not released yet.",
+      "card": "release/cards/spine-xray-corners.md"
+    }
+  ]
+}

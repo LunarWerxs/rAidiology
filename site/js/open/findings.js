@@ -1,5 +1,6 @@
-// Reading a rAidiology findings file: the few kilobytes a reading on somebody's own machine leaves
-// behind, so this page can show them their own pictures with what was found marked on them.
+// Reading a rAidiology reading file: the few kilobytes the CT outliner on somebody's own machine leaves
+// behind, so this page can show them their own pictures with the anatomy outlined and named. Only the
+// outlines section is used; nothing else in the file is read or shown.
 //
 // The file never carries an identifier. It refers to the series and to each image by a one-way
 // fingerprint, and this module computes the same fingerprint from the scan the browser is already
@@ -63,15 +64,15 @@ export async function parse(bytes) {
     throw new Error('That file is not a rAidiology reading: it is not readable as JSON.');
   }
   if (doc.raidiology_findings !== VERSION) {
-    throw new Error(`That file says it is rAidiology findings version ${doc.raidiology_findings}, and this page reads version ${VERSION}.`);
+    throw new Error(`That file says it is rAidiology file version ${doc.raidiology_findings}, and this page reads version ${VERSION}.`);
   }
-  if (!doc.scan || !Array.isArray(doc.findings)) {
-    throw new Error('That reading is missing its scan or its findings, so there is nothing to show.');
+  if (!doc.scan || !doc.outlines || !Array.isArray(doc.outlines.slices)) {
+    throw new Error('That file holds no anatomy outlines, so there is nothing to show.');
   }
   return doc;
 }
 
-/** Work out which of the loaded series this reading is about, and which image each finding is on.
+/** Work out which of the loaded series this reading is about, and which image each outline is on.
  *
  * Two ways round, in order. The fingerprint is the real one: it matches the exact image even when
  * the person loaded the series in a different order or from a different folder. The position in the
@@ -86,7 +87,7 @@ export async function attach(doc, series) {
     if (fp && fp === want) hit = i;
   }
   if (hit < 0) {
-    return { seriesIndex: -1, bySlice: new Map(), unmatched: doc.findings.length, outlines: new Map() };
+    return { seriesIndex: -1, outlines: new Map() };
   }
   const slices = series[hit].slices;
   const prints = await Promise.all(slices.map((s) => fingerprint(s.info.sopUid)));
@@ -94,21 +95,13 @@ export async function attach(doc, series) {
     if (item.image_fingerprint) return prints.indexOf(item.image_fingerprint);
     return Number.isInteger(item.image_index) && item.image_index < slices.length ? item.image_index : -1;
   };
-  const bySlice = new Map();
-  let unmatched = 0;
-  for (const f of doc.findings) {
-    const at = place(f);
-    if (at < 0) { unmatched += 1; continue; }
-    if (!bySlice.has(at)) bySlice.set(at, []);
-    bySlice.get(at).push(f);
-  }
-  // A labeller's reading (CT) also carries every image's outlines, matched the same two ways.
+  // The reading's outlines, matched to images the same two ways.
   const outlines = new Map();
-  for (const row of (doc.outlines && Array.isArray(doc.outlines.slices)) ? doc.outlines.slices : []) {
+  for (const row of doc.outlines.slices) {
     const at = place(row);
     if (at >= 0 && Array.isArray(row.paths)) outlines.set(at, row.paths);
   }
-  return { seriesIndex: hit, bySlice, unmatched, outlines };
+  return { seriesIndex: hit, outlines };
 }
 
 /** One outline as core/findings.py's encode_path wrote it: base64 of zigzag varints, each the step

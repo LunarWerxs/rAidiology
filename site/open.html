@@ -12,46 +12,51 @@
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
   <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
-  <meta name="theme-color" content="#ffffff">
-  <meta name="color-scheme" content="light">
-  <link rel="stylesheet" href="css/open.css">
+  <meta name="theme-color" content="#08131f">
+  <link rel="preload" href="fonts/Inter-Variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/brand.css">
+  <link rel="stylesheet" href="css/open.css">
   <script defer src="js/nav.js"></script>
   <script type="module" src="js/open/viewer.js"></script>
   <script type="module" src="js/open/sample.js"></script>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <script type="module" src="js/install.js"></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to the content</a>
   <header class="site-head">
     <div class="site-head-in">
-      <a class="brand" href="index.html" aria-label="rAidiology home"><img src="img/logo.svg" width="34" height="34" alt="">rAidiology</a>
+      <a class="brand" href="index.html" aria-label="rAidiology home"><img src="img/logo.svg" width="32" height="32" alt="">rAidiology</a>
       <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
       <nav id="site-nav" class="site-nav" aria-label="Main">
-        <a href="open.html" aria-current="page">Open a scan</a>
-        <a href="index.html#how">How it works</a>
-        <a href="index.html#models">Research models</a>
-        <a href="run.html">Run it yourself</a>
+        <a href="index.html#scans">Scans we cover</a>
+        <a href="models.html">Research results</a>
+        <a href="run.html">Run it on your computer</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="support.html">Support</a>
         <a href="https://github.com/LunarWerxs/rAidiology">GitHub</a>
-        <a class="discord" href="https://lunarwerx.com/discord/raidiology"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.3 5.3A17 17 0 0 0 15.1 4l-.5 1a15.800 15.800 0 0 0-5.200 0l-.5-1a17 17 0 0 0-4.200 1.300C2 9.300 1.300 13.200 1.600 17a17 17 0 0 0 5.200 2.600l1.100-1.800c-.6-.2-1.200-.5-1.700-.8l.4-.3a12 12 0 0 0 10.800 0l.4.300c-.5.300-1.100.6-1.700.8l1.100 1.800a17 17 0 0 0 5.200-2.600c.4-4.400-.7-8.300-3.100-11.700zM8.700 14.700c-1 0-1.800-.9-1.800-2s.8-2 1.800-2 1.800.9 1.800 2-.8 2-1.800 2zm6.600 0c-1 0-1.800-.9-1.800-2s.8-2 1.800-2 1.800.9 1.800 2-.8 2-1.800 2z"/></svg><span>Discord</span></a>
+        <a href="https://lunarwerx.com/discord/raidiology">Discord</a>
+        <a class="btn" href="open.html">Open a scan</a>
       </nav>
     </div>
   </header>
-  <div class="start-over-row"><button class="ghost small" type="button" id="start-over" hidden>Open a different scan</button></div>
+  <div class="start-over-row"><button class="btn quiet small" type="button" id="start-over" hidden>Open a different scan</button></div>
 
   <main id="main">
     <section id="intake" class="pane">
       <h1>Open your own scan</h1>
       <p class="lede">Choose the disc or the ZIP your hospital gave you. Your browser opens it on
-        this device. Nothing is uploaded unless you choose to donate a scan, there is no account, the page does not use or keep your name, and it is
-        free.</p>
+        this device. Nothing is uploaded, and there is no account.</p>
 
       <div class="drop" id="drop" tabindex="0" role="button" aria-describedby="drop-help">
         <svg viewBox="0 0 24 24" aria-hidden="true" class="drop-icon"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
         <strong>Drop your scan folder or ZIP here</strong>
         <span id="drop-help">or use a button below.</span>
         <div class="pickers">
-          <button class="cta" type="button" id="pick-folder">Choose the disc or a folder</button>
-          <button class="ghost" type="button" id="pick-zip">Choose a ZIP file</button>
+          <button class="btn" type="button" id="pick-folder">Choose the disc or a folder</button>
+          <button class="btn quiet" type="button" id="pick-zip">Choose a ZIP file</button>
         </div>
       </div>
 
@@ -59,9 +64,9 @@
         Allowing it only lets the page read them.</p>
 
       <p class="try">No scan to hand?
-        <button class="ghost" type="button" id="pick-sample">Try a sample scan</button></p>
+        <button class="btn quiet" type="button" id="pick-sample">Try a sample scan</button></p>
       <p class="try">Not at your computer? Open this page there, with your disc:
-        <a class="ghost small" id="send-self" href="mailto:">Email this page to yourself</a></p>
+        <a class="btn quiet small" id="send-self" href="mailto:">Email this page to yourself</a></p>
 
       <details class="help">
         <summary>Where is my scan? Step by step</summary>
@@ -75,17 +80,17 @@
         </ol>
         <p>Got a ZIP from a patient portal instead? Press <strong>Choose a ZIP file</strong> and
           pick it from your downloads.</p>
-        <p><strong>To check that nothing is sent, turn off Wi-Fi and open your scan.</strong> It
+        <p><strong>To check, turn off Wi-Fi and open your scan.</strong> It
           still works, because the scan is read on this device.</p>
       </details>
 
-      <p class="aside">This page shows you your pictures. On the sample, it also names each part of
+      <p class="aside">This page shows you your pictures. It can also name each part of
         the body you point at. It never says whether anything is wrong, and it is not a diagnosis.</p>
 
       <div class="progress" id="progress" hidden role="status" aria-live="polite">
         <p id="progress-text">Reading&hellip;</p>
         <div class="track"><div class="fill" id="progress-fill"></div></div>
-        <button class="ghost small" type="button" id="cancel">Stop</button>
+        <button class="btn quiet small" type="button" id="cancel">Stop</button>
       </div>
     </section>
 
@@ -97,15 +102,14 @@
       <div class="cards" id="series-cards"></div>
 
       <details class="reading" id="reading-box" hidden>
-        <summary>A reading of this scan from your own AI assistant</summary>
-        <p class="fine">Most people can skip this. If your own AI assistant read this scan with
-          rAidiology on your computer, it saved a small file ending in <code>.raidiology.json.gz</code>.
-          Add it here to see what it found on your own pictures.</p>
+        <summary>Anatomy outlines from your own computer</summary>
+        <p class="fine">If you ran rAidiology's CT outliner on your own computer, it saved a small file ending in <code>.raidiology.json.gz</code>.
+          Add it here to see the organs and bones it outlined, named on your own pictures. It shows anatomy only: which part is which, never whether anything is wrong.</p>
         <p class="fine">The file holds no name, patient number or date of birth. This tab reads it, and
           it goes nowhere.</p>
         <div class="drop small" id="reading-drop" tabindex="0" role="button">
-          <strong>Drop the reading file here</strong>
-          <span>or <button class="ghost small" type="button" id="pick-reading">choose the file</button></span>
+          <strong>Drop the file here</strong>
+          <span>or <button class="btn quiet small" type="button" id="pick-reading">choose the file</button></span>
         </div>
         <div id="reading-out" hidden></div>
       </details>
@@ -113,7 +117,7 @@
 
     <section id="viewer" class="pane viewer" hidden aria-labelledby="viewer-h">
       <div class="viewer-head">
-        <button class="ghost small" type="button" id="back">Back to the list</button>
+        <button class="btn quiet small" type="button" id="back">Back to the list</button>
         <h2 id="viewer-h"></h2>
       </div>
       <div class="stage" id="stage">
@@ -127,17 +131,17 @@
         <div class="scalebar" id="scalebar" hidden><span id="scalebar-label">1 cm</span></div>
       </div>
       <div class="controls">
-        <button class="ghost small" type="button" id="toggle-marks" hidden>Hide the marks</button>
-        <button class="ghost small" type="button" id="prev-picture" aria-label="Previous picture">Previous</button>
+        <button class="btn quiet small" type="button" id="toggle-marks" hidden>Hide the outlines</button>
+        <button class="btn quiet small" type="button" id="prev-picture" aria-label="Previous picture">Previous</button>
         <label class="slider">Picture <input type="range" id="slice" min="0" max="0" value="0"></label>
-        <button class="ghost small" type="button" id="next-picture" aria-label="Next picture">Next</button>
+        <button class="btn quiet small" type="button" id="next-picture" aria-label="Next picture">Next</button>
       </div>
       <details class="adjust">
         <summary>Brightness and contrast</summary>
         <div class="controls">
           <label class="slider">Brightness <input type="range" id="centre" min="0" max="1000" value="500"></label>
           <label class="slider">Contrast <input type="range" id="width" min="1" max="1000" value="500"></label>
-          <button class="ghost small" type="button" id="reset-window">Reset brightness</button>
+          <button class="btn quiet small" type="button" id="reset-window">Reset brightness</button>
         </div>
       </details>
       <p class="fine">Use Previous and Next, drag up and down on the picture, or press the arrow keys
@@ -146,10 +150,9 @@
       <div class="finding" id="finding" hidden role="status" aria-live="polite"></div>
       <p class="fine" id="viewer-credit" hidden></p>
       <div id="sample-reading-about" hidden>
-        <p class="fine">rAidiology's program drew these outlines on the sample. Your own scan opens
+        <p class="fine">rAidiology's CT outliner drew these outlines on the sample. Your own scan opens
           here as plain pictures, with nothing to install.</p>
-        <p class="fine">Outlines on your own scan are optional: an AI assistant such as Claude or
-          ChatGPT can add them after a one-time setup. That step is optional.</p>
+        <p class="fine">Anatomy outlines on your own CT are optional: an AI assistant such as Claude or ChatGPT can add them on your own computer after a one-time setup.</p>
       </div>
     </section>
 
@@ -160,8 +163,8 @@
 
     <section id="donate-offer" class="pane" hidden>
       <h2>Help train rAidiology (optional)</h2>
-      <p class="fine">You can donate this scan after your browser removes what could identify you. You see everything first. Nothing is sent until you say so.</p>
-      <button class="cta" type="button" id="donate-start">Donate this scan</button>
+      <p class="fine">You can donate this scan after your browser removes what could identify you. You see everything first. Nothing leaves your device until you say so.</p>
+      <button class="btn" type="button" id="donate-start">Donate this scan</button>
     </section>
 
     <section id="donate" class="pane" hidden aria-labelledby="donate-h"></section>
@@ -170,7 +173,7 @@
   <footer class="site-foot">
     <div class="site-foot-in">
       <p class="disclaim">Not a medical device. For education and research.</p>
-      <nav aria-label="Footer"><a href="health-data-privacy.html">Privacy</a><a href="https://github.com/LunarWerxs/rAidiology">GitHub</a><a href="https://lunarwerx.com/discord/raidiology">Discord</a><a href="donation.html">See or delete a donation</a></nav>
+      <nav aria-label="Footer"><a href="health-data-privacy.html">Privacy</a><a href="pricing.html">Pricing</a><a href="support.html">Support</a><a href="https://github.com/LunarWerxs/rAidiology">GitHub</a><a href="https://lunarwerx.com/discord/raidiology">Discord</a><a href="donation.html">See or delete a donation</a></nav>
       <p class="meta">&copy; 2026 LunarWerx</p>
     </div>
   </footer>

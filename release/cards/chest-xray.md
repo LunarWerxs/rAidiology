@@ -72,7 +72,7 @@ Two kinds of learning went into the weights.
 | TAIX-Ray, training part only (University Hospital Aachen, bedside intensive care X-rays) | Pre-training pictures only | 137,593 | CC BY 4.0 | Yes, with the credit below |
 | COVID-19-NY-SBU (The Cancer Imaging Archive; Stony Brook University) | Pre-training pictures only | 13,634 | CC BY 4.0 | Yes, with the credit below |
 | Tuberculosis chest X-ray sets (Kiran and Jabeen; three Mendeley Data sets) | Pre-training pictures only | 13,717 | CC BY 4.0 | Yes, with the credit below |
-| BDCXR-3257 (children's chest X-rays from a hospital in Dhaka) | Pre-training pictures only | 3,257 | CC BY 4.0 (the figshare record, which LunarWerx follows). The download also carries the hospital's data use agreement, which describes non-commercial academic research and asks for the acknowledgement below. | Yes, under the record's CC BY 4.0, with the credit and acknowledgement below |
+| BDCXR-3257 (children's chest X-rays from a hospital in Dhaka) | Pre-training pictures only | 3,257 | CC BY 4.0 (the figshare record). The download also carries the hospital's data use agreement, which allows non-commercial academic research only and forbids commercial exploitation, resale, licensing or integration into clinical decision-support systems without written authorization. LunarWerx follows the download record's CC BY 4.0 licence (LICENSING.md decision D26), and the commercial licence's dataset schedule discloses this. The agreement also asks for the acknowledgement below. | Yes, under the record's CC BY 4.0, with the credit and acknowledgement below |
 | COVID-19-AR (The Cancer Imaging Archive) | Pre-training pictures only | 262 | CC BY 4.0 | Yes, with the credit below |
 
 The pre-training counts add up to the pool's 254,987 pictures. We resized the pictures, and we did not use their labels.
@@ -116,7 +116,7 @@ The weights and the code are under the PolyForm Noncommercial License 1.0.0 (see
 
 Required Notice: Copyright (c) 2026 LunarWerx (https://github.com/LunarWerxs)
 
-Commercial use needs a separate licence from LunarWerx. Downloads are gated: you accept the licence before you download.
+Commercial use is available under the rAidiology Commercial Licence ([COMMERCIAL-LICENSE.md](../../COMMERCIAL-LICENSE.md)), with a free 60-day evaluation (500 studies, internal testing only, no customers, no patients' care), priced on the rAidiology site's pricing page. Not for diagnosis or treatment. Not cleared by the FDA or any regulator. Downloads are gated: you accept the licence before you download.
 
 The credits above, BDCXR-3257's hospital acknowledgement included, must stay with the weights.
 

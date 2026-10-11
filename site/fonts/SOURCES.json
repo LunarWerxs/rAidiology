@@ -1,0 +1,22 @@
+[
+ {
+  "file": "Inter-Variable.woff2",
+  "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/inter/Inter%5Bopsz%2Cwght%5D.ttf",
+  "sha256": "29160a80ff49ddcab2c97711247e08b1fab27a484a329ce8b813d820dc559031"
+ },
+ {
+  "file": "OFL-Inter.txt",
+  "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/inter/OFL.txt",
+  "sha256": "5b9321a4298cfeb6b34354164a1c3afc3db114569984c502b9b35d988fd58c57"
+ },
+ {
+  "file": "SourceSerif4-Variable.woff2",
+  "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/sourceserif4/SourceSerif4%5Bopsz%2Cwght%5D.ttf",
+  "sha256": "97b2d4da6e3cb494b5a1e66ae176914d852ccabef49e0c02c0df25f3e39aca0b"
+ },
+ {
+  "file": "OFL-SourceSerif4.txt",
+  "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/sourceserif4/OFL.txt",
+  "sha256": "5f94c3fd3a23131a417ab5a0c8452de57e70c3cfb9f604d88241f7065ebf9fd9"
+ }
+]

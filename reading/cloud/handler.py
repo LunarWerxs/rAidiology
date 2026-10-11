@@ -8,8 +8,12 @@ scan is read the way `modalities/ct/eval/segmenter.py scan` reads one (read_scan
 repeats its steps without the printing) and is deleted when the read ends, whether it worked or not. Nothing about a
 scan is logged.
 
-Input:  {"url": "https://..."} or {"sample": "s0654.nii.gz"}
-Output: {"seconds": {...}, "found": [{"structure": ..., "millilitres": ...}], "gpu": ..., "not_a_medical_device": true}
+Input:  {"url": "https://..."} or {"sample": "s0654.nii.gz"}, and optionally "labels_put_url": "https://..." (same rule
+        as the scan link): the uint8 label map is then written as a compressed NIfTI with the scan's affine and PUT there.
+Output: {"structures": [{"label": <int>, "name": ...}] sorted by label, "labels_written": bool, "seconds": {...},
+         "shape", "measured_spacing", "gpu", "torch", "version", "not_a_medical_device": true, "notice": ...}
+Anatomy names only: no volumes, sizes, counts or scores leave the worker. Pathology classes (any name containing cyst,
+lesion, tumor, tumour, nodule, stone, calcif or fracture) are set to 0 in the label map and never listed.
 
 Layout on the network volume (RAID_SERVE_HOME, default /runpod-volume/raid-serve): repo/ (core/ and modalities/ct/eval/),
 Models/ct-segmenter-v<N>/, samples/, and pylib/ (the packages the base image lacks, on PYTHONPATH).
@@ -24,7 +28,7 @@ import urllib.request
 
 BOOT = time.time()
 HOME = os.environ.get("RAID_SERVE_HOME", "/runpod-volume/raid-serve")
-REPO = os.path.join(HOME, "repo")
+REPO = os.environ.get("RAID_SERVE_REPO") or os.path.join(HOME, "repo")
 sys.path[:0] = [os.path.join(REPO, "modalities", "ct", "eval"), REPO]
 os.environ.setdefault("RAIDIOLOGY_MODELS", os.path.join(HOME, "Models"))
 os.environ.setdefault("RAIDIOLOGY_WORK", "/tmp/raid-work")
@@ -51,6 +55,10 @@ segmenter.steady_inference()
 MODELS, META = segmenter.load_models(VERSION, range(segmenter.FOLDS))
 NAMES = META["structures"]
 READING = segmenter.reading_of(META)
+PATHOLOGY = ("cyst", "lesion", "tumor", "tumour", "nodule", "stone", "calcif", "fracture")
+EXCLUDED = {i + 1: n for i, n in enumerate(NAMES) if any(w in n.lower() for w in PATHOLOGY)}
+NOTICE = ("Anatomy names for education and research. Not a medical device. "
+          "It does not tell you whether anything is wrong.")
 if torch.cuda.is_available():
     torch.cuda.synchronize()
 READY = time.time()
@@ -107,11 +115,27 @@ def read(path):
     pred = segmenter.under_the_floor(segmenter.labels_on_grid(acc, weight, tuple(fine.shape)), READING["floor"], NAMES)
     if not measured:
         pred = F.interpolate(pred[None, None].float(), size=ct.shape, mode="nearest")[0, 0].to(torch.uint8)
-    found = torch.bincount(pred.reshape(-1).long(), minlength=len(NAMES) + 1)[1:].cpu().numpy()
-    voxel_ml = float(np.prod(zooms)) / 1000.0
-    listing = [{"structure": n, "millilitres": round(float(found[i]) * voxel_ml, 1)}
-               for i, n in enumerate(NAMES) if found[i]]
-    return listing, measured, list(ct.shape)
+    for lab in EXCLUDED:
+        pred[pred == lab] = 0
+    present = sorted(int(v) for v in torch.unique(pred).cpu().tolist() if v)
+    listing = [{"label": v, "name": NAMES[v - 1]} for v in present]
+    return listing, measured, list(ct.shape), pred.cpu().numpy().astype(np.uint8), img.affine
+
+
+def write_labels(labels, affine, path):
+    """The label map as a compressed NIfTI at path (the one code path the PUT and the selftest both use)."""
+    nib.save(nib.Nifti1Image(labels, affine), path)
+
+
+def put_labels(url, path):
+    """HTTP PUT of the written file to an allowed link; True if the storage accepted it."""
+    if not allowed(url):
+        raise ValueError("only https links to the upload storage are written")
+    with open(path, "rb") as f:
+        data = f.read()
+    req = urllib.request.Request(url, data=data, method="PUT", headers={"Content-Type": "application/octet-stream"})
+    with OPENER.open(req, timeout=120) as r:
+        return 200 <= r.status < 300
 
 
 def handler(job):
@@ -130,15 +154,20 @@ def handler(job):
         else:
             return {"error": "give url or sample"}
         t1 = time.time()
-        found, measured, shape = read(path)
+        listing, measured, shape, labels, affine = read(path)
+        written = False
+        if inp.get("labels_put_url"):
+            out_path = os.path.join(work, "labels.nii.gz")
+            write_labels(labels, affine, out_path)
+            written = put_labels(inp["labels_put_url"], out_path)
         if torch.cuda.is_available():
             torch.cuda.synchronize()
         t2 = time.time()
-        return {"seconds": {"fetch": round(t1 - t0, 3), "read": round(t2 - t1, 3),
+        return {"structures": listing, "labels_written": written, "seconds": {"fetch": round(t1 - t0, 3), "read": round(t2 - t1, 3),
                             "imports": round(IMPORTED - BOOT, 3), "load_models": round(READY - IMPORTED, 3)},
                 "first_request_on_this_worker": first, "shape": shape, "measured_spacing": measured,
                 "gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else "cpu",
-                "torch": torch.__version__, "version": VERSION, "found": found, "not_a_medical_device": True}
+                "torch": torch.__version__, "version": VERSION, "not_a_medical_device": True, "notice": NOTICE}
     finally:
         shutil.rmtree(work, ignore_errors=True)
 

@@ -1,0 +1,11 @@
+/* Support, pricing and thanks pages. Loaded after brand.css. */
+.money-card { display: flex; flex-direction: column; min-width: 0; overflow-wrap: anywhere; }
+.money-card .tag { margin: 0 0 6px; }
+.money-card p { margin: 0 0 12px; }
+.money-card .btn { display: inline-block; }
+.money-price { font-size: 1.35rem; font-weight: 700; }
+.money-disclosure { margin-top: 20px; }
+main a { overflow-wrap: anywhere; }
+.callout-dark { border-left: 4px solid var(--primary-light); padding: 6px 16px; max-width: 68ch; font-weight: 600; margin-top: var(--sp-3); }
+.short-list { padding-left: 1.2em; max-width: 68ch; }
+.short-list li { margin-bottom: 8px; }

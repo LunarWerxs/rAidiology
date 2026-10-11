@@ -36,9 +36,8 @@ const state = {
   panX: 0,
   panY: 0,
   cancelled: false,
-  reading: null,                    // the parsed findings file, when one has been opened
+  reading: null,                    // the parsed reading file, when one has been opened
   readingSeries: -1,                // which loaded series it turned out to be about
-  marks: new Map(),                 // slice index -> the findings on that image
   outlines: new Map(),              // slice index -> [structure, path] pairs, for a labeller's reading
   pointedAt: -1,                    // the outlined structure under the pointer, or -1
   keyOpen: false,                   // whether the visitor opened the list of outlined parts
@@ -321,7 +320,6 @@ function renderSeries(read) {
 function clearReading() {
   state.reading = null;
   state.readingSeries = -1;
-  state.marks = new Map();
   state.outlines = new Map();
   state.pointedAt = -1;
   el('name-tip').hidden = true;
@@ -373,7 +371,7 @@ async function loadReading(file) {
     readingProblem(String(err && err.message ? err.message : err));
     return;
   }
-  const { seriesIndex, bySlice, unmatched, outlines } = await attachReading(doc, series);
+  const { seriesIndex, outlines } = await attachReading(doc, series);
   if (state.series !== series) return;            // another scan was opened while this was read
   if (seriesIndex < 0) {
     readingProblem('That reading is about a different scan from the one open here. Open the scan it was written from, or open a different reading.');
@@ -381,15 +379,14 @@ async function loadReading(file) {
   }
   state.reading = doc;
   state.readingSeries = seriesIndex;
-  state.marks = bySlice;
   state.outlines = outlines;
   state.showMarks = true;
   forgetPointing();
-  renderReading(unmatched);
+  renderReading();
   renderSeriesMarks();
   if (state.current === state.readingSeries) {
     el('toggle-marks').hidden = false;
-    el('toggle-marks').textContent = 'Hide the marks';
+    el('toggle-marks').textContent = 'Hide the outlines';
     draw();
   }
 }
@@ -400,67 +397,18 @@ function forgetPointing() {
   el('name-tip').hidden = true;
 }
 
-function renderReading(unmatched) {
-  const doc = state.reading;
+function renderReading() {
   const out = el('reading-out');
   out.replaceChildren();
-
-  const head = document.createElement('p');
-  head.className = 'reading-summary';
-  head.textContent = doc.summary || '';
-  out.append(head);
-
-  const list = document.createElement('ul');
-  list.className = 'reading-list';
-  const flat = [...state.marks.entries()].sort((a, b) => a[0] - b[0]);
-  for (const [slice, found] of flat) {
-    for (const f of found) {
-      const li = document.createElement('li');
-      const go = document.createElement('button');
-      go.type = 'button';
-      go.className = 'reading-go';
-      go.textContent = f.plain || f.label || 'A finding';
-      go.addEventListener('click', async () => {
-        if (state.current !== state.readingSeries) await openSeries(state.readingSeries);
-        setSlice(slice, false);
-        el('viewer').scrollIntoView({ block: 'start' });
-      });
-      const score = document.createElement('span');
-      score.className = 'reading-score';
-      score.textContent = Number.isFinite(f.score)
-        ? `${f.confidence || 'above the line'} · ${f.score.toFixed(2)} against ${Number(doc.model && doc.model.threshold || 0).toFixed(2)}`
-        : (f.confidence || '');
-      li.append(go, score);
-      list.append(li);
-    }
-  }
-  if (flat.length) out.append(list);
-
-  const notes = [];
-  if (!flat.length) notes.push('Nothing was marked on these images.');
-  if (unmatched) notes.push(`${unmatched} finding${unmatched === 1 ? '' : 's'} in this reading could not be matched to an image here.`);
-  notes.push(...modelNotes(doc.model || {}), doc.not_a_medical_device || '');
-  for (const text of notes.filter(Boolean)) {
-    const p = document.createElement('p');
-    p.className = 'reading-note';
-    p.textContent = text;
-    out.append(p);
-  }
+  const names = (state.reading.outlines && state.reading.outlines.structures) || [];
+  const p = document.createElement('p');
+  p.className = 'reading-note';
+  p.textContent = state.outlines.size
+    ? `${state.outlines.size} image${state.outlines.size === 1 ? '' : 's'} outlined, naming ${names.length} part${names.length === 1 ? '' : 's'} of the body. Point at an outline on a picture to see its name.`
+    : 'This file holds no outlines for the pictures open here.';
+  out.append(p);
   out.hidden = false;
   showReadingBox();
-}
-
-/** What the reading's model says about itself: a detector's catch rates, a labeller's overlap. */
-function modelNotes(model) {
-  const notes = [];
-  if (model.catches) {
-    notes.push(`The model behind this reading catches ${model.catches} and clears ${model.clears}. ${model.who_it_is_not_for || ''}`);
-  }
-  if (Number.isFinite(model.mean_dice)) {
-    notes.push(`On ${model.measured_on} it had never seen, its outlines matched specialists' by about ${Math.round(model.mean_dice * 100)} out of 100 on average. ${model.invents || ''}. ${model.who_it_is_not_for || ''}`);
-  }
-  if (model.caveat) notes.push(model.caveat);
-  return notes;
 }
 
 function renderSeriesMarks() {
@@ -472,18 +420,9 @@ function renderSeriesMarks() {
     const flag = document.createElement('div');
     flag.className = 'series-flag';
     const outlined = state.outlines.size;
-    flag.textContent = outlined
-      ? `${outlined} image${outlined === 1 ? '' : 's'} outlined`
-      : state.marks.size
-        ? `${state.marks.size} image${state.marks.size === 1 ? '' : 's'} marked`
-        : 'read, nothing marked';
+    flag.textContent = `${outlined} image${outlined === 1 ? '' : 's'} outlined`;
     cards[i].append(flag);
   }
-}
-
-function marksForSlice() {
-  if (state.current !== state.readingSeries || !state.showMarks) return [];
-  return state.marks.get(state.slice) || [];
 }
 
 /** A colour for structure `s`, the same every time: hues a golden angle apart, so neighbours in
@@ -634,18 +573,11 @@ function overlayOutlines(canvas, frame, fit, panX, panY, paths, dpr) {
   return [...drawn].sort((a, b) => a - b);
 }
 
-/** Under the picture: what the reading says about it, when there is a reading of this series. */
-function describeImage(note, found, drawn) {
+/** Under the picture: the names of the outlined parts, when there is a reading of this series. */
+function describeImage(note, drawn) {
   note.hidden = !(state.current === state.readingSeries && state.reading);
   if (note.hidden) return;
-  if (state.reading.outlines) {
-    describeOutlines(note, drawn);
-    return;
-  }
-  note.textContent = found.length
-    ? `${found.map((f) => f.plain || f.label).join(' ')} The shading is where the score came from, not where a fracture is: this model was never scored on location.`
-    : 'Nothing was marked on this image.';
-  note.classList.toggle('marked', found.length > 0);
+  describeOutlines(note, drawn);
 }
 
 /** Under the picture: how to find out what an outline is, and, folded away, every outlined part
@@ -682,42 +614,7 @@ function describeOutlines(note, drawn) {
     key.append(swatch, document.createTextNode(names[s] || `structure ${s + 1}`));
     list.append(key, document.createTextNode(i < drawn.length - 1 ? ', ' : '.'));
   });
-  const caveat = document.createElement('p');
-  caveat.textContent = (state.reading.model && state.reading.model.caveat) || '';
-  note.append(how, all, caveat);
-}
-
-/** Paint the heat map over the picture, in the same place the picture itself was drawn.
- *
- * The grid is six cells across, which is all the model has, so it is scaled up with smoothing on
- * rather than drawn as hard squares: a hard square would claim an edge that the measurement does
- * not have. Only the top of the range is shown at all, because a map where every cell glows a
- * little says nothing and still looks like a verdict. */
-function overlayMarks(canvas, frame, fit, panX, panY, found) {
-  const cells = found.map((f) => f.where).filter((w) => w && Array.isArray(w.cells));
-  if (!cells.length) return;
-  const [gw, gh] = cells[0].grid;
-  const merged = new Array(gw * gh).fill(0);
-  for (const w of cells) {
-    if (w.grid[0] !== gw || w.grid[1] !== gh) continue;
-    for (let i = 0; i < merged.length; i++) merged[i] = Math.max(merged[i], w.cells[i] || 0);
-  }
-  const heat = new OffscreenCanvas(gw, gh);
-  const img = heat.getContext('2d').createImageData(gw, gh);
-  for (let i = 0; i < merged.length; i++) {
-    const strength = Math.max(0, (merged[i] / 255 - 0.55) / 0.45);
-    img.data[i * 4] = 0xd9; img.data[i * 4 + 1] = 0xa4; img.data[i * 4 + 2] = 0x41;
-    img.data[i * 4 + 3] = Math.round(strength * 150);
-  }
-  heat.getContext('2d').putImageData(img, 0, 0);
-  const w = frame.width * fit;
-  const h = frame.height * fit;
-  const ctx = canvas.getContext('2d');
-  ctx.save();
-  ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = 'high';
-  ctx.drawImage(heat, (canvas.width - w) / 2 + panX, (canvas.height - h) / 2 + panY, w, h);
-  ctx.restore();
+  note.append(how, all);
 }
 
 async function openSeries(index) {
@@ -745,7 +642,7 @@ async function openSeries(index) {
   syncWindowSliders(frame);
   const marks = el('toggle-marks');
   marks.hidden = !(state.reading && index === state.readingSeries);
-  marks.textContent = state.showMarks ? 'Hide the marks' : 'Show the marks';
+  marks.textContent = state.showMarks ? 'Hide the outlines' : 'Show the outlines';
   show('viewer', true);
   show('series', false);
   draw();
@@ -931,10 +828,8 @@ function draw() {
     canvas.width = Math.max(1, Math.round(rect.width * dpr));
     canvas.height = Math.max(1, Math.round(rect.height * dpr));
     const fit = paint(canvas, frame, { centre: state.centre, width: state.width }, state.zoom, state.panX * dpr, state.panY * dpr);
-    const found = marksForSlice();
-    overlayMarks(canvas, frame, fit, state.panX * dpr, state.panY * dpr, found);
     const drawn = overlayOutlines(canvas, frame, fit, state.panX * dpr, state.panY * dpr, outlinesForSlice(), dpr);
-    describeImage(el('finding'), found, drawn);
+    describeImage(el('finding'), drawn);
         describeView(s.info);
     // Which picture, and nothing else. The brightness and contrast numbers and the sort order were
     // on here too; they are a radiographer's units, and a visitor read them as things to understand.
@@ -1226,7 +1121,7 @@ function wireIntake() {
   });
   el('toggle-marks').addEventListener('click', () => {
     state.showMarks = !state.showMarks;
-    el('toggle-marks').textContent = state.showMarks ? 'Hide the marks' : 'Show the marks';
+    el('toggle-marks').textContent = state.showMarks ? 'Hide the outlines' : 'Show the outlines';
     draw();
   });
   el('cancel').addEventListener('click', () => { state.cancelled = true; show('progress', false); });

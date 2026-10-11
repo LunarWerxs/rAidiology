@@ -110,7 +110,7 @@ The weights and the code are under the [PolyForm Noncommercial License 1.0.0](..
 
 Required Notice: Copyright (c) 2026 LunarWerx (https://github.com/LunarWerxs)
 
-You may use them free for noncommercial purposes the licence lists, such as personal study and use by educational or public research organisations. Commercial use is not offered for this model. It depends on TotalSpineSeg's weights, which are not cleared for commercial use (see 'Tool it depends on'). It is still not a medical device and may not be used for diagnosis. You must accept the licence before you download the weights. The datasets keep their own CC BY 4.0 licences and credits, listed above. TotalSpineSeg has its own terms. More in [LICENSING.md](../../LICENSING.md).
+You may use them free for noncommercial purposes the licence lists, such as personal study and use by educational or public research organisations. This model is not covered by the commercial licence: it is for noncommercial use only. The reason: it runs on TotalSpineSeg to find and label the discs, and its authors were never asked for commercial use. Permission for commercial use was never given. It depends on TotalSpineSeg's weights, which are not cleared for commercial use (see 'Tool it depends on'). It is still not a medical device and may not be used for diagnosis. You must accept the licence before you download the weights. The datasets keep their own CC BY 4.0 licences and credits, listed above. TotalSpineSeg has its own terms. More in [LICENSING.md](../../LICENSING.md).
 
 ## How to run it
 
