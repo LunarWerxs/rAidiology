@@ -974,11 +974,14 @@ function draw() {
     const fit = paint(canvas, frame, { centre: state.centre, width: state.width }, state.zoom, state.panX * dpr, state.panY * dpr);
     const drawn = overlayOutlines(canvas, frame, fit, state.panX * dpr, state.panY * dpr, outlinesForSlice(), dpr);
     describeImage(el('finding'), drawn);
-        describeView(s.info);
+    describeView(s.info);
     // Which picture, and nothing else. The brightness and contrast numbers and the sort order were
     // on here too; they are a radiographer's units, and a visitor read them as things to understand.
     // The how-to is a chip under the picture, never on it, and it goes after the first change.
     el('hud').textContent = `Picture ${state.slice + 1} of ${s.slices.length}`;
+    // The slider is what a screen reader hears on each move, so it says the picture and the outline count.
+    const parts = el('finding').hidden || !drawn.length ? '' : `, ${drawn.length} part${drawn.length === 1 ? '' : 's'} outlined`;
+    el('slice').setAttribute('aria-valuetext', `Picture ${state.slice + 1} of ${s.slices.length}${parts}`);
     el('hint-chip').hidden = state.moved || s.slices.length < 2;
     const spacing = s.info.pixelSpacing;
     const bar = el('scalebar');

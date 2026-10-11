@@ -23,6 +23,21 @@ p{margin:0;font:400 24px/1.45 IN;color:#2a3a4d}
 <h1>Open your own scans in your browser.</h1><p>Seven open research models for X-ray, CT, MRI and mammogram pictures. Nothing is uploaded.</p></div>
 <div class=f><b></b>Not a medical device. For education and research.</div>
 <div class=g><img src="img/scans/ct-organs.webp"><img src="img/scans/mri-spine.webp"><img src="img/scans/xray-chest.webp"><img src="img/scans/xray-wrist.webp"></div>"""
+
+
+def shrink_og(path):
+    """A 256-colour PNG: the lossless screenshot is about 254 KB against a 160 KB share-card budget. The palette is
+    median cut over the card plus the brand teal, blue and ink kept exact, so the small bullet and the type keep
+    their colour (a plain median cut turned the teal bullet navy). About 148 KB."""
+    from PIL import Image
+    im = Image.open(path).convert("RGB")
+    base = im.quantize(colors=253, method=Image.Quantize.MEDIANCUT).getpalette()[:253 * 3]
+    keep = [0x0c, 0x8a, 0x86, 0x16, 0x60, 0xc4, 0x0f, 0x1b, 0x2a]
+    pal = Image.new("P", (1, 1))
+    pal.putpalette(base + keep)
+    im.quantize(palette=pal, dither=Image.Dither.FLOYDSTEINBERG).save(path, optimize=True)
+
+
 fonts = os.listdir(os.path.join(S, "fonts"))
 sans = next(f for f in fonts if f.lower().startswith("inter") and f.endswith(".woff2") and "italic" not in f.lower())
 tmp = os.path.join(S, "_card.html")
@@ -36,7 +51,9 @@ try:
         pg = b.new_page(viewport={"width": 1200, "height": 630}, service_workers="block")
         pg.goto("http://127.0.0.1:8777/_card.html", wait_until="networkidle")
         pg.evaluate("document.fonts.ready"); pg.wait_for_timeout(300)
-        pg.screenshot(path=os.path.join(S, "img/og.png"))
+        og = os.path.join(S, "img/og.png")
+        pg.screenshot(path=og)
+        shrink_og(og)
         pg = b.new_page(viewport={"width": 1280, "height": 800}, service_workers="block")
         pg.goto("http://127.0.0.1:8777/index.html", wait_until="networkidle"); pg.wait_for_timeout(800)
         pg.screenshot(path=os.path.join(S, "img/screenshot-home.png"))

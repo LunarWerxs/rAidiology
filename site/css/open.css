@@ -11,11 +11,12 @@
   --accent-soft: var(--primary-soft);
   --accent-hover: var(--primary-dark);
   --warn: #8a5200;
-  --on-picture: #eef3f8;            /* words drawn over a picture */
+  --edge-bg: rgba(0, 0, 0, 0.4);    /* behind the side labels drawn over a picture (words over a picture: --on-picture, in brand.css) */
+  --edge-ink: rgba(238, 243, 248, 0.82);
+  --swatch-ring: rgba(15, 27, 42, 0.2);
   --scrim: rgba(0, 0, 0, 0.6);      /* behind words drawn over a picture */
   --alert-edge: #a33;
   --alert-ink: #7a1f1f;
-  --black: #000;
   --sev-mild-a07: rgba(217, 164, 65, 0.07);
   --sev-mild-a16: rgba(217, 164, 65, 0.16);
   --shade-a55: rgba(0, 0, 0, 0.55);
@@ -139,7 +140,7 @@ p { max-width: 68ch; }
    so they stay in the black margin; phones swap them for R and L below. */
 .edge {
   position: absolute; padding: 2px 8px; border-radius: 999px; pointer-events: none;
-  background: rgba(0, 0, 0, 0.4); color: rgba(238, 243, 248, 0.82); font-size: 0.75rem; line-height: 1.3; white-space: nowrap;
+  background: var(--edge-bg); color: var(--edge-ink); font-size: 0.75rem; line-height: 1.3; white-space: nowrap;
 }
 .edge-left, .edge-right { white-space: normal; max-inline-size: 7em; text-align: center; border-radius: 10px; line-height: 1.25; }
 /* arkitect-allow: css-logical-direction-properties - a side of the picture, not of a sentence. */
@@ -158,7 +159,7 @@ p { max-width: 68ch; }
 }
 .stage-status .spinner {
   inline-size: 14px; block-size: 14px; border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.35); border-block-start-color: #fff; animation: stage-spin 0.8s linear infinite;
+  border: 2px solid var(--chip-line-strong); border-block-start-color: var(--on-dark-strong); animation: stage-spin 0.8s linear infinite;
 }
 @keyframes stage-spin { to { transform: rotate(360deg); } }
 .what { margin: 12px 0 0; color: var(--text-2); max-width: 72ch; }
@@ -184,9 +185,13 @@ p { max-width: 68ch; }
 .slider input { width: 100%; accent-color: var(--accent); }
 
 .stage-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 10px 0 0; }
-.hint-chip {
-  margin: 0; padding: 4px 12px; border-radius: 999px; font-size: 0.86rem;
-  background: var(--primary-soft); color: var(--primary-dark); border: 1px solid var(--line-strong);
+/* A plain caption, not a pill: the pill read as a button (design review 2026-10-11). It names the gesture the
+   device has: a swipe on a touch screen, a drag or the arrow keys with a mouse. */
+.hint-chip { margin: 0; font-size: 0.86rem; color: var(--text-2); }
+.hint-chip .on-mouse { display: none; }
+@media (hover: hover) and (pointer: fine) {
+  .hint-chip .on-touch { display: none; }
+  .hint-chip .on-mouse { display: inline; }
 }
 .caption { margin: 8px 0 4px; }
 #viewer-credit { margin: 0 0 10px; font-size: 0.86rem; }
@@ -199,6 +204,13 @@ p { max-width: 68ch; }
 .next-step .fine { margin: 0; flex: 1 1 14rem; }
 .slice-bar { align-items: center; flex-wrap: nowrap; }
 .slice-bar .slider { flex: 1 1 auto; min-width: 0; }
+/* The picture slider is the viewer's main control: the same 28px thumb as the home demo and the support amount. */
+.slice-bar input[type="range"] { height: 44px; margin: 0; background: transparent; cursor: pointer; -webkit-appearance: none; appearance: none; }
+.slice-bar input[type="range"]:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: 8px; }
+.slice-bar input[type="range"]::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: var(--line-strong); }
+.slice-bar input[type="range"]::-moz-range-track { height: 6px; border-radius: 3px; background: var(--line-strong); }
+.slice-bar input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 28px; height: 28px; margin-top: -11px; border-radius: 50%; background: var(--primary); border: 3px solid var(--card); box-shadow: var(--shadow-thumb); }
+.slice-bar input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: var(--primary); border: 3px solid var(--card); box-shadow: var(--shadow-thumb); }
 .lbl { margin-inline-end: 6px; }
 
 ul.plain { list-style: none; margin: 0; padding: 0; }
@@ -304,7 +316,7 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
   background: transparent; color: var(--ink); font: inherit; font-size: 1rem; line-height: 1.3; text-align: start; cursor: pointer;
 }
 .outline-swatch { display: inline-block; flex: none; }
-.part-row .outline-swatch { inline-size: 16px; block-size: 16px; border-radius: 4px; margin: 0; box-shadow: 0 0 0 1px rgba(15, 27, 42, 0.2); }
+.part-row .outline-swatch { inline-size: 16px; block-size: 16px; border-radius: 4px; margin: 0; box-shadow: 0 0 0 1px var(--swatch-ring); }
 .part-name { display: block; min-width: 0; }
 .part-name::first-letter { text-transform: uppercase; }
 .part-about { display: none; grid-column: 2; margin-top: 4px; color: var(--text-2); font-size: 0.875rem; line-height: 1.45; }
@@ -345,7 +357,7 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
   text-decoration: none; background: var(--primary-soft); color: var(--primary-dark);
   border: 2px solid var(--line-strong); padding-inline: 18px;
 }
-.viewer .btn.quiet:hover { background: #fff; border-color: var(--primary); color: var(--primary-dark); }
+.viewer .btn.quiet:hover { background: var(--card); border-color: var(--primary); color: var(--primary-dark); }
 .viewer .btn.quiet:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
 
 /* Round 3: at laptop widths the picture sits beside a column with the controls, the notes and the

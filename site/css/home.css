@@ -1,9 +1,9 @@
 /* Home page (index.html) only; models.html loads results.css and run.html loads pages.css.
    Tokens, type, buttons, cards, chips, stats, header and footer come from brand.css (DESIGN_V3.md). */
 
-/* The scan pictures carry a baked-in dark frame of #04101c; picture frames on this page use the same colour
+/* The scan pictures carry a baked-in dark frame (--scan-frame); picture frames on this page use the same colour
    so a picture never shows a box inside its frame. */
-.scan-pics, .scan-pics .tile, #results .result-tile > img { background: #04101c; }
+.scan-pics, .scan-pics .tile, #results .result-tile > img { background: var(--scan-frame); }
 
 /* 1. Hero: copy on the left, the live 3D on the right with the sample CT card on its lower-left corner.
    On a phone the copy comes first, then the 3D, then the CT card directly under it. */
@@ -23,11 +23,11 @@
 @media (max-width: 359px) { .hero-actions { flex-wrap: wrap; } .hero-actions .btn { flex: 1 1 100%; } }
 .proof { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
 .proof li { display: inline-flex; align-items: baseline; gap: 5px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg-soft); color: var(--text); font-size: 0.8125rem; font-weight: 550; line-height: 1.35; white-space: nowrap; }
-.proof strong { color: #087470; font-size: 0.9375rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.proof strong { color: var(--teal-text); font-size: 0.9375rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 
 .hero-stage { display: grid; gap: 12px; min-width: 0; }
 .stage-wrap { position: relative; display: grid; gap: 12px; min-width: 0; }
-.stage-box { position: relative; height: clamp(300px, 52vh, 560px); height: clamp(300px, 52svh, 560px); overflow: hidden; border-radius: var(--radius); background: var(--lightbox); box-shadow: 0 28px 56px -28px rgba(5, 9, 14, 0.6); }
+.stage-box { position: relative; height: clamp(300px, 52vh, 560px); height: clamp(300px, 52svh, 560px); overflow: hidden; border-radius: var(--radius); background: var(--lightbox); box-shadow: var(--shadow-stage); }
 /* The poster shows from first paint and until the 3D draws its first frame. hero3d.js fits its camera the way
    "contain" fits a poster, and uses the phone poster on stages under 600 px wide (about 650 px of screen). */
 .stage-box > .hero3d { position: absolute; inset: 0; width: 100%; height: 100%; background: var(--lightbox) url("../img/hero-poster.webp") center / contain no-repeat; }
@@ -38,15 +38,15 @@
    While it loads (.is-loading, until ctdemo.js paints the first frame) the whole card is the viewer's near-black
    with a skeleton for the controls, never a white empty card; the pre-script markup (.demo-ph, .demo-sk) and the
    script-built markup look the same. */
-.hero-stage .ctdemo { max-width: none; margin: 0; padding: 8px; border: 1px solid var(--line-strong); border-radius: var(--radius); background: #fff; box-shadow: 0 2px 6px rgba(5, 9, 14, 0.12), 0 22px 44px -16px rgba(5, 9, 14, 0.5); transition: background-color .25s, border-color .25s; }
-.hero-stage .ctdemo.is-loading, .hero-stage .ctdemo.is-failed { background: var(--lightbox); border-color: rgba(255, 255, 255, 0.16); }
+.hero-stage .ctdemo { max-width: none; margin: 0; padding: 8px; border: 1px solid var(--line-strong); border-radius: var(--radius); background: var(--card); box-shadow: var(--shadow-ctdemo); transition: background-color .25s, border-color .25s; }
+.hero-stage .ctdemo.is-loading, .hero-stage .ctdemo.is-failed { background: var(--lightbox); border-color: var(--line-dark-ring); }
 .hero-stage .ctdemo:focus-visible { outline-offset: 3px; }
 .hero-stage .ctdemo .ctdemo__lightbox, .demo-ph { border-radius: 8px; }
 .demo-ph { position: relative; overflow: hidden; aspect-ratio: 1 / 1; background: var(--lightbox); }
 .demo-ph img { display: block; width: 100%; height: 100%; object-fit: contain; }
 /* the space the controls will take, drawn as two dark bars so the card does not jump when the viewer mounts */
 .demo-sk { height: 167px; padding-top: 8px; }
-.demo-sk span { position: relative; display: block; overflow: hidden; background: rgba(255, 255, 255, 0.07); }
+.demo-sk span { position: relative; display: block; overflow: hidden; background: var(--skeleton-fill); }
 .demo-sk span:first-child { height: 44px; border-radius: 10px; }
 .demo-sk span:last-child { width: 46%; height: 10px; margin: 22px auto 0; border-radius: 5px; }
 .stage-credit { display: none; }
@@ -59,7 +59,7 @@
   .demo-sk { height: 113px; }
   /* the CT card sits on the stage's lower-left corner, so the view chips move to the lower-right */
   .hero-stage .hero3d .hero3d__modes { left: auto; right: 14px; transform: none; }
-  .stage-credit { display: block; max-width: none; margin: 0; padding-left: 46%; color: var(--muted); font-size: 0.8125rem; line-height: 1.45; text-align: right; }
+  .stage-credit { display: block; max-width: none; margin: 0; padding-inline-start: 46%; color: var(--muted); font-size: 0.8125rem; line-height: 1.45; text-align: end; }
 }
 
 /* Nothing on this page reads under 12px: hero3d.css sets the stage's picture credit and its view labels at 11px,
@@ -75,8 +75,8 @@
 .why-notes dt { margin: 0 0 4px; color: var(--primary); font-size: 0.8125rem; font-weight: 650; letter-spacing: 0.08em; line-height: 1.4; text-transform: uppercase; }
 .why-notes dd { margin: 0; color: var(--ink); font-weight: 500; }
 .why-actions { gap: 8px 24px; margin-top: var(--sp-3); }
-.why .btn.tonal { color: var(--primary-dark); background: var(--primary-soft); border-color: #c5d8f3; }
-.why .btn.tonal:hover { color: var(--primary-dark); background: #d9e7fa; border-color: var(--primary); }
+.why .btn.tonal { color: var(--primary-dark); background: var(--primary-soft); border-color: var(--primary-line); }
+.why .btn.tonal:hover { color: var(--primary-dark); background: var(--primary-soft-hover); border-color: var(--primary); }
 .why .more-link { min-height: 44px; }
 
 /* 2b. Numbers: one light band of three tests; number, label and note. A phone gets rows (number left, words right),
@@ -128,13 +128,13 @@
 @media (max-width: 599px) {
   .tag-key { flex-direction: column; gap: 10px; }
   .tag-key div { flex-direction: column; gap: 2px; }
-  .tag-key dd { padding-left: 17px; }
+  .tag-key dd { padding-inline-start: 17px; }
 }
 
 /* 5. Install as an app: one slim row */
 .install-row { padding-block: clamp(28px, 4vw, 44px); border-bottom: 1px solid var(--line); }
 .install { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; }
-.app-icon { flex: none; display: grid; place-items: center; width: 64px; height: 64px; border: 1px solid var(--line); border-radius: 16px; background: #fff; box-shadow: var(--shadow); }
+.app-icon { flex: none; display: grid; place-items: center; width: 64px; height: 64px; border: 1px solid var(--line); border-radius: 16px; background: var(--card); box-shadow: var(--shadow); }
 .app-icon img { display: block; width: 40px; height: 40px; }
 .install-text { flex: 1 1 280px; min-width: 0; }
 .install-text h2 { margin: 0 0 10px; font-size: 1.25rem; font-weight: 650; letter-spacing: -0.01em; line-height: 1.3; }
@@ -154,34 +154,35 @@
 .price .fine { margin: 0; }
 .price .card-foot { margin: auto 0 0; padding-top: 24px; }
 .more-link { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; text-decoration: none; }
+/* arkitect-allow: css-logical-direction-properties - a chevron drawn by rotating two physical borders; it points the same way in every reading direction. */
 .more-link::after { content: ""; width: 7px; height: 7px; border-top: 2px solid currentColor; border-right: 2px solid currentColor; transform: rotate(45deg); }
 .more-link:hover { text-decoration: underline; }
 #pricing .sec-more { margin-top: 28px; }
 
 /* 7. Support the research: a soft panel, the words on the left and a small chooser on the right */
-.support-panel { display: grid; gap: 28px; align-items: start; padding: clamp(24px, 5vw, 56px); border: 1px solid #d6e3f5; border-radius: 20px; background: var(--primary-soft); }
+.support-panel { display: grid; gap: 28px; align-items: start; padding: clamp(24px, 5vw, 56px); border: 1px solid var(--primary-soft-edge); border-radius: 20px; background: var(--primary-soft); }
 .support-head > :last-child, .support-foot > :last-child { margin-bottom: 0; }
 .support-foot .invest { margin: 0; color: var(--ink); font-weight: 550; }
 .support-foot .actions { margin-top: 20px; }
-.support-foot .money-line { margin: 20px 0 0; color: #4d5e71; }
+.support-foot .money-line { margin: 20px 0 0; color: var(--text-soft); }
 @media (min-width: 900px) {
   .support-panel { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); grid-template-areas: "head chooser" "foot chooser"; gap: 28px 56px; align-content: center; }
   .support-head { grid-area: head; align-self: end; }
   .support-foot { grid-area: foot; align-self: start; }
   .chooser { grid-area: chooser; align-self: center; }
 }
-.chooser { padding: clamp(16px, 3vw, 28px); border: 1px solid var(--line); border-radius: var(--radius); background: #fff; box-shadow: var(--shadow); }
+.chooser { padding: clamp(16px, 3vw, 28px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); box-shadow: var(--shadow); }
 .chooser h3 { margin: 0 0 16px; }
 .chooser button { font: inherit; text-align: center; }
 .chooser .seg { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; margin-bottom: 16px; background: var(--bg-soft); border: 1px solid var(--line); border-radius: 12px; }
 .chooser .seg-b { min-height: 44px; border: 0; border-radius: 9px; background: transparent; color: var(--muted); font-weight: 600; cursor: pointer; }
-.chooser .seg-b[aria-pressed="true"] { background: #fff; color: var(--primary-dark); box-shadow: 0 1px 3px rgba(15, 27, 42, 0.14); }
+.chooser .seg-b[aria-pressed="true"] { background: var(--card); color: var(--primary-dark); box-shadow: var(--shadow-seg-on); }
 .chooser .amts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-.chooser .amt { min-height: 52px; border: 1px solid var(--line-strong); border-radius: var(--radius-s); background: #fff; color: var(--ink); font-size: 1.125rem; font-weight: 650; font-variant-numeric: tabular-nums; cursor: pointer; transition: border-color .15s, background-color .15s, color .15s; }
+.chooser .amt { min-height: 52px; border: 1px solid var(--line-strong); border-radius: var(--radius-s); background: var(--card); color: var(--ink); font-size: 1.125rem; font-weight: 650; font-variant-numeric: tabular-nums; cursor: pointer; transition: border-color .15s, background-color .15s, color .15s; }
 .chooser .amt:hover { border-color: var(--primary); }
 .chooser .amt[aria-pressed="true"] { border-color: var(--primary); background: var(--primary-soft); color: var(--primary-dark); box-shadow: inset 0 0 0 1px var(--primary); }
 .chooser .seg-b:focus-visible, .chooser .amt:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
-.gm-line { margin: 16px 0; color: #07615e; font-weight: 600; line-height: 1.4; text-wrap: balance; }
+.gm-line { margin: 16px 0; color: var(--teal-dark); font-weight: 600; line-height: 1.4; text-wrap: balance; }
 .chooser-go { width: 100%; min-height: 52px; }
 @media (max-width: 599px) { .gm-line { font-size: 0.875rem; } }
 
@@ -213,10 +214,11 @@
 #privacy { padding-bottom: clamp(56px, 7vw, 88px); }
 #credits > summary { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: var(--fs-s); font-weight: 600; list-style: none; }
 #credits > summary::-webkit-details-marker { display: none; }
+/* arkitect-allow: css-logical-direction-properties - a chevron drawn by rotating two physical borders; it points the same way in every reading direction. */
 #credits > summary::after { content: ""; width: 7px; height: 7px; margin-top: -3px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); transition: transform .15s; }
 #credits[open] > summary::after { margin-top: 3px; transform: rotate(-135deg); }
 #credits > summary:hover { color: var(--ink); }
-.credits-list { margin: 16px 0 0; padding-left: 1.1em; color: var(--muted); font-size: var(--fs-s); line-height: 1.55; }
+.credits-list { margin: 16px 0 0; padding-inline-start: 1.1em; color: var(--muted); font-size: var(--fs-s); line-height: 1.55; }
 .credits-list li { margin-bottom: 8px; break-inside: avoid; }
 @media (min-width: 900px) { .credits-list { columns: 2; column-gap: 48px; } }
 

@@ -205,8 +205,10 @@ export function mountHero3D(stage, opts = {}) {
   let dead = false;
   let booted = false;
   let core = null;
-  let readyDone;
-  const ready = new Promise((resolve) => { readyDone = resolve; });
+  // `ready` settles once: true when the 3D has drawn its first frame, false when it never will (no WebGL, a failed load, dispose).
+  const readySignal = new EventTarget();
+  const ready = new Promise((resolve) => { readySignal.addEventListener('ready', (e) => resolve(e.detail), { once: true }); });
+  const settleReady = (ok) => readySignal.dispatchEvent(new CustomEvent('ready', { detail: ok }));
   const before = { style: stage.getAttribute('style'), role: stage.getAttribute('role'), label: stage.getAttribute('aria-label') };
 
   stage.classList.add('hero3d');
@@ -270,7 +272,7 @@ export function mountHero3D(stage, opts = {}) {
   function goStatic() {
     stage.classList.add('hero3d--static');
     stage.classList.remove('is-live');
-    readyDone(false);
+    settleReady(false);
   }
 
   function setMode(m) {
@@ -637,12 +639,10 @@ export function mountHero3D(stage, opts = {}) {
       if (!sel) {
         label.hidden = true;
         hi.visible = false;
-        stage.classList.remove('has-label');
         return;
       }
       labelName.textContent = sel.name;
       label.hidden = false;
-      stage.classList.add('has-label');
       placeLabel();
     }
 
@@ -923,10 +923,16 @@ export function mountHero3D(stage, opts = {}) {
     try { await renderer.compileAsync(scene, camera); } catch { /* compiled on first draw instead */ }
     if (dead || lost) return;
     renderer.render(scene, camera);
-    requestAnimationFrame(() => {
-      if (dead || lost) return;
+    // Reveal on the next frame. A hidden tab never fires requestAnimationFrame, so a timer reveals it too;
+    // whichever comes first runs the reveal and the other is a no-op.
+    let revealed = false;
+    let revealTimer = 0;
+    const reveal = () => {
+      if (revealed || dead || lost) return;
+      revealed = true;
+      clearTimeout(revealTimer);
       stage.classList.add('is-live');
-      readyDone(true);
+      settleReady(true);
       setTimeout(() => {
         if (dead || lost) return;
         started = true;
@@ -934,7 +940,9 @@ export function mountHero3D(stage, opts = {}) {
         if (lastSlice) core.slice();
         kick(true);
       }, reduced ? 0 : 750);
-    });
+    };
+    requestAnimationFrame(reveal);
+    revealTimer = setTimeout(reveal, 1000);
   }
 
   return {
@@ -948,11 +956,11 @@ export function mountHero3D(stage, opts = {}) {
       ro?.disconnect();
       core?.dispose();
       for (const n of made) n.remove();
-      stage.classList.remove('hero3d--static', 'hero3d--narrow', 'is-live', 'is-dragging', 'is-pointing', 'is-turned', 'has-label');
+      stage.classList.remove('hero3d--static', 'hero3d--narrow', 'is-live', 'is-dragging', 'is-pointing', 'is-turned');
       if (before.style === null) stage.removeAttribute('style'); else stage.setAttribute('style', before.style);
       if (before.role === null) stage.removeAttribute('role'); else stage.setAttribute('role', before.role);
       if (before.label === null) stage.removeAttribute('aria-label'); else stage.setAttribute('aria-label', before.label);
-      readyDone(false);
+      settleReady(false);
     },
   };
 }

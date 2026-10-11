@@ -170,7 +170,6 @@ export function mountCtDemo(box, opts = {}) {
     if (!playing) return;
     playing = false;
     cancelAnimationFrame(raf);
-    box.classList.remove('is-playing');
   }
 
   function play() {
@@ -180,7 +179,6 @@ export function mountCtDemo(box, opts = {}) {
     const legs = [[m, 0], [0, n], [n, m]];
     const total = legs.reduce((s, [a, b]) => s + Math.abs(b - a), 0);
     playing = true;
-    box.classList.add('is-playing');
     const t0 = performance.now();
     const tick = (now) => {
       if (!playing) return;
@@ -267,7 +265,6 @@ export function mountCtDemo(box, opts = {}) {
     range.max = String(d.count - 1);
     index = -1;
     show(mid(), false);
-    box.classList.add('is-ready');
     if (prefersReducedMotion()) restingOutline();
     if ('IntersectionObserver' in window) {
       io = new IntersectionObserver((entries) => {

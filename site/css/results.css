@@ -8,13 +8,13 @@
 /* Filled dot: held-out test. Hollow dot: development. The same key in the charts and on the tiles. */
 .dot-key { flex: none; display: block; width: 11px; height: 11px; }
 .dot-key circle { fill: var(--teal); stroke: var(--teal); stroke-width: 1.6; }
-.dot-key.hollow circle { fill: #fff; }
+.dot-key.hollow circle { fill: var(--card); }
 
 /* Result tiles: one per model, picture in a black frame, the headline score in teal.
    Phone: the picture beside the text. Tablet: two columns. Desktop: four over three, every row filled. */
 .result-tiles { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; margin: 0; }
 .result-tile { position: relative; display: grid; grid-template-columns: 84px minmax(0, 1fr); column-gap: 16px; align-content: start; align-items: start; padding: 14px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); color: var(--text); text-decoration: none; transition: border-color .15s, box-shadow .15s; }
-.result-tile:hover { color: var(--text); border-color: var(--primary); box-shadow: 0 1px 2px rgba(15, 27, 42, 0.05), 0 12px 32px rgba(15, 27, 42, 0.09); }
+.result-tile:hover { color: var(--text); border-color: var(--primary); box-shadow: var(--shadow-tile-hover); }
 .result-tile > img { grid-row: 1 / span 6; display: block; width: 84px; height: 84px; object-fit: cover; background: var(--lightbox); border-radius: 10px; }
 .result-tile > .pic-chip { display: none; }
 .result-tile > :not(img):not(.pic-chip) { grid-column: 2; }
@@ -24,8 +24,8 @@
 .result-tile .interval { color: var(--muted); font-size: 0.875rem; font-weight: 500; letter-spacing: 0; white-space: nowrap; }
 .result-tile .what { margin: 6px 0 0; color: var(--text); font-size: 0.875rem; line-height: 1.45; }
 .result-tile .test { margin: 4px 0 0; color: var(--muted); font-size: 0.8125rem; line-height: 1.45; }
-.result-tile .tag { justify-self: start; display: inline-flex; align-items: center; gap: 6px; margin: 10px 0 0; padding: 3px 10px 3px 7px; border-radius: 999px; background: var(--teal-soft); color: #07615e; font-size: 0.75rem; font-weight: 650; line-height: 1.4; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
-.result-tile .tag.dev { background: #eef1f4; color: var(--muted); }
+.result-tile .tag { justify-self: start; display: inline-flex; align-items: center; gap: 6px; margin: 10px 0 0; padding: 3px 10px 3px 7px; border-radius: 999px; background: var(--teal-soft); color: var(--teal-dark); font-size: 0.75rem; font-weight: 650; line-height: 1.4; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+.result-tile .tag.dev { background: var(--grey-soft); color: var(--muted); }
 @media (min-width: 640px) and (max-width: 899px) {
   .result-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
   .result-tiles > :last-child:nth-child(odd) { grid-column: 1 / -1; }
@@ -71,12 +71,12 @@
 /* The track: hairline axis, tick lines (dashed at chance), the 95% interval with end caps, and the dot.
    The interval keeps at least 7px either side of the dot so its caps stay visible; the printed numbers stay exact. */
 .rc-t { position: relative; align-self: stretch; min-height: 30px; margin: 0 12px; background: linear-gradient(var(--line-strong), var(--line-strong)) center / 100% 1px no-repeat; }
-.rc-t i { position: absolute; top: 0; bottom: 0; width: 1px; transform: translateX(-50%); background: #dde4ec; }
-.rc-t i.c { background: repeating-linear-gradient(to bottom, #b9c5d2 0 3px, transparent 3px 7px); }
+.rc-t i { position: absolute; top: 0; bottom: 0; width: 1px; transform: translateX(-50%); background: var(--track-tick); }
+.rc-t i.c { background: repeating-linear-gradient(to bottom, var(--track-chance) 0 3px, transparent 3px 7px); }
 .rc-t::before { content: ""; position: absolute; top: 50%; height: 14px; margin-top: -7px; left: min(calc(var(--lo) * 1%), calc(var(--v) * 1% - 7px)); right: min(calc(100% - var(--hi) * 1%), calc(100% - var(--v) * 1% - 7px)); border-inline: 2px solid var(--teal); background: linear-gradient(var(--teal), var(--teal)) center / 100% 2px no-repeat; }
 .no-iv .rc-t::before { content: none; }
 .rc-t::after { content: ""; position: absolute; top: 50%; left: calc(var(--v) * 1%); width: 11px; height: 11px; margin: -5.5px 0 0 -5.5px; border: 2px solid var(--teal); border-radius: 50%; background: var(--teal); }
-.dev .rc-t::after { background: #fff; }
+.dev .rc-t::after { background: var(--card); }
 @media (max-width: 639px) {
   .rc { padding: 16px 14px; border-radius: 12px; }
   .rc-grid { grid-template-columns: minmax(0, 1fr) max-content; column-gap: 14px; }
@@ -84,25 +84,26 @@
   /* label | score on the first line, track | interval on the second */
   .rc-l { grid-column: 1; grid-row: 1; padding: 9px 0 2px; }
   .rc-v { display: contents; }
-  .rc-v strong { grid-column: 2; grid-row: 1; align-self: start; padding-top: 9px; text-align: right; }
-  .rc-v span { grid-column: 2; grid-row: 2; align-self: center; font-size: 0.8125rem; text-align: right; }
+  .rc-v strong { grid-column: 2; grid-row: 1; align-self: start; padding-top: 9px; text-align: end; }
+  .rc-v span { grid-column: 2; grid-row: 2; align-self: center; font-size: 0.8125rem; text-align: end; }
   .rc-t { grid-column: 1; grid-row: 2; min-height: 24px; }
   .rc-row:hover { background: none; }
-  .rc-vh { text-align: right; }
+  .rc-vh { text-align: end; }
   .rc-vh span { display: block; }
 }
 
 /* Show the numbers */
 .rnums { margin-top: 20px; }
-.rnums summary { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 6px 16px; background: #fff; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--ink); font-size: var(--fs-s); font-weight: 600; list-style: none; }
+.rnums summary { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 6px 16px; background: var(--card); border: 1px solid var(--line-strong); border-radius: 999px; color: var(--ink); font-size: var(--fs-s); font-weight: 600; list-style: none; }
 .rnums summary::-webkit-details-marker { display: none; }
+/* arkitect-allow: css-logical-direction-properties - a chevron drawn by rotating two physical borders; it points the same way in every reading direction. */
 .rnums summary::after { content: ""; width: 7px; height: 7px; margin: -3px 2px 0 2px; border-right: 2px solid var(--primary); border-bottom: 2px solid var(--primary); transform: rotate(45deg); }
 .rnums[open] summary::after { margin-top: 3px; transform: rotate(-135deg); }
 .rnums summary:hover { border-color: var(--primary); color: var(--primary-dark); }
 .rnums[open] summary { margin-bottom: 12px; }
 .rnums-wrap { overflow-x: auto; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-s); }
 .rnums table { width: 100%; border-collapse: collapse; font-size: var(--fs-s); line-height: 1.45; font-variant-numeric: tabular-nums; }
-.rnums th, .rnums td { padding: 8px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.rnums th, .rnums td { padding: 8px 12px; border-bottom: 1px solid var(--line); text-align: start; vertical-align: top; }
 .rnums thead th { color: var(--muted); font-weight: 600; white-space: nowrap; }
 .rnums tbody th { color: var(--ink); font-weight: 600; }
 .rnums tr.grp th { padding-top: 14px; background: var(--bg-soft); color: var(--muted); font-size: 0.75rem; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase; }
@@ -119,7 +120,7 @@
   .results-head .result-tile { grid-template-columns: 64px minmax(0, 1fr); padding: 12px; }
   .results-head .result-tile > img { grid-row: 1 / span 4; width: 64px; height: 64px; }
   .results-head .result-tile .score { font-size: 1.25rem; }
-  .results-head .result-tile .interval { display: inline; margin-left: 4px; }
+  .results-head .result-tile .interval { display: inline; margin-inline-start: 4px; }
   .results-head .result-tile .tag { margin-top: 6px; }
 }
 @media (min-width: 900px) {
@@ -149,7 +150,7 @@
 .model-name h2 { margin: 0; }
 .model-name .eyebrow { margin-bottom: 8px; }
 .model-pic { grid-area: pic; align-self: start; }
-.model-pic > img { width: 100%; height: 200px; object-fit: contain; background: #000; }
+.model-pic > img { width: 100%; height: 200px; object-fit: contain; background: var(--black); }
 .model-pic > .pic-chip { top: 20px; bottom: auto; }
 .model-pic figcaption { margin-top: 10px; font-size: 0.75rem; line-height: 1.45; }
 .model-main { grid-area: main; min-width: 0; }
@@ -158,7 +159,7 @@
 .model-bd { display: grid; gap: 20px; min-width: 0; align-content: start; }
 .model-facts { display: grid; gap: 24px 40px; align-content: start; min-width: 0; padding-top: 8px; }
 .model-facts h3 { margin: 0 0 10px; font-size: 1rem; line-height: 1.4; }
-.model-facts .short-list { margin: 0; padding-left: 1.1em; max-width: 68ch; font-size: 0.9375rem; line-height: 1.55; }
+.model-facts .short-list { margin: 0; padding-inline-start: 1.1em; max-width: 68ch; font-size: 0.9375rem; line-height: 1.55; }
 .model-facts .short-list li { margin-bottom: 8px; }
 .model-facts .short-list li:last-child { margin-bottom: 0; }
 .model-facts .short-list li::marker { color: var(--muted); }

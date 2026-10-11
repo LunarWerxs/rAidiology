@@ -31,7 +31,7 @@ if (box) {
   const segs = [...document.querySelectorAll('.seg-b')];
   const chips = [...document.querySelectorAll('.chip')];
   const state = { amount: 15, freq: 'month', busy: false };
-  const money = (n) => '$' + n.toLocaleString('en-US');
+  const money = (n) => '$' + n.toLocaleString(undefined);
 
   function parse(text) {
     const n = parseInt(String(text).replace(/[^0-9]/g, ''), 10);

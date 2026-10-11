@@ -21,6 +21,13 @@
   --accent-a30: rgba(233, 223, 201, 0.3);
   --accent-a60: rgba(233, 223, 201, 0.6);
   --black: #000;
+  --gold-light: #ecd08f;
+  --gold: #d9a441;
+  --cream-a03: rgba(255, 248, 235, 0.03);
+  --cream-a06: rgba(255, 248, 235, 0.06);
+  --black-a60: rgba(0, 0, 0, 0.6);
+  --ground-a94: rgba(13, 13, 12, 0.94);
+  --ground-a76: rgba(13, 13, 12, 0.76);
   --cream-a05: rgba(255, 248, 235, 0.05);
   --cream-a07: rgba(255, 248, 235, 0.07);
   --cream-a10: rgba(255, 248, 235, 0.1);
@@ -126,7 +133,7 @@ svg { flex-shrink: 0; }
 .meta-chip { font-size: 12.5px; color: var(--text-2); padding: 3px 9px; border-radius: 999px; background: var(--card-hover); white-space: nowrap; }
 .sample-badge {
   font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
-  color: var(--ink-amber); background: linear-gradient(135deg, #ecd08f, #d9a441);
+  color: var(--ink-amber); background: linear-gradient(135deg, var(--gold-light), var(--gold));
   padding: 4px 10px; border-radius: 999px; white-space: nowrap;
   box-shadow: 0 0 0 3px var(--sev-mild-a16);
 }
@@ -345,7 +352,7 @@ details.tech .tech-body strong { font-family: inherit; display: block; margin-bo
 .stage { position: relative; width: 100%; background: var(--black); border-radius: 12px; overflow: hidden; box-shadow: inset 0 0 0 1px var(--line); }
 .stage-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; }
 .stage-marks { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-.stage-missing { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 12px; font-size: 12.5px; color: var(--muted); background: repeating-linear-gradient(135deg, rgba(255, 248, 235, 0.03) 0 10px, transparent 10px 20px); }
+.stage-missing { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 12px; font-size: 12.5px; color: var(--muted); background: repeating-linear-gradient(135deg, var(--cream-a03) 0 10px, transparent 10px 20px); }
 .orient { position: absolute; font-size: 11px; font-weight: 650; color: var(--cream-a90); background: var(--shade-a55); padding: 2px 8px; border-radius: 999px; pointer-events: none; letter-spacing: 0.02em; }
 .orient.top { top: 8px; left: 50%; transform: translateX(-50%); }
 .orient.bottom { bottom: 8px; left: 50%; transform: translateX(-50%); }
@@ -358,7 +365,7 @@ details.tech .tech-body strong { font-family: inherit; display: block; margin-bo
 .field label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); }
 .select {
   appearance: none; -webkit-appearance: none; width: 100%;
-  background: rgba(255, 248, 235, 0.06) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238e887e' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center / 16px;
+  background: var(--cream-a06) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238e887e' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center / 16px;
   border: 1px solid var(--line-strong); border-radius: 10px; padding: 9px 36px 9px 12px; font-size: 16px;
 }
 .select option { background: var(--raised); color: var(--text); }
@@ -415,7 +422,7 @@ details.tech .tech-body strong { font-family: inherit; display: block; margin-bo
 .spine-diagram .hit { cursor: pointer; outline: none; }
 .spine-diagram .hit .shape { transition: stroke var(--dur), filter var(--dur); }
 .spine-diagram .hit:hover .shape, .spine-diagram .hit:focus-visible .shape { stroke: var(--paper-2); stroke-width: 1.5; }
-.spine-diagram .hit.is-selected .shape { stroke: var(--paper-2); stroke-width: 2.2; filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.6)); }
+.spine-diagram .hit.is-selected .shape { stroke: var(--paper-2); stroke-width: 2.2; filter: drop-shadow(0 0 4px var(--black-a60)); }
 .spine-diagram text { font-family: inherit; }
 .legend { display: flex; flex-wrap: wrap; gap: 6px; }
 .level-detail h3 { margin: 0; font-size: 18px; font-weight: 680; }
@@ -446,7 +453,7 @@ details.tech .tech-body strong { font-family: inherit; display: block; margin-bo
 /* ---------- disclaimer ---------- */
 .disclaimer {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 7; min-height: var(--foot-h);
-  background: linear-gradient(to top, rgba(13, 13, 12, 0.94), rgba(13, 13, 12, 0.76));
+  background: linear-gradient(to top, var(--ground-a94), var(--ground-a76));
   border-top: 1px solid var(--line);
   -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
 }
