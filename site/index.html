@@ -28,6 +28,7 @@
   <script type="importmap">{"imports":{"three":"./js/vendor/three/three.module.min.js","three/addons/":"./js/vendor/three/addons/"}}</script>
   <script type="module" src="js/install.js"></script>
   <script type="module" src="js/home.js"></script>
+  <noscript><style>.ctdemo__loading { display: none; }</style></noscript>
 </head>
 <body>
   <a class="skip" href="#main">Skip to the content</a>
@@ -57,7 +58,7 @@
           <p class="eyebrow">Free and open source</p>
           <h1>See inside a scan, right in your browser.</h1>
           <p class="lede">Your own CT, MRI or X-ray opens on this device, research models outline the parts and name them, and nothing is uploaded.</p>
-          <p class="actions hero-actions"><a class="btn" id="try-sample" href="#demo">Try the sample scan</a>
+          <p class="actions hero-actions"><a class="btn" id="try-sample" href="open.html?sample=1">Try the sample scan</a>
             <a class="btn secondary" href="open.html">Open your own scan</a></p>
           <ul class="proof">
             <!-- 54 = the structures listed in site/sample/demo/demo.json -->
@@ -69,18 +70,41 @@
         <div class="hero-stage">
           <div class="stage-wrap">
             <div class="stage-box"><div class="hero3d" data-poster="img/hero-poster.webp" data-poster-phone="img/hero-poster-phone.webp"></div></div>
-            <div class="ctdemo" id="demo" data-src="sample/demo/demo.json"><div class="demo-ph"><img src="sample/demo/s22.webp" width="384" height="384" alt="A slice of the sample CT scan." decoding="async"></div></div>
+            <div class="ctdemo is-loading" id="demo" data-src="sample/demo/demo.json"><div class="demo-ph"><img src="sample/demo/s22.webp" width="384" height="384" alt="A slice of the sample CT scan." decoding="async"><p class="ctdemo__loading" role="status">Loading the sample scan</p></div><div class="demo-sk" aria-hidden="true"><span></span><span></span></div></div>
           </div>
           <p class="stage-credit">Sample CT from TotalSegmentator (CC BY 4.0). Outlines by an open research model.</p>
         </div>
       </div>
     </section>
 
+    <section class="sec why" id="why" aria-labelledby="why-h">
+      <div class="wrap">
+        <div class="sec-head">
+          <p class="eyebrow">Why back this</p>
+          <h2 id="why-h">What your support builds on.</h2>
+          <p>Three facts from this page, and who is behind them.</p>
+        </div>
+        <!-- 7 = research models; 54 = the structures listed in site/sample/demo/demo.json.
+             tools/build_momentum.py writes the data-log numbers from the run ledger, like the "Built in the open" block. -->
+        <ul class="stats why-stats">
+          <li class="stat"><p class="stat-n">7</p><p class="stat-l">research models</p><p class="stat-d">Open models for X-ray, CT, MRI and mammogram pictures, each described in detail.</p></li>
+          <li class="stat"><p class="stat-n">54</p><p class="stat-l">parts named on the sample scan</p><p class="stat-d">Open the sample and tap an outline to see its name.</p></li>
+          <li class="stat"><p class="stat-n" data-log="runs">1,615</p><p class="stat-l">runs on record</p><p class="stat-d"><span data-log="hours">382</span> hours of recorded runs. The newest entry is <time data-log="newest" datetime="2026-10-11">Oct 11, 2026</time>.</p></li>
+        </ul>
+        <dl class="why-notes">
+          <div><dt>Who builds it</dt><dd>LunarWerx LLC, a for-profit company. The code and the model cards are public.</dd></div>
+          <div><dt>What is next</dt><dd>Bigger research models, trained on rented GPU time.</dd></div>
+        </dl>
+        <p class="actions why-actions"><a class="btn tonal" href="support.html">Support the next model</a>
+          <a class="more-link" href="support.html#invest">Investing or partnering? Talk to us</a></p>
+      </div>
+    </section>
+
     <section class="numbers soft" id="numbers" aria-labelledby="numbers-h">
       <div class="wrap">
-        <h2 id="numbers-h" class="sr">What was built, in numbers</h2>
+        <h2 id="numbers-h">Checked on pictures the models never trained on.</h2>
         <!-- chart:band -->
-<ul class="stats"><li class="stat"><p class="stat-n">7</p><p class="stat-l">research models</p><p class="stat-d">Seven models trained on public data, each described on its own card</p><a class="stat-src" href="models.html">Where this comes from</a></li><li class="stat"><p class="stat-n">4</p><p class="stat-l">kinds of scan</p><p class="stat-d">X-ray, CT, MRI and mammogram</p><a class="stat-src" href="models.html">Where this comes from</a></li><li class="stat"><p class="stat-n">115</p><p class="stat-l">body structures outlined on CT, scored on held-out scans</p><p class="stat-d">Structures found in at least 10 of the 89 held-out CT scans</p><a class="stat-src" href="models.html#ct-segmenter">Where this comes from</a></li><li class="stat"><p class="stat-n">25,596</p><p class="stat-l">chest X-rays in the held-out test</p><p class="stat-d">NIH&#x27;s official test list, kept out of all training</p><a class="stat-src" href="models.html#chest-xray">Where this comes from</a></li><li class="stat"><p class="stat-n">4,067</p><p class="stat-l">children&#x27;s wrist X-rays in the held-out test</p><p class="stat-d">GRAZPEDWRI-DX held-out test pictures with a certain label</p><a class="stat-src" href="models.html#fracture-detector">Where this comes from</a></li></ul>
+<ul class="stats"><li class="stat"><p class="stat-n">115</p><p class="stat-l">body structures outlined on CT</p><p class="stat-d">Checked on 89 CT scans kept out of training. Each structure is in at least 10 of them.</p></li><li class="stat"><p class="stat-n">25,596</p><p class="stat-l">chest <span class="nb">X-rays</span> used for testing</p><p class="stat-d">NIH's official test list. None were used in training.</p></li><li class="stat"><p class="stat-n">4,067</p><p class="stat-l">children's wrist <span class="nb">X-rays</span> used for testing</p><p class="stat-d">From the <span class="nb">GRAZPEDWRI-DX</span> test set. Only pictures with a clear label are counted.</p></li></ul><p class="band-src"><a href="models.html">Where these numbers come from</a></p>
 <!-- /chart:band -->
       </div>
     </section>
@@ -171,7 +195,7 @@
         </div>
         <!-- momentum -->
         <ul class="momentum-list">
-          <li><p class="m-n">1,614</p><p class="m-l">runs recorded</p></li>
+          <li><p class="m-n">1,615</p><p class="m-l">runs recorded</p></li>
           <li><p class="m-n">382</p><p class="m-l">hours of recorded runs</p></li>
           <li><p class="m-n">74</p><p class="m-l">ideas tried</p></li>
           <li><p class="m-n"><time datetime="2026-10-11">Oct 11, 2026</time></p><p class="m-l">newest entry</p></li>
@@ -250,7 +274,7 @@
             <a class="btn chooser-go" id="chooser-go" href="support.html?amount=15&amp;freq=month">Give $15 a month</a>
           </div>
           <div class="support-foot">
-            <p class="invest">Investing or partnering? <a href="mailto:contact@lunarwerx.com?subject=Investing%20in%20rAidiology">Email us</a></p>
+            <p class="invest">Investing or partnering? <a href="support.html#invest">Talk to us</a></p>
             <p class="actions"><a class="btn secondary" href="support.html">All the ways to give</a>
               <a class="btn secondary" href="pricing.html">See pricing</a></p>
             <p class="fine money-line">LunarWerx LLC is a for-profit company. Payments are not tax-deductible.</p>

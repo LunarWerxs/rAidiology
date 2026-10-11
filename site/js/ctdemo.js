@@ -35,7 +35,8 @@ export function mountCtDemo(box, opts = {}) {
   let dead = false;
   const loaded = new Set();
 
-  box.classList.add('ctdemo');
+  box.classList.add('ctdemo', 'is-loading');
+  box.setAttribute('aria-busy', 'true');
   box.replaceChildren();
 
   const lightbox = make('div', 'ctdemo__lightbox');
@@ -43,7 +44,10 @@ export function mountCtDemo(box, opts = {}) {
   const svg = svgEl('svg', { class: 'ctdemo__svg', 'aria-hidden': 'true' });
   const chip = make('div', 'ctdemo__chip');
   chip.hidden = true;
-  lightbox.append(img, svg, chip);
+  // Dark skeleton with a short line until the first picture paints (css/ctdemo.css styles .is-loading).
+  const loading = make('p', 'ctdemo__loading', { role: 'status' });
+  loading.textContent = 'Loading the sample scan';
+  lightbox.append(img, svg, chip, loading);
 
   const bar = make('div', 'ctdemo__bar');
   const prev = make('button', 'ctdemo__step', { type: 'button', 'aria-label': 'Previous slice' });
@@ -66,6 +70,20 @@ export function mountCtDemo(box, opts = {}) {
   box.tabIndex = 0;
   box.setAttribute('role', 'group');
   box.setAttribute('aria-label', 'Sample CT viewer. Arrow keys change the slice.');
+
+  function failed() {
+    box.classList.remove('is-loading');
+    box.classList.add('is-failed');
+    box.removeAttribute('aria-busy');
+    loading.textContent = 'The sample scan could not load.';
+    credit.replaceChildren(link); // the full viewer is still one tap away
+  }
+  on(img, 'load', () => {
+    box.classList.remove('is-loading');
+    box.removeAttribute('aria-busy');
+    loading.remove();
+  }, { once: true });
+  on(img, 'error', failed, { once: true });
 
   const frameUrl = (i) => new URL(demo.frames[i], src).href;
   const mid = () => Math.floor((demo.count - 1) / 2);
@@ -259,9 +277,7 @@ export function mountCtDemo(box, opts = {}) {
     } else {
       begin();
     }
-  }).catch(() => {
-    credit.textContent = 'The sample could not be loaded.';
-  });
+  }).catch(failed);
 
   return {
     dispose() {

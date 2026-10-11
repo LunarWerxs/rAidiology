@@ -197,14 +197,11 @@ def tiles():
 
 
 def band():
-    cards = []
-    for b in STATS["band"]:
-        src = (b.get("source") or {}).get("file", "")
-        key = os.path.splitext(os.path.basename(src))[0] if src.startswith("release/cards/") else ""
-        href = f"models.html#{key}" if key else "models.html"
-        cards.append(f'<li class="stat"><p class="stat-n">{esc(b["value"])}</p><p class="stat-l">{esc(b["label"])}</p>'
-                     f'<p class="stat-d">{esc(b["detail"])}</p><a class="stat-src" href="{href}">Where this comes from</a></li>')
-    return '<ul class="stats">' + "".join(cards) + "</ul>"
+    """The numbers band, with one source link under it (a link on every card read as clutter in the design review)."""
+    cards = [f'<li class="stat"><p class="stat-n">{esc(b["value"])}</p><p class="stat-l">{text(b["label"])}</p>'
+             f'<p class="stat-d">{text(b["detail"])}</p></li>' for b in STATS["band"]]
+    return ('<ul class="stats">' + "".join(cards) + '</ul>'
+            '<p class="band-src"><a href="models.html">Where these numbers come from</a></p>')
 
 
 def build():

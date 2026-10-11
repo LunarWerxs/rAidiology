@@ -1,21 +1,9 @@
 {
   "band": [
     {
-      "value": "7",
-      "label": "research models",
-      "detail": "Seven models trained on public data, each described on its own card",
-      "computed": "models"
-    },
-    {
-      "value": "4",
-      "label": "kinds of scan",
-      "detail": "X-ray, CT, MRI and mammogram",
-      "computed": "scan_types"
-    },
-    {
       "value": "115",
-      "label": "body structures outlined on CT, scored on held-out scans",
-      "detail": "Structures found in at least 10 of the 89 held-out CT scans",
+      "label": "body structures outlined on CT",
+      "detail": "Checked on 89 CT scans kept out of training. Each structure is in at least 10 of them.",
       "source": {
         "file": "release/cards/ct-segmenter.md",
         "line": 30
@@ -23,8 +11,8 @@
     },
     {
       "value": "25,596",
-      "label": "chest X-rays in the held-out test",
-      "detail": "NIH's official test list, kept out of all training",
+      "label": "chest X-rays used for testing",
+      "detail": "NIH's official test list. None were used in training.",
       "source": {
         "file": "release/cards/chest-xray.md",
         "line": 26
@@ -32,8 +20,8 @@
     },
     {
       "value": "4,067",
-      "label": "children's wrist X-rays in the held-out test",
-      "detail": "GRAZPEDWRI-DX held-out test pictures with a certain label",
+      "label": "children's wrist X-rays used for testing",
+      "detail": "From the GRAZPEDWRI-DX test set. Only pictures with a clear label are counted.",
       "source": {
         "file": "release/cards/fracture-detector.md",
         "line": 50

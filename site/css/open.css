@@ -109,8 +109,10 @@ p { max-width: 68ch; }
 .series-card .title { font-weight: 620; }
 .series-card .sub { color: var(--muted); font-size: 0.86rem; }
 
-.viewer-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.viewer-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 12px; }
 .viewer-head h2 { margin: 0; }
+/* The one way out of the viewer: a chevron, then either "Back to the list" or "Open a different scan". */
+.back-btn::before { content: ""; flex: none; inline-size: 0.5em; block-size: 0.5em; margin-inline-end: 2px; border-inline-start: 2px solid currentColor; border-block-end: 2px solid currentColor; transform: rotate(45deg); }
 .stage {
   position: relative; background: var(--black); border: 1px solid var(--line); border-radius: var(--r-lg);
   overflow: hidden; touch-action: none; aspect-ratio: 1 / 1;
@@ -132,18 +134,33 @@ p { max-width: 68ch; }
 }
 .name-tip strong { font-weight: 700; color: inherit; }
 /* Which side of the body each edge of the picture is. Drawn over the image, so like the scale bar
-   these are sides of the picture and must not mirror with the reading direction. */
+   these are sides of the picture and must not mirror with the reading direction. Small and faint:
+   a reviewer found the long words large and sitting on the anatomy. The side ones wrap to two lines
+   so they stay in the black margin; phones swap them for R and L below. */
 .edge {
-  position: absolute; padding: 3px 9px; border-radius: 999px; pointer-events: none;
-  background: var(--scrim); color: var(--on-picture); font-size: 0.9rem; white-space: nowrap;
+  position: absolute; padding: 2px 8px; border-radius: 999px; pointer-events: none;
+  background: rgba(0, 0, 0, 0.4); color: rgba(238, 243, 248, 0.82); font-size: 0.75rem; line-height: 1.3; white-space: nowrap;
 }
+.edge-left, .edge-right { white-space: normal; max-inline-size: 7em; text-align: center; border-radius: 10px; line-height: 1.25; }
 /* arkitect-allow: css-logical-direction-properties - a side of the picture, not of a sentence. */
-.edge-top { top: 10px; left: 50%; transform: translateX(-50%); }
-.edge-bottom { bottom: 10px; left: 50%; transform: translateX(-50%); }
+.edge-top { top: 8px; left: 50%; transform: translateX(-50%); }
+.edge-bottom { bottom: 8px; left: 50%; transform: translateX(-50%); }
 /* arkitect-allow: css-logical-direction-properties - a side of the picture, not of a sentence. */
-.edge-left { left: 10px; top: 50%; transform: translateY(-50%); }
+.edge-left { left: 8px; top: 50%; transform: translateY(-50%); }
 /* arkitect-allow: css-logical-direction-properties - a side of the picture, not of a sentence. */
-.edge-right { right: 10px; top: 50%; transform: translateY(-50%); }
+.edge-right { right: 8px; top: 50%; transform: translateY(-50%); }
+
+/* Over the picture while a reading is matched to it and drawn. */
+.stage-status {
+  position: absolute; left: 50%; top: 50%; z-index: 2; transform: translate(-50%, -50%);
+  display: inline-flex; align-items: center; gap: 10px; padding: 8px 16px; border-radius: 999px;
+  background: var(--scrim); color: var(--on-picture); font-size: 0.9375rem; font-weight: 600; white-space: nowrap; pointer-events: none;
+}
+.stage-status .spinner {
+  inline-size: 14px; block-size: 14px; border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35); border-block-start-color: #fff; animation: stage-spin 0.8s linear infinite;
+}
+@keyframes stage-spin { to { transform: rotate(360deg); } }
 .what { margin: 12px 0 0; color: var(--text-2); max-width: 72ch; }
 .source { font-size: 0.86rem; }
 
@@ -154,7 +171,7 @@ p { max-width: 68ch; }
   border-inline-start: 2px solid var(--on-picture); border-inline-end: 2px solid var(--on-picture); border-bottom: 2px solid var(--on-picture);
   pointer-events: none;
 }
-.scalebar span { position: absolute; right: 0; bottom: 20px; color: var(--on-picture); font-size: 0.75rem; }
+.scalebar span { position: absolute; right: 0; bottom: 20px; color: var(--on-picture); font-size: 0.75rem; white-space: nowrap; }
 
 .controls { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin: 14px 0 10px; }
 .controls .slider { flex: 1 1 14rem; }
@@ -199,9 +216,19 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
   .btn, .cta, .ghost, .small { min-height: 48px; }
   /* The picture slider across the whole width, with Previous and Next under it side by side. */
   .controls > .slider { flex-basis: 100%; order: -1; }
-  /* On one line, "right side of the body" and "left side of the body" met across the middle of a
-     phone's picture; on two they keep to the edges. */
-  .edge-left, .edge-right { white-space: normal; max-inline-size: 6.5em; text-align: center; border-radius: 12px; line-height: 1.25; }
+}
+/* Phones: "right side of the body" and "left side of the body" covered the edges of the anatomy; they
+   show as R and L there. The full words stay in the page for screen readers, pushed out of a clipped
+   circle at their normal size rather than shrunk to nothing. */
+@media (max-width: 600px) {
+  .edge[data-short="R"], .edge[data-short="L"] {
+    inline-size: 1.75rem; block-size: 1.75rem; padding: 0; max-inline-size: none; overflow: hidden; white-space: nowrap;
+    text-indent: 100%; border-radius: 999px; background: var(--scrim); color: var(--on-picture);
+  }
+  .edge[data-short="R"]::after, .edge[data-short="L"]::after {
+    content: attr(data-short); position: absolute; inset: 0; display: grid; place-items: center; text-indent: 0;
+    font-size: 0.9rem; font-weight: 700; line-height: 1;
+  }
 }
 /* Phones: Previous, the slider and Next sit in one bar pinned to the bottom of the viewer area. It
    comes after the picture in the page, so it never covers the image. */
@@ -258,21 +285,34 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
 }
 
 .finding {
-  margin: 12px 0 0; padding: 12px 14px; border-radius: var(--r-md);
+  margin: 14px 0 0; padding: 12px 12px 8px; border-radius: var(--r-md);
   border-inline-start: 2px solid var(--line-strong);
-  background: var(--card); color: var(--muted); font-size: 0.92rem; max-width: 80ch;
+  background: var(--bg-soft); color: var(--muted); font-size: 0.92rem; max-width: 80ch;
 }
-.finding.marked { border-inline-start-color: var(--warn); color: var(--text-2); }
-/* A CT reading's key: each outlined structure next to the colour it is drawn in. */
-.outline-key { white-space: nowrap; cursor: default; }
-.finding p { margin: 0; max-width: none; }
-.finding p + * { margin-top: 8px; }
-.outline-all summary { cursor: pointer; color: var(--text); font-weight: 600; }
-.outline-all p { margin-top: 6px; }
-.outline-swatch {
-  display: inline-block; inline-size: 0.8em; block-size: 0.8em; border-radius: 0.15em;
-  margin-inline-end: 0.3em; vertical-align: -0.05em;
+.finding.marked { border-inline-start: 3px solid var(--primary); color: var(--text-2); }
+.finding p { margin: 0; max-width: none; padding-inline: 2px; }
+.finding p + * { margin-top: 4px; }
+/* The outlined parts, open by default: one row per part, each a button at least 44px tall with the
+   colour it is drawn in. A tap names that part on the picture. */
+.outline-all summary { display: flex; align-items: center; min-height: 44px; padding-inline: 2px; cursor: pointer; color: var(--ink); font-weight: 650; }
+.parts { list-style: none; margin: 0; padding: 0; }
+.parts li + li { border-top: 1px solid var(--line); }
+.part-row {
+  -webkit-tap-highlight-color: transparent;
+  display: grid; grid-template-columns: 16px minmax(0, 1fr); column-gap: 12px; align-items: center;
+  inline-size: 100%; min-block-size: 44px; margin: 0; padding: 8px 10px; border: 0; border-radius: 8px;
+  background: transparent; color: var(--ink); font: inherit; font-size: 1rem; line-height: 1.3; text-align: start; cursor: pointer;
 }
+.outline-swatch { display: inline-block; flex: none; }
+.part-row .outline-swatch { inline-size: 16px; block-size: 16px; border-radius: 4px; margin: 0; box-shadow: 0 0 0 1px rgba(15, 27, 42, 0.2); }
+.part-name { display: block; min-width: 0; }
+.part-name::first-letter { text-transform: uppercase; }
+.part-about { display: none; grid-column: 2; margin-top: 4px; color: var(--text-2); font-size: 0.875rem; line-height: 1.45; }
+.part-row[aria-pressed="true"] .part-about { display: block; }
+.part-row.is-pointed, .part-row[aria-pressed="true"] { background: var(--primary-soft); }
+.part-row[aria-pressed="true"] { box-shadow: inset 3px 0 0 var(--primary); }
+@media (hover: hover) { .part-row:hover { background: var(--primary-soft); } }
+.part-row:focus-visible { outline: 3px solid var(--primary); outline-offset: -3px; }
 
 /* Donating a scan, and the page to see or delete a donation. */
 .donate-steps { display: grid; gap: 22px; }
@@ -318,5 +358,7 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
   }
   .pane.viewer > * { grid-column: 2; min-width: 0; }
   .pane.viewer > .viewer-head { grid-column: 1 / -1; }
-  .pane.viewer > .stage { grid-column: 1; grid-row: 2 / span 12; max-height: 80vh; align-self: start; }
+  .pane.viewer > .stage { grid-column: 1; grid-row: 2 / span 12; max-height: 80vh; align-self: start; position: sticky; top: calc(var(--head-h) + 12px); }
+  /* The parts list sits high in this column; a long one scrolls inside itself. */
+  .finding .parts { max-block-size: min(26rem, 52vh); overflow-y: auto; overscroll-behavior: contain; }
 }

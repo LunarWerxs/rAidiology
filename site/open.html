@@ -130,7 +130,7 @@
 
     <section id="viewer" class="pane viewer" hidden aria-labelledby="viewer-h">
       <div class="viewer-head">
-        <button class="btn quiet small" type="button" id="back">Back to the list</button>
+        <button class="btn quiet small back-btn" type="button" id="back">Open a different scan</button>
         <h2 id="viewer-h"></h2>
       </div>
       <div class="stage" id="stage">
@@ -142,6 +142,7 @@
         <span class="edge edge-left" id="edge-left" hidden></span>
         <span class="edge edge-right" id="edge-right" hidden></span>
         <div class="scalebar" id="scalebar" hidden><span id="scalebar-label">1 cm</span></div>
+        <div class="stage-status" id="stage-status" hidden role="status" aria-live="polite"><span class="spinner" aria-hidden="true"></span>Outlining parts…</div>
       </div>
       <div class="stage-tools">
         <p class="hint-chip" id="hint-chip" hidden>Swipe up or down for the other pictures</p>
@@ -154,6 +155,7 @@
         <label class="slider"><span class="lbl">Picture</span> <input type="range" id="slice" min="0" max="0" value="0" aria-label="Picture"></label>
         <button class="btn quiet small" type="button" id="next-picture" aria-label="Next picture">Next</button>
       </div>
+      <div class="finding" id="finding" hidden></div>
       <details class="adjust">
         <summary>Brightness and contrast</summary>
         <div class="controls">
@@ -165,7 +167,6 @@
       <p class="fine">Use Previous and Next, drag up and down on the picture, or press the arrow keys
         to move through the pictures. Scroll or pinch to zoom in.</p>
       <p class="what" id="what" hidden></p>
-      <div class="finding" id="finding" hidden role="status" aria-live="polite"></div>
       <details class="about-sample" id="sample-reading-about" hidden>
         <summary>About this sample</summary>
         <p class="fine" id="about-credit"></p>
@@ -175,7 +176,8 @@
       </details>
       <div class="card next-step" id="sample-next" hidden>
         <a class="btn" href="open.html">Open your own scan</a>
-        <p class="fine">It is free because people support it. <a href="support.html">See how</a></p>
+        <p class="fine">It is free because people support it.</p>
+        <a class="btn quiet" href="support.html">Support the next model</a>
       </div>
     </section>
 

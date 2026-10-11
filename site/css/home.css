@@ -34,13 +34,21 @@
 @media (max-width: 649px) { .stage-box > .hero3d { background-image: url("../img/hero-poster-phone.webp"); } }
 @media (min-width: 960px) { .stage-box { height: min(78vh, 680px); height: min(78svh, 680px); } }
 
-/* The sample CT card: a white card with a thin edge, so the black picture inside it reads against the black stage */
-.hero-stage .ctdemo { max-width: none; margin: 0; padding: 8px; border: 1px solid var(--line-strong); border-radius: var(--radius); background: #fff; box-shadow: 0 2px 6px rgba(5, 9, 14, 0.12), 0 22px 44px -16px rgba(5, 9, 14, 0.5); }
+/* The sample CT card: a white card with a thin edge, so the black picture inside it reads against the black stage.
+   While it loads (.is-loading, until ctdemo.js paints the first frame) the whole card is the viewer's near-black
+   with a skeleton for the controls, never a white empty card; the pre-script markup (.demo-ph, .demo-sk) and the
+   script-built markup look the same. */
+.hero-stage .ctdemo { max-width: none; margin: 0; padding: 8px; border: 1px solid var(--line-strong); border-radius: var(--radius); background: #fff; box-shadow: 0 2px 6px rgba(5, 9, 14, 0.12), 0 22px 44px -16px rgba(5, 9, 14, 0.5); transition: background-color .25s, border-color .25s; }
+.hero-stage .ctdemo.is-loading, .hero-stage .ctdemo.is-failed { background: var(--lightbox); border-color: rgba(255, 255, 255, 0.16); }
 .hero-stage .ctdemo:focus-visible { outline-offset: 3px; }
 .hero-stage .ctdemo .ctdemo__lightbox, .demo-ph { border-radius: 8px; }
 .demo-ph { position: relative; overflow: hidden; aspect-ratio: 1 / 1; background: var(--lightbox); }
 .demo-ph img { display: block; width: 100%; height: 100%; object-fit: contain; }
-.demo-ph { margin-bottom: 166px; }
+/* the space the controls will take, drawn as two dark bars so the card does not jump when the viewer mounts */
+.demo-sk { height: 167px; padding-top: 8px; }
+.demo-sk span { position: relative; display: block; overflow: hidden; background: rgba(255, 255, 255, 0.07); }
+.demo-sk span:first-child { height: 44px; border-radius: 10px; }
+.demo-sk span:last-child { width: 46%; height: 10px; margin: 22px auto 0; border-radius: 5px; }
 .stage-credit { display: none; }
 @media (min-width: 600px) and (max-width: 959px) { .hero-stage .ctdemo { max-width: 440px; margin-inline: auto; } }
 @media (min-width: 960px) {
@@ -48,22 +56,50 @@
   /* the credit moves under the stage so the card stays short */
   .hero-stage .ctdemo .ctdemo__line { display: none; }
   .hero-stage .ctdemo .ctdemo__link { padding: 8px 0 2px; }
-  .demo-ph { margin-bottom: 104px; }
+  .demo-sk { height: 113px; }
   /* the CT card sits on the stage's lower-left corner, so the view chips move to the lower-right */
   .hero-stage .hero3d .hero3d__modes { left: auto; right: 14px; transform: none; }
   .stage-credit { display: block; max-width: none; margin: 0; padding-left: 46%; color: var(--muted); font-size: 0.8125rem; line-height: 1.45; text-align: right; }
 }
 
-/* 2. Numbers: one light band; number, label, note and source line up across the row */
+/* Nothing on this page reads under 12px: hero3d.css sets the stage's picture credit and its view labels at 11px,
+   so this page lifts them (it does not edit that stylesheet). */
+.hero-stage .hero3d .hero3d__credit, .hero-stage .hero3d .hero3d__ref { font-size: 0.75rem; }
+
+/* 2a. Why back this: three plain facts, who builds it, and the ask. Sits straight under the hero (and its sample CT). */
+.why { padding-block: clamp(48px, 6vw, 80px); }
+.why .sec-head { margin-bottom: var(--sp-3); }
+.why-notes { display: grid; gap: var(--sp-2) var(--sp-4); margin: var(--sp-4) 0 0; padding: 0; }
+@media (min-width: 720px) { .why-notes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.why-notes div { max-width: 52ch; }
+.why-notes dt { margin: 0 0 4px; color: var(--primary); font-size: 0.8125rem; font-weight: 650; letter-spacing: 0.08em; line-height: 1.4; text-transform: uppercase; }
+.why-notes dd { margin: 0; color: var(--ink); font-weight: 500; }
+.why-actions { gap: 8px 24px; margin-top: var(--sp-3); }
+.why .btn.tonal { color: var(--primary-dark); background: var(--primary-soft); border-color: #c5d8f3; }
+.why .btn.tonal:hover { color: var(--primary-dark); background: #d9e7fa; border-color: var(--primary); }
+.why .more-link { min-height: 44px; }
+
+/* 2b. Numbers: one light band of three tests; number, label and note. A phone gets rows (number left, words right),
+   a wider screen three columns. Also lays out the three facts in "Why back this". */
 .numbers { padding-block: clamp(48px, 6vw, 72px); border-block: 1px solid var(--line); }
-.numbers .stats { row-gap: 0; }
-.numbers .stat { margin-bottom: 28px; }
-@media (min-width: 900px) { .numbers .stat { margin-bottom: 0; } }
-@supports (grid-template-rows: subgrid) {
-  .numbers .stat { display: grid; grid-row: span 4; grid-template-rows: subgrid; row-gap: 0; align-content: start; }
+.numbers h2 { max-width: 760px; margin-bottom: var(--sp-3); font-size: 1.5rem; }
+:is(.numbers, .why) .stats { grid-template-columns: minmax(0, 1fr); grid-auto-flow: row; grid-auto-columns: auto; gap: 0; }
+:is(.numbers, .why) .stat { display: grid; grid-template-columns: 7.25rem minmax(0, 1fr); align-content: start; column-gap: var(--sp-2); padding: var(--sp-2) 0; }
+:is(.numbers, .why) .stat .stat-n { grid-row: 1 / span 2; font-size: 2rem; }
+:is(.numbers, .why) .stat .stat-l { grid-column: 2; margin-top: 3px; font-size: 1rem; }
+:is(.numbers, .why) .stat .stat-d { grid-column: 2; margin-top: 4px; }
+@media (min-width: 720px) {
+  :is(.numbers, .why) .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--sp-4); }
+  :is(.numbers, .why) .stat { display: flex; padding: var(--sp-2) 0 0; }
+  :is(.numbers, .why) .stats > .stat:last-child:nth-child(odd) { grid-column: auto; }
+  :is(.numbers, .why) .stat .stat-n { font-size: var(--fs-stat); }
+  :is(.numbers, .why) .stat .stat-l { margin-top: 10px; }
+  :is(.numbers, .why) .stat .stat-d { margin-top: 6px; }
 }
-.numbers .stat-l { font-size: 0.9375rem; }
-.numbers .stat-src { align-self: end; }
+@media (max-width: 719px) { .why .stat { grid-template-columns: 6rem minmax(0, 1fr); } }
+:is(.numbers, .why) .stat-d time { white-space: nowrap; }
+.band-src { margin: var(--sp-3) 0 0; font-size: var(--fs-s); }
+.band-src a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; }
 
 /* 3. Scans we cover */
 .scan-card { padding: 0; overflow: hidden; }

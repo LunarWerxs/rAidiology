@@ -1,7 +1,7 @@
-// Home page: wakes the live 3D and the sample CT after first paint, runs the "Try the sample scan" button and the
-// small support chooser. The stage keeps its poster until the 3D is running, and keeps it if an import fails.
+// Home page: wakes the live 3D and the sample CT after first paint, keeps the "Why back this" numbers equal to the
+// "Built in the open" block, and runs the small support chooser. "Try the sample scan" is a plain link to the full
+// viewer (open.html?sample=1). The stage keeps its poster until the 3D is running, and keeps it if an import fails.
 
-const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const stage = document.querySelector('.hero3d');
 const demo = document.getElementById('demo');
 
@@ -24,9 +24,18 @@ function mountHero() {
   return heroJob;
 }
 
+// The script never loaded: stop the "loading" look and say so (ctdemo.js does this itself for a failed fetch).
+function demoFailed() {
+  demo.classList.remove('is-loading');
+  demo.classList.add('is-failed');
+  demo.removeAttribute('aria-busy');
+  const msg = demo.querySelector('.ctdemo__loading');
+  if (msg) msg.textContent = 'The sample scan could not load.';
+}
+
 function mountCt() {
   if (!demo) return null;
-  ctJob ||= import('./ctdemo.js').then((m) => m.mountCtDemo(demo)).catch(() => null);
+  ctJob ||= import('./ctdemo.js').then((m) => m.mountCtDemo(demo)).catch(() => { demoFailed(); return null; });
   return ctJob;
 }
 
@@ -40,21 +49,6 @@ afterLoadAndIdle(() => {
   mountHero();
   mountCt();
 });
-
-// "Try the sample scan": bring the CT card into view only when it is not already there, then focus it.
-const trySample = document.getElementById('try-sample');
-if (trySample && demo) {
-  trySample.addEventListener('click', (e) => {
-    e.preventDefault();
-    const head = document.querySelector('.site-head')?.offsetHeight || 64;
-    const r = demo.getBoundingClientRect();
-    if (r.top < head || r.bottom > innerHeight) {
-      demo.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
-    }
-    history.replaceState(null, '', '#demo');
-    Promise.resolve(mountCt()).then(() => demo.focus({ preventScroll: true }));
-  });
-}
 
 // Support chooser: Monthly or Once, three amounts, the GPU hours they buy, and a link that carries the choice.
 const RATE = 1.59;

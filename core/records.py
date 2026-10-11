@@ -302,58 +302,71 @@ def parse_ideas(text):
     return rows
 
 
+def _is_bar_start(ln):
+    if (re.match(r"^#{1,6} ", ln) or ln.startswith("**")) and BAR_HEAD.search(ln):
+        return True
+    return bool(LIST_ITEM.match(ln) and BAR_HEAD.search(ln[:200]))
+
+
+def _bar_stamp(lines, stamps, i):
+    w = WRITTEN.search(lines[i])
+    if not w:
+        return ""
+    date = w.group(1) or next((d for n, d in reversed(stamps) if n <= i), "")
+    return f"{date} {w.group(2) or w.group(3) or ''}".strip()
+
+
+def _bar_title(line):
+    t = line.lstrip("#").strip()
+    if LIST_ITEM.match(line):
+        t = re.sub(r"^(?:[-*]|\d+\.) +", "", t).replace("**", "")[:200].strip()
+    return t.strip("*").strip()
+
+
+def _bar_end(lines, i, marks):
+    """Where the bar at line i stops: the next heading or bar, or for a list item the next item at
+    its own indent."""
+    j = min([x for x in marks if x > i] or [len(lines)])
+    item = LIST_ITEM.match(lines[i])
+    if item:
+        same = re.compile(r"^ {%d}(?:[-*]|\d+\.) " % len(item.group(1)))
+        j = min([x for x in range(i + 1, j) if same.match(lines[x])] or [j])
+    return j
+
+
+def _inherited_stamp(lines, stamps, i, marks):
+    """No stamp of its own: the nearest earlier heading or bar in this `##` section has one,
+    and its idea and trial numbers too. None when the section has none."""
+    for n in range(i - 1, -1, -1):
+        if n in marks and _bar_stamp(lines, stamps, n):
+            return _bar_stamp(lines, stamps, n), _bar_title(lines[n]) + " (the bar)", lines[n]
+        if lines[n].startswith("## "):
+            break
+    return None
+
+
+def _bar_row(lines, stamps, marks, i):
+    j = _bar_end(lines, i, marks)
+    head = lines[i]
+    body = "\n".join(lines[i:j]).strip()
+    written, title, named = _bar_stamp(lines, stamps, i), _bar_title(head), head
+    if not written:
+        written, title, named = _inherited_stamp(lines, stamps, i, marks) or (written, title, named)
+    idea, trial = re.search(r"\bidea (\d+)", named, re.I), re.search(r"\bTrial (\d+)", named)
+    queues = dict.fromkeys(m.group(0).lower() for m in QUEUE_REF.finditer(head + "\n" + body))
+    outcome = next((ln.strip()[:300] for ln in lines[i + 1:j] if OUTCOME.search(ln)), None)
+    return (int(idea.group(1)) if idea else None, int(trial.group(1)) if trial else None,
+            ", ".join(queues), written, title, body, outcome)
+
+
 def parse_bars(text):
     """Every heading or bold-opened paragraph that says it was written before the code, the run or
     the change, with its text up to the next heading or the next bar."""
     lines = text.splitlines()
-    starts = [i for i, ln in enumerate(lines)
-              if ((re.match(r"^#{1,6} ", ln) or ln.startswith("**")) and BAR_HEAD.search(ln))
-              or (LIST_ITEM.match(ln) and BAR_HEAD.search(ln[:200]))]
-    heads = [i for i, ln in enumerate(lines) if re.match(r"^#{1,6} ", ln)]
+    starts = [i for i, ln in enumerate(lines) if _is_bar_start(ln)]
+    marks = set(starts) | {i for i, ln in enumerate(lines) if re.match(r"^#{1,6} ", ln)}
     stamps = [(i, m.group(1)) for i, ln in enumerate(lines) for m in FULL_STAMP.finditer(ln)]
-
-    def stamp_of(i):
-        w = WRITTEN.search(lines[i])
-        if not w:
-            return ""
-        date = w.group(1) or next((d for n, d in reversed(stamps) if n <= i), "")
-        return f"{date} {w.group(2) or w.group(3) or ''}".strip()
-
-    def title_of(i):
-        t = lines[i].lstrip("#").strip()
-        if LIST_ITEM.match(lines[i]):
-            t = re.sub(r"^(?:[-*]|\d+\.) +", "", t).replace("**", "")[:200].strip()
-        return t.strip("*").strip()
-
-    rows = []
-    for k, i in enumerate(starts):
-        j = min([x for x in heads + starts if x > i] or [len(lines)])
-        item = LIST_ITEM.match(lines[i])
-        if item:
-            same = re.compile(r"^ {%d}(?:[-*]|\d+\.) " % len(item.group(1)))
-            j = min([x for x in range(i + 1, j) if same.match(lines[x])] or [j])
-        head = lines[i]
-        body = "\n".join(lines[i:j]).strip()
-        written, title, named = stamp_of(i), title_of(i), head
-        if not written:
-            # No stamp of its own: the nearest earlier heading or bar in this `##` section has one,
-            # and its idea and trial numbers too.
-            for n in range(i - 1, -1, -1):
-                if (n in heads or n in starts) and stamp_of(n):
-                    written, title, named = stamp_of(n), title_of(n) + " (the bar)", lines[n]
-                    break
-                if lines[n].startswith("## "):
-                    break
-        idea, trial = re.search(r"\bidea (\d+)", named, re.I), re.search(r"\bTrial (\d+)", named)
-        queues = []
-        for m in QUEUE_REF.finditer(head + "\n" + body):
-            q = m.group(0).lower()
-            if q not in queues:
-                queues.append(q)
-        outcome = next((ln.strip()[:300] for ln in lines[i + 1:j] if OUTCOME.search(ln)), None)
-        rows.append((int(idea.group(1)) if idea else None, int(trial.group(1)) if trial else None,
-                     ", ".join(queues), written, title, body, outcome))
-    return rows
+    return [_bar_row(lines, stamps, marks, i) for i in starts]
 
 
 def parse_register(text):

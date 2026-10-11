@@ -1,4 +1,5 @@
-// Support page: one chosen-amount card (frequency, chips, box, slider, live GPU hours, checkout button).
+// Support page: one chosen-amount card (frequency, chips, box, slider, live GPU hours, checkout button),
+// plus a small refresh of the training-log counts at the bottom of this file.
 const RATE = 1.59;
 const MIN = 3;
 const MAX = { month: 1000, once: 5000 };
@@ -13,6 +14,9 @@ const LEVELS = [
   [15, 'Supporter', 'a supporter role on Discord, your name in the supporters list, a vote on what to train next.'],
   [5, 'Backer', 'a supporter role on Discord.'],
 ];
+
+// Shown under Once, so the perks line never vanishes. Pricing says perks are for monthly members.
+const ONCE_NOTE = 'A one-time payment buys GPU time. The app stays free. Perks such as the Discord supporter role are for monthly members.';
 
 const $ = (id) => document.getElementById(id);
 const box = $('give-amt');
@@ -68,7 +72,7 @@ if (box) {
     } else {
       hours.textContent = `About ${Math.floor(n / RATE)} hours of A100 GPU training${monthly ? ' a month' : ''}`;
       const lv = LEVELS.find((l) => n >= l[0]);
-      level.textContent = !monthly ? '' : lv ? `${lv[1]}: ${lv[2]}` : 'Levels: Backer at $5+, Supporter at $15+, Sponsor at $50+.';
+      level.textContent = !monthly ? ONCE_NOTE : lv ? `${lv[1]}: ${lv[2]}` : 'Levels: Backer at $5+, Supporter at $15+, Sponsor at $50+.';
       go.textContent = `Give ${money(n)} ${monthly ? 'a month' : 'once'}`;
     }
     go.setAttribute('aria-disabled', String(Boolean(bad) || state.busy));

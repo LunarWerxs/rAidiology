@@ -38,7 +38,8 @@ const state = {
   readingSeries: -1,                // which loaded series it turned out to be about
   outlines: new Map(),              // slice index -> [structure, path] pairs, for a labeller's reading
   pointedAt: -1,                    // the outlined structure under the pointer, or -1
-  keyOpen: false,                   // whether the visitor opened the list of outlined parts
+  keyOpen: true,                    // whether the list of outlined parts is open (it starts open)
+  chosen: -1,                       // the part whose row the visitor tapped, or -1
   view: null,                       // where the last picture was drawn: { x0, y0, fit, dpr }
   showMarks: true,
 };
@@ -152,8 +153,10 @@ function resetForOpen(credit) {
   state.cancelled = false;
   state.series = [];
   state.problems = [];
+  state.current = null;
   forgetFrames();
   clearReading();
+  el('stage-status').hidden = true;
   el('sample-reading-about').hidden = true;     // sample.js shows it once the sample's reading is open
   setCreditLine(el('sample-credit'), credit);
   setCreditLine(el('about-credit'), credit);
@@ -181,7 +184,14 @@ function setCreditLine(line, credit) {
   line.hidden = !credit;
 }
 
-async function handleFiles(entries, credit = null) {
+// How long a scan waits for its outlines before it opens as plain pictures and draws them on arrival.
+const READING_WAIT_MS = 5000;
+const LATE = Symbol('late');
+
+// `readingFile` is only given for the sample: a promise for its reading file (or null), fetched at the
+// same moment as the pictures. It is waited for here, before anything is shown, so the first picture
+// the visitor sees already has its outlines on it. Returns { late }: the promise again when it was too slow.
+async function handleFiles(entries, credit = null, readingFile = null) {
   resetForOpen(credit);
 
   let read;
@@ -204,11 +214,23 @@ async function handleFiles(entries, credit = null) {
   series.sort((a, b) => (a.info.seriesNumber ?? 1e9) - (b.info.seriesNumber ?? 1e9));
   state.series = series;
 
+  let late = null;
+  if (readingFile && series.length === 1) {
+    progress('Outlining parts…', 0, 0);
+    const got = await Promise.race([readingFile, new Promise((r) => setTimeout(r, READING_WAIT_MS, LATE))]);
+    if (got === LATE) late = readingFile;
+    else if (got) await loadReading(got);
+    if (state.cancelled) { show('progress', false); return null; }
+  }
+
   show('progress', false);
   renderProblems();
   renderSeries(read);
+  renderSeriesMarks();
   // The sample is someone else's scan: only a visitor's own scan can be offered for donation.
   if (!credit && state.series.length) scanOpened(wholeFiles);
+  // Wrapped: an async function that returns a promise hands back what it resolves to, not the promise.
+  return { late };
 }
 
 // Read each file's header and group the usable pictures by series. Null when the reading was cancelled.
@@ -325,11 +347,13 @@ function clearReading() {
   state.readingSeries = -1;
   state.outlines = new Map();
   state.pointedAt = -1;
+  state.chosen = -1;
   el('name-tip').hidden = true;
   const out = el('reading-out');
   out.replaceChildren();
   out.hidden = true;
   el('finding').hidden = true;
+  el('finding').dataset.sig = '';
   el('toggle-marks').hidden = true;
 }
 
@@ -361,7 +385,22 @@ async function isReadingFile(file) {
   return looksLikeFindings(file.name, head);
 }
 
+/** The words over the picture while a reading is being matched to it and drawn. */
+function setStageStatus(on) {
+  el('stage-status').hidden = !on;
+}
+
 async function loadReading(file) {
+  const viewing = state.current !== null;
+  if (viewing) setStageStatus(true);
+  try {
+    await attachFile(file);
+  } finally {
+    if (viewing) setStageStatus(false);
+  }
+}
+
+async function attachFile(file) {
   const series = state.series;
   if (!series.length) {
     readingProblem('Open the scan itself first, then add the reading: the reading on its own has no pictures in it.');
@@ -384,6 +423,7 @@ async function loadReading(file) {
   state.readingSeries = seriesIndex;
   state.outlines = outlines;
   state.showMarks = true;
+  el('finding').dataset.sig = '';
   forgetPointing();
   renderReading();
   renderSeriesMarks();
@@ -397,6 +437,7 @@ async function loadReading(file) {
 /** Forget what the visitor was pointing at: a new picture, series or reading has other outlines. */
 function forgetPointing() {
   state.pointedAt = -1;
+  state.chosen = -1;
   el('name-tip').hidden = true;
 }
 
@@ -496,15 +537,77 @@ function pointAt(clientX, clientY, above = false) {
   const y = ((clientY - rect.top) * v.dpr - v.y0) / v.fit;
   let s = structureAt(x, y);
   if (s < 0 && above) s = nearestStructure(x, y, (FINGER_PX * v.dpr) / v.fit);
-  if (s !== state.pointedAt) { state.pointedAt = s; draw(); }
+  if (s !== state.pointedAt) { state.pointedAt = s; state.chosen = -1; draw(); }
   if (s < 0) { tip.hidden = true; return; }
+  nameTip(s, clientX - rect.left, clientY - rect.top, rect, above);
+}
+
+/** Write structure `s`'s name (and what it is) into the tip and put it at (x, y) on the picture. */
+function nameTip(s, x, y, rect, above) {
+  const tip = el('name-tip');
   const o = state.reading.outlines;
   const name = document.createElement('strong');
   name.textContent = o.structures[s] || `structure ${s + 1}`;
   tip.replaceChildren(name);
   if (o.about && o.about[s]) tip.append(document.createTextNode(`: ${o.about[s]}`));
   tip.hidden = false;
-  placeTip(tip, clientX - rect.left, clientY - rect.top, rect, above);
+  placeTip(tip, x, y, rect, above);
+}
+
+/** A point inside structure `s` on this picture, near the middle of its outline, in image pixels; or
+ * null when it has no outline here. Where no point of a coarse grid lies inside it (a thin or tiny
+ * part), the middle of its box is used. */
+function interiorPoint(s) {
+  const mine = outlinesForSlice().filter(([k]) => k === s);
+  if (!mine.length) return null;
+  const box = [Infinity, Infinity, -Infinity, -Infinity];
+  for (const [, text] of mine) {
+    const p = pointsOf(text);
+    for (let i = 0; i < p.length; i += 2) {
+      box[0] = Math.min(box[0], p[i]); box[1] = Math.min(box[1], p[i + 1]);
+      box[2] = Math.max(box[2], p[i]); box[3] = Math.max(box[3], p[i + 1]);
+    }
+  }
+  const [x0, y0, x1, y1] = box;
+  const cx = (x0 + x1) / 2;
+  const cy = (y0 + y1) / 2;
+  let best = null;
+  for (let i = 1; i < 16; i++) {
+    for (let k = 1; k < 16; k++) {
+      const x = x0 + ((x1 - x0) * i) / 16;
+      const y = y0 + ((y1 - y0) * k) / 16;
+      if (structureAt(x, y) !== s) continue;
+      const d = (x - cx) ** 2 + (y - cy) ** 2;
+      if (!best || d < best[2]) best = [x, y, d];
+    }
+  }
+  return best ? [best[0], best[1]] : [cx, cy];
+}
+
+/** Point at structure `s` from its row in the list: outline it on the picture and put its name beside
+ * a point inside it, the same way a tap on the picture does. */
+function namePart(s) {
+  const v = state.view;
+  if (!v || !state.reading || !state.reading.outlines) return;
+  const at = interiorPoint(s);
+  if (!at) return;
+  state.pointedAt = s;
+  state.chosen = s;
+  draw();
+  const rect = el('canvas').getBoundingClientRect();
+  nameTip(s, (at[0] * v.fit + v.x0) / v.dpr, (at[1] * v.fit + v.y0) / v.dpr, rect, false);
+}
+
+/** A tap on a row of the list: name that part on the picture, or let go of it when it already is. */
+function choosePart(s) {
+  if (state.chosen === s) {
+    state.chosen = -1;
+    state.pointedAt = -1;
+    el('name-tip').hidden = true;
+    draw();
+    return;
+  }
+  namePart(s);
 }
 
 /** Put the name next to the point, on whichever side keeps all of it inside the picture. Round seven:
@@ -583,41 +686,75 @@ function describeImage(note, drawn) {
   describeOutlines(note, drawn);
 }
 
-/** Under the picture: how to find out what an outline is, and, folded away, every outlined part
- * next to its colour. Round seven: a visitor stopped halfway down the list when it was open. */
+/** The list of outlined parts, open by default: a tinted row per part, each a button at least 44px
+ * tall with the colour it is drawn in. It is built once for each set of parts and only has its marks
+ * updated on later draws, so hovering the picture does not rebuild it or scroll it back to the top. */
 function describeOutlines(note, drawn) {
   const names = state.reading.outlines.structures || [];
-  note.replaceChildren();
   note.classList.toggle('marked', drawn.length > 0);
   if (!drawn.length) {
-    note.textContent = 'Nothing is outlined on this image.';
+    note.dataset.sig = '';
+    note.textContent = state.showMarks ? 'Nothing is outlined on this image.'
+      : 'The outlines are hidden. Press Show the outlines to see the parts.';
     return;
   }
-  const how = document.createElement('p');
-  how.textContent = 'Tap or hover an outline on the picture to see what that part of the body is.';
-  const all = document.createElement('details');
-  all.className = 'outline-all';
-  all.open = state.keyOpen;
-  all.addEventListener('toggle', () => { state.keyOpen = all.open; });
-  const summary = document.createElement('summary');
-  summary.textContent = drawn.length === 1 ? 'The one part outlined on this picture'
-    : `All ${drawn.length} parts outlined on this picture`;
-  const list = document.createElement('p');
-  all.append(summary, list);
-  drawn.forEach((s, i) => {
-    const key = document.createElement('span');
-    key.className = 'outline-key';
+  const sig = drawn.join(',');
+  if (note.dataset.sig !== sig) {
+    note.dataset.sig = sig;
+    note.replaceChildren();
+    const how = document.createElement('p');
+    how.textContent = 'Tap a part below to find it on the picture. You can also tap or hover an outline.';
+    const all = document.createElement('details');
+    all.className = 'outline-all';
+    all.open = state.keyOpen;
+    all.addEventListener('toggle', () => { state.keyOpen = all.open; });
+    const summary = document.createElement('summary');
+    summary.textContent = drawn.length === 1 ? 'The one part outlined on this picture'
+      : `${drawn.length} parts outlined on this picture`;
+    const list = document.createElement('ul');
+    list.className = 'parts';
     const about = state.reading.outlines.about;
-    if (about && about[s]) key.title = about[s];
-    key.addEventListener('pointerenter', () => { state.pointedAt = s; draw(); });
-    key.addEventListener('pointerleave', () => { state.pointedAt = -1; draw(); });
-    const swatch = document.createElement('span');
-    swatch.className = 'outline-swatch';
-    swatch.style.backgroundColor = colourOf(s);
-    key.append(swatch, document.createTextNode(names[s] || `structure ${s + 1}`));
-    list.append(key, document.createTextNode(i < drawn.length - 1 ? ', ' : '.'));
-  });
-  note.append(how, all);
+    for (const s of drawn) {
+      const item = document.createElement('li');
+      const row = document.createElement('button');
+      row.type = 'button';
+      row.className = 'part-row';
+      row.dataset.part = String(s);
+      const swatch = document.createElement('span');
+      swatch.className = 'outline-swatch';
+      swatch.style.backgroundColor = colourOf(s);
+      const label = document.createElement('span');
+      label.className = 'part-name';
+      label.textContent = names[s] || `structure ${s + 1}`;
+      row.append(swatch, label);
+      if (about && about[s]) {
+        const what = document.createElement('span');
+        what.className = 'part-about';
+        what.textContent = about[s];
+        row.append(what);
+      }
+      row.addEventListener('click', () => choosePart(s));
+      row.addEventListener('pointerenter', (ev) => {
+        if (ev.pointerType === 'touch') return;
+        state.pointedAt = s;
+        draw();
+      });
+      row.addEventListener('pointerleave', (ev) => {
+        if (ev.pointerType === 'touch') return;
+        state.pointedAt = state.chosen;
+        draw();
+      });
+      item.append(row);
+      list.append(item);
+    }
+    all.append(summary, list);
+    note.append(how, all);
+  }
+  for (const row of note.querySelectorAll('.part-row')) {
+    const s = Number(row.dataset.part);
+    row.classList.toggle('is-pointed', s === state.pointedAt);
+    row.setAttribute('aria-pressed', String(s === state.chosen));
+  }
 }
 
 async function openSeries(index) {
@@ -646,6 +783,10 @@ async function openSeries(index) {
   const marks = el('toggle-marks');
   marks.hidden = !(state.reading && index === state.readingSeries);
   marks.textContent = state.showMarks ? 'Hide the outlines' : 'Show the outlines';
+  // One way out of the viewer: back to the list when there is more than one set to choose from,
+  // otherwise straight to opening a different scan (a list of one has nothing in it).
+  el('back').textContent = state.series.length > 1 ? 'Back to the list' : 'Open a different scan';
+  el('start-over').hidden = true;
   show('viewer', true);
   show('series', false);
   draw();
@@ -853,6 +994,18 @@ function draw() {
       bar.hidden = true;
     }
     prefetchAround(state.current, state.slice);
+    const waiting = drawWaiters;
+    drawWaiters = [];
+    for (const done of waiting) done();
+  });
+}
+
+let drawWaiters = [];
+/** Resolves once the next picture has been drawn, or after `ms` if none is (a hidden tab draws nothing). */
+export function afterNextDraw(ms = 2000) {
+  return new Promise((resolve) => {
+    const timer = setTimeout(resolve, ms);
+    drawWaiters.push(() => { clearTimeout(timer); resolve(); });
   });
 }
 
@@ -889,6 +1042,8 @@ function describeView(info) {
   for (const [id, text] of Object.entries(edges)) {
     el(id).textContent = text;
     el(id).hidden = !text;
+    // Phones show R and L in place of the long side names, which sat on the anatomy (open.css).
+    el(id).dataset.short = text === SIDES[0][0] ? 'R' : text === SIDES[0][1] ? 'L' : '';
   }
   const parts = [];
   if (known) {
@@ -961,7 +1116,7 @@ function wireNaming(stage, dragging) {
   stage.addEventListener('pointerleave', (ev) => {
     if (ev.pointerType !== 'mouse' || dragging()) return;
     el('name-tip').hidden = true;
-    if (state.pointedAt >= 0) { state.pointedAt = -1; draw(); }
+    if (state.pointedAt >= 0) { state.pointedAt = -1; state.chosen = -1; draw(); }
   });
 }
 
@@ -1127,7 +1282,7 @@ function wireIntake() {
     draw();
   });
   el('cancel').addEventListener('click', () => { state.cancelled = true; show('progress', false); });
-  el('start-over').addEventListener('click', () => {
+  const startOver = () => {
     scanOpened(null);
     state.series = []; state.problems = []; state.current = null; forgetFrames();
     clearReading();
@@ -1135,11 +1290,14 @@ function wireIntake() {
     show('intake', true);
     el('start-over').hidden = true;
     el('intake').scrollIntoView({ block: 'start' });
-  });
+  };
+  el('start-over').addEventListener('click', startOver);
   el('back').addEventListener('click', () => {
+    if (state.series.length <= 1) { startOver(); return; }
     state.current = null;
     show('viewer', false);
     show('series', true);
+    el('start-over').hidden = false;
   });
   el('slice').addEventListener('input', (ev) => setSlice(Number(ev.target.value)));
   // Round six's board: on a touch screen, dragging was the only way through the pictures.
@@ -1166,13 +1324,46 @@ function wireIntake() {
 
 // The sample's way in: the same path a dropped ZIP takes, then straight to the pictures, because
 // somebody trying a sample wants to see a scan and not a list with one thing in it.
-export async function openFiles(entries, credit) {
-  await handleFiles(entries, credit);
-  if (state.series.length === 1) await openSeries(0);
+// `readingFile` is a promise for the sample's outlines, fetched alongside its pictures. Resolves to
+// whether the outlines are on the picture.
+export async function openFiles(entries, credit, readingFile = null) {
+  const { late } = (await handleFiles(entries, credit, readingFile)) || {};
+  const mine = state.series;
+  if (mine.length === 1) await openSeries(0);
+  if (late) {
+    // The outlines were slower than the pictures: the picture is up with "Outlining parts" over it.
+    setStageStatus(true);
+    try {
+      const file = await late;
+      if (file && state.series === mine) await loadReading(file);
+    } finally {
+      setStageStatus(false);
+    }
+  }
+  return state.reading !== null;
 }
 
 // The sample's reading comes in the same way a dropped one does.
 export const openReading = loadReading;
+
+/** Name the biggest outlined part on the picture once, the way a tap would, so the first look at the
+ * sample already shows what the outlines are for (the designers, 2026-10-11: the best part sat below
+ * the fold). It looks for a point inside that part nearest its middle; any tap or slice change
+ * replaces the name as usual. */
+export function nameBiggestPart() {
+  const v = state.view;
+  if (!v || !state.reading || !state.reading.outlines) return;
+  const area = new Map();
+  for (const [s, text] of outlinesForSlice()) {
+    const p = pointsOf(text);
+    let a = 0;
+    for (let i = 0, j = p.length - 2; i < p.length; j = i, i += 2) a += p[j] * p[i + 1] - p[i] * p[j + 1];
+    area.set(s, (area.get(s) || 0) + Math.abs(a / 2));
+  }
+  let biggest = -1;
+  for (const [s, a] of area) if (biggest < 0 || a > area.get(biggest)) biggest = s;
+  if (biggest >= 0) namePart(biggest);
+}
 
 export function start() {
   wireIntake();
