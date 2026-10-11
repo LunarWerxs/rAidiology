@@ -151,6 +151,9 @@ ASKED = ("Added 2026-10-06 on the modelling chat's ask, under the owner's word t
          "its own record's licence was re-read at the source")
 GAPS = ("Added 2026-10-11 for the modelling chat's nine weak lines, on the owner's word that day (\"fill the gaps that "
         "it's missing things on\"), once its own record's licence and open download were re-read at the source")
+NHANES2 = "https://wwwn.cdc.gov/nchs/data/nhanes2/NH2_Xray.htm"
+NHANES2_RELEASE = ("These digitized x-ray images had been publicly released previously on the NIH National Library of "
+                   "Medicine (NLM) website")   # the release page's own words: NCHS, a US federal agency, publishes them
 GPL3 = "other:gpl-3.0"   # GitHub's SPDX id as licence_id writes it: copyleft, commercial use allowed (owner, 2026-10-04:
                          # "I would probably assume share alike is okay")
 SETS = [
@@ -437,6 +440,12 @@ SETS = [
     S("yolov9-aid-lumbar", "Lumbar MRI", 4, "github", 0.4, "https://github.com/JackChow666/YOLOv9-AID", GPL3,
       repo="JackChow666/YOLOv9-AID", keep=("datasets", "LICENSE.md", "README.md"), approved=GAPS),
     S("irbid-canal-stenosis-labels", "Lumbar MRI", 2, Z, 0.001, ZR + "23298064", BY4, ids=[23298064], approved=GAPS),
+    # NCHS's August 2025 release of NHANES II's digitized spine films: the lumbar films only (lateral views); the
+    # cervical ones answer no gap. The landmark masks below are drawn on 268 of them.
+    S("nhanes2-lumbar-xray", "Lumbar X-ray", 3, "page", 46.2, NHANES2, {fetch.licence_id(NHANES2_RELEASE)}, page=NHANES2,
+      pattern=re.escape(NHANES2_RELEASE), index="https://ftp.cdc.gov/pub/NHANES/XRays/Nhanes2/", files=r"L\d+\.tiff",
+      jobs=32, approved=GAPS),
+    S("nhanes2-vertebra-masks", "Lumbar X-ray", 3, Z, 1.0, ZR + "10223910", BY4, ids=[10223910], approved=GAPS),
     # FRDR publishes it on a Globus collection whose HTTPS server answers anyone; FRDR's web page offers only Globus
     # Transfer (a Globus account) and a zip it makes on request.
     S("nl-breast-screen", "Mammography", 5, "frdr", 90.8, "https://doi.org/10.20383/103.01526", BY4,
@@ -480,7 +489,10 @@ def listing(s, ctx):
     if a == "frdr":
         return fetch.frdr(name, ctx, s["doi"], s["base"])
     if a == "page":
-        return fetch.lab_page(name, ctx, s["page"], s["pattern"], s.get("links"))
+        lst = fetch.lab_page(name, ctx, s["page"], s["pattern"], s.get("links"))
+        if s.get("index"):                         # the files from the server's own directory listing
+            lst.files += fetch.dir_index(name, ctx, s["index"], s["files"])
+        return lst
     if a == T:
         return fetch.tcia(name, ctx, s["slug"], s.get("kind", "collection"), s["licence"], s.get("skip_sources", False))
     if a == "browser":
@@ -793,8 +805,9 @@ def _fetch_files(s, rec, ctx, lst, need, folder, room):
         rec.save()
 
     # Files at once, the biggest first so the longest is never started last; each host's cap still bounds its
-    # connections (Zenodo's 100, four kept for listings: core/fetch.py SHORT).
-    jobs = 64 if any(e.kind == "instance" for e in lst.files) else 16 if s["archive"] == Z else 8
+    # connections (Zenodo's 100, four kept for listings: core/fetch.py SHORT). A set's own `jobs` is for a host that
+    # paces each connection and serves many small files (CDC's 0.3 MB/s each).
+    jobs = s.get("jobs") or (64 if any(e.kind == "instance" for e in lst.files) else 16 if s["archive"] == Z else 8)
     with concurrent.futures.ThreadPoolExecutor(max_workers=jobs) as pool:
         futs = {pool.submit(one, e): e for e in sorted(lst.files, key=lambda e: -(e.size or 0))}
         for fu in concurrent.futures.as_completed(futs):

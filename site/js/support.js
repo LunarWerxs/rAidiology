@@ -25,6 +25,7 @@ if (box) {
   const go = $('give-go');
   const err = $('give-err');
   const note = $('give-note');
+  const minHelp = $('give-min');
   const hours = $('give-hours');
   const level = $('give-level');
   const segs = [...document.querySelectorAll('.seg-b')];
@@ -82,10 +83,12 @@ if (box) {
     next.textContent = monthly
       ? 'Next: a secure Stripe checkout page, then a receipt by email. Cancel any time.'
       : 'Next: a secure Stripe checkout page, then a receipt by email.';
+    const low = n > 0 && n < MIN || (state.custom && box.value.trim() !== '' && n < MIN);
+    if (minHelp) minHelp.hidden = showBad && n < MIN;
     if (bad) {
-      hours.textContent = 'Pick an amount to see the GPU time it buys';
+      hours.textContent = low ? 'Enter $3 or more to see the GPU time it buys' : 'Pick an amount to see the GPU time it buys';
       level.textContent = '';
-      go.textContent = 'Choose an amount';
+      go.textContent = low ? 'Enter $3 or more' : 'Choose an amount';
     } else {
       hours.textContent = `About ${Math.floor(n / RATE)} hours of A100 GPU training${monthly ? ' a month' : ''}`;
       const lv = LEVELS.find((l) => n >= l[0]);

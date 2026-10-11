@@ -1,6 +1,6 @@
 // rAidiology service worker. The precache list and version are written by release/site/build_sw.py.
 // precache:start
-const VERSION = 'bc9c9646888d';
+const VERSION = 'e2dcaf2725f2';
 const PRECACHE = [
   './css/brand.css',
   './css/ctdemo.css',

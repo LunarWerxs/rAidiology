@@ -20,10 +20,12 @@
   .proof-x { display: none; }
 }
 @media (max-width: 359px) { .hero-actions { flex-wrap: wrap; } .hero-actions .btn { flex: 1 1 100%; } }
-.licence-line { margin: -4px 0 14px; max-width: 60ch; color: var(--text); font-size: var(--fs-s); line-height: 1.5; }
-.proof { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
-.proof li { display: inline-flex; align-items: center; gap: 5px; min-height: 34px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg-soft); color: var(--text); font-size: 0.875rem; font-weight: 550; line-height: 1.35; white-space: nowrap; }
-.proof strong { color: var(--teal-text); font-size: 0.875rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.licence-note { max-width: 60ch; color: var(--text); font-size: 0.875rem; line-height: 1.5; }
+.proof { display: flex; flex-wrap: wrap; gap: 0 8px; margin: 20px 0 0; padding: 0; list-style: none; color: #3f4650; font-size: 0.875rem; line-height: 1.5; }
+.proof li + li::before { content: "\00B7"; margin-right: 8px; }
+.proof strong { font-weight: 700; font-variant-numeric: tabular-nums; }
+/* On a phone the row wraps, and a dot would start the second line: spacing alone separates them there. */
+@media (max-width: 599px) { .proof { gap: 2px 16px; } .proof li + li::before { content: none; } }
 
 .hero-stage { display: grid; gap: 12px; min-width: 0; }
 .stage-wrap { position: relative; display: grid; gap: 12px; min-width: 0; }

@@ -78,6 +78,7 @@ CAPS = {
     "ndownloader.figshare.com": 8,                   # these four hand the bytes to S3 or a CDN
     "data.mendeley.com": 8,
     "huggingface.co": 8,
+    "ftp.cdc.gov": 32,                                # 0.3 MB/s per connection, in step with the count (2026-10-11)
     "object-arbutus.alliancecan.ca": 8,
     "api.osf.io": 2,
     "files.osf.io": 4,
@@ -979,6 +980,19 @@ def lab_page(name, ctx, page, pattern, links=None):
             raise FetchError("%s: Google Drive answered %s for %s, not the file (a quota or a sign-in page); "
                              "not worked around" % (name, kind, fid))
         out.files.append(Entry(fname or fid, size, url, None, meta={"drive_id": fid}))
+    return out
+
+
+def dir_index(name, ctx, index, pattern):
+    """The files a web server's own directory listing (IIS's: date, time, size, link) shows under `index` whose names
+    match `pattern`, each with the size the listing gives; the server keeps no checksum, so each is hashed on arrival."""
+    text = get_bytes(index, ctx, timeout=300).decode("utf-8", "replace")
+    out = []
+    for size, href, fname in re.findall(r"(\d+) <A HREF=\"([^\"]+)\">([^<]+)</A>", text, re.I):
+        if re.fullmatch(pattern, fname):
+            out.append(Entry(fname, int(size), urllib.parse.urljoin(index, href), None, meta={}))
+    if not out:
+        raise FetchError("%s: %s lists no file matching %s" % (name, index, pattern))
     return out
 
 

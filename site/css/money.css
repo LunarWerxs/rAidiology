@@ -186,6 +186,8 @@ main.support .hours h3 { margin-bottom: var(--sp-2); }
 .amt-box input::placeholder { color: var(--muted); font-weight: 400; opacity: 1; }
 .amt-box:has(input[aria-invalid="true"]) { border-color: var(--danger); }
 .amt-min { margin: 6px 0 0; color: var(--text); font-size: 0.875rem; line-height: 1.4; }
+.amt-min[hidden] { display: none; }
+.money-how { margin: 0 0 16px; font-size: 0.9375rem; line-height: 1.5; }
 .amt-note, .give-err { display: flex; align-items: flex-start; gap: 6px; margin: 4px 0 0; color: var(--danger); font-size: var(--fs-s); line-height: 1.5; }
 .amt-note[hidden], .give-err[hidden] { display: none; }
 .msg-ic { display: inline-flex; flex: none; margin-top: 0.2em; }

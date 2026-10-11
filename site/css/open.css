@@ -412,14 +412,14 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
   .pane.viewer #toggle-marks { order: -1; align-self: flex-start; margin-block: 6px; }
   .pane.viewer .footnote { order: 10; }
   .pane.viewer > .viewer-head { order: -3; }
-  .pane.viewer .stage { aspect-ratio: auto; block-size: 36dvh; max-height: none; min-height: 200px; }
-  .stage-caption { min-block-size: 3.2rem; margin-block-start: 6px; }
+  .pane.viewer .stage { aspect-ratio: auto; block-size: 30dvh; max-height: 270px; min-height: 200px; }
+  .stage-caption { min-block-size: 2.2rem; margin-block-start: 4px; }
   /* The slice bar goes after the parts list, so its pinned-to-the-bottom position holds while the list scrolls. */
   .pane.viewer:not([hidden]) { display: flex; flex-direction: column; }
   .pane.viewer .slice-bar { order: 9; }
   .name-tip { font-size: 1rem; padding: 6px 10px; }
   /* A row scrolled to (keyboard focus) lands below the pinned picture, not behind it. */
-  .part-row { scroll-margin-block: calc(var(--head-h) + 36dvh + 4.5rem) 5rem; }
+  .part-row { scroll-margin-block: calc(var(--head-h) + 30dvh + 3.5rem) 5rem; }
 }
 
 /* Button tiers in the viewer: Previous and Next are tonal (soft fill, no outline), "Hide the
@@ -464,6 +464,9 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
 /* Phone landscape: the title row goes, the picture and its controls fill the left column at full
    height, and the parts list scrolls on the right. */
 @media (orientation: landscape) and (max-height: 500px) {
+  /* The site header scrolls away on this page so the picture gets the height. */
+  :root { --head-h: 0px; }
+  .site-head { position: static; }
   .pane.viewer:not([hidden]) {
     display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(240px, 1fr); column-gap: 16px; align-content: start;
   }
@@ -477,11 +480,11 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
   }
   .pane.viewer .pic-controls { display: grid; inline-size: auto; }
   .pane.viewer .pic-pin { position: static; order: 0; padding: 0; }
-  .pane.viewer .stage { block-size: auto; aspect-ratio: auto; min-height: 0; max-height: none; inline-size: 100%; block-size: calc(100dvh - var(--head-h) - 4.5rem - 72px); }
+  .pane.viewer .stage { block-size: auto; aspect-ratio: auto; min-height: 0; max-height: none; inline-size: 100%; block-size: calc(100dvh - 2.4rem - 64px); }
   .pane.viewer .pic-controls { grid-template-columns: auto minmax(0, 1fr); align-items: center; margin-block-start: 4px; }
   .pane.viewer { padding-block-start: 4px; }
   .pane.viewer #toggle-marks.btn.quiet { padding-inline: 10px; }
-  .pane.viewer .stage-caption { inline-size: auto; min-block-size: 2.6rem; }
+  .pane.viewer .stage-caption { inline-size: auto; min-block-size: 2rem; margin-block-start: 2px; }
   .pane.viewer #toggle-marks { order: 0; margin: 0; }
   .pane.viewer .slice-bar { position: static; border: 0; padding: 0; }
   .pane.viewer > .finding:not([hidden]) {

@@ -4,7 +4,7 @@
 
 <h1 align="center">rAidiology</h1>
 
-<p align="center">A free, open-source scan viewer that runs in your browser, with seven open research models.</p>
+<p align="center">A free scan viewer that runs in your browser, with seven research models. Free for personal use, schools, charities and public research under PolyForm Noncommercial 1.0.0; companies buy a licence.</p>
 
 <p align="center">
   <a href="LICENSE"><img alt="License: PolyForm Noncommercial 1.0.0" src="https://img.shields.io/badge/license-PolyForm_Noncommercial_1.0.0-blue"></a>
