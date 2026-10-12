@@ -29,6 +29,7 @@ const FRAMES = {
   phone: { aspect: 780 / 880, height: 1640, y: 1020, elev: 0.18 },
 };
 const MODES = [['glass', 'Glass'], ['skeleton', 'Skeleton'], ['xray', 'X-ray']];
+const MODE_LINE = { glass: 'Glass shows the body as a clear shell around the bones.', skeleton: 'Skeleton shows the bones alone, without the body.', xray: 'X-ray fades the body back and makes the bones see-through.' };
 const BODY_OPACITY = { glass: 1, skeleton: 0, xray: 0.32 };
 const SCAN_COLOR = 0x4fe0d2;
 const REST_LEVEL = 'T12';
@@ -222,8 +223,12 @@ export function mountHero3D(stage, opts = {}) {
     modeBar.append(b);
     return b;
   });
-  const made = [canvas, label, modeBar];
-  stage.append(...made);
+  const viewLine = el('span', 'hero3d__view', { 'aria-live': 'polite' });
+  const showView = () => { viewLine.textContent = MODE_LINE[mode]; };
+  showView();
+  const made = [canvas, label, modeBar, viewLine];
+  stage.append(canvas, label, modeBar);
+  (stage.querySelector('.hero3d__cap') || stage).append(viewLine);
 
   const width = () => stage.clientWidth || 0;
   // The page may say which framing fits its layout (--hero3d-frame: phone or wide); otherwise the stage's width decides.
@@ -266,6 +271,7 @@ export function mountHero3D(stage, opts = {}) {
 
   function setMode(m) {
     mode = m;
+    showView();
     for (const b of chips) b.setAttribute('aria-pressed', String(b.dataset.mode === m));
     core?.applyMode(false);
   }

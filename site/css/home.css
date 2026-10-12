@@ -21,7 +21,9 @@
 /* Under the buttons, two tiers and no more: one line that belongs to "Open your scan" (what a scan can be), then the
    fine print (research use and the licence) in smaller, quieter type. The figures live once, in "Why back this". */
 .hero-note { margin: 12px 0 0; color: var(--text); font-size: 0.9375rem; line-height: 1.5; }
-.hero-fine { max-width: 52ch; margin: 28px 0 0; color: var(--muted); font-size: var(--fs-s); line-height: 1.55; text-wrap: pretty; }
+.hero-fine { max-width: 52ch; margin: 28px 0 0; color: var(--text); font-size: var(--fs-s); line-height: 1.55; text-wrap: pretty; }
+.hero-actions .btn.secondary { border-color: #6b7a8c; }
+.hero-actions .btn.secondary:hover { border-color: var(--primary); }
 /* The header's "Open your scan" waits until the hero's own pair of buttons has slid under the header, so the first
    view never shows the same button twice, at any width. It fades in with the scroll and keeps its place, so nothing in
    the header moves. Browsers without scroll-driven animations show both. */
@@ -54,7 +56,7 @@ main .eyebrow { font-size: 0.9375rem; font-weight: 600; letter-spacing: 0; text-
   /* The sample CT card covers the stage's lower-left corner here, so the body stands in the room to its right: the
      poster moves by half the width the card covers (16 px inset plus the card), and hero3d.js moves the live 3D by
      the same amount, measured from the card. */
-  .stage-box > .hero3d { background-position: calc(50% + clamp(200px, 36cqi, 260px) / 2 + 8px) 50%; }
+  .stage-box > .hero3d { background-position: calc(50% + clamp(200px, 36cqi, 260px) / 2 + 24px) 50%; }
 }
 /* The View buttons (Glass, Skeleton, X-ray) sit in the stage's lower-right corner, beside the body, never over it. */
 .hero-stage .hero3d .hero3d__modes { left: auto; right: 14px; transform: none; }
@@ -70,14 +72,14 @@ main .eyebrow { font-size: 0.9375rem; font-weight: 600; letter-spacing: 0; text-
 /* Phones held upright: the stage is too narrow for the buttons or the caption beside the body, so both sit in a tray
    under it, the buttons first, and the body fades into the tray. The canvas and the poster stop above the tray (hero3d.css). */
 @media (max-width: 649px) and (orientation: portrait) {
-  .stage-box { --hero3d-tray: 148px; height: calc(clamp(300px, 52vh, 560px) + var(--hero3d-tray)); height: calc(clamp(300px, 52svh, 560px) + var(--hero3d-tray)); }
+  .stage-box { --hero3d-tray: 196px; height: calc(clamp(300px, 52vh, 560px) + var(--hero3d-tray)); height: calc(clamp(300px, 52svh, 560px) + var(--hero3d-tray)); }
   .hero-stage .hero3d::after { content: ""; position: absolute; inset-inline: 0; bottom: var(--hero3d-tray); z-index: 1; height: 56px; background: linear-gradient(to bottom, transparent, var(--lightbox)); pointer-events: none; }
   .hero-stage .hero3d .hero3d__modes { left: 50%; right: auto; bottom: calc(var(--hero3d-tray) - 56px); transform: translateX(-50%); }
   .hero-stage .hero3d .hero3d__cap { top: auto; bottom: 16px; inset-inline: 16px; max-width: none; text-align: center; text-wrap: balance; }
   /* Without WebGL there are no View buttons and nothing to turn, so the tray keeps only the caption's first sentence. */
   .stage-box:has(> .hero3d--static) { --hero3d-tray: 76px; }
 }
-@media (max-width: 379px) and (orientation: portrait) { .stage-box { --hero3d-tray: 168px; } }
+@media (max-width: 379px) and (orientation: portrait) { .stage-box { --hero3d-tray: 216px; } }
 
 /* The sample CT card: a white card with a thin edge, so the black picture inside it reads against the black stage.
    While it loads (.is-loading, until ctdemo.js paints the first frame) the whole card is the viewer's near-black
@@ -99,7 +101,7 @@ main .eyebrow { font-size: 0.9375rem; font-weight: 600; letter-spacing: 0; text-
 /* Every credit for the hero sits in one place under it, at every width, as plain small text: the sample CT and its
    outlines, then the 3D skeleton with the change LunarWerx made (CC BY 4.0 asks for both). The card stays short. */
 .hero-stage .ctdemo .ctdemo__credit { display: none; }
-.stage-credit { max-width: none; margin: 0; color: var(--muted); font-size: 0.8125rem; line-height: 1.5; }
+.stage-credit { max-width: none; margin: 0; color: var(--text); font-size: 0.875rem; line-height: 1.5; }
 .stage-credit > span { display: block; text-wrap: balance; max-width: 62ch; margin-inline: auto; }
 .stage-credit > span + span { margin-top: 4px; }
 .stage-credit .cl-split { text-wrap: pretty; }

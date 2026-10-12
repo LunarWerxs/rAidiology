@@ -28,6 +28,7 @@
       <a class="brand" href="index.html" aria-label="rAidiology home"><img src="img/logo.svg" width="32" height="32" alt=""><span class="brand-name">rAidiology</span></a>
       <nav id="site-nav" class="site-nav" aria-label="Main">
         <a class="nav-home" href="index.html">Home</a>
+        <a class="nav-home" href="open.html?sample=1">Sample scan</a>
         <a href="index.html#scans"><span class="nav-long">Scans we cover</span><span class="nav-short">Scans</span></a>
         <a href="models.html">Research</a>
         <a href="pricing.html"><span class="nav-long">Company licences</span><span class="nav-short">Licences</span></a>
@@ -75,13 +76,14 @@
             <div class="amt-head"><label class="amt-lab" for="give-amt">Other amount</label><p class="amt-min" id="give-min">Minimum $3</p></div>
             <div class="amt-row">
               <span class="amt-box"><span class="amt-pre" aria-hidden="true">$</span><input id="give-amt" type="text" inputmode="numeric" pattern="[0-9]*" enterkeyhint="go" autocomplete="off" placeholder="Any amount" aria-describedby="give-min give-note"></span>
+              <div class="slide"><label class="slide-lab" for="give-range">Or slide to choose</label><output class="slide-val" id="give-val" for="give-range">$15</output></div>
               <input class="amt-range" id="give-range" type="range" min="3" max="200" step="1" value="15" aria-label="Amount, in dollars" aria-valuetext="$15">
             </div>
             <p class="amt-note" id="give-note" hidden></p>
           </div>
           <div class="readout" id="give-readout" aria-live="polite" aria-atomic="true">
             <p class="r-hours" id="give-hours">That buys about <strong>9 hours</strong> of training on a rented data-centre GPU.</p>
-            <p class="r-level" id="give-level"><strong>Perks come with monthly support.</strong> Supporters at $15 a month get a supporter role on Discord, a name in the supporters list and a vote on what we train next.</p>
+            <p class="r-level" id="give-level"><strong>Perks come with monthly support.</strong> <button type="button" class="perk-switch">Switch to Monthly</button></p>
             <p class="r-claim" id="give-claim" hidden>After you pay, reply to the receipt email with your Discord username to claim them.</p>
           </div>
           <ul class="before-pay">

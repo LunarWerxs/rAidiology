@@ -22,12 +22,12 @@ main a.btn { overflow-wrap: normal; }
 .price { margin: 0 0 20px; color: var(--muted); font-size: 0.9375rem; line-height: 1.45; }
 .price .amt { color: var(--ink); font-size: 1.375rem; font-weight: 700; letter-spacing: -0.015em; font-variant-numeric: tabular-nums; }
 .price .alt { display: block; margin-top: 2px; }
-.price .alt.gpu { color: var(--teal); font-weight: 600; }
+.price .alt.gpu { color: var(--primary-dark); font-weight: 600; }
 .ticks { margin: 0 0 24px; padding: 18px 0 0; border-top: 1px solid var(--line); list-style: none; font-size: 0.9375rem; line-height: 1.5; }
 .ticks li { position: relative; padding-inline-start: 26px; }
 .ticks li + li { margin-top: 10px; }
 /* arkitect-allow: css-logical-direction-properties - a tick mark drawn by rotating two physical borders; it is not mirrored in right-to-left. */
-.ticks li::before { content: ""; position: absolute; left: 4px; top: 0.28em; width: 6px; height: 11px; border-right: 2px solid var(--teal); border-bottom: 2px solid var(--teal); transform: rotate(45deg); }
+.ticks li::before { content: ""; position: absolute; left: 4px; top: 0.28em; width: 6px; height: 11px; border-right: 2px solid var(--primary); border-bottom: 2px solid var(--primary); transform: rotate(45deg); }
 .plan-cta { display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; }
 .plan-cta .btn { align-self: stretch; }
 .plan > .fine { margin-top: 14px; font-size: 0.875rem; }
@@ -100,7 +100,7 @@ main a.btn { overflow-wrap: normal; }
 .bars li { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; }
 .bar-l { color: var(--ink); font-size: 0.9375rem; font-weight: 600; line-height: 1.4; }
 .bar-t { display: flex; align-items: center; gap: 10px; min-height: 24px; border-inline-start: 2px solid var(--line-strong); }
-.bar-f { flex: none; height: 14px; border-radius: 0 7px 7px 0; background: var(--teal); }
+.bar-f { flex: none; height: 14px; border-radius: 0 7px 7px 0; background: var(--primary); }
 .bar-f.w3 { width: calc((100% - 7.5rem) * 0.097); } .bar-f.w9 { width: calc((100% - 7.5rem) * 0.29); } .bar-f.w31 { width: calc(100% - 7.5rem); }
 .bar-v { flex: none; color: var(--ink); font-size: 0.9375rem; font-weight: 600; line-height: 1.4; font-variant-numeric: tabular-nums; white-space: nowrap; }
 @media (min-width: 600px) {
@@ -132,7 +132,7 @@ main a.btn { overflow-wrap: normal; }
 
 /* Support page (main.support). Only support.html carries that class, so none of this reaches Pricing or Thanks.
    One solid blue on the page: the Pay button. Chosen chips are tonal, the chosen frequency is a white pill, the
-   slider and the training-time box are teal (time), and numbers are ink. Helper text is at least 14px. */
+   slider and the training-time box use the same blue family, and numbers are ink. Helper text is at least 14px. */
 main.support { --muted: var(--muted-strong); }
 main.support .sec { padding-block: clamp(32px, 5vw, 56px); }
 main.support .page-head { padding-block: 24px 12px; }
@@ -209,10 +209,10 @@ main.support .hours h3 { margin-bottom: var(--sp-2); }
   .give > .seg { grid-column: 2; grid-row: 1; grid-template-columns: repeat(2, minmax(112px, auto)); margin-bottom: 14px; }
 }
 .give button, .give input { font: inherit; text-align: center; }
-.give .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; margin-bottom: 12px; background: var(--grey-soft); border-radius: 12px; }
+.give .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; margin-bottom: 12px; background: #d9e0e8; border-radius: 12px; }
 .give .seg-b { min-height: 46px; border: 0; border-radius: 9px; background: transparent; color: var(--text); font-weight: 600; cursor: pointer; }
-.give .seg-b:hover { color: var(--ink); background: rgba(255, 255, 255, 0.6); }
-.give .seg-b[aria-pressed="true"] { background: var(--card); color: var(--ink); font-weight: 700; box-shadow: var(--shadow-seg-on), inset 0 0 0 1px var(--line-strong); }
+.give .seg-b:hover { color: var(--ink); background: rgba(255, 255, 255, 0.55); }
+.give .seg-b[aria-pressed="true"] { background: var(--card); color: var(--ink); font-weight: 800; box-shadow: 0 2px 5px rgba(15, 27, 42, 0.28), inset 0 0 0 1px var(--ink); }
 .give .chips { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0 0 16px; }
 .give .chip { display: flex; align-items: center; justify-content: center; gap: .3em; height: 48px; padding: 0 6px; border: 1px solid var(--line-strong); border-radius: var(--radius-s); background: var(--card); color: var(--ink); font-size: 1rem; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; cursor: pointer; }
 .give .chip:hover { border-color: var(--primary); }
@@ -220,7 +220,8 @@ main.support .hours h3 { margin-bottom: var(--sp-2); }
   .give .chip { flex-direction: column; gap: 2px; height: 60px; }
   .give .chip-name { font-size: .875rem; font-weight: 600; }
 }
-.give .chip[aria-pressed="true"] { background: var(--primary-soft); border-color: var(--primary); box-shadow: inset 0 0 0 1px var(--primary); color: var(--primary-dark); }
+.give .chip[aria-pressed="true"] { position: relative; background: var(--primary-soft); border: 2px solid var(--primary); color: var(--primary-dark); }
+.give .chip[aria-pressed="true"]::after { content: ""; position: absolute; top: 4px; right: 6px; width: 5px; height: 9px; border-right: 2px solid var(--primary); border-bottom: 2px solid var(--primary); transform: rotate(45deg); }
 .give .seg-b:focus-visible, .give .chip:focus-visible, .give .amt-box:focus-within { outline: 3px solid var(--primary-soft); outline-offset: 1px; box-shadow: 0 0 0 2px var(--primary); }
 
 /* Other amount: the box and the slider set the same amount. They share a row where the card is wide. */
@@ -234,12 +235,16 @@ main.support .hours h3 { margin-bottom: var(--sp-2); }
 .amt-box input { align-self: stretch; text-align: start; width: 100%; min-width: 0; padding: 0 0 0 4px; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 1rem; font-weight: 700; font-variant-numeric: tabular-nums; scroll-margin-block: 96px 120px; }
 .amt-box input::placeholder { color: var(--text); font-weight: 500; opacity: 1; }
 .amt-box:has(input[aria-invalid="true"]) { border-color: var(--danger); }
-.amt-range { --fill: 6%; flex: 999 1 220px; min-width: 0; height: 44px; margin: 0; background: transparent; cursor: pointer; -webkit-appearance: none; appearance: none; }
-.amt-range::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: linear-gradient(to right, var(--teal) var(--fill), var(--line-strong) var(--fill)); }
-.amt-range::-webkit-slider-thumb { width: 28px; height: 28px; margin-top: -11px; border: 2px solid var(--teal); border-radius: 50%; background: var(--card); box-shadow: var(--shadow-thumb); -webkit-appearance: none; appearance: none; }
-.amt-range::-moz-range-track { height: 6px; border-radius: 3px; background: var(--line-strong); }
-.amt-range::-moz-range-progress { height: 6px; border-radius: 3px; background: var(--teal); }
-.amt-range::-moz-range-thumb { width: 24px; height: 24px; border: 2px solid var(--teal); border-radius: 50%; background: var(--card); box-shadow: var(--shadow-thumb); }
+.slide { display: flex; flex: 0 0 100%; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 6px; }
+.slide-lab { color: var(--ink); font-size: 0.9375rem; font-weight: 600; line-height: 1.3; }
+.slide-val { color: var(--primary-dark); font-size: 1rem; font-weight: 750; font-variant-numeric: tabular-nums; }
+.amt-range { --fill: 6%; flex: 1 1 100%; min-width: 0; height: 44px; margin: 0; background: transparent; cursor: pointer; -webkit-appearance: none; appearance: none; }
+@media (pointer: coarse) { .amt-range { height: 48px; } }
+.amt-range::-webkit-slider-runnable-track { height: 10px; border-radius: 5px; background: linear-gradient(to right, var(--primary) var(--fill), #c3cdd9 var(--fill)); }
+.amt-range::-webkit-slider-thumb { width: 28px; height: 28px; margin-top: -9px; border: 3px solid var(--card); border-radius: 50%; background: var(--primary); box-shadow: 0 0 0 1px var(--primary-dark), var(--shadow-thumb); -webkit-appearance: none; appearance: none; }
+.amt-range::-moz-range-track { height: 10px; border-radius: 5px; background: #c3cdd9; }
+.amt-range::-moz-range-progress { height: 10px; border-radius: 5px; background: var(--primary); }
+.amt-range::-moz-range-thumb { width: 22px; height: 22px; border: 3px solid var(--card); border-radius: 50%; background: var(--primary); box-shadow: 0 0 0 1px var(--primary-dark), var(--shadow-thumb); }
 .amt-range:focus-visible { outline: none; }
 .amt-range:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px var(--card), 0 0 0 5px var(--primary); }
 .amt-range:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px var(--card), 0 0 0 5px var(--primary); }
@@ -248,14 +253,17 @@ main.support .hours h3 { margin-bottom: var(--sp-2); }
 .msg-ic { display: inline-flex; flex: none; margin-top: 0.2em; }
 
 /* What the amount buys, then what comes with it */
-.readout { margin: 14px 0 0; padding: 14px 16px; background: var(--teal-soft); border-radius: var(--radius-s); }
+.readout { margin: 14px 0 0; padding: 14px 16px; background: var(--primary-soft); border: 1px solid var(--primary-line); border-radius: var(--radius-s); }
 .readout[hidden] { display: none; }
 .readout p { margin: 0; }
 .r-hours { color: var(--ink); font-size: 1.0625rem; line-height: 1.4; }
 .r-hours strong { font-weight: 750; }
 @media (max-width: 479px) { .r-hours { font-size: 1rem; } }
-.readout .r-level { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(12, 138, 134, 0.22); color: var(--text); font-size: 0.9375rem; line-height: 1.5; }
+.readout .r-level { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--primary-line); color: var(--text); font-size: 0.9375rem; line-height: 1.5; }
 .r-level strong { color: var(--ink); font-weight: 650; }
+.perk-switch { min-height: 44px; padding: 0 4px; border: 0; background: transparent; color: var(--primary-dark); font: inherit; font-weight: 650; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.perk-switch:focus-visible { outline: 3px solid var(--primary-soft); outline-offset: 1px; box-shadow: 0 0 0 2px var(--primary); border-radius: 4px; }
+@media (pointer: coarse) { .perk-switch { min-height: 48px; } }
 .r-level:empty { display: none; }
 .readout .r-claim { margin-top: 6px; color: var(--ink); font-size: 0.9375rem; font-weight: 600; line-height: 1.5; }
 .readout .r-claim[hidden] { display: none; }

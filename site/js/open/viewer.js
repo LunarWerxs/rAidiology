@@ -417,7 +417,6 @@ function clearReading() {
 function showOutlineTools(on) {
   el('outline-tools').hidden = !on;
   el('stage-caption').hidden = !on;
-  el('how-outlines-foot').hidden = !on;
 }
 
 /** "Show the outlines" is a switch: its words stay put and its state is on or off (wave three: as a third button
@@ -1329,7 +1328,7 @@ function draw() {
     el('slice').style.setProperty('--fill', `${s.slices.length > 1 ? (state.slice / (s.slices.length - 1)) * 100 : 0}%`);
     // The one line that says how to step and zoom. It stays: it is the only place that says so (wave three found
     // a second, different instruction further down, naming the arrow keys on a phone).
-    el('hint-chip').hidden = s.slices.length < 2;
+    el('hint-chip').hidden = el('hint-chip-side').hidden = s.slices.length < 2;
     const spacing = s.info.pixelSpacing;
     const bar = el('scalebar');
     if (spacing && spacing[0] > 0) {

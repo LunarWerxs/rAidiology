@@ -38,6 +38,7 @@
       <a class="brand" href="index.html" aria-label="rAidiology home"><img src="img/logo.svg" width="32" height="32" alt=""><span class="brand-name">rAidiology</span></a>
       <nav id="site-nav" class="site-nav" aria-label="Main">
         <a class="nav-home" href="index.html">Home</a>
+        <a aria-current="page" class="nav-home" href="open.html?sample=1">Sample scan</a>
         <a href="index.html#scans"><span class="nav-long">Scans we cover</span><span class="nav-short">Scans</span></a>
         <a href="models.html">Research</a>
         <a href="pricing.html"><span class="nav-long">Company licences</span><span class="nav-short">Licences</span></a>
@@ -147,6 +148,7 @@
 
     <section id="viewer" class="pane viewer" hidden aria-labelledby="viewer-h">
       <div class="viewer-head">
+        <a class="home-btn" href="index.html">Home</a>
         <h2 id="viewer-h"></h2>
       </div>
       <div class="stage-wrap">
@@ -164,14 +166,15 @@
       <div class="stage-caption" id="stage-caption" hidden><div class="name-tip" id="name-tip" hidden role="status"></div><p class="caption-empty"><span class="on-touch">Tap an outline to see its name here.</span><span class="on-mouse">Point at an outline to see its name here.</span><span class="when-off">The outlines are switched off.</span></p></div>
       <div class="pic-controls">
         <div class="controls slice-bar">
-          <button class="btn step-btn step-prev" type="button" id="prev-picture" aria-label="Previous picture">Previous</button>
+          <button class="btn quiet step-btn step-prev" type="button" id="prev-picture" aria-label="Previous picture">Previous</button>
           <label class="slider"><span class="lbl">Picture</span> <input type="range" id="slice" min="0" max="0" value="0" aria-label="Picture"></label>
           <button class="btn step-btn step-next" type="button" id="next-picture" aria-label="Next picture">Next</button>
         </div>
+        <p class="hint-chip" id="hint-chip" hidden><span class="on-touch">Swipe up or down</span><span class="on-mouse">Drag up or down, or use the arrow keys,</span> to step through the pictures. <span class="on-touch">Pinch</span><span class="on-mouse">Scroll</span> to zoom in.</p>
       </div>
       </div>
       <div class="stage-tools">
-        <p class="hint-chip" id="hint-chip" hidden><span class="on-touch">Swipe up or down</span><span class="on-mouse">Drag up or down, or use the arrow keys,</span> to step through the pictures. <span class="on-touch">Pinch</span><span class="on-mouse">Scroll</span> to zoom in.</p>
+        <p class="hint-chip hint-side" id="hint-chip-side" hidden><span class="on-touch">Swipe up or down</span><span class="on-mouse">Drag up or down, or use the arrow keys,</span> to step through the pictures. <span class="on-touch">Pinch</span><span class="on-mouse">Scroll</span> to zoom in.</p>
       </div>
       <div class="viewer-foot">
         <button class="back-link" type="button" id="back">Open a different scan</button>
@@ -199,13 +202,12 @@
         <p class="fine">Want outlines on your CT too? After a one-time setup, an AI assistant such as Claude or ChatGPT can add them on your computer.</p>
       </details>
       <div class="card next-step" id="sample-next" hidden>
-        <a class="btn" href="open.html">Open your own scan</a>
+        <a class="btn quiet" href="open.html">Open your own scan</a>
         <p class="fine">It's free because it runs on your device. <a class="text-link" href="support.html">Support the next model</a></p>
       </div>
       <div class="footnote" id="viewer-footnote">
         <p class="fine caption" id="outline-caption" hidden>Outlines by the CT organ outliner, one of our research models.</p>
         <p class="fine" id="viewer-credit" hidden></p>
-        <p class="fine" id="how-outlines-foot" hidden><a href="models.html#ct-segmenter">How these outlines are made</a></p>
       </div>
     </section>
 

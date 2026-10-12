@@ -70,6 +70,7 @@ if (box) {
   const claim = $('give-claim');
   const renew = $('give-renew');
   const range = $('give-range');
+  const val = $('give-val');
   const perksLink = $('perks-mail');
   const bar = $('pay-bar');
   const barBtn = bar && bar.querySelector('button');
@@ -80,6 +81,8 @@ if (box) {
   const state = { amount: 15, freq: 'once', busy: false, custom: false, settled: true };
   const ICON = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M12 3 2 21h20L12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v5M12 18v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
   let timer = 0;
+  const perkSwitch = level.querySelector('.perk-switch') || Object.assign(document.createElement('button'), { type: 'button', className: 'perk-switch', textContent: 'Switch to Monthly' });
+  perkSwitch.addEventListener('click', () => { state.freq = 'month'; render(); });
 
   // A message with a small warning icon. role="alert" only on the render where it first appears.
   function show(el, text) {
@@ -133,8 +136,9 @@ if (box) {
     const n = state.amount;
     const monthly = state.freq === 'month';
     segs.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.freq === state.freq)));
-    chips.forEach((c) => c.setAttribute('aria-pressed', String(!state.custom && Number(c.dataset.amt) === n)));
-    if (from !== 'box') box.value = state.custom && n ? String(n) : '';
+    chips.forEach((c) => c.setAttribute('aria-pressed', String(Number(c.dataset.amt) === n)));
+    if (from !== 'box') box.value = n ? String(n) : '';
+    if (val) val.textContent = n ? money(n) : '';
     paintRange();
 
     // While someone is still typing, a low amount only greys the button; the message waits for the pause.
@@ -156,8 +160,12 @@ if (box) {
       if (monthly && lv) lead(level, `As a ${lv[1]},`, `you get ${lv[2]}.`);
       else if (monthly) lead(level, 'Perks start at $5 a month,', 'with Supporter from $15 and Sponsor from $50.');
       else {
-        const shown = lv || LEVELS[LEVELS.length - 1];
-        lead(level, 'Perks come with monthly support.', `${shown[1]}s at ${money(shown[0])} a month get ${shown[2]}.`);
+        // One persistent button: a blur-triggered render must not replace it between mousedown and click.
+        if (!level.contains(perkSwitch)) {
+          const b = document.createElement('strong');
+          b.textContent = 'Perks come with monthly support.';
+          level.replaceChildren(b, ' ', perkSwitch);
+        }
       }
       claim.hidden = !(monthly && lv);
       go.textContent = `Pay ${money(n)} ${monthly ? 'a month' : 'once'}`;

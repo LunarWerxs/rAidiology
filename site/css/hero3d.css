@@ -133,7 +133,7 @@
   z-index: 2;
   max-width: 22rem;
   margin: 0;
-  color: var(--stage-turn-ink, rgba(220, 230, 240, 0.75));
+  color: #dce6f0;
   font-size: 0.875rem;
   line-height: 1.5;
   text-wrap: pretty;
@@ -143,3 +143,7 @@
 @media (prefers-reduced-motion: reduce) {
   .hero3d .hero3d__canvas { transition: none; }
 }
+
+/* One short line for the chosen view, set by hero3d.js inside the caption. */
+.hero3d .hero3d__view { display: block; margin-top: 6px; color: var(--on-dark-strong); font-weight: 600; }
+.hero3d.hero3d--static .hero3d__view { display: none; }

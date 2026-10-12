@@ -18,7 +18,7 @@
   /* Colour */
   --bg: #ffffff; --bg-soft: #f4f7fa; --card: #ffffff;
   --ink: #0f1b2a; --text: #2a3a4d; --muted: #526173;
-  --line: #e3e9ef; --line-strong: #cdd6e0;
+  --line: #e3e9ef; --line-strong: #cdd6e0; --btn-edge: #84909f;
   --primary: #1660c4; --primary-dark: #0f4c9e; --primary-soft: #e8f0fb; --on-primary: #ffffff;
   --teal: #0c8a86; --teal-soft: #e3f3f2;
   --lightbox: #05090e;
@@ -135,7 +135,7 @@ details > summary { cursor: pointer; }
 /* Buttons: one filled primary; a secondary is a white button with a hairline, never a bare link */
 .btn, .cta { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 12px 22px; font: inherit; font-size: 1rem; font-weight: 600; line-height: 1.2; text-align: center; text-decoration: none; color: var(--on-primary); background: var(--primary); border: 1px solid var(--primary); border-radius: var(--radius-s); cursor: pointer; transition: background-color .15s, border-color .15s, color .15s; }
 .btn:hover, .cta:hover { color: var(--on-primary); background: var(--primary-dark); border-color: var(--primary-dark); }
-.btn.secondary, .btn.quiet { color: var(--ink); background: var(--card); border-color: var(--line-strong); box-shadow: var(--shadow-btn); }
+.btn.secondary, .btn.quiet { color: var(--ink); background: var(--card); border-color: var(--btn-edge); box-shadow: var(--shadow-btn); }
 .btn.secondary:hover, .btn.quiet:hover { color: var(--primary-dark); background: var(--card); border-color: var(--primary); }
 .btn.small { min-height: 40px; padding: 8px 16px; font-size: 0.9375rem; }
 .btn[hidden] { display: none; }
@@ -224,7 +224,7 @@ a.chip:hover { background: var(--primary); color: var(--on-primary); }
 @media (min-width: 1100px) { .gh-link { width: auto; gap: 6px; padding-inline: 8px; } .gh-link .gh-text { display: inline; font-size: 0.9375rem; font-weight: 550; } }
 .head-actions .btn { min-height: 40px; padding: 8px 16px; font-size: 0.9375rem; white-space: nowrap; }
 /* One call to action per page: the header button is the small outline kind, so the page body holds the filled one */
-.head-actions .btn { color: var(--ink); background: var(--card); border-color: var(--line-strong); box-shadow: var(--shadow-btn); }
+.head-actions .btn { color: var(--ink); background: var(--card); border-color: var(--btn-edge); box-shadow: var(--shadow-btn); }
 .head-actions .btn:hover { color: var(--primary-dark); background: var(--card); border-color: var(--primary); }
 .menu-btn { display: none; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; color: var(--ink); background: var(--card); border: 1px solid var(--line-strong); border-radius: var(--radius-s); cursor: pointer; }
 .menu-btn svg { width: 22px; height: 22px; display: block; }
