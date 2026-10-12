@@ -1710,92 +1710,14 @@ def unpack(path, out_dir, turn=None, release=False):
     bad = [x for x in names if not _inside(out_dir, x)]
     if bad:
         raise FetchError("%s: members escape the folder: %s" % (path, bad[:3]))
-    p = subprocess.Popen([SEVEN_ZIP, "x", "-y", "-p", "-aoa", "-o" + out_dir, path], stdout=subprocess.PIPE,
-                         stderr=subprocess.PIPE, text=True, encoding="utf-8", errors="replace", creationflags=NO_WINDOW)
-    stop = threading.Event()
-    ahead = threading.Thread(target=_read_ahead, args=(path, p, stop), daemon=True)
-    ahead.start()
-    try:
-        out, err = p.communicate()
-    except BaseException:
-        p.kill()
-        p.wait()
-        raise
-    finally:
-        stop.set()
-        ahead.join()
-    if p.returncode != 0:
-        raise FetchError("7-Zip could not unpack %s: %s" % (path, (err or out)[-300:]))
+    # No read-ahead beside it (92bd932, taken out): with H: to itself, 7-Zip read a zip in ~19,000 scattered 1 MB
+    # pieces at 66 MB/s alone and 68 with 16 reads in flight ahead of it (2026-10-11); the 4x a first test showed was
+    # the 16-deep reader taking the disk from the unpack beside it
+    r = subprocess.run([SEVEN_ZIP, "x", "-y", "-p", "-aoa", "-o" + out_dir, path], capture_output=True, text=True,
+                       encoding="utf-8", errors="replace", creationflags=NO_WINDOW)
+    if r.returncode != 0:
+        raise FetchError("7-Zip could not unpack %s: %s" % (path, (r.stderr or r.stdout)[-300:]))
     return len(names)
-
-
-# A download that came in over many connections lies on its disk in pieces (petwb-rep's 40 GB zip on H: in 18,424 of
-# about 1 MB, all over the disk), and 7-Zip reads them one at a time, a seek each: 18.5 MB/s off NL-Breast-Screen's
-# normal.7z, where 16 reads at once, which the disk itself puts in order, took 74.6 (2026-10-11, beside an unpack).
-READ_AHEAD_DEPTH = 16          # reads in flight ahead of 7-Zip
-READ_AHEAD_BYTES = 2 << 30     # at most this far ahead of what 7-Zip has read: it finds the rest in the file cache
-READ_AHEAD_PIECE = 1 << 20
-
-
-def _read_bytes(proc):
-    """Bytes a running process has read so far (its I/O counters), or None where they cannot be read."""
-    if sys.platform != "win32":
-        return None
-    import ctypes  # noqa: PLC0415
-
-    class Counters(ctypes.Structure):
-        _fields_ = [(k, ctypes.c_ulonglong) for k in ("reads", "writes", "others", "read", "written", "other")]
-
-    c = Counters()
-    if not ctypes.windll.kernel32.GetProcessIoCounters(ctypes.c_void_p(int(proc._handle)), ctypes.byref(c)):
-        return None
-    return c.read
-
-
-def _read_ahead(path, proc, stop):
-    """`path` read into the file cache READ_AHEAD_DEPTH pieces at a time, never more than READ_AHEAD_BYTES past what
-    `proc` (7-Zip unpacking it) has read, until it ends or `stop` is set. Only a help: a failed read ends it."""
-    try:
-        size = os.path.getsize(path)
-    except OSError:
-        return
-    local = threading.local()
-    opened = []
-
-    def piece(off):
-        f = getattr(local, "f", None)
-        if f is None:
-            f = local.f = open(path, "rb", buffering=0)  # noqa: SIM115   one a thread, closed below
-            opened.append(f)
-        f.seek(off)
-        f.read(READ_AHEAD_PIECE)
-
-    off = 0
-    futs = set()
-    try:
-        with concurrent.futures.ThreadPoolExecutor(READ_AHEAD_DEPTH) as ex:
-            while off < size and not stop.is_set():
-                got = _read_bytes(proc)
-                if got is None:
-                    break
-                while len(futs) < READ_AHEAD_DEPTH and off < size and off < got + READ_AHEAD_BYTES:
-                    futs.add(ex.submit(piece, off))
-                    off += READ_AHEAD_PIECE
-                if not futs:
-                    stop.wait(0.2)             # far enough ahead: 7-Zip catches up
-                    continue
-                done, futs = concurrent.futures.wait(futs, timeout=0.5,
-                                                     return_when=concurrent.futures.FIRST_COMPLETED)
-                for fu in done:
-                    fu.result()
-    except OSError:
-        pass
-    finally:
-        for fu in futs:
-            fu.cancel()
-        for f in opened:
-            with contextlib.suppress(OSError):
-                f.close()
 
 
 def _out_whole(out_dir, member):

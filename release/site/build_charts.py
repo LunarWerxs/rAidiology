@@ -20,19 +20,46 @@ STATS = json.load(open(os.path.join(SITE, "data", "stats.json"), encoding="utf-8
 # Axis per metric: (min, max, ticks, name, what the scale means, chance level drawn dashed or None)
 AXES = {
     "AUROC": (0.5, 1.0, [0.5, 0.75, 1.0], "AUROC", "0.5 is a coin toss, 1 is perfect", 0.5),
-    "Dice": (0.0, 1.0, [0, 0.5, 1.0], "Dice", "overlap with the dataset's own outlines, 1 is a perfect match", None),
+    "Dice": (0.0, 1.0, [0, 0.5, 1.0], "Dice", "how closely it matches the dataset's own outlines, 1 is a perfect match", None),
     "kappa": (0.0, 1.0, [0, 0.5, 1.0], "Kappa", "0 is chance agreement, 1 is full agreement", 0.0),
     "percent": (0.0, 100.0, [0, 50, 100], "Percent", "0 to 100", None),
 }
+# Plain words first; the technical name follows in brackets.
+LEAD = {"AUROC": "How well it ranks cases", "Dice": "Outline overlap", "kappa": "Agreement beyond chance",
+        "percent": "Share matched"}
 ORDER = ("AUROC", "Dice", "kappa", "percent")
-# The dot only repeats the words beside it ("Held-out test", "Development"), so screen readers skip it.
+# The marker only repeats the words beside it, so screen readers skip it. Shapes differ, not just fill:
+# a circle for results on data the model never saw, a diamond for development results.
 GLYPH = {
     True: '<svg class="dot-key" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false">'
           '<circle cx="6" cy="6" r="4.5"/></svg>',
     False: '<svg class="dot-key hollow" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false">'
-           '<circle cx="6" cy="6" r="4.5"/></svg>',
+           '<path d="M6 1 11 6 6 11 1 6Z"/></svg>',
 }
-KIND = {True: "Held-out test", False: "Development"}
+KIND = {True: "Tested on data it never saw", False: "Development result (scored while building)"}
+
+# Plain wording for the strings that come from stats.json (the numbers are never touched).
+SAY = [
+    ("Held-out test: 89 CT scans (a scan can sit in more than one group)",
+     "89 CT scans the models never saw (a scan can be in more than one group)"),
+    ("Held-out test: ", "Tested on "),
+    (" held-out test: ", ", tested on data it never saw: "),
+    (" held-out test (", ", tested on pictures it never saw ("),
+    (" held-out test", ", tested on data it never saw"),
+    (", held-out test", ", on data it never saw"),
+    ("each read by models that never saw it", "each scored by models trained without it"),
+    ("each read by a model that never trained on it", "each scored by a model trained without it"),
+    ("out of fold", "each scored by a model trained without it"),
+    ("opened once", "scored once"),
+    ("five folds split by patient", "five groups split by patient"),
+    ("five folds", "five groups"),
+]
+
+
+def say(s):
+    for a, b in SAY:
+        s = s.replace(a, b)
+    return s
 
 
 def esc(s):
@@ -109,10 +136,10 @@ def chart_grid(metric, rows, note_key):
     lo_a, hi_a, ticks, name, scale, chance = AXES[metric]
     dp = places(metric, rows)
     out = ['<div class="rc-grid">', '<div class="rc-hd">',
-           f'<p class="rc-scale"><strong>{esc(name)}</strong> {text(scale)}</p>',
+           f'<p class="rc-scale">{esc(LEAD[metric])} (<strong>{esc(name)}</strong>): {text(scale)}</p>',
            '<p class="rc-ax" aria-hidden="true">' + "".join(
                f'<span style="left:{num(pos(metric, t))}%">{num(t)}</span>' for t in ticks) + "</p>",
-           '<p class="rc-vh">Score <span>(95% interval)</span></p>', "</div>"]
+           '<p class="rc-vh">Score <span>(likely range)</span></p>', "</div>"]
     dashed = ' class="c"'
     grid = "".join(f'<i{dashed if chance is not None and t == chance else ""} style="left:{num(pos(metric, t))}%"></i>'
                    for t in ticks)
@@ -124,12 +151,12 @@ def chart_grid(metric, rows, note_key):
         for r in group:
             main, iv = value_text(metric, r, dp)
             note = r.get(note_key)
-            note_html = f'<span class="{"rc-set" if note_key == "set" else "rc-n"}">{text(note)}</span>' if note else ""
+            note_html = f'<span class="{"rc-set" if note_key == "set" else "rc-n"}">{text(say(note))}</span>' if note else ""
             var = f"--v:{num(pos(metric, r['value']))}"
             if has_interval(r):
                 var += f";--lo:{num(pos(metric, r['low']))};--hi:{num(pos(metric, r['high']))}"
             out.append(f'<div class="rc-row{"" if held else " dev"}{"" if has_interval(r) else " no-iv"}">'
-                       f'<p class="rc-l">{text(r["label"])}{note_html}</p>'
+                       f'<p class="rc-l">{text(say(r["label"]))}{note_html}</p>'
                        f'<span class="rc-t" style="{var}" aria-hidden="true">{grid}</span>'
                        f'<p class="rc-v"><strong>{esc(main)}</strong>{(" <span>" + esc(iv) + "</span>") if iv else ""}</p></div>')
     out.append("</div>")
@@ -140,7 +167,7 @@ def chart(title, sub, items, note_key):
     """items: rows carrying their own metric. One card, one grid per metric in a fixed order."""
     grids = [chart_grid(m, [r for r in items if r["metric"] == m], note_key) for m in ORDER
              if any(r["metric"] == m for r in items)]
-    cap = f"<h3>{text(title)}</h3>" + (f"<p>{text(sub)}</p>" if sub else "")
+    cap = f"<h3>{text(say(title))}</h3>" + (f"<p>{text(say(sub))}</p>" if sub else "")
     return f'<figure class="rc"><figcaption class="rc-cap">{cap}</figcaption>' + "".join(grids) + "</figure>"
 
 
@@ -150,18 +177,18 @@ def headline(m):
 
 def breakdown(b):
     rows = [dict(r, metric=b["metric"], held_out=b["held_out"]) for r in b["rows"]]
-    return chart(b["title"], f"Test set: {b['set']}", rows, "n")
+    return chart(b["title"], f"Tested on: {b['set']}", rows, "n")
 
 
 def numbers(m):
     """Every result of one model as a table, behind "Show the numbers"."""
     head = ('<thead><tr><th scope="col">Result</th><th scope="col">Metric</th><th scope="col">Score</th>'
-            '<th scope="col">95% interval</th><th scope="col">Kind</th><th scope="col">Test set</th></tr></thead>')
+            '<th scope="col">Likely range (95% interval)</th><th scope="col">Kind</th><th scope="col">Data it was scored on</th></tr></thead>')
 
     def row(metric, r, setx, held, dp):
-        return (f'<tr><th scope="row">{esc(r["label"])}</th><td>{esc(AXES[metric][3])}</td>'
+        return (f'<tr><th scope="row">{esc(say(r["label"]))}</th><td>{esc(AXES[metric][3])}</td>'
                 f'<td>{fmt(metric, r["value"], dp)}{"%" if metric == "percent" else ""}</td>'
-                f'<td>{esc(interval(metric, r, dp))}</td><td>{KIND[held]}</td><td>{esc(setx)}</td></tr>')
+                f'<td>{esc(interval(metric, r, dp))}</td><td>{KIND[held]}</td><td>{esc(say(setx))}</td></tr>')
 
     hl = m["headline"]
     dps = {mt: places(mt, [h for h in hl if h["metric"] == mt]) for mt in ORDER}
@@ -169,7 +196,7 @@ def numbers(m):
               + "".join(row(h["metric"], h, h["set"], h["held_out"], dps[h["metric"]]) for h in hl) + "</tbody>"]
     for b in m.get("breakdowns", []):
         dp = places(b["metric"], b["rows"])
-        bodies.append(f'<tbody><tr class="grp"><th scope="colgroup" colspan="6">{esc(b["title"])}</th></tr>'
+        bodies.append(f'<tbody><tr class="grp"><th scope="colgroup" colspan="6">{esc(say(b["title"]))}</th></tr>'
                       + "".join(row(b["metric"], r, f"{b['set']}; {r['n']}" if r.get("n") else b["set"], b["held_out"], dp)
                                 for r in b["rows"]) + "</tbody>")
     return ('<details class="rnums"><summary>Show the numbers</summary><div class="rnums-wrap"><table>'
@@ -204,15 +231,16 @@ def tiles():
         # A held-out result says in plain words what the tag means; a development one is only "measured".
         head = ((f"Tested on {size.group(1)} {size.group(2)} it never saw" if h["held_out"]
                  else f"Measured on {size.group(1)} {size.group(2)}") if size else m["scan"])
-        tag = (f'<span class="tag">{GLYPH[True]}{KIND[True]}</span>' if h["held_out"]
-               else f'<span class="tag dev">{GLYPH[False]}Development</span>')
+        # The headline says "never saw" once per card in words; only a development result gets a chip (a diamond).
+        tag = "" if h["held_out"] else f'<span class="tag dev">{GLYPH[False]}Development result</span>'
+        cue = '<span class="cue">See the results</span>'
         w, h_ = webp_size(m["picture"])
         out.append(f'<a class="result-tile" href="models.html#{esc(m["key"])}">'
                    f'<img src="{esc(m["picture"])}" width="{w}" height="{h_}" alt="" loading="lazy">'
                    f'<span class="pic-chip">{esc(m["scan"])}</span>'
                    f'<h3>{text(m["name"])}</h3>'
                    f'<p class="score">{esc(head)}</p>'
-                   f'<p class="what">{text(what)}</p>{tag}</a>')
+                   f'<p class="what">{text(what)}</p>{tag}{cue}</a>')
     return '<div class="result-tiles">' + "".join(out) + "</div>"
 
 

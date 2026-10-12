@@ -237,7 +237,7 @@ main.support .hours h3 { margin-bottom: var(--sp-2); }
 .amt-box input { align-self: stretch; text-align: start; width: 100%; min-width: 0; padding: 0 0 0 4px; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 1rem; font-weight: 700; font-variant-numeric: tabular-nums; scroll-margin-block: 96px 120px; }
 .amt-box input::placeholder { color: var(--text); font-weight: 500; opacity: 1; }
 .amt-box:has(input[aria-invalid="true"]) { border-color: var(--danger); }
-@media (pointer: coarse) { .amt-note, .give-err { display: flex; align-items: flex-start; gap: 6px; margin: 6px 0 0; color: var(--danger); font-size: 0.9375rem; font-weight: 600; line-height: 1.5; }
+.amt-note, .give-err { display: flex; align-items: flex-start; gap: 6px; margin: 6px 0 0; color: var(--danger); font-size: 0.9375rem; font-weight: 600; line-height: 1.5; }
 .amt-note[hidden], .give-err[hidden] { display: none; }
 .msg-ic { display: inline-flex; flex: none; margin-top: 0.2em; }
 
@@ -253,6 +253,10 @@ main.support .hours h3 { margin-bottom: var(--sp-2); }
 .perk-switch { min-height: 44px; padding: 0 4px; border: 0; background: transparent; color: var(--primary-dark); font: inherit; font-weight: 650; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .perk-switch:focus-visible { outline: 3px solid var(--primary-soft); outline-offset: 1px; box-shadow: 0 0 0 2px var(--primary); border-radius: 4px; }
 @media (pointer: coarse) { .perk-switch { min-height: 48px; } }
+.perk-list { margin: 6px 0 0; padding-left: 1.2em; }
+.perk-list li { margin: 2px 0; }
+.perk-list .is-yours { color: var(--ink); font-weight: 650; }
+@media (max-width: 1023px) { .give-grid > .train-pic { order: 2; } .train-frame { max-height: 220px; } }
 .r-level:empty { display: none; }
 .readout .r-claim { margin-top: 6px; color: var(--ink); font-size: 0.9375rem; font-weight: 600; line-height: 1.5; }
 .readout .r-claim[hidden] { display: none; }
@@ -266,7 +270,7 @@ main.support .hours h3 { margin-bottom: var(--sp-2); }
 .give .give-btn.btn[aria-disabled="true"], .pay-bar .give-btn[aria-disabled="true"] { background: var(--line); border-color: var(--line-strong); color: var(--ink); box-shadow: none; opacity: 1; cursor: not-allowed; }
 .give .give-btn.btn[aria-disabled="true"] { pointer-events: none; }
 .give-err { margin: 0; }
-.give-next { margin: 0; color: var(--text); font-size: 0.9375rem; line-height: 1.5; text-align: center; }
+.give-next { margin: 0; color: var(--text); font-size: 0.9375rem; line-height: 1.5; text-align: left; }
 
 /* How payment works: closed by default; open, every fact is its own row and every checkout link a 48px row */
 .pay-details { margin-top: 16px; border: 1px solid var(--line-strong); border-radius: var(--radius-s); background: var(--card); }

@@ -65,6 +65,11 @@ main .eyebrow { font-size: 0.9375rem; font-weight: 600; letter-spacing: 0; text-
   .hero-stage .hero3d.hero3d--narrow .hero3d__modes { right: 12px; }
   .hero-stage .hero3d.hero3d--narrow .hero3d__mode { min-width: 72px; padding-inline: 10px; }
 }
+/* The legend for the three views stacks right above the buttons, on the stage's lower right, where the sample CT card never reaches. */
+@media (min-width: 650px), (orientation: landscape) {
+  .hero-stage .hero3d .hero3d__view { inset-inline-start: auto; inset-inline-end: 14px; inset-block-end: 76px; max-width: 17rem; text-align: end; text-shadow: none;
+    padding: 8px 12px; border-radius: 10px; background: rgba(5, 9, 14, 0.78); }
+}
 /* The caption sits top left, clear of the body's head. With the card docked (960 px and up) the body has moved right,
    so the caption may run as wide as the room the move leaves. */
 .hero-stage .hero3d .hero3d__cap { max-width: min(26rem, calc(50% - 80px)); }
@@ -72,14 +77,15 @@ main .eyebrow { font-size: 0.9375rem; font-weight: 600; letter-spacing: 0; text-
 /* Phones held upright: the stage is too narrow for the buttons or the caption beside the body, so both sit in a tray
    under it, the buttons first, and the body fades into the tray. The canvas and the poster stop above the tray (hero3d.css). */
 @media (max-width: 649px) and (orientation: portrait) {
-  .stage-box { --hero3d-tray: 196px; height: calc(clamp(300px, 52vh, 560px) + var(--hero3d-tray)); height: calc(clamp(300px, 52svh, 560px) + var(--hero3d-tray)); }
+  .stage-box { --hero3d-tray: 236px; height: calc(clamp(300px, 52vh, 560px) + var(--hero3d-tray)); height: calc(clamp(300px, 52svh, 560px) + var(--hero3d-tray)); }
   .hero-stage .hero3d::after { content: ""; position: absolute; inset-inline: 0; bottom: var(--hero3d-tray); z-index: 1; height: 56px; background: linear-gradient(to bottom, transparent, var(--lightbox)); pointer-events: none; }
   .hero-stage .hero3d .hero3d__modes { left: 50%; right: auto; bottom: calc(var(--hero3d-tray) - 56px); transform: translateX(-50%); }
   .hero-stage .hero3d .hero3d__cap { top: auto; bottom: 16px; inset-inline: 16px; max-width: none; text-align: center; text-wrap: balance; }
+  .hero-stage .hero3d .hero3d__view { inset-inline: 16px; max-width: none; inset-block-end: 88px; }
   /* Without WebGL there are no View buttons and nothing to turn, so the tray keeps only the caption's first sentence. */
   .stage-box:has(> .hero3d--static) { --hero3d-tray: 76px; }
 }
-@media (max-width: 379px) and (orientation: portrait) { .stage-box { --hero3d-tray: 216px; } }
+@media (max-width: 379px) and (orientation: portrait) { .stage-box { --hero3d-tray: 256px; } }
 
 /* The sample CT card: a white card with a thin edge, so the black picture inside it reads against the black stage.
    While it loads (.is-loading, until ctdemo.js paints the first frame) the whole card is the viewer's near-black

@@ -941,7 +941,7 @@ function describeOutlines(note, drawn) {
       swatch.style.backgroundColor = colourOf(s);
       const label = document.createElement('span');
       label.className = 'part-name';
-      label.textContent = names[s] || `structure ${s + 1}`;
+      label.textContent = cap1(names[s] || `structure ${s + 1}`);
       row.append(swatch, label);
       if (about && about[s]) {
         const what = document.createElement('span');
@@ -1069,7 +1069,7 @@ async function openSeries(index) {
   markSwitch();
   // One way out of the viewer: back to the list when there is more than one set to choose from,
   // otherwise straight to opening a different scan (a list of one has nothing in it).
-  el('back').textContent = state.series.length > 1 ? 'Back to the list' : 'Open a different scan';
+  el('back').textContent = state.series.length > 1 ? 'Back to the list' : 'Open your scan';
   el('start-over').hidden = true;
   show('viewer', true);
   show('series', false);
@@ -1415,7 +1415,7 @@ function sideOf(v) {
 // What is true of every picture of this kind, and nothing about this one. It says which way up the
 // picture is and what white and black usually are; it does not say what anything on it means.
 const SHADES = {
-  CT: 'On a CT, white is bone, grey is organs and muscle, and black is air.',
+  CT: 'On a CT, white is bone, gray is organs and muscle, and black is air.',
   CR: 'On an X-ray, white is bone and anything dense, and black is air.',
   DX: 'On an X-ray, white is bone and anything dense, and black is air.',
   MR: 'On an MRI, what looks bright depends on how the scan was taken, so there\'s no simple rule for white and black.',
@@ -1430,10 +1430,9 @@ function describeView(info) {
     ? { 'edge-right': across.toward, 'edge-left': across.away, 'edge-bottom': down.toward, 'edge-top': down.away }
     : { 'edge-right': '', 'edge-left': '', 'edge-bottom': '', 'edge-top': '' };
   for (const [id, text] of Object.entries(edges)) {
-    el(id).textContent = text;
+    // Side labels are plain words, Right and Left in full, placed the same way on every picture (open.css).
+    el(id).textContent = text === SIDES[0][0] ? 'Right' : text === SIDES[0][1] ? 'Left' : text ? cap1(text) : '';
     el(id).hidden = !text;
-    // Phones show R and L in place of the long side names, which sat on the anatomy (open.css).
-    el(id).dataset.short = text === SIDES[0][0] ? 'R' : text === SIDES[0][1] ? 'L' : '';
   }
   const parts = [];
   if (known) {

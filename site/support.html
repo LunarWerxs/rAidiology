@@ -29,11 +29,11 @@
       <nav id="site-nav" class="site-nav" aria-label="Main">
         <a class="nav-home" href="index.html">Home</a>
         <a class="nav-home" href="open.html?sample=1">Sample scan</a>
-        <a href="index.html#scans"><span class="nav-long">Scan types</span><span class="nav-short">Scans</span></a>
+        <a href="index.html#scans"><span class="nav-long">CT, MRI, X-ray</span><span class="nav-short">Scans</span></a>
         <a href="models.html">Research</a>
         <a aria-current="page" href="support.html">Support us</a>
         <span class="nav-group">For companies</span>
-        <a class="nav-biz" href="pricing.html"><span class="nav-long">Company licences</span><span class="nav-short">Licences</span></a>
+        <a class="nav-biz" href="pricing.html"><span class="nav-long">Company licenses</span><span class="nav-short">Licenses</span></a>
         <a href="support.html#invest">Investors</a>
         <a class="nav-extra" href="https://github.com/LunarWerxs/rAidiology">GitHub</a>
         <a class="nav-extra" href="https://lunarwerx.com/discord/raidiology">Discord</a>
@@ -51,7 +51,7 @@
       <div class="wrap">
         <h1>Back our research models</h1>
         <p class="lede">Your support pays for the computer time that trains our research models. The app stays free.</p>
-        <p class="head-links"><a href="pricing.html#companies">See company licences</a><a href="#invest">For investors</a></p>
+        <p class="head-links"><a href="pricing.html#companies">See company licenses</a><a href="#invest">For investors</a></p>
       </div>
     </section>
 
@@ -76,24 +76,25 @@
             <p class="amt-note" id="give-note" hidden></p>
           </div>
           <div class="readout" id="give-readout" aria-live="polite" aria-atomic="true">
-            <p class="r-hours" id="give-hours">That pays for about <strong>9 hours</strong> on a rented A100 graphics card, training our research models.</p>
-            <p class="r-level" id="give-level"><strong>Perks go to monthly backers.</strong> <span class="perk-txt">They are a role on Discord (from $5), a name in the supporters list and a vote on what we train next (from $15), and a name or logo in the README ($50).</span> <button type="button" class="perk-switch">Switch to Monthly</button></p>
+            <p class="r-hours" id="give-hours">That pays for about <strong>9 hours</strong> of rented GPU time, training our research models.</p>
+            <div class="r-level" id="give-level"><strong>Perks (a role on Discord and more) go to monthly backers.</strong> <button type="button" class="perk-switch">Switch to Monthly</button></div>
             <p class="r-claim" id="give-claim" hidden>After you pay, reply to the receipt email with your Discord username to claim them.</p>
           </div>
           <ul class="before-pay">
             <li id="give-renew" hidden>It renews each month, and you can cancel any time.</li>
-            <li>It is <strong>not tax-deductible</strong>, because LunarWerx LLC is a for-profit company.</li>
+            <li>LunarWerx LLC is a for-profit company, so support is not a charitable gift.</li>
           </ul>
           <div class="give-cta">
             <a class="btn give-btn" id="give-go" href="https://buy.stripe.com/7sY9ATagDbjq5yC95l9Zm01?prefilled_amount=1500">Pay $15 once</a>
             <p class="give-err" id="give-err" hidden></p>
-            <p class="give-next" id="give-next">You'll pay on a secure Stripe page that shows Connections Global LLC, because it handles payments for LunarWerx LLC. Your receipt comes by email.</p>
+            <p class="give-next" id="give-next">The secure Stripe page shows Connections Global LLC. It runs our payments and has the same owner as rAidiology. Your receipt comes by email.</p>
           </div>
           <details class="pay-details">
-            <summary><span>How payment works <span class="sum-sub">Card statement, tax and limits</span></span></summary>
+            <summary><span>How payment works <span class="sum-sub">Card statement and limits</span></span></summary>
             <ul class="pay-list">
-              <li>Link, from Stripe, takes your payment, so your card statement starts with LINK.COM.</li>
-              <li>The money goes to LunarWerx LLC, a for-profit company, so payments are not donations and are not tax-deductible.</li>
+              <li>The Stripe checkout page shows Connections Global LLC. It runs our payments and has the same owner as rAidiology.</li>
+              <li>Link, from Stripe, takes your card payment. Your card statement starts with LINK.COM.</li>
+              <li>LunarWerx LLC makes rAidiology. Support is not tax-deductible.</li>
               <li>The most you can pay is $1,000 a month, or $5,000 once.</li>
             </ul>
             <p class="pay-links-h" id="pay-links-h">Or go straight to checkout</p>
@@ -107,15 +108,15 @@
         </div>
 
         <figure class="train-pic">
-          <div class="train-frame"><svg class="train-svg" viewBox="0 72 384 264" preserveAspectRatio="xMidYMid slice" role="img" aria-label="A slice across the upper belly, from the sample CT, with each structure outlined in its own colour."><image href="sample/demo/s22.webp" width="384" height="384"/><g class="train-ol"><path d="M123 260l-12 0-17-5-11-11-5-13-2-13 0-22 12-26 12-11 32-10 18-11 48-7 41 2 13 6 12 11 4 5 0 5-6 2-18 22-21 18-22 3 1 5-8 12 1-4-4-3-11 0-4-3-7 6-1 10 4 4-3 3-23 18z" stroke="hsl(153 85% 44%)" fill="hsl(153 85% 44%)"/><path d="M249 288l-21-5-13-11-3-12 10-14 0-5-6-10 4-1 9 7 9 3 9 8 5 0 3 2 12 0 15-5 14-11 2-9 3-1 0-9 2-3 0-19 2-2 1 7 2 2 0 27-10 31-7 12-14 10z" stroke="hsl(290 85% 74%)" fill="hsl(290 85% 74%)"/><path d="M140 288l-16 0-25-10-16-18-2-12-3-2 0-7 2 0 1 3 17 16 6 0 3 2 21 0 23-10 21-18 7 0 1-2 13-3 2 5-7 5-4 0-10 12-2 16-5 7-10 8zM76 235l0-6 2 0z" stroke="hsl(68 85% 60%)" fill="hsl(68 85% 60%)"/><path d="M104 154l-5 0-2-3 5-7 15-8 9 2-2 6-10 3zM289 159l-3 0-3-7-4-3-9 4-5-7 0-5 6-5 6 4 15 13z" stroke="hsl(263 85% 60%)" fill="hsl(263 85% 60%)"/><path d="M241 237l-13-5-11-10-5-5 0-5 7-10 4 0 20-18 19-22 5 0 1 15-3 7 3 9 0 19-8 8-3 9z" stroke="hsl(168 85% 44%)" fill="hsl(168 85% 44%)"/><path d="M270 249l-22-1-8-10 45-23 3-5 0-5-3-2 0-12 4-3 3 0 9 12-3 9 3 9-8 16-6 6z" stroke="hsl(253 85% 74%)" fill="hsl(253 85% 74%)"/><path d="M186 284l-3-4-9-1 3-4-3-3 0-17 9-12 11-3 11 13 0 9 2 1 0 8-2 2 1 7zM195 280l2-3 0-6-3-3-8 0-4 4 6 8zM209 288l-4-2 3-6 2 2zM175 288l-3-3 2-2 3 1z" stroke="hsl(313 85% 74%)" fill="hsl(313 85% 74%)"/><path d="M236 311l-21 0-6-5-9-3-5-7 0-4 6-7 9 3 5-4 12 1 12 6 6 4 1 5-5 8z" stroke="hsl(190 85% 44%)" fill="hsl(190 85% 44%)"/><path d="M162 309l-16-1-9-5-2-6 6-5 20-9 5 0 9 5 2-3 6 2 4 5-3 8-3 3z" stroke="hsl(328 85% 74%)" fill="hsl(328 85% 74%)"/><path d="M172 232l-4-4 0-5 1-5 7-6 4 3 11 0 4 3-4 7z" stroke="hsl(185 85% 74%)" fill="hsl(185 85% 74%)"/><path d="M217 253l-9-2-6-7 0-8 7-6 8 2 5 9 0 5z" stroke="hsl(275 85% 74%)" fill="hsl(275 85% 74%)"/><path d="M194 280l-6 0-6-5 4-7 8 0 3 3 0 6z" stroke="hsl(116 85% 44%)" fill="hsl(116 85% 44%)"/><path d="M114 288l-10-3-5-6 9 1 8 6z" stroke="hsl(76 85% 60%)" fill="hsl(76 85% 60%)"/><path d="M271 288l-4-1 1-4 14-4-5 6z" stroke="hsl(225 85% 60%)" fill="hsl(225 85% 60%)"/><path d="M209 229l-4 0-3-5 10-7 1 7z" stroke="hsl(178 85% 74%)" fill="hsl(178 85% 74%)"/><path d="M193 301l-6-4 1-12 7 1-3 5z" stroke="hsl(176 85% 44%)" fill="hsl(176 85% 44%)"/><path d="M304 245l2-14 3-4 2 10z" stroke="hsl(161 85% 44%)" fill="hsl(161 85% 44%)"/><path d="M75 187l-2-1 0-6 7-6 1 6z" stroke="hsl(233 85% 60%)" fill="hsl(233 85% 60%)"/><path d="M296 165l-8-5 4-6 4 2z" stroke="hsl(245 85% 74%)" fill="hsl(245 85% 74%)"/><path d="M75 241l-4-7 0-9 5 0z" stroke="hsl(11 85% 44%)" fill="hsl(11 85% 44%)"/><path d="M309 202l-3-4 0-9 5 5z" stroke="hsl(23 85% 60%)" fill="hsl(23 85% 60%)"/><path d="M98 154l0-2 0 2z" stroke="hsl(96 85% 74%)" fill="hsl(96 85% 74%)"/></g></svg><span class="pic-chip" aria-hidden="true">Sample CT</span></div>
-          <figcaption><strong>This is the kind of work your support pays for.</strong> Sample CT from TotalSegmentator (CC BY 4.0), with each organ outlined by our CT organ outliner.</figcaption>
+          <div class="train-frame"><svg class="train-svg" viewBox="0 72 384 264" preserveAspectRatio="xMidYMid slice" role="img" aria-label="A slice across the upper belly, from the sample CT, with each structure outlined in its own color."><image href="sample/demo/s22.webp" width="384" height="384"/><g class="train-ol"><path d="M123 260l-12 0-17-5-11-11-5-13-2-13 0-22 12-26 12-11 32-10 18-11 48-7 41 2 13 6 12 11 4 5 0 5-6 2-18 22-21 18-22 3 1 5-8 12 1-4-4-3-11 0-4-3-7 6-1 10 4 4-3 3-23 18z" stroke="hsl(153 85% 44%)" fill="hsl(153 85% 44%)"/><path d="M249 288l-21-5-13-11-3-12 10-14 0-5-6-10 4-1 9 7 9 3 9 8 5 0 3 2 12 0 15-5 14-11 2-9 3-1 0-9 2-3 0-19 2-2 1 7 2 2 0 27-10 31-7 12-14 10z" stroke="hsl(290 85% 74%)" fill="hsl(290 85% 74%)"/><path d="M140 288l-16 0-25-10-16-18-2-12-3-2 0-7 2 0 1 3 17 16 6 0 3 2 21 0 23-10 21-18 7 0 1-2 13-3 2 5-7 5-4 0-10 12-2 16-5 7-10 8zM76 235l0-6 2 0z" stroke="hsl(68 85% 60%)" fill="hsl(68 85% 60%)"/><path d="M104 154l-5 0-2-3 5-7 15-8 9 2-2 6-10 3zM289 159l-3 0-3-7-4-3-9 4-5-7 0-5 6-5 6 4 15 13z" stroke="hsl(263 85% 60%)" fill="hsl(263 85% 60%)"/><path d="M241 237l-13-5-11-10-5-5 0-5 7-10 4 0 20-18 19-22 5 0 1 15-3 7 3 9 0 19-8 8-3 9z" stroke="hsl(168 85% 44%)" fill="hsl(168 85% 44%)"/><path d="M270 249l-22-1-8-10 45-23 3-5 0-5-3-2 0-12 4-3 3 0 9 12-3 9 3 9-8 16-6 6z" stroke="hsl(253 85% 74%)" fill="hsl(253 85% 74%)"/><path d="M186 284l-3-4-9-1 3-4-3-3 0-17 9-12 11-3 11 13 0 9 2 1 0 8-2 2 1 7zM195 280l2-3 0-6-3-3-8 0-4 4 6 8zM209 288l-4-2 3-6 2 2zM175 288l-3-3 2-2 3 1z" stroke="hsl(313 85% 74%)" fill="hsl(313 85% 74%)"/><path d="M236 311l-21 0-6-5-9-3-5-7 0-4 6-7 9 3 5-4 12 1 12 6 6 4 1 5-5 8z" stroke="hsl(190 85% 44%)" fill="hsl(190 85% 44%)"/><path d="M162 309l-16-1-9-5-2-6 6-5 20-9 5 0 9 5 2-3 6 2 4 5-3 8-3 3z" stroke="hsl(328 85% 74%)" fill="hsl(328 85% 74%)"/><path d="M172 232l-4-4 0-5 1-5 7-6 4 3 11 0 4 3-4 7z" stroke="hsl(185 85% 74%)" fill="hsl(185 85% 74%)"/><path d="M217 253l-9-2-6-7 0-8 7-6 8 2 5 9 0 5z" stroke="hsl(275 85% 74%)" fill="hsl(275 85% 74%)"/><path d="M194 280l-6 0-6-5 4-7 8 0 3 3 0 6z" stroke="hsl(116 85% 44%)" fill="hsl(116 85% 44%)"/><path d="M114 288l-10-3-5-6 9 1 8 6z" stroke="hsl(76 85% 60%)" fill="hsl(76 85% 60%)"/><path d="M271 288l-4-1 1-4 14-4-5 6z" stroke="hsl(225 85% 60%)" fill="hsl(225 85% 60%)"/><path d="M209 229l-4 0-3-5 10-7 1 7z" stroke="hsl(178 85% 74%)" fill="hsl(178 85% 74%)"/><path d="M193 301l-6-4 1-12 7 1-3 5z" stroke="hsl(176 85% 44%)" fill="hsl(176 85% 44%)"/><path d="M304 245l2-14 3-4 2 10z" stroke="hsl(161 85% 44%)" fill="hsl(161 85% 44%)"/><path d="M75 187l-2-1 0-6 7-6 1 6z" stroke="hsl(233 85% 60%)" fill="hsl(233 85% 60%)"/><path d="M296 165l-8-5 4-6 4 2z" stroke="hsl(245 85% 74%)" fill="hsl(245 85% 74%)"/><path d="M75 241l-4-7 0-9 5 0z" stroke="hsl(11 85% 44%)" fill="hsl(11 85% 44%)"/><path d="M309 202l-3-4 0-9 5 5z" stroke="hsl(23 85% 60%)" fill="hsl(23 85% 60%)"/><path d="M98 154l0-2 0 2z" stroke="hsl(96 85% 74%)" fill="hsl(96 85% 74%)"/></g></svg><span class="pic-chip" aria-hidden="true">Sample CT</span></div>
+          <figcaption><strong>This is the kind of work your support pays for.</strong> Sample CT from TotalSegmentator (CC BY 4.0), with each organ outlined by our research model that outlines organs on CT.</figcaption>
         </figure>
 
         <div class="vision">
           <h2 id="vision-h">Where your money goes</h2>
           <dl class="vision-list">
             <div><dt>Today</dt><dd>Our research models train on one home graphics card.</dd></div>
-            <div><dt>What's next</dt><dd>Your support rents data-centre GPUs to train bigger ones. Supporters at $15 a month or more vote on what we train.</dd></div>
+            <div><dt>What's next</dt><dd>Your support pays for rented GPU time to train bigger ones. Supporters at $15 a month or more vote on what we train.</dd></div>
             <div><dt>Who builds it</dt><dd>We're LunarWerx LLC, and the code is public.</dd></div>
           </dl>
           <!-- tools/build_momentum.py writes every data-log count on this page from the same ledger as the home page. -->
@@ -134,15 +135,15 @@
       <div class="wrap split buys">
         <div class="buys-text">
           <h2 id="buys-h">What the money buys</h2>
-          <p>Bigger models train on data-centre GPUs, rented by the hour.</p>
+          <p>Bigger models train on rented GPUs, paid for by the hour.</p>
           <ul class="stats gpu-stats">
-            <li class="stat"><p class="stat-n">$1.59</p><p class="stat-l">An hour on an A100 80GB GPU</p></li>
+            <li class="stat"><p class="stat-n">$1.59</p><p class="stat-l">An hour of rented GPU time</p></li>
             <li class="stat"><p class="stat-n">$3.49</p><p class="stat-l">An hour on an H100 SXM GPU</p></li>
           </ul>
           <p class="fine">RunPod listed these prices in October 2026.</p>
         </div>
         <div class="card hours">
-          <h3 id="hours-h">A month of support, in A100 hours</h3>
+          <h3 id="hours-h">A month of support, in hours of GPU time</h3>
           <ul class="bars" aria-labelledby="hours-h">
             <li><span class="bar-l">Backer, $5</span><span class="bar-t"><span class="bar-f w3"></span><span class="bar-v">About 3 hours</span></span></li>
             <li><span class="bar-l">Supporter, $15</span><span class="bar-t"><span class="bar-f w9"></span><span class="bar-v">About 9 hours</span></span></li>
@@ -158,7 +159,7 @@
         <ul class="card-grid three-up after">
           <li class="card">
             <h3>Get your perks</h3>
-            <p>Your receipt comes by email. Reply to it with your Discord username. If your tier puts you on the supporters list or in the README, add the name or logo you'd like shown.</p>
+            <p>Your receipt comes by email. Reply to it with your Discord username. If your tier puts you on the supporters list or on the GitHub page, add the name or logo you'd like shown.</p>
             <p class="fine">Never post a receipt or an email address on Discord.</p>
             <div class="card-foot"><p class="foot-q">No email after an hour?</p><a class="btn secondary" id="perks-mail" href="mailto:contact@lunarwerx.com?subject=My%20rAidiology%20supporter%20perks&amp;body=Discord%20username%3A%20%0AEmail%20I%20paid%20with%3A%20%0AName%20for%20the%20supporters%20list%20(optional)%3A%20%0A">Write to us</a></div>
           </li>
@@ -185,11 +186,11 @@
         <div class="faq">
           <details>
             <summary>Does paying add anything to the app?</summary>
-            <p>No. Everyone gets the same free app. The perks live on Discord, in the supporters list and in the README, and they never include early or private access to a research model.</p>
+            <p>No. Everyone gets the same free app. The perks live on Discord, in the supporters list and on the project's GitHub page, and they never include early or private access to a research model.</p>
           </details>
           <details>
             <summary>Does company sponsorship cover commercial use?</summary>
-            <p>No. Using the models in a product or an internal tool needs a <a href="pricing.html#companies">commercial licence</a>, and a sponsorship doesn't include one.</p>
+            <p>No. Using the models in a product or an internal tool needs a <a href="pricing.html#companies">commercial license</a>, and a sponsorship doesn't include one.</p>
           </details>
         </div>
       </div>
@@ -213,7 +214,7 @@
       <div>
         <a class="brand" href="index.html"><img src="img/logo.svg" width="28" height="28" alt=""><span class="brand-name">rAidiology</span></a>
         <p class="disclaim">Not a medical device. For education and research.</p>
-        <p class="foot-legal">LunarWerx LLC is a for-profit company. Payments are not charitable donations and are not tax-deductible.</p>
+        <p class="foot-legal">LunarWerx LLC is a for-profit company. Payments are not charitable donations.</p>
       </div>
       <nav class="foot-cols" aria-label="Footer">
         <div><h2>Product</h2><ul><li><a href="open.html">Open a scan</a></li><li><a href="index.html#scans">Scans we cover</a></li><li><a href="models.html">Research results</a></li><li><a href="run.html">Run it on your computer</a></li></ul></div>

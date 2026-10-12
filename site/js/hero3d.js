@@ -29,7 +29,7 @@ const FRAMES = {
   phone: { aspect: 780 / 880, height: 1640, y: 1020, elev: 0.18 },
 };
 const MODES = [['glass', 'Glass'], ['skeleton', 'Skeleton'], ['xray', 'X-ray']];
-const MODE_LINE = { glass: ['Glass', ' is a clear shell around the bones.'], skeleton: ['Skeleton', ' shows the bones alone.'], xray: ['X-ray', ' fades the body so the bones show through.'] };
+const MODE_LINE = { glass: ['Glass', ': a clear shell around the bones.'], skeleton: ['Skeleton', ': the bones alone.'], xray: ['X-ray', ': a faded body, bones showing through.'] };
 const BODY_OPACITY = { glass: 1, skeleton: 0, xray: 0.32 };
 const SCAN_COLOR = 0x4fe0d2;
 const REST_LEVEL = 'T12';
@@ -223,12 +223,18 @@ export function mountHero3D(stage, opts = {}) {
     modeBar.append(b);
     return b;
   });
-  const viewLine = el('span', 'hero3d__view', { 'aria-live': 'polite' });
-  const showView = () => { const [name, rest] = MODE_LINE[mode]; const b = document.createElement('strong'); b.textContent = name; viewLine.replaceChildren(b, rest); };
+  const viewLine = el('p', 'hero3d__view', { 'aria-live': 'polite' });
+  const showView = () => {
+    viewLine.replaceChildren(...MODES.map(([m]) => {
+      const [name, rest] = MODE_LINE[m]; const row = el('span', 'hero3d__row'); const b = document.createElement('strong'); b.textContent = name;
+      if (m === mode) row.dataset.on = '';
+      row.append(b, rest); return row;
+    }));
+  };
   showView();
   const made = [canvas, label, modeBar, viewLine];
   stage.append(canvas, label, modeBar);
-  (stage.querySelector('.hero3d__cap') || stage).append(viewLine);
+  stage.append(viewLine);
 
   const width = () => stage.clientWidth || 0;
   // The page may say which framing fits its layout (--hero3d-frame: phone or wide); otherwise the stage's width decides.

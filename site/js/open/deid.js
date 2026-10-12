@@ -446,7 +446,7 @@ function refuseFile(f) {
   }
   if (d.numberOfFrames > 1) return 'Multi-frame (enhanced) images are not accepted yet.';
   if (d.samplesPerPixel !== 1 || (d.photometric !== 'MONOCHROME1' && d.photometric !== 'MONOCHROME2')) {
-    return 'Colour pictures are not accepted. Only greyscale scans are.';
+    return 'Color pictures are not accepted. Only grayscale scans are.';
   }
   const itype = text(e, '00080008').toUpperCase();
   const desc = fieldsOf(ds).join(' ').toUpperCase();
@@ -531,7 +531,7 @@ async function textRefusal(files, onProgress) {
     i++;
     const frame = await decodeFrame(f.ds, 0);
     if (frame.unsupported) return `These pictures are stored in a format this page cannot open (${frame.unsupported}).`;
-    if (frame.samples !== 1) return 'Colour pictures are not accepted. Only greyscale scans are.';
+    if (frame.samples !== 1) return 'Color pictures are not accepted. Only grayscale scans are.';
     const raw = frame.raw || Float32Array.from(frame.values);
     if (findText(raw, frame.height, frame.width, frame.invert)) {
       return `Printed text was found in a picture (number ${i} of ${files.length}), so this series is not sent.`;

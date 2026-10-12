@@ -10,11 +10,15 @@ const FIXED = {
 };
 const ONCE = 'https://buy.stripe.com/7sY9ATagDbjq5yC95l9Zm01';
 const LEVELS = [
-  [50, 'Sponsor', 'everything Supporters get, plus a name or logo in the sponsors section of the README'],
+  [50, 'Sponsor', 'everything Supporters get, plus a name or logo in the sponsors section of the GitHub page'],
   [15, 'Supporter', 'a role on Discord, your name in the supporters list and a vote on what we train next'],
   [5, 'Backer', 'a role on Discord'],
 ];
-const ONCE_PERKS = 'They are a role on Discord (from $5), a name in the supporters list and a vote on what we train next (from $15), and a name or logo in the README ($50).';
+const PERK_LINES = [
+  [5, 'A role on Discord (from $5)'],
+  [15, 'Your name in the supporters list and a vote on what we train next (from $15)'],
+  [50, "A name or logo on the project's GitHub page ($50)"],
+];
 // A typed amount is judged once the typing pauses, so "1" on the way to "15" never flashes an error.
 const SETTLE_MS = 700;
 const KEY = 'raidiology-support-choice';
@@ -139,21 +143,29 @@ if (box) {
       readout.hidden = false;
       const h = `${Math.floor(n / RATE)} hours`;
       hours.replaceChildren('That pays for about ', Object.assign(document.createElement('strong'), { textContent: h }),
-        ` ${monthly ? 'a month ' : ''}on a rented A100 graphics card, training our research models.`);
+        ` ${monthly ? 'a month ' : ''}of rented GPU time, training our research models.`);
       if (barHours) {
         barHours.replaceChildren('That pays for about ', Object.assign(document.createElement('strong'), { textContent: h }),
           ` of training${monthly ? ' a month' : ''}.`);
       }
       const lv = levelFor(n);
-      if (monthly && lv) lead(level, `As a ${lv[1]},`, `you get ${lv[2]}.`);
-      else if (monthly) lead(level, 'Perks start at $5 a month,', 'with Supporter from $15 and Sponsor from $50.');
-      else {
-        // One persistent button: a blur-triggered render must not replace it between mousedown and click.
-        if (!level.contains(perkSwitch)) {
-          const b = document.createElement('strong');
-          b.textContent = 'Perks go to monthly backers.';
-          level.replaceChildren(b, ' ', Object.assign(document.createElement('span'), { className: 'perk-txt', textContent: ONCE_PERKS }), ' ', perkSwitch);
+      if (monthly) {
+        const ul = document.createElement('ul');
+        ul.className = 'perk-list';
+        for (const [min, text] of PERK_LINES) {
+          const li = document.createElement('li');
+          li.textContent = text;
+          if (lv && lv[0] === min) li.className = 'is-yours';
+          ul.append(li);
         }
+        const b = document.createElement('strong');
+        b.textContent = 'Perks with monthly support:';
+        level.replaceChildren(b, ul);
+      } else if (!level.contains(perkSwitch)) {
+        // One persistent button: a blur-triggered render must not replace it between mousedown and click.
+        const b = document.createElement('strong');
+        b.textContent = 'Perks (a role on Discord and more) go to monthly backers.';
+        level.replaceChildren(b, ' ', perkSwitch);
       }
       claim.hidden = !(monthly && lv);
       go.textContent = `Pay ${money(n)} ${monthly ? 'a month' : 'once'}`;

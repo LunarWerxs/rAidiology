@@ -145,6 +145,8 @@
 }
 
 /* One short line for the chosen view, set by hero3d.js inside the caption. */
-.hero3d .hero3d__view { display: inline; color: #dce6f0; font-weight: 400; }
+.hero3d .hero3d__view { position: absolute; z-index: 2; inset-block-end: 16px; inset-inline-start: 16px; max-width: 18rem; margin: 0; font-size: 0.875rem; line-height: 1.5; color: #dce6f0; font-weight: 400; text-align: start; pointer-events: none; }
+.hero3d .hero3d__row { display: block; }
+.hero3d .hero3d__row[data-on] { color: #fff; }
 .hero3d .hero3d__view strong { color: var(--on-dark-strong); font-weight: 700; }
 .hero3d.hero3d--static .hero3d__view { display: none; }

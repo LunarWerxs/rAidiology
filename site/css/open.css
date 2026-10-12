@@ -177,8 +177,8 @@ p { max-width: 68ch; }
 }
 .edge-left, .edge-right { white-space: normal; max-inline-size: 7em; text-align: center; border-radius: 10px; line-height: 1.25; }
 /* Top corner opposite the picture count, bottom corner opposite the scale bar: the four never meet. */
-.edge-top { inset-block-start: 8px; inset-inline-end: 8px; }
-.edge-bottom { inset-block-end: 8px; inset-inline-start: 8px; }
+.edge-top { inset-block-start: 8px; left: 50%; transform: translateX(-50%); }
+.edge-bottom { inset-block-end: 8px; left: 50%; transform: translateX(-50%); }
 /* arkitect-allow: css-logical-direction-properties - a side of the picture, not of a sentence. */
 .edge-left { left: 8px; top: 50%; transform: translateY(-50%); }
 /* arkitect-allow: css-logical-direction-properties - a side of the picture, not of a sentence. */
@@ -301,18 +301,6 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
   .controls > .slider { flex-basis: 100%; order: -1; }
   /* ...except the picture slider, which stays between Previous and Next in its one-row bar. */
   .slice-bar > .slider { flex-basis: auto; order: 0; }
-}
-/* "Right side of the body" and "left side of the body" show as R and L in a small round badge. The long words
-   covered the edges of the anatomy on narrow pictures, and now that a CT opens fitted to the body they would on
-   every picture. The full words stay in the page for screen readers, pushed out of a clipped circle at their
-   normal size rather than shrunk to nothing. */
-.edge[data-short="R"], .edge[data-short="L"] {
-  inline-size: 2rem; block-size: 2rem; padding: 0; max-inline-size: none; overflow: hidden; white-space: nowrap;
-  text-indent: 100%; border-radius: 999px; background: rgba(0, 0, 0, 0.7); color: #fff;
-}
-.edge[data-short="R"]::after, .edge[data-short="L"]::after {
-  content: attr(data-short); position: absolute; inset: 0; display: grid; place-items: center; text-indent: 0;
-  font-size: 1rem; font-weight: 700; line-height: 1;
 }
 /* Phones: Previous, the slider and Next sit right under the picture and its caption, pinned with them (see
    below), so nothing is pinned to the bottom of the screen and no row of the list is ever cut in half under a bar
@@ -596,17 +584,17 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
    The first column keeps 380px, so a caption of two lines holds the longest description whole. */
 @media (orientation: landscape) and (max-height: 500px), (orientation: landscape) and (max-height: 720px) and (hover: none) and (pointer: coarse) {
   /* Sideways the site header shrinks to its logo and menu button, floated at the top right of the names column. */
-  body:has(.pane.viewer:not([hidden])) .site-head { position: fixed; inset: 4px 8px auto auto; z-index: 50; width: auto; background: none; border: 0; pointer-events: none; }
-  .site-head .site-head-in { display: flex; height: auto; padding: 0; gap: 8px; max-width: none; }
-  .site-head .site-head-in > * { pointer-events: auto; }
-  .site-head .brand-name, .site-head .gh-link, .site-head .head-actions .btn { display: none; }
+  body:has(.pane.viewer:not([hidden])) .site-head { position: absolute; inset: 0 8px auto auto; z-index: 50; width: 260px; min-height: 44px; background: none; border: 0; }
+  .site-head .site-head-in { display: flex; align-items: center; justify-content: space-between; height: 44px; padding: 0; gap: 8px; max-width: none; }
+  .site-head .brand-name { display: inline; font-size: 1rem; }
+  .site-head .gh-link, .site-head .head-actions .btn { display: none; }
   .site-head .head-actions { display: flex; }
   .site-head .menu-btn { display: inline-flex; }
   .site-head .site-nav { display: none; position: fixed; top: 56px; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; max-height: calc(100dvh - 60px); overflow-y: auto; padding: 4px var(--gutter) 12px; background: var(--bg); border-bottom: 1px solid var(--line); box-shadow: var(--shadow-btn); }
   .site-head .site-nav.open { display: flex; }
   .site-head .site-nav .nav-extra, .site-head .site-nav .nav-home { display: block; }
   .site-head .site-nav a { padding: 12px 4px; border-radius: 0; border-bottom: 1px solid var(--line); }
-  .pane.viewer .viewer-head { padding-inline-end: 96px; min-block-size: 44px; }
+  .pane.viewer .viewer-head { min-block-size: 44px; }
   html:has(.pane.viewer:not([hidden])) { scroll-padding-top: 8px; }
   .pane.viewer { padding-block-start: 4px; }
   .pane.viewer:not([hidden]) {
@@ -625,7 +613,7 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
   .pane.viewer .pic-controls { margin-block-start: 6px; }
   .pane.viewer .stage-caption + .pic-controls { margin-block-start: 10px; }
   .pane.viewer .slice-bar::before { display: none; }
-  .pane.viewer > .viewer-head { order: -3; margin: 4px 0 2px; }
+  .pane.viewer > .viewer-head { order: -3; margin: 48px 0 2px; }
   .pane.viewer .viewer-head h2 { font-size: 1.0625rem; }
   .pane.viewer .stage-tools { order: -1; margin-block-start: 2px; }
   .pane.viewer > .outline-tools { order: -1; margin-block: 4px 0; }
@@ -690,3 +678,11 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
 }
 .back-link::before { display: none; }
 .back-link:hover, #start-over:hover { color: var(--primary-dark); border-color: var(--primary); background: var(--card); }
+
+/* Support links in the viewer: a plain 44px tap target, not a button. */
+.next-step .support-link, .site-foot a[href="support.html"] { display: inline-flex; align-items: center; min-height: 44px; }
+
+/* A tap cue on every name row: a divider under it and a chevron at its end; rows are 48px or taller. */
+.part-row { min-block-size: 48px; border-radius: 0; border-bottom: 1px solid var(--line); grid-template-columns: 16px minmax(0, 1fr) 12px; }
+.part-row::after { content: ""; grid-column: 3; grid-row: 1; inline-size: 8px; block-size: 8px; border-top: 2px solid currentColor; border-right: 2px solid currentColor; transform: rotate(45deg); opacity: 0.55; }
+.part-row .part-about { grid-column: 2 / span 2; }

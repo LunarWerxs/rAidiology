@@ -23,7 +23,7 @@ const CREDIT = {
     + 'body, and you can step through them one by one. Your own CT, MRI or X-ray opens the same way.',
   short: 'A sample CT from TotalSegmentator (CC BY 4.0), not your scan.',
   source: 'Where the sample comes from, for the record: the TotalSegmentator dataset by Wasserthal and '
-    + 'others, 2023, under licence CC BY 4.0. We left out every second slice.',
+    + 'others, 2023, under license CC BY 4.0. We left out every second slice.',
 };
 
 // The reading is fetched at the same moment as the pictures, not after them. It is 48 KB beside a
