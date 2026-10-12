@@ -20,18 +20,21 @@
 .result-tile > :not(img):not(.pic-chip) { grid-column: 2; }
 .result-tile h3 { margin: 0 0 4px; font-size: 1.0625rem; font-weight: 650; line-height: 1.3; letter-spacing: -0.01em; color: var(--ink); text-wrap: balance; }
 .result-tile:hover h3 { color: var(--primary-dark); }
-.result-tile .score { margin: 0; color: var(--teal-text); font-size: 1.375rem; font-weight: 700; line-height: 1.25; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+.result-tile .score { margin: 0; color: var(--text); font-size: 1rem; font-weight: 500; line-height: 1.3; font-variant-numeric: tabular-nums; }
+.result-tile .score strong { font-weight: 700; color: var(--ink); }
+.result-tile .score-sub { margin: 1px 0 0; color: var(--muted); font-size: 0.875rem; line-height: 1.4; }
 /* The tap cue: a short line with a chevron, so a card reads as a link. */
 .result-tile .cue { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; margin: 4px 0 -14px; color: var(--teal-dark); font-size: 0.9375rem; font-weight: 650; }
 .result-tile .cue::after { content: ""; width: 7px; height: 7px; border-top: 2px solid currentColor; border-right: 2px solid currentColor; transform: rotate(45deg); }
 .result-tile:hover .cue { text-decoration: underline; }
 /* The card's hit area reaches halfway across the gap, so a tap between two cards still lands on one. */
 @media (max-width: 899px) { .result-tile::after { content: ""; position: absolute; inset: -6px; } }
+.result-tile .drew { margin: 6px 0 0; color: var(--teal-dark); font-size: 0.875rem; font-weight: 650; line-height: 1.35; overflow-wrap: anywhere; }
 .result-tile .interval { color: var(--muted); font-size: 0.875rem; font-weight: 500; letter-spacing: 0; white-space: nowrap; }
 .result-tile .what { margin: 6px 0 0; color: var(--text); font-size: 0.875rem; line-height: 1.45; }
 .result-tile .test { margin: 4px 0 0; color: var(--muted); font-size: 0.875rem; line-height: 1.45; }
 /* The kind tag is sentence case at 14px everywhere, dark on its tint (6:1 or better). */
-.result-tile .tag { justify-self: start; display: inline-flex; align-items: center; gap: 6px; margin: 10px 0 0; padding: 6px 10px 6px 8px; border-radius: 999px; background: var(--teal-soft); color: var(--teal-dark); font-size: 0.875rem; font-weight: 650; line-height: 1.4; letter-spacing: 0; text-transform: none; white-space: nowrap; }
+.result-tile .tag { justify-self: start; display: inline-flex; align-items: center; gap: 6px; margin: 10px 0 0; padding: 6px 10px 6px 8px; border-radius: 999px; background: var(--teal-soft); color: var(--teal-dark); font-size: 0.875rem; font-weight: 650; line-height: 1.4; letter-spacing: 0; text-transform: none; white-space: normal; max-width: 100%; }
 .result-tile .tag.dev { background: var(--grey-soft); color: var(--muted); }
 @media (min-width: 640px) and (max-width: 899px) {
   .result-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
@@ -66,6 +69,8 @@
 .rc-scale { grid-column: 1; contain: inline-size; }
 .rc-scale strong { color: var(--ink); font-weight: 650; }
 .rc-ax { position: relative; align-self: end; height: 1.45em; margin: 0 12px !important; font-variant-numeric: tabular-nums; }
+.rc-hd .rc-ax { display: none; }
+.rc-ax-end { grid-column: 2; margin-top: 4px !important; margin-bottom: 0; }
 .rc-ax span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
 .rc-vh { align-self: end; white-space: nowrap; }
 .rc-grp .dot-key { width: 14px; height: 14px; }
@@ -83,17 +88,17 @@
 .rc-t { position: relative; align-self: stretch; min-height: 30px; margin: 0 12px; background: linear-gradient(var(--line-strong), var(--line-strong)) center / 100% 1px no-repeat; }
 .rc-t i { position: absolute; top: 0; bottom: 0; width: 1px; transform: translateX(-50%); background: var(--track-tick); }
 .rc-t i.c { background: repeating-linear-gradient(to bottom, var(--track-chance) 0 3px, transparent 3px 7px); }
-.rc-t::before { content: ""; position: absolute; top: 50%; height: 14px; margin-top: -7px; left: min(calc(var(--lo) * 1%), calc(var(--v) * 1% - 7px)); right: min(calc(100% - var(--hi) * 1%), calc(100% - var(--v) * 1% - 7px)); border-inline: 2px solid var(--teal); background: linear-gradient(var(--teal), var(--teal)) center / 100% 2px no-repeat; }
+.rc-t::before { content: ""; position: absolute; top: 50%; height: 8px; margin-top: -4px; border-radius: 4px; left: min(calc(var(--lo) * 1%), calc(var(--v) * 1% - 7px)); right: min(calc(100% - var(--hi) * 1%), calc(100% - var(--v) * 1% - 7px)); background: var(--teal); }
 .no-iv .rc-t::before { content: none; }
-.rc-t::after { content: ""; position: absolute; top: 50%; left: calc(var(--v) * 1%); width: 11px; height: 11px; margin: -5.5px 0 0 -5.5px; border: 2px solid var(--teal); border-radius: 50%; background: var(--teal); }
-.dev .rc-t::after { background: var(--card); border-radius: 2px; transform: rotate(45deg); }
+.rc-t::after { content: ""; position: absolute; top: 50%; left: calc(var(--v) * 1%); width: 14px; height: 14px; margin: -7px 0 0 -7px; box-sizing: border-box; border: 2px solid var(--card, #fff); border-radius: 50%; background: var(--teal-dark); box-shadow: 0 0 0 1px var(--teal-dark); }
+.dev .rc-t::after { background: var(--card, #fff); border: 2px solid var(--teal-dark); box-shadow: none; border-radius: 2px; transform: rotate(45deg); }
 @media (max-width: 639px) {
   .rc { padding: 16px 14px; border-radius: 12px; }
   .rc-grid { grid-template-columns: minmax(0, 1fr) max-content; column-gap: 14px; }
   .rc-scale { grid-column: 1 / -1; contain: none; margin-bottom: 8px !important; }
   /* label | score on the first line, the full-width track on the second, the range under it */
   .rc-grid { font-size: 1rem; }
-  .rc-ax { grid-column: 1 / -1; margin-inline: 14px !important; }
+  .rc-ax, .rc-ax-end { grid-column: 1 / -1; margin-inline: 14px !important; }
   .rc-vh { display: none; }
   .rc-l { grid-column: 1; grid-row: 1; padding: 10px 0 2px; }
   .rc-v { display: contents; }

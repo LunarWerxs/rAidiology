@@ -43,10 +43,10 @@ SAY = [
     ("Held-out test: 89 CT scans (a scan can sit in more than one group)",
      "89 CT scans the models never saw (a scan can be in more than one group)"),
     ("Held-out test: ", "Tested on "),
+    (", held-out test", ", on data it never saw"),
     (" held-out test: ", ", tested on data it never saw: "),
     (" held-out test (", ", tested on pictures it never saw ("),
     (" held-out test", ", tested on data it never saw"),
-    (", held-out test", ", on data it never saw"),
     ("each read by models that never saw it", "each scored by models trained without it"),
     ("each read by a model that never trained on it", "each scored by a model trained without it"),
     ("out of fold", "each scored by a model trained without it"),
@@ -68,7 +68,7 @@ def esc(s):
 
 def text(s):
     """Escaped text in which a hyphenated word (X-ray, GRAZPEDWRI-DX's) never breaks at its hyphen."""
-    return re.sub(r"[\w'’]+(?:-[\w'’]+)+", lambda m: f'<span class="nb">{m.group(0)}</span>',
+    return re.sub(r"\(?[\w'’]+(?:-[\w'’]+)+\)?", lambda m: f'<span class="nb">{m.group(0)}</span>',
                   html.escape(str(s), quote=False))
 
 
@@ -134,7 +134,7 @@ def chart_grid(metric, rows, note_key):
     """One metric's rows: a header (scale, ticks, value heading), then a group per kind (held-out first).
     rows: dicts with label, value, low, high, held_out, and a note under the label (note_key)."""
     lo_a, hi_a, ticks, name, scale, chance = AXES[metric]
-    dp = places(metric, rows)
+    dp = min(places(metric, rows), 3)
     out = ['<div class="rc-grid">', '<div class="rc-hd">',
            f'<p class="rc-scale">{esc(LEAD[metric])} (<strong>{esc(name)}</strong>): {text(scale)}</p>',
            '<p class="rc-ax" aria-hidden="true">' + "".join(
@@ -159,6 +159,8 @@ def chart_grid(metric, rows, note_key):
                        f'<p class="rc-l">{text(say(r["label"]))}{note_html}</p>'
                        f'<span class="rc-t" style="{var}" aria-hidden="true">{grid}</span>'
                        f'<p class="rc-v"><strong>{esc(main)}</strong>{(" <span>" + esc(iv) + "</span>") if iv else ""}</p></div>')
+    out.append('<p class="rc-ax rc-ax-end" aria-hidden="true">' + "".join(
+        f'<span style="left:{num(pos(metric, t))}%">{num(t)}</span>' for t in ticks) + "</p>")
     out.append("</div>")
     return "".join(out)
 
@@ -229,17 +231,21 @@ def tiles():
         what = PLAIN[m["key"]].format(n=n.group(0) if n else "")
         size = SET_SIZE.search(h["set"])
         # A held-out result says in plain words what the tag means; a development one is only "measured".
-        head = ((f"Tested on {size.group(1)} {size.group(2)} it never saw" if h["held_out"]
-                 else f"Measured on {size.group(1)} {size.group(2)}") if size else m["scan"])
+        if size:
+            head = f'<strong>{esc(size.group(1))}</strong> {"test " if h["held_out"] else ""}{esc(size.group(2))}'
+            sub = "none used in training" if h["held_out"] else "scored while building"
+        else:
+            head, sub = esc(m["scan"]), ""
         # The headline says "never saw" once per card in words; only a development result gets a chip (a diamond).
-        tag = "" if h["held_out"] else f'<span class="tag dev">{GLYPH[False]}Development result</span>'
+        tag = "" if h["held_out"] else f'<span class="tag dev">{GLYPH[False]}In development</span>'
         cue = '<span class="cue">See the results</span>'
         w, h_ = webp_size(m["picture"])
+        drew = '<p class="drew">Drew the outlines on the sample CT</p>' if m["key"] == "ct-segmenter" else ""
         out.append(f'<a class="result-tile" href="models.html#{esc(m["key"])}">'
                    f'<img src="{esc(m["picture"])}" width="{w}" height="{h_}" alt="" loading="lazy">'
                    f'<span class="pic-chip">{esc(m["scan"])}</span>'
                    f'<h3>{text(m["name"])}</h3>'
-                   f'<p class="score">{esc(head)}</p>'
+                   f'<p class="score">{head}</p>' + (f'<p class="score-sub">{sub}</p>' if sub else "") + drew +
                    f'<p class="what">{text(what)}</p>{tag}{cue}</a>')
     return '<div class="result-tiles">' + "".join(out) + "</div>"
 

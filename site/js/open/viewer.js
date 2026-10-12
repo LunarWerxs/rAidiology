@@ -875,7 +875,11 @@ function overlayOutlines(canvas, view, paths, dpr) {
     for (let i = 2; i < p.length; i += 2) ctx.lineTo(x0 + p[i] * fit, y0 + p[i + 1] * fit);
     ctx.closePath();
     if (pointed) {
-      // A light ring under the coloured stroke so the chosen part stands out on the grey picture.
+      // A dark halo with a white ring inside it under the coloured stroke, so any structure, pale or dark,
+      // stands out on the grey picture.
+      ctx.strokeStyle = '#06142e';
+      ctx.lineWidth = width + 8 * dpr;
+      ctx.stroke();
       ctx.strokeStyle = '#fff';
       ctx.lineWidth = width + 4 * dpr;
       ctx.stroke();
@@ -885,7 +889,7 @@ function overlayOutlines(canvas, view, paths, dpr) {
     ctx.stroke();
     if (pointed) {
       ctx.globalAlpha = state.pulse && s === state.chosen ? 0.5 : 0.25;
-      ctx.fillStyle = colourOf(s);
+      ctx.fillStyle = '#ff8a00'; // one saturated fill for every lit structure; pale own colours vanish on grey
       ctx.fill('evenodd');
       ctx.globalAlpha = 1;
     }
@@ -944,6 +948,10 @@ function describeOutlines(note, drawn) {
       label.textContent = cap1(names[s] || `structure ${s + 1}`);
       row.append(swatch, label);
       if (about && about[s]) {
+        const gap = document.createElement('span');
+        gap.className = 'sr';
+        gap.textContent = ': ';
+        row.append(gap);
         const what = document.createElement('span');
         what.className = 'part-about';
         what.textContent = about[s];
@@ -1070,6 +1078,8 @@ async function openSeries(index) {
   // One way out of the viewer: back to the list when there is more than one set to choose from,
   // otherwise straight to opening a different scan (a list of one has nothing in it).
   el('back').textContent = state.series.length > 1 ? 'Back to the list' : 'Open your scan';
+  // With one series the button only repeats the header link; open.css hides it on a phone.
+  el('back').classList.toggle('dup-open', state.series.length <= 1);
   el('start-over').hidden = true;
   show('viewer', true);
   show('series', false);

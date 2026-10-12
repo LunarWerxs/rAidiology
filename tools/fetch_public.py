@@ -60,6 +60,7 @@ Usage (`--log FILE` writes the run's log there, line by line):
   python tools/fetch_public.py warm name ...          move them back to an SSD
 """
 import argparse
+import collections
 import concurrent.futures
 import contextlib
 import datetime
@@ -930,26 +931,108 @@ def _working_target(name, need, beside=None, src=None, via=None, loose=False):
     raise fetch.FetchError("%s: no working disk has %.0f GB to spare" % (name, need / 1e9))
 
 
-def _copy_unless_whole(s, d):
-    """copy2, unless d already has s whole (same size and time, which copy2 sets only after the data): a move cut
-    short by a restart goes on where it stopped instead of copying 48 GB to G: again (2026-10-07)."""
-    try:
-        a, b = os.stat(s), os.stat(d)
-        if a.st_size == b.st_size and abs(a.st_mtime - b.st_mtime) < 0.01:
-            return d
-    except OSError:
-        pass
-    return shutil.copy2(s, d)
-
-
-def _tree(root):
-    """Every file under root, by its path relative to root, with its size."""
+def _tree(root, dirs=None):
+    """Every file under root, by its path relative to root, with its size; each folder's relative path appended to
+    `dirs` too, when given (an empty one included)."""
     out = {}
     for d, _, fs in os.walk(root):
+        if dirs is not None and d != root:
+            dirs.append(os.path.relpath(d, root))
         for f in fs:
             p = os.path.join(d, f)
             out[os.path.relpath(p, root)] = os.path.getsize(p)
     return out
+
+
+# A move reads several files at once and writes them one at a time, in order. NL-Breast-Screen, re-encoded on H:, is
+# 27,000 mammograms of about 2.5 MB, each alone in a folder four deep: copied one at a time (copytree), H: read them at
+# 26 MB/s, 99% busy, about 110 ms of seeking a file, while G: stood 72% idle (2026-10-12). One writer, so G: (shingled)
+# is still written in one stream.
+MOVE_READERS = 8               # files read at once
+MOVE_HELD = 256 << 20          # bytes read and not yet written, at most
+MOVE_WHOLE = 64 << 20          # a bigger file is copied by the writer itself, never held in memory whole
+# D22 in the mover: G:, shingled, empties its media cache only while left alone. At 01:12 on 2026-10-12, a few GB into
+# NL-Breast-Screen at 64 MB/s, it fell to 0.8 MB/s at 0.44 s a write. A move whose writes crawl that slowly gives its
+# turns back, the disk rests, and the move goes on after (a file already copied whole is skipped).
+# Each file is allowed MOVE_FILE_S on top of the bytes: a 1 KB file takes its create and its times however fast the
+# disk, so speed alone called a healthy disk choking on tiny files (LNDb's headers, 2026-10-12). Healthy G: wrote
+# splenoct-kauh's 145,000 small files at 0.001 s each; choking, 0.1 to 0.44 s each.
+MOVE_SLOW_MBS = 8              # writes slower than this over a stretch: the disk is choking
+MOVE_FILE_S = 0.02             # each file's own time, allowed on top
+MOVE_SLOW_S = 30               # the stretch, in seconds of writing
+DISK_REST_S = 50 * 60          # D22's rest
+
+
+class DiskChoking(fetch.FetchError):
+    """The disk a move writes to has slowed past MOVE_SLOW_MBS: the move stops for DISK_REST_S, then goes on, or the
+    set stays where it is (could_stay). move_tier sets src, dst, files and dirs: the copy it was making."""
+    src = dst = None
+    files = {}
+    dirs = []
+
+
+def _copy_tree(src, dst, files, dirs):
+    """`files` (relative path: size, as _tree gives them) and `dirs` copied from src into dst. A file already there
+    whole (same size and time, which a copy gets only after its data) is skipped, so a move cut short by a restart
+    goes on where it stopped instead of copying 48 GB to G: again (2026-10-07)."""
+    for rel in [""] + dirs:
+        os.makedirs(os.path.join(dst, rel), exist_ok=True)
+    todo = []
+    for rel in files:
+        try:
+            a, b = os.stat(os.path.join(src, rel)), os.stat(os.path.join(dst, rel))
+            if a.st_size == b.st_size and abs(a.st_mtime - b.st_mtime) < 0.01:
+                continue
+        except OSError:
+            pass
+        todo.append(rel)
+
+    def read(rel):
+        with open(os.path.join(src, rel), "rb") as f:
+            return f.read()
+
+    small = iter([r for r in todo if files[r] <= MOVE_WHOLE])
+    window = collections.deque()
+    held = 0
+    stretch = [0.0, 0, 0]                          # seconds spent writing, bytes and files written, since it began
+
+    def timed(n, t0):
+        stretch[0] += time.time() - t0
+        stretch[1] += n
+        stretch[2] += 1
+        if stretch[0] >= MOVE_SLOW_S:
+            if stretch[0] > stretch[2] * MOVE_FILE_S + stretch[1] / (MOVE_SLOW_MBS * 1e6):
+                raise DiskChoking("%s writes at %.1f MB/s, %.2f s a file" % (
+                    _drive(dst).rstrip("\\/"), stretch[1] / 1e6 / stretch[0], stretch[0] / stretch[2]))
+            stretch[:] = [0.0, 0, 0]
+
+    with concurrent.futures.ThreadPoolExecutor(MOVE_READERS) as ex:
+        def fill():
+            nonlocal held
+            while len(window) < 4 * MOVE_READERS and held < MOVE_HELD:
+                rel = next(small, None)
+                if rel is None:
+                    return
+                window.append((rel, ex.submit(read, rel)))
+                held += files[rel]
+
+        fill()
+        while window:
+            rel, fu = window.popleft()
+            data = fu.result()
+            held -= files[rel]
+            d = os.path.join(dst, rel)
+            t0 = time.time()
+            with open(d, "wb") as f:
+                f.write(data)
+            shutil.copystat(os.path.join(src, rel), d)
+            timed(len(data), t0)
+            fill()
+    for rel in todo:
+        if files[rel] > MOVE_WHOLE:
+            t0 = time.time()
+            shutil.copy2(os.path.join(src, rel), os.path.join(dst, rel))
+            timed(files[rel], t0)
 
 
 def move_tier(name, cold, to=None, staging=False):
@@ -981,7 +1064,8 @@ def move_tier(name, cold, to=None, staging=False):
         return {"name": name, "status": "done"}
     else:
         roots = [r for r in WORKING if (_drive(r) in cold_drives) == cold and os.path.isdir(_drive(r))]
-    files = _tree(src)
+    dirs = []
+    files = _tree(src, dirs)
     need = sum(files.values())
     room = None
     for r in roots:
@@ -998,7 +1082,11 @@ def move_tier(name, cold, to=None, staging=False):
                                                     " (first on the slow disk: %s is near its line)" % _drive(src).rstrip("\\/")
                                                     if full else ""))
         with fetch.Turn([src, dst], name, 1 if full else rank(name)):
-            shutil.copytree(src, dst, dirs_exist_ok=True, copy_function=_copy_unless_whole)
+            try:
+                _copy_tree(src, dst, files, dirs)
+            except DiskChoking as e:
+                e.src, e.dst, e.files, e.dirs = src, dst, files, dirs
+                raise
             got = _tree(dst)
         bad = [k for k, v in files.items() if got.get(k) != v]
         if bad:
@@ -1361,14 +1449,80 @@ def finish_move(name):
         rec.save(True)
 
 
+def _staged_bytes(drive, but):
+    """What the sets staged on `drive` (all but `but`) hold there: room the disk gets back once they move on."""
+    out = 0
+    for n in sorted(os.listdir(ARCHIVE)):
+        if n == but or not staged(n):
+            continue
+        wc = Record(n).data.get("working_copy")
+        if wc and _drive(wc) == drive:
+            out += sum(_tree(wc).values())
+    return out
+
+
+# A move to G: that chokes rests 50 minutes, and the mover, one set at a time, waits with it. NL-Breast-Screen (27,000
+# folders of one file each) wrote about 8 GB after a rest before G: choked again at 0.2 MB/s, so its 77 GB would have
+# taken a day while LNDb, nhanes2-lumbar and three more waited behind it (2026-10-12). A set staged on a cold home (H:)
+# that H: can keep under its stay line, once the sets staged beside it leave, stays there for good instead.
+def could_stay(name, src):
+    """Whether a set whose move off `src` chokes may stay there for good: `src` is a cold home, and its disk is under
+    the line it keeps for what stays (fetch.floor: 85% on H:) once the other sets staged there have moved on."""
+    drive = _drive(src)
+    if drive not in {_drive(r) for r in COLD_ROOTS}:
+        return False
+    return fetch.room(src) - _claimed(drive) + _staged_bytes(drive, name) >= 0
+
+
+def stay_put(name, dst, files, dirs, why):
+    """A staged set kept where it is for good: its record no longer staged (a note says why), and what a move had
+    copied of it to `dst` removed: only the set's own files, then the folders left empty. Nothing is removed under a
+    link. The number of files removed."""
+    rec = Record(name)
+    rec.data.pop("staged", None)
+    rec.data.setdefault("notes", []).append("%s: stays at %s: %s" % (now(), rec.data.get("working_copy"), why))
+    rec.save(True)
+    if not dst or not os.path.isdir(dst) or fetch.is_link(dst):
+        return 0
+    links = [r for r in dirs if fetch.is_link(os.path.join(dst, r))]
+    if links:
+        log("%s: %s holds a link (%s); the copy there is left alone" % (name, dst, links[0]))
+        return 0
+    gone = 0
+    for rel in files:
+        p = os.path.join(dst, rel)
+        if os.path.isfile(p) and not fetch.is_link(p):
+            os.remove(p)
+            gone += 1
+    for rel in sorted(dirs, key=lambda r: r.count(os.sep), reverse=True) + [""]:
+        p = os.path.join(dst, rel)
+        if os.path.isdir(p) and not fetch.is_link(p) and not os.listdir(p):
+            os.rmdir(p)
+    return gone
+
+
 def moved_on(s, to):
     """A set staged on H: moved on to `to` under its lock, then its Status cell again (it names `to` now). A move
-    cut short is finished first."""
+    cut short is finished first. A move that chokes rests and goes on, or the set stays on H: (could_stay)."""
     def work(s):
         finish_move(s["name"])
-        if staged(s["name"]):
-            move_tier(s["name"], True, to)
+        while staged(s["name"]):
+            try:
+                move_tier(s["name"], True, to)
+            except DiskChoking as e:               # its turns are given back: the unpacks go on meanwhile
+                if e.src and could_stay(s["name"], e.src):
+                    here = _drive(e.src).rstrip("\\/")
+                    gone = stay_put(s["name"], e.dst, e.files, e.dirs,
+                                    "the move to %s choked (%s); %s stays under its line once the sets staged beside "
+                                    "it move on" % (_drive(to).rstrip("\\/"), e, here))
+                    log("%s: %s, choking: it stays on %s for good (under its line once the sets staged beside it move "
+                        "on); the %d files copied to %s removed" % (s["name"], e, here, gone, e.dst))
+                    break
+                log("%s: %s, choking: it rests %d min (D22), then the move goes on" % (s["name"], e, DISK_REST_S // 60))
+                time.sleep(DISK_REST_S)
+                continue
             finish_move(s["name"])
+            break                                  # moved, or already there
         with RECORDING:
             record_licensing()
         return {"name": s["name"], "status": "done"}

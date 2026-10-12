@@ -112,7 +112,8 @@ main a.btn { overflow-wrap: normal; }
 .after .card > p { font-size: 0.9375rem; }
 .after .card > .fine { font-size: var(--fs-s); }
 .after .card-foot { display: flex; flex-direction: column; gap: 8px; }
-.after .card-foot .btn { align-self: stretch; }
+.after .card-foot { align-items: flex-start; }
+.after-link { display: inline-flex; align-items: center; min-height: 44px; padding: 0; border: 0; background: none; color: var(--primary-dark); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 .foot-q { margin: 0; color: var(--text); font-size: 0.9375rem; line-height: 1.4; }
 
 /* Thanks: two calm cards, one action each; the one a buyer lands on is outlined */
@@ -210,11 +211,12 @@ main.support .hours h3 { margin-bottom: var(--sp-2); }
 }
 .give button, .give input { font: inherit; text-align: center; }
 .give .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; margin-bottom: 12px; background: #d9e0e8; border-radius: 12px; }
-.give .seg-b { min-height: 46px; border: 0; border-radius: 9px; background: transparent; color: var(--text); font-weight: 600; cursor: pointer; }
+.give .seg-b { min-height: 46px; border: 1px solid var(--line-strong); border-radius: 9px; background: transparent; color: var(--text); font-weight: 600; cursor: pointer; }
 .give .seg-b:hover { color: var(--ink); background: rgba(255, 255, 255, 0.55); }
 .give .seg-b { position: relative; }
-.give .seg-b[aria-pressed="true"] { background: var(--primary-soft); color: var(--primary-dark); font-weight: 800; box-shadow: inset 0 0 0 2px var(--primary); }
-.give .seg-b[aria-pressed="true"]::after { content: ""; position: absolute; top: 9px; right: 10px; width: 5px; height: 9px; border-right: 2px solid var(--primary); border-bottom: 2px solid var(--primary); transform: rotate(45deg); }
+.give .seg-b .tick { display: none; }
+.give .seg-b[aria-pressed="true"] { background: var(--primary-soft); border: 2px solid var(--primary); color: var(--primary-dark); font-weight: 800; }
+.give .seg-b[aria-pressed="true"] .tick { display: inline-block; width: 6px; height: 11px; margin-inline-end: 8px; border-right: 2px solid var(--primary); border-bottom: 2px solid var(--primary); transform: rotate(45deg) translateY(-2px); }
 .give .chips { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0 0 16px; }
 .give .chip { display: flex; align-items: center; justify-content: center; gap: .3em; height: 48px; padding: 0 6px; border: 1px solid var(--line-strong); border-radius: var(--radius-s); background: var(--card); color: var(--ink); font-size: 1rem; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; cursor: pointer; }
 .give .chip:hover { border-color: var(--primary); }

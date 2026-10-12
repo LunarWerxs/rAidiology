@@ -130,8 +130,8 @@ if (box) {
     const n = state.amount;
     const monthly = state.freq === 'month';
     segs.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.freq === state.freq)));
-    chips.forEach((c) => c.setAttribute('aria-pressed', String(Number(c.dataset.amt) === n)));
-    if (from !== 'box') box.value = n ? String(n) : '';
+    chips.forEach((c) => c.setAttribute('aria-pressed', String(!state.custom && Number(c.dataset.amt) === n)));
+    if (from !== 'box') box.value = state.custom && n ? String(n) : '';
 
     // While someone is still typing, a low amount only greys the button; the message waits for the pause.
     const showBad = Boolean(bad && bad.msg) && (state.settled || !state.custom);
@@ -143,7 +143,7 @@ if (box) {
       readout.hidden = false;
       const h = `${Math.floor(n / RATE)} hours`;
       hours.replaceChildren('That pays for about ', Object.assign(document.createElement('strong'), { textContent: h }),
-        ` ${monthly ? 'a month ' : ''}of rented GPU time, training our research models.`);
+        ` ${monthly ? 'a month ' : ''}of rented GPU time (a GPU is the graphics chip that trains a model), training our research models.`);
       if (barHours) {
         barHours.replaceChildren('That pays for about ', Object.assign(document.createElement('strong'), { textContent: h }),
           ` of training${monthly ? ' a month' : ''}.`);
@@ -164,7 +164,7 @@ if (box) {
       } else if (!level.contains(perkSwitch)) {
         // One persistent button: a blur-triggered render must not replace it between mousedown and click.
         const b = document.createElement('strong');
-        b.textContent = 'Perks (a role on Discord and more) go to monthly backers.';
+        b.textContent = "Perks go to monthly backers: a role on Discord from $5, from $15 your name in the supporters list and a vote on what we train next, and at $50 a name or logo on the project's GitHub page.";
         level.replaceChildren(b, ' ', perkSwitch);
       }
       claim.hidden = !(monthly && lv);

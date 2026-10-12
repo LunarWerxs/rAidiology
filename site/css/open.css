@@ -584,7 +584,14 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
    The first column keeps 380px, so a caption of two lines holds the longest description whole. */
 @media (orientation: landscape) and (max-height: 500px), (orientation: landscape) and (max-height: 720px) and (hover: none) and (pointer: coarse) {
   /* Sideways the site header shrinks to its logo and menu button, floated at the top right of the names column. */
-  body:has(.pane.viewer:not([hidden])) .site-head { position: absolute; inset: 0 8px auto auto; z-index: 50; width: 260px; min-height: 44px; background: none; border: 0; }
+  body:has(.pane.viewer:not([hidden])) .site-head {
+    /* The same grid the viewer uses: the pane's content box, then the picture column (the default frame shape), then the gap. */
+    --pane-pad: clamp(18px, 5vw, 32px);
+    --pane-in: calc(min(var(--wrap), 100vw) - 2 * var(--pane-pad));
+    --col-pic: clamp(min(380px, var(--pane-in) - 276px), calc((100dvh - 8px - 4rem - 56px - env(safe-area-inset-bottom, 0px)) * 1.3333), var(--pane-in) - 276px);
+    position: absolute; inset: 0 8px auto calc((100vw - min(var(--wrap), 100vw)) / 2 + var(--pane-pad) + var(--col-pic) + 16px);
+    z-index: 50; min-height: 44px; background: none; border: 0;
+  }
   .site-head .site-head-in { display: flex; align-items: center; justify-content: space-between; height: 44px; padding: 0; gap: 8px; max-width: none; }
   .site-head .brand-name { display: inline; font-size: 1rem; }
   .site-head .gh-link, .site-head .head-actions .btn { display: none; }
@@ -644,9 +651,8 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
 }
 
 /* Wave five: one filled button (Next); Previous is the tonal twin, same size. The hint sits right under the row. */
-.slice-bar .step-prev { background: var(--card); border: 2px solid var(--primary); color: var(--primary-dark); }
-.slice-bar .step-prev:hover { background: var(--primary-soft); }
-.slice-bar .step-next { background: var(--primary); border: 2px solid var(--primary); color: var(--on-primary); }
+.slice-bar .step-prev, .slice-bar .step-next { background: var(--card); border: 2px solid var(--primary); color: var(--primary-dark); }
+.slice-bar .step-prev:hover, .slice-bar .step-next:hover { background: var(--primary-soft); }
 .pic-controls .hint-chip { margin: 0; }
 .next-step .btn.quiet { background: transparent; border: 2px solid var(--primary); color: var(--primary-dark); }
 .next-step .btn.quiet:hover { background: var(--primary-soft); }
@@ -686,3 +692,11 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
 .part-row { min-block-size: 48px; border-radius: 0; border-bottom: 1px solid var(--line); grid-template-columns: 16px minmax(0, 1fr) 12px; }
 .part-row::after { content: ""; grid-column: 3; grid-row: 1; inline-size: 8px; block-size: 8px; border-top: 2px solid currentColor; border-right: 2px solid currentColor; transform: rotate(45deg); opacity: 0.55; }
 .part-row .part-about { grid-column: 2 / span 2; }
+
+/* Wave eight: on a phone the header link is the one Open your scan; the Ribs row uses the same right-hand chevron column as the other rows. */
+@media (max-width: 560px) { #back.dup-open { display: none; } }
+.part-row.rib-group { grid-template-columns: 16px minmax(0, 1fr) 12px; }
+.part-row.rib-group .rib-chevron { display: none; }
+.part-row.rib-group[aria-expanded="true"]::after { transform: rotate(135deg); }
+.slice-bar .btn.step-prev, .slice-bar .btn.step-next { background: var(--card); border: 2px solid var(--primary); color: var(--primary-dark); }
+.slice-bar .btn.step-prev:hover, .slice-bar .btn.step-next:hover { background: var(--primary-soft); }
