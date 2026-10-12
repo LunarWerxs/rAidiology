@@ -179,7 +179,9 @@ def numbers(m):
 
 PLAIN = {
     "chest-xray": "Scores one chest X-ray for 14 kinds of label from a public dataset.",
-    "ct-segmenter": "Outlines {n} body structures on CT and names each one.",
+    # 117, not the headline's {n}: the model outlines 117 structures and its mean covers the 115 common enough in the test
+    # scans to score (release/cards/ct-segmenter.md line 30; models.html says both, side by side).
+    "ct-segmenter": "Outlines and names 117 body structures on CT.",
     "disc-grader": "Grades the discs of a spine MRI on a public five-step scale.",
     "fracture-detector": "Scores a child's wrist X-ray for a fracture label from a public dataset.",
     "lung-nodules": "Marks small lung nodules on CT.",

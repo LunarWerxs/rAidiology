@@ -94,7 +94,7 @@ export function mountPreview(container, images) {
       message.textContent = '';
       paintFull(canvas, frames.get(at), fullBox.checked);
     } catch (e) {
-      if (mine === seq) message.textContent = `This picture can't be shown (${e.message}).`;
+      if (mine === seq) message.textContent = `This picture can't be shown. ${e.message}`;
     }
   };
   prev.addEventListener('click', () => show(at - 1));

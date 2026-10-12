@@ -1,4 +1,4 @@
-// Support page: one chosen-amount card (how often, three tier chips, an Other amount box with a slider, the training
+// Support page: one chosen-amount card (how often, three tier chips, an Other amount box, the training
 // time it buys, the checkout button). The choice is kept on this device so thanks.html can name it in the perks email.
 const RATE = 1.59;
 const MIN = 3;
@@ -11,9 +11,10 @@ const FIXED = {
 const ONCE = 'https://buy.stripe.com/7sY9ATagDbjq5yC95l9Zm01';
 const LEVELS = [
   [50, 'Sponsor', 'everything Supporters get, plus a name or logo in the sponsors section of the README'],
-  [15, 'Supporter', 'a supporter role on Discord, a name in the supporters list and a vote on what we train next'],
-  [5, 'Backer', 'a supporter role on Discord'],
+  [15, 'Supporter', 'a role on Discord, your name in the supporters list and a vote on what we train next'],
+  [5, 'Backer', 'a role on Discord'],
 ];
+const ONCE_PERKS = 'They are a role on Discord (from $5), a name in the supporters list and a vote on what we train next (from $15), and a name or logo in the README ($50).';
 // A typed amount is judged once the typing pauses, so "1" on the way to "15" never flashes an error.
 const SETTLE_MS = 700;
 const KEY = 'raidiology-support-choice';
@@ -69,8 +70,6 @@ if (box) {
   const level = $('give-level');
   const claim = $('give-claim');
   const renew = $('give-renew');
-  const range = $('give-range');
-  const val = $('give-val');
   const perksLink = $('perks-mail');
   const bar = $('pay-bar');
   const barBtn = bar && bar.querySelector('button');
@@ -122,15 +121,6 @@ if (box) {
     return FIXED[state.amount] || '#give';
   }
 
-  function paintRange() {
-    const lo = Number(range.min);
-    const hi = Number(range.max);
-    const v = Math.min(hi, Math.max(lo, state.amount || lo));
-    range.value = String(v);
-    range.style.setProperty('--fill', `${((v - lo) / (hi - lo)) * 100}%`);
-    range.setAttribute('aria-valuetext', state.amount ? money(state.amount) : 'No amount');
-  }
-
   function render(from) {
     const bad = problem();
     const n = state.amount;
@@ -138,8 +128,6 @@ if (box) {
     segs.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.freq === state.freq)));
     chips.forEach((c) => c.setAttribute('aria-pressed', String(Number(c.dataset.amt) === n)));
     if (from !== 'box') box.value = n ? String(n) : '';
-    if (val) val.textContent = n ? money(n) : '';
-    paintRange();
 
     // While someone is still typing, a low amount only greys the button; the message waits for the pause.
     const showBad = Boolean(bad && bad.msg) && (state.settled || !state.custom);
@@ -150,10 +138,10 @@ if (box) {
     if (!bad) {
       readout.hidden = false;
       const h = `${Math.floor(n / RATE)} hours`;
-      hours.replaceChildren('That buys about ', Object.assign(document.createElement('strong'), { textContent: h }),
-        ` of training${monthly ? ' a month' : ''} on a rented data-centre GPU.`);
+      hours.replaceChildren('That pays for about ', Object.assign(document.createElement('strong'), { textContent: h }),
+        ` ${monthly ? 'a month ' : ''}on a rented A100 graphics card, training our research models.`);
       if (barHours) {
-        barHours.replaceChildren('That buys about ', Object.assign(document.createElement('strong'), { textContent: h }),
+        barHours.replaceChildren('That pays for about ', Object.assign(document.createElement('strong'), { textContent: h }),
           ` of training${monthly ? ' a month' : ''}.`);
       }
       const lv = levelFor(n);
@@ -163,8 +151,8 @@ if (box) {
         // One persistent button: a blur-triggered render must not replace it between mousedown and click.
         if (!level.contains(perkSwitch)) {
           const b = document.createElement('strong');
-          b.textContent = 'Perks come with monthly support.';
-          level.replaceChildren(b, ' ', perkSwitch);
+          b.textContent = 'Perks go to monthly backers.';
+          level.replaceChildren(b, ' ', Object.assign(document.createElement('span'), { className: 'perk-txt', textContent: ONCE_PERKS }), ' ', perkSwitch);
         }
       }
       claim.hidden = !(monthly && lv);
@@ -226,11 +214,6 @@ if (box) {
   });
   box.addEventListener('focus', showBar);
   box.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); go.click(); } });
-  range.addEventListener('input', () => {
-    clearTimeout(timer);
-    Object.assign(state, { custom: true, settled: true, amount: Number(range.value) });
-    render();
-  });
   if (bar && barBtn) {
     // pointerdown would move focus to the button and close the keyboard before the tap lands.
     barBtn.addEventListener('pointerdown', (e) => e.preventDefault());

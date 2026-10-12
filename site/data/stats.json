@@ -2,8 +2,8 @@
   "band": [
     {
       "value": "115",
-      "label": "body structures outlined on CT",
-      "detail": "Checked on 89 CT scans kept out of training. Each structure is in at least 10 of them.",
+      "label": "body structures scored on CT",
+      "detail": "Tested on 89 CT scans the model never saw while it learned. Each structure is in at least 10 of them.",
       "source": {
         "file": "release/cards/ct-segmenter.md",
         "line": 30
@@ -12,7 +12,7 @@
     {
       "value": "25,596",
       "label": "chest X-rays used for testing",
-      "detail": "NIH's official test list. None were used in training.",
+      "detail": "NIH's official test list. None of these X-rays were used to train the model.",
       "source": {
         "file": "release/cards/chest-xray.md",
         "line": 26
@@ -21,7 +21,7 @@
     {
       "value": "4,067",
       "label": "children's wrist X-rays used for testing",
-      "detail": "From the GRAZPEDWRI-DX test set. Only pictures with a clear label are counted.",
+      "detail": "From the GRAZPEDWRI-DX test set. We counted only X-rays with a clear label.",
       "source": {
         "file": "release/cards/fracture-detector.md",
         "line": 50

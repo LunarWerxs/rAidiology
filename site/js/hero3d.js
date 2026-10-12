@@ -29,7 +29,7 @@ const FRAMES = {
   phone: { aspect: 780 / 880, height: 1640, y: 1020, elev: 0.18 },
 };
 const MODES = [['glass', 'Glass'], ['skeleton', 'Skeleton'], ['xray', 'X-ray']];
-const MODE_LINE = { glass: 'Glass shows the body as a clear shell around the bones.', skeleton: 'Skeleton shows the bones alone, without the body.', xray: 'X-ray fades the body back and makes the bones see-through.' };
+const MODE_LINE = { glass: ['Glass', ' is a clear shell around the bones.'], skeleton: ['Skeleton', ' shows the bones alone.'], xray: ['X-ray', ' fades the body so the bones show through.'] };
 const BODY_OPACITY = { glass: 1, skeleton: 0, xray: 0.32 };
 const SCAN_COLOR = 0x4fe0d2;
 const REST_LEVEL = 'T12';
@@ -224,7 +224,7 @@ export function mountHero3D(stage, opts = {}) {
     return b;
   });
   const viewLine = el('span', 'hero3d__view', { 'aria-live': 'polite' });
-  const showView = () => { viewLine.textContent = MODE_LINE[mode]; };
+  const showView = () => { const [name, rest] = MODE_LINE[mode]; const b = document.createElement('strong'); b.textContent = name; viewLine.replaceChildren(b, rest); };
   showView();
   const made = [canvas, label, modeBar, viewLine];
   stage.append(canvas, label, modeBar);

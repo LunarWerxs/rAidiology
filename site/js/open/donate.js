@@ -79,7 +79,7 @@ function seriesName(s) {
 }
 
 function chooseSeries(mine, root, judged) {
-  const box = step('1. Which sets of pictures can be sent?');
+  const box = step('1. Choose which sets of pictures to send');
   box.append(h('p', { className: 'fine' }, 'Nothing has been sent. Your browser checked each set on this device, and any set it refused stays here.'));
   const list = h('ul', { className: 'series-list' });
   const boxes = [];
@@ -88,10 +88,10 @@ function chooseSeries(mine, root, judged) {
     if (s.accepted) {
       const cb = h('input', { type: 'checkbox', checked: true });
       boxes.push({ cb, s });
-      li.append(h('label', {}, cb, h('span', {}, h('strong', {}, 'Can be sent: '), seriesName(s))));
+      li.append(h('label', {}, cb, h('span', {}, h('strong', {}, 'Ready to send: '), seriesName(s))));
     } else {
       li.className = 'refused';
-      li.append(h('strong', {}, 'Refused: '), seriesName(s), h('br'), s.reason || 'This set can\'t be sent.');
+      li.append(h('strong', {}, 'Can\'t be sent: '), seriesName(s), h('br'), s.reason || 'It stays on this device.');
     }
     list.append(li);
   }
@@ -133,7 +133,7 @@ async function review(mine, root, chosen) {
   pics.append(host);
   mountPreview(host, built.images);
 
-  const tags = step('3. The details that will be sent with them');
+  const tags = step('3. The details that go with them');
   tags.append(h('p', { className: 'fine' }, 'Each set keeps these technical details, shown with the values from its first picture. Nothing else is sent.'));
   built.list.forEach((s, i) => {
     tags.append(h('p', {}, h('strong', {}, `Set ${i + 1}: ${s.modality}, ${s.bodyPart}`)));

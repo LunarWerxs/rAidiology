@@ -50,7 +50,7 @@ export function mountCtDemo(box, opts = {}) {
 
   // The picture, with two quiet pills over it: the slice count (top right) and the named part (bottom left).
   const lightbox = make('div', 'ctdemo__lightbox');
-  const img = make('img', 'ctdemo__img', { alt: 'A slice of the sample CT scan', draggable: 'false' });
+  const img = make('img', 'ctdemo__img', { alt: 'A slice from the sample CT', draggable: 'false' });
   const svg = svgEl('svg', { class: 'ctdemo__svg', 'aria-hidden': 'true' });
   const count = make('p', 'ctdemo__count', { role: 'img' });
   const chip = make('p', 'ctdemo__cap', { 'aria-live': 'polite' });
@@ -86,7 +86,7 @@ export function mountCtDemo(box, opts = {}) {
   link.append(linkLong, linkShort, icon('ctdemo__i--line ctdemo__i--go', [['path', { d: 'M5 12h13M13 7l5 5-5 5' }]]));
   // Two sentences that each wrap as a whole, so the licence never breaks across lines.
   const credit = make('p', 'ctdemo__credit');
-  for (const t of ['Sample CT from TotalSegmentator (CC BY 4.0).', 'Outlines by the CT organ outliner, one of our research models.']) {
+  for (const t of ['Sample CT from TotalSegmentator (CC BY 4.0).', 'Outlines drawn by our CT organ outliner, a research model.']) {
     const s = make('span');
     s.textContent = t;
     credit.append(s, ' ');

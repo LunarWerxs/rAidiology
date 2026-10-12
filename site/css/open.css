@@ -268,8 +268,8 @@ p { max-width: 68ch; }
 .slice-bar input[type="range"]:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: 8px; }
 /* The track fills in blue up to the thumb (viewer.js sets --fill), so it reads as how far through the scan you are,
    not as a thin grey line (wave three). */
-.slice-bar input[type="range"]::-webkit-slider-runnable-track { height: 10px; border-radius: 5px; background: linear-gradient(to right, var(--primary) var(--fill, 50%), var(--ctl-edge) var(--fill, 50%)); }
-.slice-bar input[type="range"]::-moz-range-track { height: 10px; border-radius: 5px; background: var(--ctl-edge); }
+.slice-bar input[type="range"]::-webkit-slider-runnable-track { height: 10px; border-radius: 5px; background: linear-gradient(to right, var(--primary) var(--fill, 50%), var(--btn-edge) var(--fill, 50%)); }
+.slice-bar input[type="range"]::-moz-range-track { height: 10px; border-radius: 5px; background: var(--btn-edge); }
 .slice-bar input[type="range"]::-moz-range-progress { height: 10px; border-radius: 5px; background: var(--primary); }
 .slice-bar input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 34px; height: 34px; margin-top: -12px; border-radius: 50%; background: var(--primary); border: 4px solid var(--card); box-shadow: var(--shadow-thumb); }
 .slice-bar input[type="range"]::-moz-range-thumb { width: 26px; height: 26px; border-radius: 50%; background: var(--primary); border: 3px solid var(--card); box-shadow: var(--shadow-thumb); }
@@ -595,7 +595,18 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
    The title, how to step, the outline switch, the names and the way out run down the second column with the page.
    The first column keeps 380px, so a caption of two lines holds the longest description whole. */
 @media (orientation: landscape) and (max-height: 500px), (orientation: landscape) and (max-height: 720px) and (hover: none) and (pointer: coarse) {
-  body:has(.pane.viewer:not([hidden])) .site-head { display: none; }
+  /* Sideways the site header shrinks to its logo and menu button, floated at the top right of the names column. */
+  body:has(.pane.viewer:not([hidden])) .site-head { position: fixed; inset: 4px 8px auto auto; z-index: 50; width: auto; background: none; border: 0; pointer-events: none; }
+  .site-head .site-head-in { display: flex; height: auto; padding: 0; gap: 8px; max-width: none; }
+  .site-head .site-head-in > * { pointer-events: auto; }
+  .site-head .brand-name, .site-head .gh-link, .site-head .head-actions .btn { display: none; }
+  .site-head .head-actions { display: flex; }
+  .site-head .menu-btn { display: inline-flex; }
+  .site-head .site-nav { display: none; position: fixed; top: 56px; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; max-height: calc(100dvh - 60px); overflow-y: auto; padding: 4px var(--gutter) 12px; background: var(--bg); border-bottom: 1px solid var(--line); box-shadow: var(--shadow-btn); }
+  .site-head .site-nav.open { display: flex; }
+  .site-head .site-nav .nav-extra, .site-head .site-nav .nav-home { display: block; }
+  .site-head .site-nav a { padding: 12px 4px; border-radius: 0; border-bottom: 1px solid var(--line); }
+  .pane.viewer .viewer-head { padding-inline-end: 96px; min-block-size: 44px; }
   html:has(.pane.viewer:not([hidden])) { scroll-padding-top: 8px; }
   .pane.viewer { padding-block-start: 4px; }
   .pane.viewer:not([hidden]) {
@@ -612,6 +623,7 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
   }
   .pane.viewer .stage { min-height: 0; max-height: var(--stage-h); }
   .pane.viewer .pic-controls { margin-block-start: 6px; }
+  .pane.viewer .stage-caption + .pic-controls { margin-block-start: 10px; }
   .pane.viewer .slice-bar::before { display: none; }
   .pane.viewer > .viewer-head { order: -3; margin: 4px 0 2px; }
   .pane.viewer .viewer-head h2 { font-size: 1.0625rem; }
@@ -656,10 +668,9 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
 .home-btn:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
 @media (orientation: landscape) and (max-height: 500px), (orientation: landscape) and (max-height: 720px) and (hover: none) and (pointer: coarse) {
   .pane.viewer .viewer-head { display: flex; align-items: center; gap: 12px; }
-  .home-btn { display: inline-flex; }
   .pane.viewer:not([hidden]) { --stage-h: calc(100dvh - 8px - var(--cap-h) - 112px - env(safe-area-inset-bottom, 0px)); }
   .pane.viewer .pic-pin { padding-block-end: calc(12px + env(safe-area-inset-bottom, 0px)); }
-  .pane.viewer .pic-controls .hint-chip { font-size: 0.8125rem; line-height: 1.25; }
+  .pane.viewer .pic-controls .hint-chip { font-size: 0.875rem; line-height: 1.25; }
 }
 @media (max-width: 767px) { .pane.viewer .slice-bar::before { display: none; } }
 
@@ -671,3 +682,11 @@ ul.plain code { color: var(--text); font-size: 0.88em; word-break: break-all; }
   .pane.viewer:not([hidden]) { --stage-h: calc(100dvh - 8px - var(--cap-h) - 68px - env(safe-area-inset-bottom, 0px)); }
   .pane.viewer .pic-pin { padding-block-end: calc(12px + env(safe-area-inset-bottom, 0px)); }
 }
+
+/* "Open a different scan" looks like the header's "Open your scan": the small outlined button. */
+.back-link, #start-over {
+  min-block-size: 44px; padding: 8px 16px; border: 1px solid var(--btn-edge); border-radius: var(--r-sm); background: var(--card);
+  color: var(--ink); font-size: 0.9375rem; font-weight: 600; text-decoration: none; box-shadow: var(--shadow-btn);
+}
+.back-link::before { display: none; }
+.back-link:hover, #start-over:hover { color: var(--primary-dark); border-color: var(--primary); background: var(--card); }

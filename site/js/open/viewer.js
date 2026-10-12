@@ -20,6 +20,19 @@ const PREFETCH_AHEAD = 3;
 
 const el = (id) => document.getElementById(id);
 
+// A CT or MRI cross-section is a slice; any other kind of picture stays a picture (voice guide, settled call 1).
+const unitOf = (info) => (info && /^(CT|MR)$/i.test(info.modality || '') ? 'slice' : 'picture');
+const cap1 = (w) => w[0].toUpperCase() + w.slice(1);
+/** Every visible and spoken name for one step of the open set, set when the set opens. */
+function nameUnits(info) {
+  const u = unitOf(info);
+  el('prev-picture').setAttribute('aria-label', `Previous ${u}`);
+  el('next-picture').setAttribute('aria-label', `Next ${u}`);
+  el('slice').setAttribute('aria-label', cap1(u));
+  el('slice').closest('label').querySelector('.lbl').textContent = cap1(u);
+  el('canvas').setAttribute('aria-label', `${/^a/.test(u) ? 'An' : 'A'} ${u} from the set you chose. ${mouseDevice() ? 'Drag up or down' : 'Swipe up or down'} to step through the ${u}s, or sideways to change the brightness.`);
+}
+
 // Which gesture the device has, so the viewer says tap with a finger and click or point with a mouse.
 const mouseDevice = () => window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 const state = {
@@ -136,11 +149,11 @@ function orderSlices(slices) {
       s.along = p[0] * n[0] + p[1] * n[1] + p[2] * n[2];
     }
     slices.sort((a, b) => a.along - b.along);
-    return 'position along the scan direction';
+    return 'position in the scan';
   }
   if (slices.every((s) => Number.isFinite(s.info.instanceNumber))) {
     slices.sort((a, b) => a.info.instanceNumber - b.info.instanceNumber);
-    return 'image number';
+    return 'picture number';
   }
   slices.sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
   return 'file name';
@@ -1033,6 +1046,7 @@ async function openSeries(index) {
   forgetFrames();
   forgetPointing();
   // The sample is named for what it is; a visitor's set by its own description from the disc.
+  nameUnits(s.info);
   el('viewer-h').textContent = (state.credit && state.credit.title) || setName(s.info).full;
   el('slice').max = String(s.slices.length - 1);
   el('slice').value = String(state.slice);
@@ -1321,9 +1335,10 @@ function draw() {
     // on here too; they are a radiographer's units, and a visitor read them as things to understand.
     // The how-to is a chip under the picture, never on it, and it goes after the first change.
     el('hud').textContent = `${state.slice + 1} of ${s.slices.length}`;
+    keepPlaceInAddress();
     // The slider is what a screen reader hears on each move, so it says the picture and the outline count.
     const parts = el('finding').hidden || !drawn.length ? '' : `, ${drawn.length} structure${drawn.length === 1 ? '' : 's'} outlined`;
-    el('slice').setAttribute('aria-valuetext', `Picture ${state.slice + 1} of ${s.slices.length}${parts}`);
+    el('slice').setAttribute('aria-valuetext', `${cap1(unitOf(s.info))} ${state.slice + 1} of ${s.slices.length}${parts}`);
     // How far through the set, for the filled part of the slider's track (open.css).
     el('slice').style.setProperty('--fill', `${s.slices.length > 1 ? (state.slice / (s.slices.length - 1)) * 100 : 0}%`);
     // The one line that says how to step and zoom. It stays: it is the only place that says so (wave three found
@@ -1347,6 +1362,32 @@ function draw() {
     drawWaiters = [];
     for (const done of waiting) done();
   });
+}
+
+/** The sample keeps its slice and chosen structure in the address, so Back from the research page returns to
+ * the same place. Only while the sample is open: closing it drops ?sample=1 (startOver) and this stops. */
+function keepPlaceInAddress() {
+  const q = new URLSearchParams(window.location.search);
+  if (!q.has('sample') || state.current === null) return;
+  q.set('slice', String(state.slice + 1));
+  const name = state.chosen >= 0 ? (state.reading?.outlines?.structures || [])[state.chosen] : '';
+  if (name) q.set('name', name); else q.delete('name');
+  window.history.replaceState(null, '', `${window.location.pathname}?${q}${window.location.hash}`);
+}
+
+/** Put the sample back where the address says (slice, then the chosen structure). True when a structure was chosen. */
+const asked = new URLSearchParams(window.location.search);   // read before the first draw rewrites the address
+export async function restoreFromAddress() {
+  const q = asked;
+  const n = Number(q.get('slice'));
+  if (state.current === null || !q.has('sample')) return false;
+  if (Number.isInteger(n) && n >= 1 && n !== state.slice + 1) setSlice(n - 1, false);
+  const at = (state.reading?.outlines?.structures || []).indexOf(q.get('name'));
+  if (!q.get('name') || at < 0) return false;
+  // The slice's picture and outlines are drawn a moment after the step; the name needs to know where they are.
+  for (let i = 0; i < 30 && !(state.view && interiorPoint(at)); i++) await new Promise((r) => setTimeout(r, 100));
+  namePart(at);
+  return state.chosen === at;
 }
 
 let drawWaiters = [];
@@ -1489,9 +1530,6 @@ function zoomAbout(clientX, clientY, factor, from = { zoom: state.zoom, panX: st
 
 function wireStage() {
   const stage = el('stage');
-  if (mouseDevice()) {
-    el('canvas').setAttribute('aria-label', 'A picture from the set you chose. Drag up or down to step through them, or sideways to change the brightness.');
-  }
   let drag = null;
   // Round eleven: "Scroll or pinch to zoom in", but on a touch screen a pinch stepped through the slices. Two
   // fingers on the picture now zoom about the point between them and move it with them.

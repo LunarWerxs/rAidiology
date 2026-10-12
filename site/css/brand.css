@@ -215,6 +215,11 @@ a.chip:hover { background: var(--primary); color: var(--on-primary); }
 @media (min-width: 900px) and (max-width: 1099px) { .site-nav .nav-long { display: none; } .site-nav .nav-short { display: inline; } .site-nav a { padding-inline: 10px; } }
 .site-nav .nav-extra { display: none; }
 .site-nav .nav-home { display: none; }
+/* The business links (licences, investors) sit after the visitor links: a thin divider on desktop, and in the
+   phone drawer a small 'For companies' label (v5.2 art hearing C7/C13: they were mixed in with no grouping). */
+.site-nav .nav-group { display: none; }
+.site-nav .nav-biz { margin-inline-start: 9px; }
+.site-nav .nav-biz::before { content: ""; position: absolute; left: -6px; top: 11px; bottom: 11px; width: 1px; background: var(--line-strong); }
 .site-nav .nav-extra::after { content: "\2197"; content: "\2197" / " opens another site"; margin-inline-start: 4px; font-size: 0.85em; }
 .head-actions { grid-column: 3; justify-self: end; display: flex; align-items: center; gap: 8px; }
 .gh-link { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 8px; color: var(--ink); }
@@ -248,6 +253,11 @@ a.chip:hover { background: var(--primary); color: var(--on-primary); }
   .site-nav a[aria-current="page"]::after { left: -12px; right: auto; top: 14px; bottom: 14px; width: 3px; height: auto; }
   .site-nav .nav-extra { display: block; color: var(--text); }
   .site-nav .nav-home { display: block; }
+  .site-nav .nav-group { display: block; padding: 18px 4px 4px; color: var(--muted); font-size: 0.875rem; font-weight: 650; }
+  .site-nav .nav-biz { margin-inline-start: 0; }
+  .site-nav .nav-biz::before { display: none; }
+  .site-nav .nav-biz .nav-long { display: none; }
+  .site-nav .nav-biz .nav-short { display: inline; }
 }
 @keyframes menu-scrim-in { from { opacity: 0; } }
 /* Small phones (360 px and under 400): the brand, the header button and the menu button share one row without clipping */

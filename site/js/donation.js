@@ -25,7 +25,7 @@ function wireNumber() {
     if (!hex) { msg.textContent = 'That doesn\'t look like a donation number. Check it and try again.'; return; }
     if (!donationConfigured()) { msg.textContent = 'Donations aren\'t open yet.'; return; }
     busy = true;
-    msg.textContent = 'Looking it up and unlocking it on this device…';
+    msg.textContent = 'Looking up your donation and unlocking it on this device…';
     try {
       const opened = await openDonation({ baseUrl: DONATION_BASE, fetch: donationFetch, numberText: hex });
       msg.textContent = '';
@@ -118,7 +118,7 @@ async function codesFrom(entries) {
       const name = `${s.modality || 'Scan'}${s.description ? ' · ' + s.description : ''} · ${s.count} picture${s.count === 1 ? '' : 's'}`;
       if (code) {
         list.append(h('li', {}, h('strong', {}, name), h('br'), 'Code: ', h('code', {}, code), h('br'),
-          'To have a donation removed, email this code to ', h('a', { href: `mailto:contact@lunarwerx.com?subject=${encodeURIComponent('Delete my donation')}&body=${encodeURIComponent(`Please find and delete the donation with this code: ${code}`)}` }, 'contact@lunarwerx.com'), '.'));
+          'To delete this donation, email this code to ', h('a', { href: `mailto:contact@lunarwerx.com?subject=${encodeURIComponent('Delete my donation')}&body=${encodeURIComponent(`Find and delete the donation with this code: ${code}`)}` }, 'contact@lunarwerx.com'), '.'));
       } else {
         list.append(h('li', { className: 'refused' }, h('strong', {}, name), h('br'), `No code: ${s.reason || 'this set wouldn\'t have been sent.'}`));
       }

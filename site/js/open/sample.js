@@ -6,7 +6,7 @@
 // It exists because every visitor in the first test arrived without their disc to hand and left
 // without having seen what the page does.
 
-import { openFiles, afterNextDraw, nameBiggestPart } from './viewer.js';
+import { restoreFromAddress, openFiles, afterNextDraw, nameBiggestPart } from './viewer.js';
 
 const SAMPLE = 'sample/sample-ct.zip';
 // The sample's own reading, written by the MCP server's read_ct (tools/build_sample_reading.py): what
@@ -95,6 +95,7 @@ async function loadSample() {
     const outlined = await openFiles([{ path: 'sample-ct.zip', file: new File([blob], 'sample-ct.zip') }], CREDIT, reading);
     document.getElementById('sample-next').hidden = false;
     if (outlined) showSampleReading();
+    else restoreFromAddress();
     button.textContent = label;
   } catch {
     button.textContent = 'The sample didn\'t load. Try again';
@@ -112,7 +113,8 @@ function showSampleReading() {
   document.getElementById('outline-caption').hidden = false;
   // One part named at once, so the outlines explain themselves before anyone taps. Once the picture
   // with the outlines on it has been drawn, because the name needs to know where they are.
-  afterNextDraw().then(nameBiggestPart);
+  // Back from another page puts the slice and the chosen structure from the address back instead.
+  afterNextDraw().then(async () => { if (!(await restoreFromAddress())) nameBiggestPart(); });
 }
 
 function start() {

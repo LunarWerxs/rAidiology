@@ -145,5 +145,6 @@
 }
 
 /* One short line for the chosen view, set by hero3d.js inside the caption. */
-.hero3d .hero3d__view { display: block; margin-top: 6px; color: var(--on-dark-strong); font-weight: 600; }
+.hero3d .hero3d__view { display: inline; color: #dce6f0; font-weight: 400; }
+.hero3d .hero3d__view strong { color: var(--on-dark-strong); font-weight: 700; }
 .hero3d.hero3d--static .hero3d__view { display: none; }

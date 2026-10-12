@@ -30,8 +30,10 @@ may hold "things that are less immediately necessary. Especially during compress
 - **H: as staging** (owner, 2026-10-09: "you can take H up to, like, 95% as long as you know you're gonna bring it
   back down ... I just don't want it to, like, stay over 85% after long periods of time"; `fetch.FLOORS`): what
   stays on H: stops at 85%. A download that passes through (unpacked onto another drive, then removed) may take it
-  to 95%. So a download lands on H: first and is unpacked onto G:: G:, a shingled (SMR) disk on USB, slows to a
-  crawl when a slow download writes beside an unpack (2026-10-09: 5.3 MB/s against 32.8 without them).
+  to 95%. So a download lands on H: first and is unpacked and re-encoded on the first staging disk with room (an SSD,
+  else H:), usable at once, and one mover per run copies it on to G:, a set at a time (UNPACK_VIA, UNPACK_TO). G:, a shingled (SMR) disk on USB, slows to a
+  crawl when a slow download writes beside an unpack (2026-10-09: 5.3 MB/s against 32.8 without them), and when an
+  unpack writes onto it at all (2026-10-11: 2.2 MB/s at 99.8% busy, where it took a 2 GiB file at 88.6 MB/s).
 - **Kept packed** (`packed`): a set can stay as served on a cold disk, unpacked when a model needs it. None does
   now: OMAMA-DB's 796 GB `original_2d.tar` did while no drive had room for it twice over; on G: (6 TB, 45% full) it
   unpacks to 59% at most, and the found-crop readers cut their crops from its full-resolution pictures (2026-10-07).
@@ -96,7 +98,17 @@ ARCHIVE_RESERVE = 40e9       # left free on the download disk
 WORKING_RESERVE = 50e9       # left free on a working-copy disk
 ROOM_WAIT_S = 6 * 3600       # how long a set waits for another to free room before it gives up
 SAVE_S = 30
-UNPACKERS = 2                # sets unpacked at once, beside the downloads
+UNPACKERS = int(os.environ.get("RAIDIOLOGY_UNPACKERS") or 4)   # sets unpacked at once, beside the downloads
+# Where `fetch` unpacks and re-encodes a set, and where its mover then takes it ("" either: the working disks, G:
+# first, as before 2026-10-11). On 2026-10-11 G:, a shingled ST8000DM004 on USB, wrote 2.2 MB/s at 99.8% busy under
+# 7-Zip unpacking NL-Breast-Screen onto it, while H:, a conventional disk, sat idle; with nothing unpacking onto it,
+# G: took a 2 GiB file at 88.6 MB/s minutes later. The staging disks are tried in order, each down to its line: the
+# SSDs first, then H:, so H:, which holds the downloads, mostly only reads them. With all three unpacks on H:, it was
+# 100% busy at 34 MB/s written and 29 read (queue 3.5), reading and writing at once (2026-10-11 21:06).
+UNPACK_VIA = os.environ.get("RAIDIOLOGY_UNPACK_VIA", "E:;D:;F:;" + COLD)
+UNPACK_TO = os.environ.get("RAIDIOLOGY_UNPACK_TO", SPARE)
+# DICOM re-encoders at once, twice core.store's own default (4 here, where mammo-mx re-encoded at 58-72 MB/s)
+SHRINK_WORKERS = int(os.environ.get("RAIDIOLOGY_SHRINK_WORKERS") or 0) or max(1, min(8, (os.cpu_count() or 4) // 4))
 # Who goes first on a slow disk (fetch.Turn; 0 first, then the order the owner and the modelling chat gave on
 # 2026-10-07): the original 2D mammograms' download (globus_fetch.py), then the mammograms in the order their readers
 # want them (the whole-picture readers' 1024 copy, the crop readers' originals, the views nobody reads together yet),
@@ -878,27 +890,39 @@ def _place(src, dst, size):
     return 1
 
 
-def _working_target(name, need, beside=None, src=None, via=None):
+def _vias(via):
+    """The staging disks `via` names, in the order tried ("E:;D:;F:;H:/rAidiology/cold": E:\\, D:\\, F:\\, H:\\)."""
+    return [_drive(v) for v in (via or "").split(";") if v.strip()]
+
+
+def _working_target(name, need, beside=None, src=None, via=None, loose=False):
     """Where the set's working copy goes, and the room claimed there: its junction's target when it has
     one, else the first working disk with room (waiting on the last one when none has it now), or (via) the
-    working root on that disk, under its staging line: the copy only passes through on its way to another disk.
-    On the drive holding `src` (the download), `beside` is claimed instead: its big tars give their room back as
-    they unpack."""
+    working root on the first staging disk with room (waiting on the last), under its staging line: the copy only
+    passes through on its way to another disk. A folder of the set already on a staging disk, from a run cut short,
+    is gone on with there. `loose`: nothing to unpack, so the download's own disk comes first (a rename there, where
+    another disk would take a copy). On the drive holding `src` (the download), `beside` is claimed instead: its big
+    tars give their room back as they unpack."""
     link = os.path.join(LINKS, name)
+    home = _drive(os.path.realpath(src)) if src and beside is not None else None
     if os.path.lexists(link):
         if not fetch.is_link(link):
             raise fetch.FetchError("%s is a real folder, not a junction; left alone" % link)
         targets = [os.readlink(link).replace("\\\\?\\", "")]
     elif via:
-        targets = [os.path.join(r, name) for r in WORKING if _drive(r) == _drive(via)][:1]
+        drives = _vias(via)
+        if loose and home in drives:
+            drives = [home] + [v for v in drives if v != home]
+        roots = [next((r for r in WORKING if _drive(r) == v), None) for v in drives]
+        targets = [os.path.join(r, name) for r in roots if r and os.path.isdir(_drive(r))]
         if not targets:
             raise fetch.FetchError("%s: %s holds no working disk (%s)" % (name, via, ";".join(WORKING)))
+        targets = [t for t in targets if os.path.isdir(t)][:1] or targets
     else:
         targets = [os.path.join(r, name) for r in WORKING if os.path.isdir(_drive(r))]
-    home = _drive(os.path.realpath(src)) if src and beside is not None else None
     for i, t in enumerate(targets):
         n = beside if home and _drive(os.path.realpath(t)) == home else need
-        passing = bool(via) and _drive(os.path.realpath(t)) == _drive(via)
+        passing = bool(via) and _drive(os.path.realpath(t)) in _vias(via)
         room = claim(t, n, WORKING_RESERVE, name, passing=passing) if i == len(targets) - 1 else \
             claim(t, n, WORKING_RESERVE, name, wait=False, passing=passing)
         if room is not None:
@@ -980,6 +1004,10 @@ def move_tier(name, cold, to=None, staging=False):
         if bad:
             raise fetch.FetchError("%s: %d files differ after the copy (first %s); the old copy is kept"
                                    % (name, len(bad), bad[0]))
+        extra = [k for k in got if k not in files]   # a folder of that name there before, from something else
+        if extra:
+            raise fetch.FetchError("%s: %s holds %d files the copy has not (first %s); the old copy is kept"
+                                   % (name, dst, len(extra), extra[0]))
         was = src
         if src == link:                            # the folder set aside (same disk, at once), the junction in its place
             os.rename(link, link + ".moved")
@@ -999,6 +1027,7 @@ def move_tier(name, cold, to=None, staging=False):
                     d = json.load(f)
                 d["working_copy"] = dst.replace("\\", "/")
                 d.setdefault("moved", []).append({"from": was.replace("\\", "/"), "to": d["working_copy"], "at": now()})
+                d.pop("staged", None)
                 fetch._save_json(p, d)
         shutil.rmtree(src)
         log("%s: now at %s" % (name, dst))
@@ -1032,13 +1061,17 @@ def unpack_set(name, via=None):
             if f not in seen and not SPLIT_PART.search(f) and os.path.exists(src_of(f))]
     need = sum(fetch.unpacked_size(x) for x in left)
     beside = sum(fetch.unpack_need(x, release=True) for x in left)   # its big tars give their bytes back as they go
-    target, room = _working_target(name, need, beside, src_root, via)
+    loose = not any(fetch.is_archive(x) for x in left)
+    target, room = _working_target(name, need, beside, src_root, via, loose)
     count = 0
     t0 = time.time()
     turn = None
     try:
         os.makedirs(target, exist_ok=True)         # in the try: a folder not made gives its room back
-        turn = fetch.Turn([target] if via else [target, src_root], name, rank(name))
+        # its download's disk too, unless that is the shingled one, whose reads never make it rewrite its bands: on
+        # H:, a disk with one head, five unpacks reading and writing at once took 1 to 4 MB/s each (2026-10-11)
+        shingled = via and _drive(os.path.realpath(src_root)) == _drive(SPARE)
+        turn = fetch.Turn([target] if shingled else [target, src_root], name, rank(name))
         # Archives first, loose files after, so a loose file wins over a same-named member (an annexed image
         # over its pointer in the repository snapshot). Smallest archive first: labels and small sets are usable
         # within minutes, not after a day of detection slices onto the hard disk (CSTL, 2026-10-06: its 242 MB of
@@ -1076,6 +1109,8 @@ def unpack_set(name, via=None):
         if r.get("checked_when_unpacked"):
             r["checked"] = r.pop("checked_when_unpacked")
     d.update(working_copy=target.replace("\\", "/"), junction=link.replace("\\", "/"), unpacked=now())
+    if via and _drive(os.path.realpath(target)) in _vias(via):   # it moves on once re-encoded (fetch_all's mover);
+        d["staged"] = _drive(os.path.realpath(target)).rstrip("\\/")   # move_tier clears it
     rec.save(True)
     freed = 0
     for fname in d["files"]:                       # where a tar given back as it unpacked would have gone on
@@ -1102,7 +1137,7 @@ def unpack_set(name, via=None):
 def shrink_tree(root, label):
     """core.store over one working copy, with its totals logged; the totals are returned for the record."""
     log("%s: re-encoding uncompressed DICOM images losslessly (%s) in %s" % (label, store.CODEC_NAME, root))
-    t = store.shrink_tree(root, log=log)
+    t = store.shrink_tree(root, workers=SHRINK_WORKERS, log=log)
     out = {"at": now(), "codec": store.CODEC_NAME, "files": t["files"], "shrunk": t["shrunk"], "left_alone": t["left"],
            "kept_original": t["kept"], "unchecked": t["unchecked"], "gb_before": round(t["before"] / 1e9, 3),
            "gb_after": round(t["after"] / 1e9, 3), "why_left": t["reasons"], "examples": t["examples"],
@@ -1278,24 +1313,146 @@ def unpacked(s, via=None, to=None):
         return {"name": s["name"], "status": "unpack failed: %s" % e}
 
 
-def fetch_all(sets, again):
+def staged(name):
+    """Unpacked and re-encoded on the staging disk (unpack_set's `via`), not yet moved on."""
+    d = Record(name).data
+    return bool(d.get("staged") and d.get("unpacked") and d.get("shrunk"))
+
+
+def _old_copies(name, d):
+    """Folders a move of this set left behind: its junction points elsewhere now, but the record's working copy
+    or the last move's source is still on disk (a run killed between the junction's move and the record, or
+    while the old copy was being removed)."""
+    link = os.path.join(LINKS, name)
+    if not fetch.is_link(link):
+        return None, []
+    new = _target(link)
+    same = os.path.normcase(os.path.abspath(new))
+    olds = {d.get("working_copy")} | {m.get("from") for m in (d.get("moved") or [])[-1:]}
+    return new, [o for o in olds if o and os.path.normcase(os.path.abspath(o)) != same and os.path.isdir(o)
+                 and not fetch.is_link(o)]
+
+
+def unfinished_move(name):
+    return bool(_old_copies(name, Record(name).data)[1])
+
+
+def finish_move(name):
+    """A move cut short after its junction moved: each copy left behind removed once every file in it is in the
+    junction's copy at the same size (a copy that differs is kept and said), then the record caught up."""
+    rec = Record(name)
+    d = rec.data
+    new, olds = _old_copies(name, d)
+    if new is None:
+        return
+    got = _tree(new) if olds else {}
+    for old in olds:
+        bad = [k for k, v in _tree(old).items() if got.get(k) != v]
+        if bad:
+            log("%s: %s, left from a move, differs from %s in %d files (first %s); kept" % (name, old, new, len(bad), bad[0]))
+            return
+        shutil.rmtree(old)
+        log("%s: removed %s, left from a move cut short (all of it is in %s)" % (name, old, new))
+    wc = d.get("working_copy")
+    if wc and os.path.normcase(os.path.abspath(wc)) != os.path.normcase(os.path.abspath(new)):
+        d["working_copy"] = new.replace("\\", "/")
+        if d.get("staged") and _drive(new) != _drive(d["staged"]):
+            d.pop("staged", None)
+        rec.save(True)
+
+
+def moved_on(s, to):
+    """A set staged on H: moved on to `to` under its lock, then its Status cell again (it names `to` now). A move
+    cut short is finished first."""
+    def work(s):
+        finish_move(s["name"])
+        if staged(s["name"]):
+            move_tier(s["name"], True, to)
+            finish_move(s["name"])
+        with RECORDING:
+            record_licensing()
+        return {"name": s["name"], "status": "done"}
+    try:
+        return locked(s, work)
+    except Exception as e:  # noqa: BLE001  one set's move must not stop the others; it stays usable where it is
+        log("%s: move to %s failed: %s: %s\n%s" % (s["name"], to, type(e).__name__, e, traceback.format_exc()))
+        return {"name": s["name"], "status": "move failed: %s" % e}
+
+
+def staging_lock(via):
+    """The one right to stage on every disk `via` names (H:), OS locks that end with their process, or None while
+    another run holds one: room on a disk is claimed inside one process (_CLAIMS), so two runs staging there at once
+    could each be given the same room and take H: past its 95% line (2026-10-11 review)."""
+    held = []
+    for v in _vias(via):
+        root = os.path.join(v, "rAidiology")
+        os.makedirs(root, exist_ok=True)
+        f = open(os.path.join(root, ".staging.lock"), "a+b")  # noqa: SIM115   held open for the run
+        try:
+            if sys.platform == "win32":
+                import msvcrt  # noqa: PLC0415
+                f.seek(1 << 20)
+                msvcrt.locking(f.fileno(), msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl  # noqa: PLC0415
+                fcntl.flock(f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            f.close()
+            for g in held:
+                g.close()
+            return None
+        held.append(f)
+    return held
+
+
+def fetch_all(sets, again, via=None, to=None):
     """Every set down its lane; each one that lands (or landed earlier and was never unpacked) is unpacked
-    in the background while its lane goes on to the next."""
+    in the background while its lane goes on to the next; on `via` (H:), and then one mover takes each set so
+    staged on to `to` (G:), a set at a time, so the next set's unpack never waits on the slow disk."""
     unpacker = concurrent.futures.ThreadPoolExecutor(max_workers=UNPACKERS)
-    pending = []
+    mover = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+    pending, moves = [], []
     plock = threading.Lock()
+    hold = staging_lock(via) if via else None      # room on H: is claimed inside one process (_CLAIMS): one stages
+    if via and hold is None:
+        log("another fetch run is staging on %s: this one unpacks straight onto the working disks" % via)
+        via = None
+
+    def move_later(s):
+        if to and (staged(s["name"]) or unfinished_move(s["name"])):
+            with plock:
+                moves.append(mover.submit(moved_on, s, to))
+
+    def unpack_then_move(s):
+        r = unpacked(s, via)
+        if r["status"] == "done":
+            move_later(s)
+        return r
 
     def work(s):
         r = locked(s, lambda s: fetched(s, again))
-        if r["status"] == "done" and not settled(s["name"]):
-            with plock:
-                pending.append(unpacker.submit(unpacked, s))
+        if r["status"] == "done":
+            if not settled(s["name"]):
+                with plock:
+                    pending.append(unpacker.submit(unpack_then_move, s))
+            else:
+                move_later(s)                      # unpacked on H: by a run cut short before its move
         return r
 
     res = run_lanes(sets, work)
     unpack = {r["name"]: r["status"] for r in (fu.result() for fu in pending)}
-    unpacker.shutdown()
-    return [dict(r, status=unpack.get(r["name"], r["status"])) for r in res]
+    unpacker.shutdown()                            # every move is asked for by now: an unpack asks before it returns
+    moved = {r["name"]: r["status"] for r in (fu.result() for fu in moves)}
+    mover.shutdown()
+    for f in hold or []:
+        f.close()                                  # the OS lock goes with the handle
+    out = []
+    for r in res:
+        st = unpack.get(r["name"], r["status"])
+        if st == "done" and moved.get(r["name"], "done") != "done":
+            st = moved[r["name"]]
+        out.append(dict(r, status=st))
+    return out
 
 
 def land_licensing():
@@ -1316,11 +1473,14 @@ def main():
     ap.add_argument("--again", action="store_true", help="fetch a set again even if fetch.json says done; shrink: "
                                                          "scan a set already re-encoded once more")
     ap.add_argument("--to", help="cold/warm: the drive to move to (D:), rather than the first of its kind with room; "
-                                 "unpack: the drive the working copy moves to once unpacked and re-encoded")
+                                 "unpack and fetch: the drive the working copy moves to once unpacked and re-encoded "
+                                 "(fetch: UNPACK_TO, G:, unless given; \"\" leaves it where it was unpacked)")
     ap.add_argument("--staging", action="store_true", help="cold/warm with --to: the copy only passes through that "
                                                              "disk (H:, up to its 95%% line), to go on later")
-    ap.add_argument("--via", help="unpack: the drive to unpack and re-encode on, under its staging line (H:), "
-                                  "before the move to --to")
+    ap.add_argument("--via", help="unpack and fetch: the drives to unpack and re-encode on, the first with room, each "
+                                  "under its staging line (\"E:;D:;F:;H:\"), before the move to --to (fetch: "
+                                  "UNPACK_VIA, the SSDs then H:, unless given; \"\" unpacks straight onto the working "
+                                  "disks)")
     ap.add_argument("--log", help="append everything printed to this file, line by line (a shell's redirect "
                                   "can hold it back in blocks)")
     ap.add_argument("--as-given", action="store_true", help="fetch: inside a lane, take the sets in the order named "
@@ -1362,7 +1522,8 @@ def main():
             record_licensing()
     else:
         os.makedirs(ARCHIVE, exist_ok=True)
-        res = fetch_all(chosen(a.names), a.again)
+        res = fetch_all(chosen(a.names), a.again, (UNPACK_VIA if a.via is None else a.via) or None,
+                        (UNPACK_TO if a.to is None else a.to) or None)
         land_licensing()
     print("\n" + "\n".join("%-28s %s" % (r["name"], r["status"]) for r in res))
     sys.exit(0 if all(r["status"] == "done" for r in res) else 1)

@@ -28,10 +28,11 @@
       <nav id="site-nav" class="site-nav" aria-label="Main">
         <a class="nav-home" href="index.html">Home</a>
         <a class="nav-home" href="open.html?sample=1">Sample scan</a>
-        <a href="index.html#scans"><span class="nav-long">Scans we cover</span><span class="nav-short">Scans</span></a>
+        <a href="index.html#scans"><span class="nav-long">Scan types</span><span class="nav-short">Scans</span></a>
         <a href="models.html">Research</a>
-        <a aria-current="page" href="pricing.html"><span class="nav-long">Company licences</span><span class="nav-short">Licences</span></a>
         <a href="support.html">Support us</a>
+        <span class="nav-group">For companies</span>
+        <a class="nav-biz" aria-current="page" href="pricing.html"><span class="nav-long">Company licences</span><span class="nav-short">Licences</span></a>
         <a href="support.html#invest">Investors</a>
         <a class="nav-extra" href="https://github.com/LunarWerxs/rAidiology">GitHub</a>
         <a class="nav-extra" href="https://lunarwerx.com/discord/raidiology">Discord</a>
@@ -48,7 +49,7 @@
     <section class="page-head">
       <div class="wrap">
         <h1>Pricing</h1>
-        <p class="lede">It's free for personal use, and for charities, schools, public research, public health and government bodies. Companies need a commercial licence.</p>
+        <p class="lede">It's free for personal use, and for charities, schools, public research, public health and government bodies, because it runs on your device. Companies need a commercial licence.</p>
         <div class="actions jump">
           <a class="btn secondary small" href="#people">For people</a>
           <a class="btn secondary small" href="#companies">For companies</a>
@@ -65,7 +66,7 @@
         <ul class="card-grid two-up plans">
           <li class="card plan">
             <p class="tag">Free</p>
-            <h3>Free viewer and licence</h3>
+            <h3>Viewer and licence</h3>
             <p class="price"><span class="amt">$0</span></p>
             <ul class="ticks">
               <li>Open scans in your browser</li>
@@ -81,7 +82,7 @@
             <ul class="ticks">
               <li>Everything in the free licence</li>
               <li>Perks for monthly members, such as a supporter role on Discord</li>
-              <li>Pays for the computer time that trains the research models</li>
+              <li>Your payment buys the computer time that trains the research models</li>
             </ul>
             <div class="plan-cta"><a class="btn" href="support.html">Support the research</a></div>
           </li>
@@ -94,7 +95,7 @@
         <div class="sec-head">
           <p class="eyebrow">Commercial licence</p>
           <h2 id="com-h">For companies</h2>
-          <p>Any company or person using the code or the covered research models for commercial purposes needs a commercial licence. Internal tools and testing count too.</p>
+          <p>If a company or a person uses the code or the covered research models for commercial purposes, they need a commercial licence. Internal tools and testing count too.</p>
         </div>
         <ul class="card-grid four-up plans r6">
           <li class="card plan">
@@ -155,7 +156,7 @@
           <div class="pw-main">
             <p class="tag">By agreement</p>
             <div class="pw-title"><h3>Enterprise / OEM</h3><p class="price"><span class="amt">From $30,000</span> <span>a year</span></p></div>
-            <p>Enterprise covers higher volumes and distribution inside a product, device or platform sold to others. It also has terms for regulated products, once you have validated and cleared them. There is a per-device royalty option too. Custom training and integration are priced by quote.</p>
+            <p>Enterprise covers higher volumes and distribution inside a product, device or platform sold to others. It also has terms for regulated products, once you have validated and cleared them, and a per-device royalty option. Custom training and integration come with their own quote.</p>
           </div>
           <div class="pw-cta">
             <a class="btn secondary" href="mailto:contact@lunarwerx.com?subject=rAidiology%20Enterprise%20licence">Email us</a>
@@ -178,7 +179,7 @@
           <li class="card">
             <span class="inc-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 3v5h5M10 13h6M10 17h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
             <h3>The documentation pack</h3>
-            <p>It holds the model cards, the dataset schedule with licences and credits, and test results with intervals. It also has versions, checksums and an SBOM-ready component list.</p>
+            <p>It holds the model cards, the dataset schedule with licences and credits, and test results with intervals. Versions, checksums and an SBOM-ready component list come with it.</p>
           </li>
           <li class="card">
             <span class="inc-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
@@ -216,16 +217,16 @@
         <div class="terms-head">
           <h2 id="terms-h">Licence terms</h2>
           <p>The full text is the rAidiology Commercial Licence. For invoices, purchase orders, a W-9 or annual terms, email <a href="mailto:contact@lunarwerx.com">contact@lunarwerx.com</a>.</p>
-          <div class="actions"><a class="btn secondary" href="https://github.com/LunarWerxs/rAidiology/blob/main/COMMERCIAL-LICENSE.md">Read COMMERCIAL-LICENSE.md</a></div>
+          <div class="actions"><a class="btn secondary" href="https://github.com/LunarWerxs/rAidiology/blob/main/COMMERCIAL-LICENSE.md">Read the licence</a></div>
         </div>
         <div class="faq">
           <details>
             <summary>What counts as a study?</summary>
-            <p>A study is one patient's imaging exam, counted once per calendar month however many covered models or re-runs touch it. Public or benchmark datasets don't count, and neither do quality checks on your fixed test sets. If a model is built from a covered one, its outputs count when used in a product or service.</p>
+            <p>A study is one patient's imaging exam, counted once per calendar month, no matter how many covered models or re-runs touch it. Public or benchmark datasets don't count, and neither do quality checks on your fixed test sets. If a model is built from a covered one, its outputs count when used in a product or service.</p>
           </details>
           <details>
             <summary>Where can the models run?</summary>
-            <p>On Startup, Builder and Growth, you may use the covered models inside your products, including a hosted service or software you sell. The weights must stay on systems you control, meaning your servers, cloud account and internal tools. Delivering the weights themselves to others (installed software, devices, scanners, PACS, platforms run by someone else) needs Enterprise / OEM.</p>
+            <p>On Startup, Builder and Growth, you may use the covered models inside your products, including a hosted service or software you sell. The weights must stay on systems you control: your servers, cloud account and internal tools. Delivering the weights themselves to others (installed software, devices, scanners, PACS, platforms run by someone else) needs Enterprise / OEM.</p>
           </details>
           <details>
             <summary>How does overage work?</summary>
@@ -237,7 +238,7 @@
           </details>
           <details>
             <summary>Who counts as a startup?</summary>
-            <p>A company under 3 years from incorporation that has raised under US$2M of equity or convertible financing. Grants don't count. You self-certify when you buy and again at each renewal.</p>
+            <p>A startup is a company under 3 years from incorporation that has raised under US$2M of equity or convertible financing. Grants don't count. You self-certify when you buy and again at each renewal.</p>
           </details>
           <details>
             <summary>How do renewing and cancelling work?</summary>
