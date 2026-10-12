@@ -16,7 +16,9 @@ const SAMPLE_READING = 'sample/sample-ct.raidiology.json.gz';
 // `source` is the attribution the licence asks for, changes included. Three visitors read it as
 // something they were supposed to understand, so the viewer draws it smaller, on its own line.
 const CREDIT = {
-  text: 'This is a sample, not your scan. It\'s a real CT of an adult\'s chest and belly, shared for '
+  // The viewer's heading for it (round eleven read "CT · Sample scan (not yours)" as a label maker).
+  title: 'Sample CT of the chest and belly',
+  text:'This is a sample, not your scan. It\'s a real CT of an adult\'s chest and belly, shared for '
     + 'research with nothing in it that identifies anyone. A CT is a stack of thin slices through the '
     + 'body, and you can step through them one by one. Your own CT, MRI or X-ray opens the same way.',
   short: 'A sample CT from TotalSegmentator (CC BY 4.0), not your scan.',
@@ -36,17 +38,60 @@ function fetchReading() {
     .catch(() => null);
 }
 
+// The bar under "Opening the sample CT": the share of the download that has arrived, when the server says how
+// big the file is. Without that it keeps its sliding stripe, which claims no amount.
+function showDownloaded(fraction) {
+  const track = document.getElementById('sample-track');
+  const pct = Math.round(Math.min(1, Math.max(0, fraction)) * 100);
+  track.classList.add('known');
+  track.setAttribute('aria-valuenow', String(pct));
+  document.getElementById('sample-fill').style.inlineSize = `${pct}%`;
+}
+
+async function download(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`the sample answered ${res.status}`);
+  const size = Number(res.headers.get('content-length')) || 0;
+  if (!size || !res.body || typeof res.body.getReader !== 'function') return res.blob();
+  const reader = res.body.getReader();
+  const parts = [];
+  let got = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    parts.push(value);
+    got += value.byteLength;
+    showDownloaded(got / size);
+  }
+  return new Blob(parts);
+}
+
+// The tab's title before the sample was asked for, to put back if it cannot load.
+const PAGE_TITLE = document.title;
+
 async function loadSample() {
-  document.documentElement.classList.add('sample-started');
+  const root = document.documentElement;
+  root.classList.add('sample-started');
+  // The tab names the sample from the first moment, as the heading does (wave three: it said "Open your own scan").
+  document.title = `rAidiology · ${CREDIT.title}`;
   const button = document.getElementById('pick-sample');
   const label = button.textContent;
   button.disabled = true;
   button.textContent = 'Loading the sample CT…';
+  // The sample button on this page takes the same viewer-shaped wait as the link from the home page (round
+  // eleven: pressed here, it left the visitor on "Open your own scan" with a greyed button).
+  if (!root.classList.contains('is-sample') || root.classList.contains('sample-done')) {
+    root.classList.remove('sample-done');
+    root.classList.add('is-sample');
+    window.scrollTo(0, 0);
+  }
+  const track = document.getElementById('sample-track');
+  track.classList.remove('known');
+  track.removeAttribute('aria-valuenow');
+  document.getElementById('sample-fill').style.inlineSize = '';
   try {
     const reading = fetchReading();
-    const res = await fetch(SAMPLE);
-    if (!res.ok) throw new Error(`the sample answered ${res.status}`);
-    const blob = await res.blob();
+    const blob = await download(SAMPLE);
     const outlined = await openFiles([{ path: 'sample-ct.zip', file: new File([blob], 'sample-ct.zip') }], CREDIT, reading);
     document.getElementById('sample-next').hidden = false;
     if (outlined) showSampleReading();
@@ -55,6 +100,7 @@ async function loadSample() {
     button.textContent = 'The sample didn\'t load. Try again';
     // Back to the ordinary page, where that message and the button are.
     document.documentElement.classList.remove('is-sample');
+    document.title = PAGE_TITLE;
   }
   document.documentElement.classList.add('sample-done');
   button.disabled = false;

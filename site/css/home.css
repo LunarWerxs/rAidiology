@@ -16,23 +16,68 @@
 @media (max-width: 599px) {
   .hero-actions { flex-wrap: nowrap; gap: 8px; margin-top: 20px; }
   .hero-actions .btn { flex: 1 1 0; min-width: 0; padding-inline: 8px; font-size: 0.875rem; white-space: nowrap; }
-  .proof { margin-top: 16px; gap: 6px; }
-  .proof-x { display: none; }
 }
 @media (max-width: 359px) { .hero-actions { flex-wrap: wrap; } .hero-actions .btn { flex: 1 1 100%; } }
-.licence-note { max-width: 60ch; color: var(--text); font-size: 0.875rem; line-height: 1.5; }
-.proof { display: flex; flex-wrap: wrap; gap: 2px 16px; margin: 20px 0 0; padding: 0; list-style: none; color: #3f4650; font-size: 0.875rem; line-height: 1.5; }
-.proof strong { font-weight: 700; font-variant-numeric: tabular-nums; }
-/* No dot separators: spacing alone separates the items, so no wrapped line starts with a dot. */
+/* Under the buttons, two tiers and no more: one line that belongs to "Open your scan" (what a scan can be), then the
+   fine print (research use and the licence) in smaller, quieter type. The figures live once, in "Why back this". */
+.hero-note { margin: 12px 0 0; color: var(--text); font-size: 0.9375rem; line-height: 1.5; }
+.hero-fine { max-width: 52ch; margin: 28px 0 0; color: var(--muted); font-size: var(--fs-s); line-height: 1.55; text-wrap: pretty; }
+/* The header's "Open your scan" waits until the hero's own pair of buttons has slid under the header, so the first
+   view never shows the same button twice, at any width. It fades in with the scroll and keeps its place, so nothing in
+   the header moves. Browsers without scroll-driven animations show both. */
+@supports (animation-timeline: view()) and (timeline-scope: none) {
+  body { timeline-scope: --hero-cta; }
+  .hero-actions { view-timeline: --hero-cta block; view-timeline-inset: var(--head-h) 0px; }
+  .site-head .head-actions > .btn { animation: head-cta-in linear both; animation-timeline: --hero-cta; animation-range: exit 0% exit 100%; }
+  /* Reduced motion (brand.css stops every animation): the button still waits, and appears in one step with no fade. */
+  @media (prefers-reduced-motion: reduce) {
+    .site-head .head-actions > .btn { animation: head-cta-in steps(1, jump-end) both !important; animation-timeline: --hero-cta !important; animation-range: exit 0% exit 100% !important; }
+  }
+}
+@keyframes head-cta-in { from { opacity: 0; visibility: hidden; } to { opacity: 1; visibility: visible; } }
+
+/* Labels on this page are sentence case. Capitals made every eyebrow shout, and a whole sentence in them wrapped at 360 px. */
+main .eyebrow { font-size: 0.9375rem; font-weight: 600; letter-spacing: 0; text-transform: none; }
+.price .tag { letter-spacing: 0; text-transform: none; }
 
 .hero-stage { display: grid; gap: 12px; min-width: 0; }
 .stage-wrap { position: relative; display: grid; gap: 12px; min-width: 0; }
-.stage-box { position: relative; height: clamp(300px, 52vh, 560px); height: clamp(300px, 52svh, 560px); overflow: hidden; border-radius: var(--radius); background: var(--lightbox); box-shadow: var(--shadow-stage); }
+.stage-box { position: relative; container-type: inline-size; height: clamp(300px, 52vh, 560px); height: clamp(300px, 52svh, 560px); overflow: hidden; border-radius: var(--radius); background: var(--lightbox); box-shadow: var(--shadow-stage); }
 /* The poster shows from first paint and until the 3D draws its first frame. hero3d.js fits its camera the way
-   "contain" fits a poster, and uses the phone poster on stages under 600 px wide (about 650 px of screen). */
-.stage-box > .hero3d { position: absolute; inset: 0; width: 100%; height: 100%; background: var(--lightbox) url("../img/hero-poster.webp") center / contain no-repeat; }
-@media (max-width: 649px) { .stage-box > .hero3d { background-image: url("../img/hero-poster-phone.webp"); } }
-@media (min-width: 960px) { .stage-box { height: min(78vh, 680px); height: min(78svh, 680px); } }
+   "contain" fits a poster, and frames the body for a phone or a wider screen as --hero3d-frame says, the same
+   breakpoint as the posters. The poster fits the content box, so a tray under the picture (--hero3d-tray) never
+   squeezes it. */
+.stage-box > .hero3d { --hero3d-frame: wide; position: absolute; inset: 0; width: 100%; height: 100%; background: var(--lightbox) url("../img/hero-poster.webp") center / contain no-repeat; background-origin: content-box; }
+@media (max-width: 649px) { .stage-box > .hero3d { --hero3d-frame: phone; background-image: url("../img/hero-poster-phone.webp"); } }
+@media (min-width: 960px) {
+  .stage-box { height: min(78vh, 680px); height: min(78svh, 680px); }
+  /* The sample CT card covers the stage's lower-left corner here, so the body stands in the room to its right: the
+     poster moves by half the width the card covers (16 px inset plus the card), and hero3d.js moves the live 3D by
+     the same amount, measured from the card. */
+  .stage-box > .hero3d { background-position: calc(50% + clamp(200px, 36cqi, 260px) / 2 + 8px) 50%; }
+}
+/* The View buttons (Glass, Skeleton, X-ray) sit in the stage's lower-right corner, beside the body, never over it. */
+.hero-stage .hero3d .hero3d__modes { left: auto; right: 14px; transform: none; }
+/* A docked stage under 600 px wide (960 to about 1100 px of screen) has the card beside the buttons: slimmer buttons keep a gap. */
+@media (min-width: 960px) {
+  .hero-stage .hero3d.hero3d--narrow .hero3d__modes { right: 12px; }
+  .hero-stage .hero3d.hero3d--narrow .hero3d__mode { min-width: 72px; padding-inline: 10px; }
+}
+/* The caption sits top left, clear of the body's head. With the card docked (960 px and up) the body has moved right,
+   so the caption may run as wide as the room the move leaves. */
+.hero-stage .hero3d .hero3d__cap { max-width: min(22rem, calc(50% - 80px)); }
+@media (min-width: 960px) { .hero-stage .hero3d .hero3d__cap { max-width: min(22rem, calc(50% + clamp(200px, 36cqi, 260px) / 2 - 56px)); } }
+/* Phones held upright: the stage is too narrow for the buttons or the caption beside the body, so both sit in a tray
+   under it, the buttons first, and the body fades into the tray. The canvas and the poster stop above the tray (hero3d.css). */
+@media (max-width: 649px) and (orientation: portrait) {
+  .stage-box { --hero3d-tray: 148px; height: calc(clamp(300px, 52vh, 560px) + var(--hero3d-tray)); height: calc(clamp(300px, 52svh, 560px) + var(--hero3d-tray)); }
+  .hero-stage .hero3d::after { content: ""; position: absolute; inset-inline: 0; bottom: var(--hero3d-tray); z-index: 1; height: 56px; background: linear-gradient(to bottom, transparent, var(--lightbox)); pointer-events: none; }
+  .hero-stage .hero3d .hero3d__modes { left: 50%; right: auto; bottom: calc(var(--hero3d-tray) - 56px); transform: translateX(-50%); }
+  .hero-stage .hero3d .hero3d__cap { top: auto; bottom: 16px; inset-inline: 16px; max-width: none; text-align: center; text-wrap: balance; }
+  /* Without WebGL there are no View buttons and nothing to turn, so the tray keeps only the caption's first sentence. */
+  .stage-box:has(> .hero3d--static) { --hero3d-tray: 76px; }
+}
+@media (max-width: 379px) and (orientation: portrait) { .stage-box { --hero3d-tray: 168px; } }
 
 /* The sample CT card: a white card with a thin edge, so the black picture inside it reads against the black stage.
    While it loads (.is-loading, until ctdemo.js paints the first frame) the whole card is the viewer's near-black
@@ -44,41 +89,54 @@
 .hero-stage .ctdemo .ctdemo__lightbox, .demo-ph { border-radius: 8px; }
 .demo-ph { position: relative; overflow: hidden; aspect-ratio: 1 / 1; background: var(--lightbox); }
 .demo-ph img { display: block; width: 100%; height: 100%; object-fit: contain; }
-/* the space the controls will take, drawn as two dark bars so the card does not jump when the viewer mounts */
-.demo-sk { height: 136px; padding-top: 8px; }
+/* the space the controls will take (the player row, then the viewer link), drawn as two dark bars so the card does
+   not jump when the viewer mounts; on touch the player row is 48 px tall (ctdemo.css) */
+.demo-sk { height: 100px; padding-top: 8px; }
 .demo-sk span { position: relative; display: block; overflow: hidden; background: var(--skeleton-fill); }
 .demo-sk span:first-child { height: 44px; border-radius: 22px; }
-.demo-sk span:last-child { width: 46%; height: 12px; margin: 18px auto 0; border-radius: 6px; }
-.stage-credit { display: none; }
+.demo-sk span:last-child { width: 46%; height: 12px; margin: 20px auto 0; border-radius: 6px; }
+@media (pointer: coarse) { .demo-sk { height: 104px; } .demo-sk span:first-child { height: 48px; border-radius: 24px; } }
+/* Every credit for the hero sits in one place under it, at every width, as plain small text: the sample CT and its
+   outlines, then the 3D skeleton with the change LunarWerx made (CC BY 4.0 asks for both). The card stays short. */
+.hero-stage .ctdemo .ctdemo__credit { display: none; }
+.stage-credit { max-width: none; margin: 0; color: var(--muted); font-size: 0.8125rem; line-height: 1.5; }
+.stage-credit > span { display: block; text-wrap: balance; max-width: 62ch; margin-inline: auto; }
+.stage-credit > span + span { margin-top: 4px; }
+.stage-credit .cl-split { text-wrap: pretty; }
+.stage-credit .cl-split > span { display: inline-block; text-wrap: pretty; }
 @media (min-width: 600px) and (max-width: 959px) { .hero-stage .ctdemo { max-width: 440px; margin-inline: auto; } }
 @media (min-width: 960px) {
   /* docked inside the 3D card's frame, 16px in from its bottom and inline-start edges */
   .hero-stage .ctdemo { position: absolute; z-index: 2; inset-inline-start: 16px; inset-block-end: 16px; width: clamp(200px, 36%, 260px); padding: 6px; }
-  /* the credit moves under the stage so the card stays short */
-  .hero-stage .ctdemo .ctdemo__credit { display: none; }
-  .demo-sk { height: 96px; }
-  /* the CT card sits on the stage's lower-left corner, so the view chips move to the lower-right */
-  .hero-stage .hero3d .hero3d__modes { left: auto; right: 14px; transform: none; }
-  .stage-credit { display: block; max-width: none; margin: 0; color: var(--muted); font-size: var(--fs-s); line-height: 1.45; text-align: end; }
+  .stage-credit { font-size: var(--fs-s); }
+}
+/* Phones held sideways (short screens under 960 px wide): the 3D fits the screen under the header, and the sample CT
+   card puts its picture on the left and its player on the right, so the picture and the slider show together. */
+@media (max-width: 959px) and (max-height: 520px) and (orientation: landscape) {
+  .stage-box { height: clamp(220px, calc(100vh - var(--head-h) - 24px), 560px); height: clamp(220px, calc(100svh - var(--head-h) - 24px), 560px); }
+  .hero-stage .ctdemo { --pic: clamp(200px, calc(100svh - var(--head-h) - 42px), 340px); display: grid; grid-template-columns: var(--pic) minmax(0, 1fr); grid-template-rows: 1fr auto auto auto 1fr; column-gap: 24px; max-width: none; }
+  .hero-stage .ctdemo > * { grid-column: 2; }
+  .hero-stage .ctdemo > .ctdemo__lightbox, .hero-stage .ctdemo > .demo-ph { grid-column: 1; grid-row: 1 / -1; }
+  .hero-stage .ctdemo > .ctdemo__bar, .hero-stage .ctdemo > .demo-sk { grid-row: 2; }
+  .hero-stage .ctdemo > .ctdemo__link { grid-row: 3; }
+  .hero-stage .ctdemo > .ctdemo__credit { grid-row: 4; }
 }
 
-/* Nothing on this page reads under 12px: hero3d.css sets the stage's picture credit and its view labels at 11px,
-   so this page lifts them (it does not edit that stylesheet). */
-.hero-stage .hero3d .hero3d__ref { font-size: var(--fs-s); }
-
-/* 2a. Why back this: three plain facts, who builds it, and the ask. Sits straight under the hero (and its sample CT). */
+/* 2a. Why back this: three plain facts, who builds it, and the ask. Sits straight under the hero (and its sample CT).
+   The figures are ink like every figure on this page: blue is the one accent, kept for what you can press. */
 .why { padding-block: clamp(48px, 6vw, 80px); }
 .why .sec-head { margin-bottom: var(--sp-3); }
 .why-notes { display: grid; gap: var(--sp-2) var(--sp-4); margin: var(--sp-4) 0 0; padding: 0; }
 @media (min-width: 720px) { .why-notes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .why-notes div { max-width: 52ch; }
-.why-notes dt { margin: 0 0 4px; color: var(--primary); font-size: 0.875rem; font-weight: 650; letter-spacing: 0.08em; line-height: 1.4; text-transform: uppercase; }
-.why-notes dd { margin: 0; color: var(--ink); font-weight: 500; }
-.why-actions { gap: 8px 24px; margin-top: var(--sp-3); }
+.why-notes dt { margin: 0 0 4px; color: var(--ink); font-size: 1rem; font-weight: 650; line-height: 1.4; }
+.why-notes dd { margin: 0; color: var(--text); }
+/* One ask, then a quiet way in for investors: the tonal button leads, the link follows it. */
+.why-actions { align-items: center; gap: 8px 28px; margin-top: var(--sp-3); }
 .why .btn.tonal { color: var(--primary-dark); background: var(--primary-soft); border-color: var(--primary-line); }
 .why .btn.tonal:hover { color: var(--primary-dark); background: var(--primary-soft-hover); border-color: var(--primary); }
-.why .btn.outline { color: var(--primary-dark); background: transparent; border: 2px solid var(--primary); box-shadow: none; }
-.why .btn.outline:hover { color: var(--primary-dark); background: var(--primary-soft); border-color: var(--primary-dark); }
+.why-actions .more-link { min-height: 44px; }
+@media (max-width: 599px) { .why-actions { flex-direction: column; align-items: stretch; } .why-actions .more-link { align-self: center; } }
 
 /* 2b. Numbers: one light band of three tests; number, label and note. A phone gets rows (number left, words right),
    a wider screen three columns. Also lays out the three facts in "Why back this". */
@@ -86,7 +144,7 @@
 .numbers h2 { max-width: 760px; margin-bottom: var(--sp-3); font-size: 1.5rem; }
 :is(.numbers, .why) .stats { grid-template-columns: minmax(0, 1fr); grid-auto-flow: row; grid-auto-columns: auto; gap: 0; }
 :is(.numbers, .why) .stat { display: grid; grid-template-columns: 7.25rem minmax(0, 1fr); align-content: start; column-gap: var(--sp-2); padding: var(--sp-2) 0; }
-:is(.numbers, .why) .stat .stat-n { grid-row: 1 / span 2; font-size: 2rem; }
+:is(.numbers, .why) .stat .stat-n { grid-row: 1 / span 2; color: var(--ink); font-size: 2rem; }
 :is(.numbers, .why) .stat .stat-l { grid-column: 2; margin-top: 3px; font-size: 1rem; }
 :is(.numbers, .why) .stat .stat-d { grid-column: 2; margin-top: 4px; }
 @media (min-width: 720px) {
@@ -99,6 +157,7 @@
 }
 @media (max-width: 719px) { .why .stat { grid-template-columns: 6rem minmax(0, 1fr); } }
 :is(.numbers, .why) .stat-d time { white-space: nowrap; }
+@media (min-width: 720px) { .why .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .band-src { margin: var(--sp-3) 0 0; font-size: var(--fs-s); }
 .band-src a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; }
 
@@ -112,12 +171,11 @@
 .scan-body h3 { margin-bottom: 6px; }
 .scan-body > p { margin: 0; color: var(--text); }
 .scan-models { margin-top: auto; padding-top: 20px; }
-.scan-body .label { margin: 0 0 10px; color: var(--muted); font-size: 0.875rem; font-weight: 650; letter-spacing: 0.08em; text-transform: uppercase; }
+.scan-body .label { margin: 0 0 10px; color: var(--muted); font-size: 0.875rem; font-weight: 650; }
 .scan-body .chips { gap: 8px; }
-.scan-body .chip { white-space: normal; }
+.scan-body .chip { white-space: normal; min-height: 44px; }
 @media (max-width: 599px) { .scan-body { padding: 20px 20px 24px; } }
 #scans .credit { margin: 20px 0 0; max-width: none; color: var(--muted); font-size: var(--fs-s); }
-.edu-line { margin: 12px 0 0; color: var(--text); font-size: 0.9375rem; line-height: 1.5; }
 
 /* 4. Research results. The seven tiles come from release/site/build_charts.py and are styled by results.css,
    shared with models.html; this page lines up the first row's scores and adds the key and "See every result". */
@@ -160,6 +218,7 @@
 .more-link::after { content: ""; width: 7px; height: 7px; border-top: 2px solid currentColor; border-right: 2px solid currentColor; transform: rotate(45deg); }
 .more-link:hover { text-decoration: underline; }
 #pricing .sec-more { margin-top: 28px; }
+.sec-more .more-link { min-height: 44px; min-width: 44px; }
 
 /* 7. Support the research: a soft panel, the words on the left and a small chooser on the right */
 .support-panel { display: grid; gap: 28px; align-items: start; padding: clamp(24px, 5vw, 56px); border: 1px solid var(--primary-soft-edge); border-radius: 20px; background: var(--primary-soft); }
@@ -184,11 +243,11 @@
 .chooser .amt:hover { border-color: var(--primary); }
 .chooser .amt[aria-pressed="true"] { border-color: var(--primary); background: var(--primary-soft); color: var(--primary-dark); box-shadow: inset 0 0 0 1px var(--primary); }
 .chooser .seg-b:focus-visible, .chooser .amt:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
-.gm-line { margin: 16px 0; color: var(--teal-dark); font-weight: 600; line-height: 1.4; text-wrap: balance; }
+.gm-line { margin: 16px 0; color: var(--ink); font-weight: 600; line-height: 1.4; text-wrap: balance; }
 .chooser-go { width: 100%; min-height: 52px; }
 @media (max-width: 599px) { .gm-line { font-size: 0.875rem; } }
 
-/* Built in the open: four numbers from the run ledger (tools/build_momentum.py writes the list) */
+/* The training log: four numbers from the run ledger (tools/build_momentum.py writes the list), in ink like every figure here */
 .momentum { padding-block: clamp(40px, 5vw, 64px); background: var(--bg); border-bottom: 1px solid var(--line); }
 .momentum-in { display: grid; gap: 28px; align-items: center; }
 @media (min-width: 900px) { .momentum-in { grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: 56px; } }
@@ -198,11 +257,11 @@
 @media (min-width: 600px) { .momentum-list { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 .momentum-list li { padding-top: 14px; border-top: 2px solid var(--line); }
 .momentum-list p { margin: 0; }
-.m-n { color: var(--teal); font-size: var(--fs-stat); font-weight: 700; letter-spacing: -0.02em; line-height: 1; font-variant-numeric: tabular-nums; }
+.m-n { color: var(--ink); font-size: var(--fs-stat); font-weight: 700; letter-spacing: -0.02em; line-height: 1; font-variant-numeric: tabular-nums; }
 .m-n time { display: block; font-size: 1.25rem; line-height: 1.5; letter-spacing: -0.01em; white-space: nowrap; }
 .m-l { margin-top: 8px !important; color: var(--text); font-size: var(--fs-s); font-weight: 550; line-height: 1.4; }
 
-/* 8. Privacy and open source: one two-column section on the soft background, picture credits under it */
+/* 8. Privacy and the public code: one two-column section on the soft background, picture credits under it */
 .privacy-split { display: grid; gap: 40px; align-items: center; }
 @media (min-width: 900px) { .privacy-split { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 72px; } }
 .privacy-copy h2 { margin-bottom: 16px; }

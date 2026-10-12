@@ -23,16 +23,17 @@ function isZip(path) {
   return extensionOf(path) === 'zip';
 }
 
+// Each reason finishes a sentence that starts with the file's path, as the viewer lists them.
 function notScanReason(path) {
-  if (baseName(path).toUpperCase() === 'DICOMDIR') return 'it is the disc index (DICOMDIR), not a scan';
+  if (baseName(path).toUpperCase() === 'DICOMDIR') return 'is the disc\'s index (DICOMDIR), so it was skipped.';
   const ext = extensionOf(path);
-  if (NOT_SCANS.has(ext)) return `it is a .${ext} file, which belongs to the disc's software rather than the scan`;
+  if (NOT_SCANS.has(ext)) return `is a .${ext} file from the disc's own software, so it was skipped.`;
   return '';
 }
 
 function limitError() {
   const gb = MAX_TOTAL_BYTES / (1024 * 1024 * 1024);
-  return new Error(`These files add up to more than ${gb} GB, which is the most this page will open in your browser's memory. Please open one study or folder at a time.`);
+  return new Error(`These files add up to more than ${gb} GB, the most this page can hold in your browser's memory. Open one folder at a time.`);
 }
 
 function readBatch(reader) {
@@ -49,7 +50,7 @@ async function walk(entry, prefix, out, skipped) {
     try {
       out.push({ path, file: await entryFile(entry) });
     } catch {
-      skipped.push({ path, why: 'the browser would not let this page read it' });
+      skipped.push({ path, why: 'was kept from this page by the browser.' });
     }
     return;
   }
@@ -61,7 +62,7 @@ async function walk(entry, prefix, out, skipped) {
     try {
       batch = await readBatch(reader);
     } catch {
-      skipped.push({ path, why: 'the browser would not let this page list this folder' });
+      skipped.push({ path, why: 'is a folder the browser kept this page from listing.' });
       return;
     }
     if (!batch.length) break;
@@ -193,7 +194,7 @@ function keepZipFiles(path, result, out) {
     const inner = `${path}/${f.path}`;
     const innerNotScan = notScanReason(inner);
     if (isZip(inner)) {
-      out.skipped.push({ path: inner, why: 'it is a ZIP inside a ZIP; please unzip the outer one first and drop the inner one' });
+      out.skipped.push({ path: inner, why: 'is a ZIP inside the ZIP. Unzip the outer one, then drop this one here.' });
     } else if (innerNotScan) {
       out.skipped.push({ path: inner, why: innerNotScan });
     } else {
@@ -206,16 +207,17 @@ function keepZipFiles(path, result, out) {
 // Unpacks one ZIP. The File itself goes to unzip so a large archive is read in slices, not all at once.
 async function expandZip(path, file, i, total, onProgress, out) {
   if (!zipSupported()) {
-    out.skipped.push({ path, why: 'this browser cannot unpack ZIP files; please unzip it first and drop the folder instead' });
+    out.skipped.push({ path, why: 'wouldn\'t open, because this browser can\'t unpack ZIP files. Unzip it first, then drop the folder here.' });
     return;
   }
   let result = null;
   try {
+    // The fourth argument counts the files inside the ZIP, so a caller can say "12 of 40" rather than a fraction.
     result = await unzip(file, (done, n, inner) => {
-      if (typeof onProgress === 'function') onProgress(i + done / Math.max(n, 1), total, `${path}/${inner}`);
+      if (typeof onProgress === 'function') onProgress(i + done / Math.max(n, 1), total, `${path}/${inner}`, { unpacked: done, of: n });
     }, { headBytes: HEAD_BYTES });
   } catch (err) {
-    out.skipped.push({ path, why: `it could not be opened as a ZIP file: ${errorText(err)}` });
+    out.skipped.push({ path, why: `wouldn't open as a ZIP file (${errorText(err)}).` });
   }
   if (result) keepZipFiles(path, result, out);
 }
@@ -245,7 +247,7 @@ export async function expand(entries, onProgress) {
     } else {
       const got = await heads[i];
       if (got.err) {
-        out.skipped.push({ path, why: `it could not be read: ${errorText(got.err)}` });
+        out.skipped.push({ path, why: `wouldn't open (${errorText(got.err)}).` });
       } else {
         addBytes(out, file.size);
         out.files.push(plainFile(path, file, got.value));

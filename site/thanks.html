@@ -20,6 +20,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <script type="module" src="js/install.js"></script>
+  <script type="module" src="js/support.js"></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to the content</a>
@@ -27,9 +28,10 @@
     <div class="site-head-in">
       <a class="brand" href="index.html" aria-label="rAidiology home"><img src="img/logo.svg" width="32" height="32" alt=""><span class="brand-name">rAidiology</span></a>
       <nav id="site-nav" class="site-nav" aria-label="Main">
-        <a href="index.html#scans">Scans we cover</a>
+        <a class="nav-home" href="index.html">Home</a>
+        <a href="index.html#scans"><span class="nav-long">Scans we cover</span><span class="nav-short">Scans</span></a>
         <a href="models.html">Research</a>
-        <a href="pricing.html">For companies</a>
+        <a href="pricing.html"><span class="nav-long">Company licences</span><span class="nav-short">Licences</span></a>
         <a href="support.html">Support us</a>
         <a href="support.html#invest">Investors</a>
         <a class="nav-extra" href="https://github.com/LunarWerxs/rAidiology">GitHub</a>
@@ -57,14 +59,14 @@
           <section class="card plan thanks-card" id="support" aria-labelledby="s-h">
             <p class="tag">Supporters</p>
             <h2 id="s-h">Your supporter perks</h2>
-            <p>Your payment buys the computer time that trains our research models. The app stays free either way.</p>
+            <p><span class="thx-choice" id="thx-choice" hidden></span>Your payment buys the computer time that trains our research models. The app stays free either way.</p>
             <ol class="steps">
               <li>Look for our email with your receipt. It comes a few minutes after you pay.</li>
-              <li>Reply with your Discord username. If your tier includes the supporters list or the README, add the name or logo you'd like shown. There's no receipt number to copy.</li>
-              <li>Perks are for monthly members. A one-time payment comes with our thanks instead. Never post a receipt or an email address on Discord.</li>
+              <li><strong>Reply to it with your Discord username.</strong> If your tier includes the supporters list or the README, add the name or logo you'd like shown. There's no receipt number to copy.</li>
+              <li>Perks come with monthly support, so a one-time payment comes with our thanks instead. Keep your receipt and your email address off Discord.</li>
             </ol>
-            <div class="card-foot"><a class="btn quiet" href="mailto:contact@lunarwerx.com?subject=My%20rAidiology%20supporter%20perks&amp;body=Discord%20username%3A%0AEmail%20I%20paid%20with%3A%0AName%20for%20the%20supporters%20list%20(optional)%3A%0A">No email after an hour? Write to us</a></div>
-            <p class="fine">Cancel any time at <a href="https://link.com">link.com</a> or with the <a href="mailto:contact@lunarwerx.com?subject=Cancel%20my%20rAidiology%20support&amp;body=Please%20cancel%20my%20rAidiology%20supporter%20subscription.%20Email%20I%20paid%20with%3A%20">ready-made cancel email</a>. For supporter payments, ask for a refund within 14 days. LunarWerx LLC is a for-profit company. Payments are not charitable donations and are not tax-deductible.</p>
+            <div class="card-foot"><p class="foot-q">No email after an hour?</p><a class="btn quiet" id="thx-perks-mail" href="mailto:contact@lunarwerx.com?subject=My%20rAidiology%20supporter%20perks&amp;body=Discord%20username%3A%20%0AEmail%20I%20paid%20with%3A%20%0AName%20for%20the%20supporters%20list%20(optional)%3A%20%0A">Write to us</a></div>
+            <p class="fine">Cancel any time at <a href="https://link.com">link.com</a> or with the <a href="mailto:contact@lunarwerx.com?subject=Cancel%20my%20rAidiology%20support&amp;body=Please%20cancel%20my%20rAidiology%20supporter%20subscription.%20Email%20I%20paid%20with%3A%20">ready-made cancel email</a>. For a refund on a supporter payment, ask within 14 days.</p>
           </section>
           <section class="card plan thanks-card" id="licence" aria-labelledby="l-h">
             <p class="tag">Companies</p>

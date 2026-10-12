@@ -35,9 +35,10 @@
     <div class="site-head-in">
       <a class="brand" href="index.html" aria-label="rAidiology home" aria-current="page"><img src="img/logo.svg" width="32" height="32" alt=""><span class="brand-name">rAidiology</span></a>
       <nav id="site-nav" class="site-nav" aria-label="Main">
+        <a aria-current="page" class="nav-home" href="index.html">Home</a>
         <a href="index.html#scans"><span class="nav-long">Scans we cover</span><span class="nav-short">Scans</span></a>
         <a href="models.html">Research</a>
-        <a href="pricing.html">For companies</a>
+        <a href="pricing.html"><span class="nav-long">Company licences</span><span class="nav-short">Licences</span></a>
         <a href="support.html">Support us</a>
         <a href="support.html#invest">Investors</a>
         <a class="nav-extra" href="https://github.com/LunarWerxs/rAidiology">GitHub</a>
@@ -60,46 +61,16 @@
           <p class="lede">Step through a sample CT with its organs and bones outlined and named by a research model. Or open your own CT, MRI or X-ray: it stays on this device.</p>
           <p class="actions hero-actions"><a class="btn" id="try-sample" href="open.html?sample=1">Try the sample scan</a>
             <a class="btn secondary" href="open.html">Open your scan</a></p>
-          <p class="edu-line dicom-line">Open DICOM files from a disc, a folder or a ZIP.</p>
-          <p class="edu-line">For education and research. Not a medical device.</p>
-          <p class="edu-line licence-note">It's free for personal use and research. <a href="pricing.html#companies">Companies buy a licence</a>.</p>
-          <ul class="proof">
-            <!-- 54 = the structures listed in site/sample/demo/demo.json -->
-            <li><strong>54</strong> named structures<span class="proof-x"> on the sample CT</span></li>
-            <li><strong>7</strong> research models</li>
-            <li>Runs on your device</li>
-          </ul>
+          <p class="hero-note">Your scan can be DICOM files on a disc, in a folder or in a ZIP.</p>
+          <p class="hero-fine">It's made for education and research, and it is not a medical device. Personal use and research are free, and <a href="pricing.html#companies">companies buy a licence</a>.</p>
         </div>
         <div class="hero-stage">
           <div class="stage-wrap">
-            <div class="stage-box"><div class="hero3d" data-poster="img/hero-poster.webp" data-poster-phone="img/hero-poster-phone.webp"></div></div>
+            <div class="stage-box"><div class="hero3d" data-poster="img/hero-poster.webp" data-poster-phone="img/hero-poster-phone.webp"><p class="hero3d__cap">The teal band marks the sample CT's slice on this reference skeleton. <span class="hero3d__how">Drag sideways to turn it, and tap a bone to see its name.</span></p></div></div>
             <div class="ctdemo is-loading" id="demo" data-src="sample/demo/demo.json"><div class="demo-ph"><img src="sample/demo/s22.webp" width="384" height="384" alt="A slice of the sample CT scan." decoding="async"></div><div class="demo-sk" aria-hidden="true"><span></span><span></span></div></div>
           </div>
-          <p class="stage-credit">Sample CT from TotalSegmentator (CC BY 4.0). Outlines by the CT organ outliner, one of our research models. 3D body from BodyParts3D, © The Database Center for Life Science, CC BY 4.0, simplified by LunarWerx.</p>
+          <p class="stage-credit"><span>Sample CT from TotalSegmentator (CC BY 4.0). Outlines by the CT organ outliner, one of our research models.</span> <span class="cl-split"><span>3D skeleton from BodyParts3D,</span> <span>© The Database Center for Life Science,</span> <span>CC BY 4.0,</span> <span>with parts merged and simplified by LunarWerx.</span></span></p>
         </div>
-      </div>
-    </section>
-
-    <section class="sec why" id="why" aria-labelledby="why-h">
-      <div class="wrap">
-        <div class="sec-head">
-          <p class="eyebrow">Why back this</p>
-          <h2 id="why-h">What your support builds on.</h2>
-          <p>What we've built so far, and who we are.</p>
-        </div>
-        <!-- 7 = research models; 54 = the structures listed in site/sample/demo/demo.json.
-             tools/build_momentum.py writes the data-log numbers from the run ledger, like the "Built in the open" block. -->
-        <ul class="stats why-stats">
-          <li class="stat"><p class="stat-n">7</p><p class="stat-l">research models</p><p class="stat-d">For X-ray, CT, MRI and mammograms, each with a public model card.</p></li>
-          <li class="stat"><p class="stat-n">54</p><p class="stat-l">structures named on the sample CT</p><p class="stat-d">Open the sample and tap an outline to see its name.</p></li>
-          <li class="stat"><p class="stat-n" data-log="runs">1,615</p><p class="stat-l">runs on record</p><p class="stat-d">Together they add up to <span data-log="hours">382</span> hours. The newest was logged on <time data-log="newest" datetime="2026-10-11">Oct 11, 2026</time>.</p></li>
-        </ul>
-        <dl class="why-notes">
-          <div><dt>Who builds it</dt><dd>We're LunarWerx LLC, a for-profit company. The code and the model cards are public.</dd></div>
-          <div><dt>What's next</dt><dd>We plan to train bigger research models on rented computer time.</dd></div>
-        </dl>
-        <p class="actions why-actions"><a class="btn tonal" href="support.html">Support the next model</a>
-          <a class="btn secondary outline" href="support.html#invest">For investors</a></p>
       </div>
     </section>
 
@@ -177,7 +148,7 @@
           <p class="callout">Research results on public test data. They say nothing about your scan.</p>
         </div>
         <!-- chart:tiles -->
-<div class="result-tiles"><a class="result-tile" href="models.html#chest-xray"><img src="img/scans/xray-chest.webp" width="800" height="800" alt="" loading="lazy"><span class="pic-chip">X-ray</span><h3>Chest <span class="nb">X-ray</span> research model</h3><p class="score">Measured on 25,596 pictures</p><p class="what">Scores one chest <span class="nb">X-ray</span> for 14 kinds of label from a public dataset.</p><span class="tag"><svg class="dot-key" viewBox="0 0 12 12" width="12" height="12" role="img" aria-label="Filled dot"><circle cx="6" cy="6" r="4.5"/></svg>Held-out test</span></a><a class="result-tile" href="models.html#ct-segmenter"><img src="img/scans/ct-organs.webp" width="720" height="900" alt="" loading="lazy"><span class="pic-chip">CT</span><h3>CT organ outliner</h3><p class="score">Measured on 89 scans</p><p class="what">Outlines 115 body structures on CT and names each one.</p><span class="tag"><svg class="dot-key" viewBox="0 0 12 12" width="12" height="12" role="img" aria-label="Filled dot"><circle cx="6" cy="6" r="4.5"/></svg>Held-out test</span></a><a class="result-tile" href="models.html#disc-grader"><img src="img/scans/mri-spine.webp" width="640" height="900" alt="" loading="lazy"><span class="pic-chip">MRI</span><h3>Disc grading research model (MRI)</h3><p class="score">Measured on 44 patients</p><p class="what">Grades the discs of a spine MRI on a public <span class="nb">five-step</span> scale.</p><span class="tag"><svg class="dot-key" viewBox="0 0 12 12" width="12" height="12" role="img" aria-label="Filled dot"><circle cx="6" cy="6" r="4.5"/></svg>Held-out test</span></a><a class="result-tile" href="models.html#fracture-detector"><img src="img/scans/xray-wrist.webp" width="720" height="900" alt="" loading="lazy"><span class="pic-chip">X-ray</span><h3>Fracture research model (<span class="nb">X-ray</span>)</h3><p class="score">Measured on 4,067 pictures</p><p class="what">Scores a child's wrist <span class="nb">X-ray</span> for a fracture label from a public dataset.</p><span class="tag"><svg class="dot-key" viewBox="0 0 12 12" width="12" height="12" role="img" aria-label="Filled dot"><circle cx="6" cy="6" r="4.5"/></svg>Held-out test</span></a><a class="result-tile" href="models.html#lung-nodules"><img src="img/scans/ct-lungs.webp" width="800" height="800" alt="" loading="lazy"><span class="pic-chip">CT</span><h3>Lung nodule research model (CT)</h3><p class="score">Measured on 888 scans</p><p class="what">Marks small lung nodules on CT.</p><span class="tag dev"><svg class="dot-key hollow" viewBox="0 0 12 12" width="12" height="12" role="img" aria-label="Hollow dot"><circle cx="6" cy="6" r="4.5"/></svg>Development</span></a><a class="result-tile" href="models.html#mammography"><img src="img/scans/mammogram.webp" width="720" height="900" alt="" loading="lazy"><span class="pic-chip">Mammogram</span><h3>Mammogram research model</h3><p class="score">Measured on 3,744 pictures</p><p class="what">Scores one mammogram picture as benign or malignant against a public dataset.</p><span class="tag dev"><svg class="dot-key hollow" viewBox="0 0 12 12" width="12" height="12" role="img" aria-label="Hollow dot"><circle cx="6" cy="6" r="4.5"/></svg>Development</span></a><a class="result-tile" href="models.html#spine-xray-corners"><img src="img/scans/xray-spine.webp" width="640" height="900" alt="" loading="lazy"><span class="pic-chip">X-ray</span><h3>Lumbar spine <span class="nb">X-ray</span> corner reader</h3><p class="score">Measured on 2,000 patients</p><p class="what">Marks the corners of the lower back's vertebrae on a <span class="nb">side-view</span> spine <span class="nb">X-ray</span>.</p><span class="tag dev"><svg class="dot-key hollow" viewBox="0 0 12 12" width="12" height="12" role="img" aria-label="Hollow dot"><circle cx="6" cy="6" r="4.5"/></svg>Development</span></a></div>
+<div class="result-tiles"><a class="result-tile" href="models.html#chest-xray"><img src="img/scans/xray-chest.webp" width="800" height="800" alt="" loading="lazy"><span class="pic-chip">X-ray</span><h3>Chest <span class="nb">X-ray</span> research model</h3><p class="score">Tested on 25,596 pictures it never saw</p><p class="what">Scores one chest <span class="nb">X-ray</span> for 14 kinds of label from a public dataset.</p><span class="tag"><svg class="dot-key" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.5"/></svg>Held-out test</span></a><a class="result-tile" href="models.html#ct-segmenter"><img src="img/scans/ct-organs.webp" width="720" height="900" alt="" loading="lazy"><span class="pic-chip">CT</span><h3>CT organ outliner</h3><p class="score">Tested on 89 scans it never saw</p><p class="what">Outlines 115 body structures on CT and names each one.</p><span class="tag"><svg class="dot-key" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.5"/></svg>Held-out test</span></a><a class="result-tile" href="models.html#disc-grader"><img src="img/scans/mri-spine.webp" width="640" height="900" alt="" loading="lazy"><span class="pic-chip">MRI</span><h3>Disc grading research model (MRI)</h3><p class="score">Tested on 44 patients it never saw</p><p class="what">Grades the discs of a spine MRI on a public <span class="nb">five-step</span> scale.</p><span class="tag"><svg class="dot-key" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.5"/></svg>Held-out test</span></a><a class="result-tile" href="models.html#fracture-detector"><img src="img/scans/xray-wrist.webp" width="720" height="900" alt="" loading="lazy"><span class="pic-chip">X-ray</span><h3>Fracture research model (<span class="nb">X-ray</span>)</h3><p class="score">Tested on 4,067 pictures it never saw</p><p class="what">Scores a child's wrist <span class="nb">X-ray</span> for a fracture label from a public dataset.</p><span class="tag"><svg class="dot-key" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.5"/></svg>Held-out test</span></a><a class="result-tile" href="models.html#lung-nodules"><img src="img/scans/ct-lungs.webp" width="800" height="800" alt="" loading="lazy"><span class="pic-chip">CT</span><h3>Lung nodule research model (CT)</h3><p class="score">Measured on 888 scans</p><p class="what">Marks small lung nodules on CT.</p><span class="tag dev"><svg class="dot-key hollow" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.5"/></svg>Development</span></a><a class="result-tile" href="models.html#mammography"><img src="img/scans/mammogram.webp" width="720" height="900" alt="" loading="lazy"><span class="pic-chip">Mammogram</span><h3>Mammogram research model</h3><p class="score">Measured on 3,744 pictures</p><p class="what">Scores one mammogram picture as benign or malignant against a public dataset.</p><span class="tag dev"><svg class="dot-key hollow" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.5"/></svg>Development</span></a><a class="result-tile" href="models.html#spine-xray-corners"><img src="img/scans/xray-spine.webp" width="640" height="900" alt="" loading="lazy"><span class="pic-chip">X-ray</span><h3>Lumbar spine <span class="nb">X-ray</span> corner reader</h3><p class="score">Measured on 2,000 patients</p><p class="what">Marks the corners of the lower back's vertebrae on a <span class="nb">side-view</span> spine <span class="nb">X-ray</span>.</p><span class="tag dev"><svg class="dot-key hollow" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.5"/></svg>Development</span></a></div>
 <!-- /chart:tiles -->
         <div class="results-foot">
           <dl class="tag-key">
@@ -254,13 +225,36 @@
       </div>
     </section>
 
+    <section class="sec why" id="why" aria-labelledby="why-h">
+      <div class="wrap">
+        <div class="sec-head">
+          <p class="eyebrow">Why back this</p>
+          <h2 id="why-h">What your support builds on.</h2>
+          <p>What we've built so far, and who we are.</p>
+        </div>
+        <!-- 7 = research models; 54 = the structures listed in site/sample/demo/demo.json.
+             the run counts live once, in the training log above. -->
+        <ul class="stats why-stats">
+          <li class="stat"><p class="stat-n">7</p><p class="stat-l">research models</p><p class="stat-d">For X-ray, CT, MRI and mammograms, each with a public model card.</p></li>
+          <li class="stat"><p class="stat-n">54</p><p class="stat-l">structures named on the sample CT</p><p class="stat-d">Open the sample and tap an outline to see its name.</p></li>
+        </ul>
+        <dl class="why-notes">
+          <div><dt>Who builds it</dt><dd>We're LunarWerx LLC, a for-profit company. The code and the model cards are public.</dd></div>
+          <div><dt>What's next</dt><dd>We plan to train bigger research models on rented computer time.</dd></div>
+          <div><dt>How we keep track</dt><dd>Every training run goes in the log above, with its hours and its date.</dd></div>
+        </dl>
+        <p class="actions why-actions"><a class="btn tonal" href="support.html">Support the next model</a>
+          <a class="more-link" href="support.html#invest">For investors</a></p>
+      </div>
+    </section>
+
     <section class="sec" id="support" aria-labelledby="support-h">
       <div class="wrap">
         <div class="support-panel">
           <div class="support-head">
             <p class="eyebrow">Support the research</p>
             <h2 id="support-h">Help train bigger research models.</h2>
-            <p>Your support pays for rented computer time to train the research models. Today they train on one home graphics card. A data-centre GPU, the A100 80GB, rents for $1.59 an hour.</p>
+            <p>Your support pays for the computer time that trains our research models. So far we've trained them on one graphics card at home. Renting a data-centre GPU, the A100 80GB, costs $1.59 an hour.</p>
           </div>
           <div class="chooser" id="chooser" role="group" aria-labelledby="chooser-h">
             <h3 id="chooser-h">Choose an amount</h3>
@@ -273,7 +267,7 @@
               <button class="amt" type="button" data-amt="15" aria-pressed="true">$15</button>
               <button class="amt" type="button" data-amt="30" aria-pressed="false">$30</button>
             </div>
-            <p class="gm-line" id="chooser-hours" aria-live="polite">Pays for about 9 hours of model training a month</p>
+            <p class="gm-line" id="chooser-hours" aria-live="polite">That pays for about 9 hours of model training a month.</p>
             <a class="btn chooser-go" id="chooser-go" href="support.html?amount=15&amp;freq=month">Pay $15 a month</a>
           </div>
           <div class="support-foot">
@@ -298,7 +292,7 @@
         <div class="card oss-card">
           <p class="eyebrow">Code on GitHub</p>
           <h3>The code and the model cards are public.</h3>
-          <p>Read the code, ask a question, report a problem or follow the work on Discord.</p>
+          <p>Read the code or report a problem on GitHub, and ask questions or follow the work on Discord.</p>
           <p class="actions card-foot"><a class="btn secondary" href="https://github.com/LunarWerxs/rAidiology"><svg class="btn-i" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
             <a class="btn secondary" href="https://lunarwerx.com/discord/raidiology"><svg class="btn-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8l-5 4v-4H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Discord</a></p>
         </div>

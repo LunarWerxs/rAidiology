@@ -9,12 +9,14 @@
 // only where WebGL works. Until the first frame is drawn the stage shows its poster (data-poster, or
 // data-poster-phone on stages under 600 px wide). tools/render_hero_poster.py renders the posters
 // with this camera, and the camera fits its frame the way background-size: contain fits the poster,
-// so the swap from poster to canvas does not show.
-// opts: { autoTurn: false } holds the turn (the poster renderer uses it); { mode: 'skeleton' }.
+// so the swap from poster to canvas does not show. The page writes the stage's caption and the skeleton's
+// credit (BodyParts3D, CC BY 4.0) itself, so both show before this loads and where WebGL does not.
+// opts: { autoTurn: false } holds the turn (the poster renderer uses it); { mode: 'skeleton' };
+// { avoid: element } names something laid over the stage (the home page's sample CT card): while it covers
+// part of the stage, the body and the poster move sideways to stand in the room beside it.
 import { prefersReducedMotion } from './motion.js';
 
 const HERO_GLB = 'data/models/skeleton-hero.glb';
-const INFO_URL = 'data/models/skeleton.json';
 const STAGE_LABEL = 'A 3D glass body with a reference skeleton inside';
 const LIGHTBOX = 0x05090e;
 const PHONE_MAX = 600;
@@ -33,9 +35,6 @@ const REST_LEVEL = 'T12';
 const BAND = ['L3', 'T8']; // slice 0 at the bottom of the band, the last slice at the top
 const LEVEL_RE = /^(C[1-7]|T(?:1[0-2]|[1-9])|L[1-5]|S1)$/;
 const ORDINAL = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th'];
-
-const TURN_ICON = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
-  + '<ellipse cx="12" cy="13.5" rx="9" ry="3.6"/><path d="M12 3.2v7.6"/><path d="M8.6 16.9l-1.7 0.5 1.2 1.4"/></svg>';
 
 // Light on the bones and the glass where the scan plane cuts them: a thin line and a soft halo.
 const SCAN_GLSL = /* glsl */ `
@@ -57,18 +56,6 @@ function el(tag, cls, attrs) {
   if (cls) e.className = cls;
   for (const k in attrs || {}) e.setAttribute(k, attrs[k]);
   return e;
-}
-
-/** Short and full credit lines from skeleton.json's attribution text. */
-function creditLines(text) {
-  const full = String(text || '').trim();
-  if (!full) return null;
-  const long = full
-    .replace(/\(c\)/i, '©')
-    .replace(/,?\s*licensed under CC Attribution 4\.0 International\s*\([^)]*\)/i, ', CC BY 4.0')
-    .replace(/;\s*modified \(parts merged and simplified\) by (\w+)/i, ', simplified by $1');
-  const short = /^BodyParts3D/.test(full) ? 'BodyParts3D © DBCLS, CC BY 4.0' : long;
-  return { full, long, short };
 }
 
 /** Connected pieces of one merged skeleton part: per vertex its piece, per piece its centre and height. */
@@ -209,14 +196,14 @@ export function mountHero3D(stage, opts = {}) {
   const readySignal = new EventTarget();
   const ready = new Promise((resolve) => { readySignal.addEventListener('ready', (e) => resolve(e.detail), { once: true }); });
   const settleReady = (ok) => readySignal.dispatchEvent(new CustomEvent('ready', { detail: ok }));
-  const before = { style: stage.getAttribute('style'), role: stage.getAttribute('role'), label: stage.getAttribute('aria-label') };
+  const before = { style: stage.getAttribute('style') };
 
   stage.classList.add('hero3d');
-  stage.setAttribute('role', 'img');
-  stage.setAttribute('aria-label', STAGE_LABEL);
   Object.assign(stage.style, { backgroundColor: '#05090e', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', backgroundSize: 'contain' });
 
-  const canvas = el('canvas', 'hero3d__canvas', { 'aria-hidden': 'true' });
+  // The picture's name sits on the canvas, not the stage: an img role hides its children from some screen readers,
+  // and the stage holds the View buttons.
+  const canvas = el('canvas', 'hero3d__canvas', { role: 'img', 'aria-label': STAGE_LABEL });
   canvas.style.touchAction = 'pan-y';
   const label = el('div', 'hero3d__label hero3d__ui', { 'aria-hidden': 'true' });
   label.hidden = true;
@@ -227,8 +214,6 @@ export function mountHero3D(stage, opts = {}) {
   labelRef.textContent = 'Reference anatomy';
   pill.append(labelName, labelRef);
   label.append(dot, pill);
-  const turn = el('div', 'hero3d__turn hero3d__ui', { 'aria-hidden': 'true' });
-  turn.innerHTML = TURN_ICON;
   const modeBar = el('div', 'hero3d__modes hero3d__ui', { role: 'group', 'aria-label': 'View' });
   const chips = MODES.map(([m, text]) => {
     const b = el('button', 'hero3d__mode', { type: 'button', 'data-mode': m, 'aria-pressed': String(m === mode) });
@@ -237,25 +222,26 @@ export function mountHero3D(stage, opts = {}) {
     modeBar.append(b);
     return b;
   });
-  const credit = el('p', 'hero3d__credit hero3d__ui');
-  const creditLong = el('span', 'hero3d__credit-long');
-  const creditShort = el('span', 'hero3d__credit-short');
-  credit.append(creditLong, creditShort);
-  credit.hidden = true;
-  const made = [canvas, label, turn, modeBar, credit];
+  const made = [canvas, label, modeBar];
   stage.append(...made);
 
-  fetch(INFO_URL).then((r) => (r.ok ? r.json() : null)).then((j) => {
-    const c = creditLines(j?.attribution);
-    if (!c || dead) return;
-    creditLong.textContent = c.long;
-    creditShort.textContent = c.short;
-    credit.title = c.full;
-    credit.hidden = false;
-  }).catch(() => {});
-
   const width = () => stage.clientWidth || 0;
-  const isPhone = () => width() < PHONE_MAX;
+  // The page may say which framing fits its layout (--hero3d-frame: phone or wide); otherwise the stage's width decides.
+  const isPhone = () => {
+    const f = getComputedStyle(stage).getPropertyValue('--hero3d-frame').trim();
+    return f ? f === 'phone' : width() < PHONE_MAX;
+  };
+  // How far the body moves sideways (px, positive toward the right) to clear opts.avoid while it covers part of the
+  // stage: half the width it covers, so the body stands in the middle of the room left beside it.
+  function shiftX() {
+    const a = opts.avoid;
+    if (!a || !a.isConnected) return 0;
+    const s = stage.getBoundingClientRect();
+    const r = a.getBoundingClientRect();
+    if (!r.width || !s.width || r.top >= s.bottom || r.bottom <= s.top || r.left >= s.right || r.right <= s.left) return 0;
+    return r.left - s.left <= s.right - r.right ? (r.right - s.left) / 2 : -(s.right - r.left) / 2;
+  }
+  let shift = 0;
   let posterUrl = '';
   function setPoster() {
     const url = (isPhone() && stage.dataset.posterPhone) || stage.dataset.poster || '';
@@ -264,8 +250,11 @@ export function mountHero3D(stage, opts = {}) {
     stage.style.backgroundImage = url ? `url("${new URL(url, document.baseURI).href}")` : '';
   }
   function layoutClasses() {
-    stage.classList.toggle('hero3d--narrow', isPhone());
+    // Narrow View buttons follow the stage's own width (a docked desktop stage can be narrow too); the framing follows isPhone().
+    stage.classList.toggle('hero3d--narrow', width() < PHONE_MAX);
     setPoster();
+    shift = shiftX();
+    stage.style.backgroundPosition = shift ? `calc(50% + ${shift.toFixed(2)}px) 50%` : 'center';
   }
   layoutClasses();
 
@@ -299,6 +288,7 @@ export function mountHero3D(stage, opts = {}) {
   let io = null;
   const ro = 'ResizeObserver' in window ? new ResizeObserver(() => { layoutClasses(); core?.resize(); }) : null;
   ro?.observe(stage);
+  if (ro && opts.avoid) ro.observe(opts.avoid);
   if (!ro) on(window, 'resize', () => { layoutClasses(); core?.resize(); });
 
   if (typeof WebGLRenderingContext === 'undefined') goStatic();
@@ -562,10 +552,14 @@ export function mountHero3D(stage, opts = {}) {
     let lost = false;
     let size = { w: 0, h: 0 };
     let frame = FRAMES.wide;
+    let tray = false; // the View buttons sit under the canvas, not over its bottom edge
 
     function resize() {
-      const w = width();
-      const h = stage.clientHeight || 0;
+      // The canvas can stop short of the stage's bottom: a page may keep a tray there for the View buttons
+      // (--hero3d-tray in hero3d.css), and the poster fits the same box.
+      const w = canvas.clientWidth || width();
+      const h = canvas.clientHeight || 0;
+      tray = stage.clientHeight - h > 1;
       if (!w || !h) return;
       frame = isPhone() ? FRAMES.phone : FRAMES.wide;
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, w < 500 ? 1.5 : 2));
@@ -577,6 +571,9 @@ export function mountHero3D(stage, opts = {}) {
       camera.aspect = w / h;
       camera.position.set(0, frame.y + Math.sin(frame.elev) * CAM_DIST, Math.cos(frame.elev) * CAM_DIST);
       camera.lookAt(0, frame.y, 0);
+      // The same sideways move as the poster (layoutClasses), so the swap still does not show.
+      if (shift) camera.setViewOffset(w, h, -shift, 0, w, h);
+      else camera.clearViewOffset();
       camera.updateProjectionMatrix();
       backdrop.position.set(0, frame.y + 40, -650);
       backdrop.scale.set(frame.height * 0.95, frame.height, 1);
@@ -651,7 +648,7 @@ export function mountHero3D(stage, opts = {}) {
       if (!sel || label.hidden) return;
       tmp.copy(sel.local).applyMatrix4(figure.matrixWorld).project(camera);
       const x = ((tmp.x + 1) / 2) * size.w;
-      const y = THREE.MathUtils.clamp(((1 - tmp.y) / 2) * size.h, 24, size.h - 84);
+      const y = THREE.MathUtils.clamp(((1 - tmp.y) / 2) * size.h, 24, size.h - (tray ? 24 : 84));
       const left = x + pill.offsetWidth + 30 > size.w;
       label.classList.toggle('is-left', left);
       label.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) translate(${left ? 'calc(-100% + 5px)' : '-5px'}, -50%)`;
@@ -736,7 +733,7 @@ export function mountHero3D(stage, opts = {}) {
           if (Math.abs(dx) < 6 || Math.abs(dx) < Math.abs(e.clientY - ptr.y)) return;
           ptr.drag = true;
           try { canvas.setPointerCapture(e.pointerId); } catch { /* the pointer is gone */ }
-          stage.classList.add('is-dragging', 'is-turned');
+          stage.classList.add('is-dragging');
           pause();
         }
         const now = performance.now();
@@ -956,10 +953,8 @@ export function mountHero3D(stage, opts = {}) {
       ro?.disconnect();
       core?.dispose();
       for (const n of made) n.remove();
-      stage.classList.remove('hero3d--static', 'hero3d--narrow', 'is-live', 'is-dragging', 'is-pointing', 'is-turned');
+      stage.classList.remove('hero3d--static', 'hero3d--narrow', 'is-live', 'is-dragging', 'is-pointing');
       if (before.style === null) stage.removeAttribute('style'); else stage.setAttribute('style', before.style);
-      if (before.role === null) stage.removeAttribute('role'); else stage.setAttribute('role', before.role);
-      if (before.label === null) stage.removeAttribute('aria-label'); else stage.setAttribute('aria-label', before.label);
       settleReady(false);
     },
   };

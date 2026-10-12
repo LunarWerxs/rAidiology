@@ -1,5 +1,8 @@
 /* hero3d.css: the home page's live 3D stage (js/hero3d.js). Every rule is scoped under .hero3d.
-   Sizes in :where() carry no weight, so the page's own CSS sizes the stage. */
+   Sizes in :where() carry no weight, so the page's own CSS sizes the stage.
+   A page can keep a tray under the picture with --hero3d-tray (a length): the canvas and the poster stop above it,
+   and the page places the View buttons in it, so they never sit over the body. --hero3d-frame (phone or wide) tells
+   hero3d.js which framing to use; without it, stages under 600 px wide get the phone framing. */
 :where(.hero3d) {
   aspect-ratio: 640 / 550;
   border-radius: var(--radius-pic, 12px);
@@ -8,7 +11,9 @@
   position: relative;
   overflow: hidden;
   isolation: isolate;
+  padding-bottom: var(--hero3d-tray, 0px);
   background: var(--lightbox, #05090e) center / contain no-repeat;
+  background-origin: content-box;
   color: var(--on-dark, #e9eef4);
   font-family: var(--font, "Inter", system-ui, sans-serif);
   -webkit-tap-highlight-color: transparent;
@@ -19,10 +24,11 @@
 
 .hero3d .hero3d__canvas {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
   display: block;
   width: 100%;
-  height: 100%;
+  height: calc(100% - var(--hero3d-tray, 0px));
   touch-action: pan-y;
   opacity: 0;
   transition: opacity 0.7s ease;
@@ -77,7 +83,7 @@
 .hero3d .hero3d__mode:focus-visible { outline: 2px solid var(--primary-light, #8fb8ea); outline-offset: 2px; border-radius: 999px; }
 .hero3d.hero3d--narrow .hero3d__mode { min-width: 78px; padding: 0 12px; }
 .hero3d.hero3d--static .hero3d__modes,
-.hero3d.hero3d--static .hero3d__turn,
+.hero3d.hero3d--static .hero3d__how,
 .hero3d.hero3d--static .hero3d__label { display: none; }
 
 /* The name of a tapped or hovered bone, pinned to the spot. */
@@ -115,49 +121,25 @@
   backdrop-filter: blur(8px);
 }
 .hero3d .hero3d__name { color: var(--on-dark-strong); font-size: 0.9375rem; font-weight: 650; line-height: 1.2; letter-spacing: -0.005em; }
-.hero3d .hero3d__ref { color: var(--stage-ref-ink); font-size: 0.6875rem; font-weight: 600; line-height: 1.2; letter-spacing: 0.07em; text-transform: uppercase; }
+.hero3d .hero3d__ref { color: var(--stage-ref-ink); font-size: 0.75rem; font-weight: 600; line-height: 1.2; }
 
-/* A small turn mark in the corner; it goes once the body has been turned by hand. */
-.hero3d .hero3d__turn {
+/* The page's caption for the stage (a .hero3d__cap the page puts inside it): what the body is and how to use it, as
+   plain text on the dark stage, never a chip that looks like a button. Its .hero3d__how part goes when nothing can
+   turn (.hero3d--static). Pointers pass through it to the body. The page places it. */
+.hero3d .hero3d__cap {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 16px;
+  inset-inline-start: 16px;
   z-index: 2;
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border: 1px solid var(--line-dark);
-  border-radius: 50%;
-  background: var(--stage-turn-bg);
-  color: var(--stage-turn-ink);
-  pointer-events: none;
-  transition: opacity 0.4s ease;
-}
-.hero3d.is-turned .hero3d__turn { opacity: 0; }
-
-/* Credit for the reference skeleton (CC BY 4.0). */
-.hero3d .hero3d__credit {
-  position: absolute;
-  top: 14px;
-  left: 16px;
-  z-index: 2;
-  max-width: calc(100% - 96px);
+  max-width: 22rem;
   margin: 0;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  padding: 4px 10px;
-  border: 1px solid var(--chip-line);
-  border-radius: 8px;
-  background: var(--chip-bg-strong);
-  color: var(--on-dark-strong);
-  font-size: 0.8125rem;
-  line-height: 1.4;
+  color: var(--stage-turn-ink, rgba(220, 230, 240, 0.75));
+  font-size: 0.875rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+  pointer-events: none;
 }
-/* One short line on the card at every width; the full credit, change note included, is the caption under the card. */
-.hero3d .hero3d__credit-long { display: none; }
-.hero3d .hero3d__credit-short { display: inline; }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero3d .hero3d__canvas,
-  .hero3d .hero3d__turn { transition: none; }
+  .hero3d .hero3d__canvas { transition: none; }
 }

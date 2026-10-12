@@ -32,7 +32,7 @@ function wireNumber() {
       showRecord(found, opened, hex);
     } catch (e) {
       msg.textContent = e.status === 404
-        ? 'There\'s no donation stored under that number. Check it for a typo. If it\'s correct, the donation may have been deleted.'
+        ? 'There\'s no donation stored under that number. Check it for a typo, and if it\'s right, it may have been deleted.'
         : explainError(e);
     } finally {
       busy = false;

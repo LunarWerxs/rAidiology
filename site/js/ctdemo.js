@@ -77,7 +77,7 @@ export function mountCtDemo(box, opts = {}) {
   const range = make('input', 'ctdemo__range', { type: 'range', min: '0', max: '0', step: '1', value: '0', 'aria-label': 'Slice' });
   bar.append(playBtn, prev, range, next);
 
-  // The way into the full viewer: a small text link, with a shorter label on the narrow docked card.
+  // The way into the viewer: a modest pill as wide as its words, with a shorter label on the narrow docked card.
   const link = make('a', 'ctdemo__link', { href: 'open.html?sample=1' });
   const linkLong = make('span', 'ctdemo__link-long');
   linkLong.textContent = 'Open in the viewer';

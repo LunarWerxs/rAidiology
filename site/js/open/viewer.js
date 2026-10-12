@@ -19,6 +19,9 @@ const MIN_CACHED_FRAMES = 8;
 const PREFETCH_AHEAD = 3;
 
 const el = (id) => document.getElementById(id);
+
+// Which gesture the device has, so the viewer says tap with a finger and click or point with a mouse.
+const mouseDevice = () => window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 const state = {
   series: [],
   problems: [],
@@ -38,6 +41,8 @@ const state = {
   readingSeries: -1,                // which loaded series it turned out to be about
   outlines: new Map(),              // slice index -> [structure, path] pairs, for a labeller's reading
   pointedAt: -1,                    // the outlined structure under the pointer, or -1
+  spotlight: -1,                    // the structure a name in the list is asking about (the others dim), or -1
+  listChosen: -1,                   // the structure whose row was tapped, or -1
   ribsOpen: false,                  // whether the Ribs row of the list shows each rib
   keyOpen: true,                    // whether the list of outlined parts is open (it starts open)
   chosen: -1,                       // the part whose row the visitor tapped, or -1
@@ -47,6 +52,45 @@ const state = {
 
 function show(id, on) {
   el(id).hidden = !on;
+}
+
+// The tab's own title, kept so it can come back when the sample is closed. The sample's tab names the sample
+// (wave three: the tab still said "Open your own scan" over a stranger's CT). A visitor's own set never goes in
+// the title, because a tab title is kept in the browser's history.
+const PAGE_TITLE = document.title;
+function titleFor(credit) {
+  document.title = credit && credit.title ? `rAidiology · ${credit.title}` : PAGE_TITLE;
+}
+
+const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
+
+// What a visitor calls each kind of scan; the file's own two-letter code otherwise.
+const KINDS = { CT: 'CT', MR: 'MRI', CR: 'X-ray', DX: 'X-ray', MG: 'Mammogram' };
+
+/** A set's name in words: its own description from the disc, or "CT set 3" when it has none (round eleven
+ * read "CT · untitled" as a label maker). */
+function setName(info) {
+  const kind = KINDS[info.modality] || info.modality || 'Scan';
+  const desc = (info.seriesDescription || '').trim();
+  if (desc) return { kind, title: desc, full: `${kind}: ${desc}` };
+  const title = `${kind} set${Number.isFinite(info.seriesNumber) ? ` ${info.seriesNumber}` : ''}`;
+  return { kind, title, full: title };
+}
+
+// A date from the disc ("2023-04-01") as a person writes it, or ''.
+function niceDate(iso) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
+  if (!m) return '';
+  const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
+  return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+}
+
+// Why a set's pictures would not decode, as the end of a sentence about the set.
+function unsupportedWhy(what) {
+  if (what === 'no pixel data') return 'didn\'t open, because its files hold no pixel data.';
+  if (what === 'truncated pixel data') return 'didn\'t open, because its pixel data is cut short.';
+  if (what === 'a JPEG the browser refused') return 'didn\'t open, because this browser refused its JPEG pictures.';
+  return `didn't open. Its pictures are stored as ${what}, a format the viewer can't read.`;
 }
 
 function problem(what, why) {
@@ -151,6 +195,8 @@ function forgetFrames() {
 // Clear the last reading and set up the screen for this one. Only the sample has a credit line.
 function resetForOpen(credit) {
   scanOpened(null);
+  state.credit = credit;
+  titleFor(credit);
   state.cancelled = false;
   state.series = [];
   state.problems = [];
@@ -197,8 +243,10 @@ async function handleFiles(entries, credit = null, readingFile = null) {
 
   let read;
   try {
-    read = await expand(entries, (done, total, path) => {
-      progress(`Reading ${done} of ${total}…`, done, total);
+    read = await expand(entries, (done, total, path, zip) => {
+      // Inside a ZIP the count is of the files it holds, so the words never show a fraction.
+      progress(zip ? `Unpacking ${zip.unpacked} of ${plural(zip.of, 'file')} from the ZIP…`
+        : `Reading ${done} of ${plural(total, 'file')}…`, done, total);
       return !state.cancelled;
     });
   } catch (err) {
@@ -286,8 +334,7 @@ async function buildSeries(bySeries, read) {
       continue;
     }
     if (frame.unsupported) {
-      problem(`${s.info.modality || 'A'} set “${s.info.seriesDescription || 'untitled'}” (${s.slices.length} pictures)`,
-        `didn't open, because this disc stores them as ${frame.unsupported}, which the viewer can't read yet.`);
+      problem(`${setName(s.info).full} (${plural(s.slices.length, 'picture')})`, unsupportedWhy(frame.unsupported));
       continue;
     }
     s.firstFrame = frame;
@@ -311,7 +358,7 @@ function renderSeries(read) {
   const total = state.series.reduce((n, s) => n + s.slices.length, 0);
   const sets = state.series.length === 1 ? '1 set' : `${state.series.length} sets`;
   el('series-summary').textContent = state.series.length
-    ? `${total} pictures in ${sets}, read from ${(read.bytes / 1e6).toFixed(0)} MB on this device.`
+    ? `${plural(total, 'picture')} in ${sets}, read from ${(read.bytes / 1e6).toFixed(0)} MB on this device.`
     : 'None of the pictures on this disc would open. Here\'s what went wrong.';
   state.series.forEach((s, i) => {
     const card = document.createElement('button');
@@ -320,14 +367,18 @@ function renderSeries(read) {
     const canvas = document.createElement('canvas');
     canvas.width = 220;
     canvas.height = 220;
-    paint(canvas, s.firstFrame, autoWindow(s.firstFrame), 1, 0, 0);
+    paint(canvas, s.firstFrame, autoWindow(s.firstFrame), 1, 0, 0, s.info.modality === 'CT' ? padBox(bodyBox(s.firstFrame), s.firstFrame) : null);
+    const name = setName(s.info);
     const title = document.createElement('div');
     title.className = 'title';
-    title.textContent = `${s.info.modality || 'Scan'} · ${s.info.seriesDescription || 'untitled'}`;
+    title.textContent = name.title;
     const sub = document.createElement('div');
     sub.className = 'sub';
-    sub.textContent = `${s.slices.length} picture${s.slices.length === 1 ? '' : 's'} · ${s.info.cols}x${s.info.rows}`
-      + (s.info.acquisitionDate ? ` · ${s.info.acquisitionDate}` : '');
+    // A sentence a person would say, with the pixel size in words: "CT, 120 pictures of 512 by 512 pixels, taken 3 Apr 2023".
+    const taken = niceDate(s.info.acquisitionDate);
+    sub.textContent = `${name.title === name.kind || name.title.startsWith(`${name.kind} set`) ? '' : `${name.kind}, `}`
+      + `${plural(s.slices.length, 'picture')} of ${s.info.cols} by ${s.info.rows} pixels`
+      + (taken ? `, taken ${taken}` : '');
     card.append(canvas, title, sub);
     card.addEventListener('click', () => openSeries(i));
     cards.append(card);
@@ -349,13 +400,31 @@ function clearReading() {
   state.outlines = new Map();
   state.pointedAt = -1;
   state.chosen = -1;
+  state.listChosen = -1;
+  state.spotlight = -1;
   el('name-tip').hidden = true;
   const out = el('reading-out');
   out.replaceChildren();
   out.hidden = true;
   el('finding').hidden = true;
   el('finding').dataset.sig = '';
-  el('toggle-marks').hidden = true;
+  state.palette = null;
+  showOutlineTools(false);
+}
+
+/** The caption strip under the picture, "Hide the outlines" and "How these outlines are made" belong to a set
+ * with outlines; on any other scan they would describe outlines the viewer does not draw. */
+function showOutlineTools(on) {
+  el('outline-tools').hidden = !on;
+  el('stage-caption').hidden = !on;
+  el('how-outlines-foot').hidden = !on;
+}
+
+/** "Show the outlines" is a switch: its words stay put and its state is on or off (wave three: as a third button
+ * beside Previous and Next it read as one more equal choice). The caption strip says when they are off. */
+function markSwitch() {
+  el('toggle-marks').setAttribute('aria-checked', String(state.showMarks));
+  el('stage-caption').classList.toggle('marks-off', !state.showMarks);
 }
 
 function readingProblem(message) {
@@ -423,15 +492,15 @@ async function attachFile(file) {
   state.reading = doc;
   state.readingSeries = seriesIndex;
   state.outlines = outlines;
+  state.palette = buildPalette(doc, outlines);
   state.showMarks = true;
   el('finding').dataset.sig = '';
   forgetPointing();
   renderReading();
   renderSeriesMarks();
   if (state.current === state.readingSeries) {
-    el('toggle-marks').hidden = false;
-    el('toggle-marks').textContent = 'Hide the outlines';
-    el('toggle-marks').setAttribute('aria-pressed', String(!state.showMarks));
+    showOutlineTools(true);
+    markSwitch();
     draw();
   }
 }
@@ -440,6 +509,8 @@ async function attachFile(file) {
 function forgetPointing() {
   state.pointedAt = -1;
   state.chosen = -1;
+  state.listChosen = -1;
+  state.spotlight = -1;
   el('name-tip').hidden = true;
 }
 
@@ -450,7 +521,7 @@ function renderReading() {
   const p = document.createElement('p');
   p.className = 'reading-note';
   p.textContent = state.outlines.size
-    ? `${names.length} structure${names.length === 1 ? '' : 's'} outlined across ${state.outlines.size} slice${state.outlines.size === 1 ? '' : 's'}. Tap or point at one to see its name.`
+    ? `${names.length} structure${names.length === 1 ? '' : 's'} outlined across ${state.outlines.size} slice${state.outlines.size === 1 ? '' : 's'}. ${mouseDevice() ? 'Point at one' : 'Tap one'} to see its name.`
     : 'This file has no outlines for the slices open here.';
   out.append(p);
   out.hidden = false;
@@ -471,17 +542,122 @@ function renderSeriesMarks() {
   }
 }
 
-// Neighbours that share the aqua hue by the golden angle get their own, well apart: green, blue, violet.
-const HUE_APART = [['food pipe', 140], ['inferior vena cava', 222], ['superior vena cava', 268]];
+// The colours an outline can take: OKLCH hues 10 degrees apart at four lightnesses, all light enough to read on
+// a black picture, each pulled in to the screen's gamut. How different two of them look is CIEDE2000, worked
+// out once for every pair.
+let paletteChoices = null;
 
-/** A colour for structure `s`, the same every time: hues a golden angle apart, so neighbours in
- * the list (the left and right of one organ, one rib and the next) never share a colour. */
+function oklchBytes(L, C, hue) {
+  const h = (hue * Math.PI) / 180;
+  for (let c = C; c >= 0; c -= 0.005) {
+    const a = c * Math.cos(h);
+    const b = c * Math.sin(h);
+    const l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3;
+    const m = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3;
+    const s = (L - 0.0894841775 * a - 1.291485548 * b) ** 3;
+    const rgb = [4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+      -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+      -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s];
+    if (rgb.every((v) => v >= -1e-4 && v <= 1 + 1e-4)) {
+      return rgb.map((v) => Math.round(255 * (v <= 0.0031308 ? 12.92 * Math.max(v, 0) : 1.055 * Math.min(v, 1) ** (1 / 2.4) - 0.055)));
+    }
+  }
+  return null;
+}
+
+function labOf(bytes) {
+  const lin = (v) => { const c = v / 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
+  const [r, g, b] = bytes.map(lin);
+  const f = (t) => (t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16 / 116);
+  const x = f((0.4124 * r + 0.3576 * g + 0.1805 * b) / 0.95047);
+  const y = f(0.2126 * r + 0.7152 * g + 0.0722 * b);
+  const z = f((0.0193 * r + 0.1192 * g + 0.9505 * b) / 1.08883);
+  return [116 * y - 16, 500 * (x - y), 200 * (y - z)];
+}
+
+function de2000([L1, a1, b1], [L2, a2, b2]) {
+  const rad = Math.PI / 180;
+  const Cb = (Math.hypot(a1, b1) + Math.hypot(a2, b2)) / 2;
+  const G = 0.5 * (1 - Math.sqrt(Cb ** 7 / (Cb ** 7 + 25 ** 7)));
+  const A1 = a1 * (1 + G);
+  const A2 = a2 * (1 + G);
+  const C1 = Math.hypot(A1, b1);
+  const C2 = Math.hypot(A2, b2);
+  const h1 = ((Math.atan2(b1, A1) / rad) + 360) % 360;
+  const h2 = ((Math.atan2(b2, A2) / rad) + 360) % 360;
+  let dh = h2 - h1;
+  if (C1 * C2 === 0) dh = 0;
+  else if (dh > 180) dh -= 360;
+  else if (dh < -180) dh += 360;
+  const dH = 2 * Math.sqrt(C1 * C2) * Math.sin((dh / 2) * rad);
+  const Lm = (L1 + L2) / 2;
+  const Cm = (C1 + C2) / 2;
+  let hm = h1 + h2;
+  if (C1 * C2 !== 0) hm = Math.abs(h1 - h2) <= 180 ? hm / 2 : (hm < 360 ? (hm + 360) / 2 : (hm - 360) / 2);
+  const T = 1 - 0.17 * Math.cos((hm - 30) * rad) + 0.24 * Math.cos(2 * hm * rad) + 0.32 * Math.cos((3 * hm + 6) * rad)
+    - 0.2 * Math.cos((4 * hm - 63) * rad);
+  const Rt = -Math.sin(2 * 30 * Math.exp(-(((hm - 275) / 25) ** 2)) * rad) * 2 * Math.sqrt(Cm ** 7 / (Cm ** 7 + 25 ** 7));
+  const Sl = 1 + (0.015 * (Lm - 50) ** 2) / Math.sqrt(20 + (Lm - 50) ** 2);
+  const Sc = 1 + 0.045 * Cm;
+  const Sh = 1 + 0.015 * Cm * T;
+  const dl = (L2 - L1) / Sl;
+  const dc = (C2 - C1) / Sc;
+  const dhh = dH / Sh;
+  return Math.sqrt(dl * dl + dc * dc + dhh * dhh + Rt * dc * dhh);
+}
+
+function choices() {
+  if (!paletteChoices) {
+    const list = [];
+    for (const L of [0.62, 0.72, 0.82, 0.92]) {
+      for (let hue = 0; hue < 360; hue += 10) {
+        const bytes = oklchBytes(L, 0.2, hue);
+        if (bytes) list.push({ css: `rgb(${bytes.join(' ')})`, lab: labOf(bytes) });
+      }
+    }
+    const gap = new Float32Array(list.length * list.length);
+    for (let i = 0; i < list.length; i++) {
+      for (let j = i + 1; j < list.length; j++) gap[i * list.length + j] = gap[j * list.length + i] = de2000(list[i].lab, list[j].lab);
+    }
+    paletteChoices = { list, gap };
+  }
+  return paletteChoices;
+}
+
+/** One colour per structure, the same on every slice, chosen so that structures drawn on the same slice look
+ * as different as they can (round eleven measured the spleen and left rib 7 at a distance of 4, and the old
+ * golden-angle hues gave a rib and the spinal cord the same green). Structures that share a slice are
+ * neighbours; the busiest are coloured first, each taking the choice furthest from its coloured neighbours,
+ * then every one is chosen again four times over. On the sample CT no two neighbours end up closer than 13. */
+function buildPalette(doc, outlines) {
+  const count = ((doc.outlines && doc.outlines.structures) || []).length;
+  const near = Array.from({ length: count }, () => new Set());
+  for (const paths of outlines.values()) {
+    const here = [...new Set(paths.map(([s]) => s))].filter((s) => s < count);
+    for (const a of here) for (const b of here) if (a !== b) near[a].add(b);
+  }
+  const { list, gap } = choices();
+  const k = list.length;
+  const colour = new Int16Array(count).fill(-1);
+  const pick = (s) => {
+    let best = 0;
+    let bestGap = -1;
+    for (let o = 0; o < k; o++) {
+      let g = Infinity;
+      for (const t of near[s]) if (colour[t] >= 0) g = Math.min(g, gap[o * k + colour[t]]);
+      if (g > bestGap + 1e-9) { best = o; bestGap = g; }
+    }
+    return best;
+  };
+  const order = [...Array(count).keys()].sort((a, b) => near[b].size - near[a].size || a - b);
+  for (const s of order) colour[s] = pick(s);
+  for (let pass = 0; pass < 4; pass++) for (const s of order) { colour[s] = -1; colour[s] = pick(s); }
+  return Array.from(colour, (o) => (o >= 0 ? list[o].css : null));
+}
+
+/** A colour for structure `s`, the same on every slice. */
 function colourOf(s) {
-  const name = (state.reading && state.reading.outlines && state.reading.outlines.structures[s]) || '';
-  const apart = HUE_APART.find(([n]) => name.includes(n));
-  if (apart) return `hsl(${apart[1]} 80% 58%)`;
-  // Round five's visitors could not tell the liver, the stomach and the food pipe apart: three teals.
-  // A lightness step as well as a hue step keeps more of the structures on one picture apart.
+  if (state.palette && state.palette[s]) return state.palette[s];
   return `hsl(${Math.round((s * 137.508) % 360)} 85% ${[60, 44, 74][s % 3]}%)`;
 }
 
@@ -534,9 +710,11 @@ function nearestStructure(x, y, radius) {
   return -1;
 }
 
-/** Name the structure under a point on the picture, or say nothing when there is none. A finger
- * covers what is under and beside it, so after a tap the name goes above the point. */
-function pointAt(clientX, clientY, above = false) {
+/** Name the structure under a point on the picture. A mouse passing over the picture only previews a name, and
+ * the chosen one comes back once it is off every outline. A tap or a click chooses what is under it, the same as
+ * tapping its row, and a tap on no outline lets the choice go. A finger covers what is under and beside it, so a
+ * tap also takes the nearest outline within a fingertip. */
+function pointAt(clientX, clientY, above = false, choose = false) {
   const tip = el('name-tip');
   const v = state.view;
   if (!v || !state.reading || !state.reading.outlines) { tip.hidden = true; return; }
@@ -545,17 +723,27 @@ function pointAt(clientX, clientY, above = false) {
   const y = ((clientY - rect.top) * v.dpr - v.y0) / v.fit;
   let s = structureAt(x, y);
   if (s < 0 && above) s = nearestStructure(x, y, (FINGER_PX * v.dpr) / v.fit);
-  if (s !== state.pointedAt) { state.pointedAt = s; state.chosen = -1; draw(); }
-  if (s < 0) { tip.hidden = true; return; }
-  nameTip(s);
+  if (choose) {
+    if (s < 0) { forgetPointing(); draw(); return; }
+    if (s !== state.chosen) { state.pointedAt = s; state.chosen = s; state.listChosen = -1; state.spotlight = -1; draw(); }
+    nameTip(s);
+    return;
+  }
+  const shown = s >= 0 ? s : state.chosen;
+  if (shown !== state.pointedAt) { state.pointedAt = shown; state.spotlight = s >= 0 ? -1 : state.listChosen; draw(); }
+  if (shown < 0) { tip.hidden = true; return; }
+  nameTip(shown);
 }
 
 /** Write structure `s`'s name (and what it is) into the caption strip under the picture. */
 function nameTip(s) {
   const tip = el('name-tip');
+  // With the outlines switched off nothing is named; the choice is kept for when they come back.
+  if (!state.showMarks) { tip.hidden = true; return; }
   const o = state.reading.outlines;
   const name = document.createElement('strong');
-  name.textContent = o.structures[s] || `structure ${s + 1}`;
+  const text = o.structures[s] || `structure ${s + 1}`;
+  name.textContent = text.charAt(0).toUpperCase() + text.slice(1);      // as its row in the list writes it
   tip.replaceChildren(name);
   if (o.about && o.about[s]) tip.append(document.createTextNode(`: ${o.about[s]}`));
   tip.hidden = false;
@@ -593,7 +781,7 @@ function interiorPoint(s) {
 
 /** Point at structure `s` from its row in the list: outline it on the picture and put its name beside
  * a point inside it, the same way a tap on the picture does. */
-function namePart(s) {
+function namePart(s, fromList = false) {
   if (RIB.test((state.reading?.outlines?.structures || [])[s] || '')) state.ribsOpen = true;
   const v = state.view;
   if (!v || !state.reading || !state.reading.outlines) return;
@@ -601,6 +789,8 @@ function namePart(s) {
   if (!at) return;
   state.pointedAt = s;
   state.chosen = s;
+  state.listChosen = fromList ? s : -1;
+  state.spotlight = state.listChosen;
   draw();
   nameTip(s);
   pulsePart();
@@ -614,16 +804,30 @@ function pulsePart() {
   state.pulseTimer = setTimeout(() => { state.pulse = false; draw(); }, 1100);
 }
 
-/** A tap on a row of the list: name that part on the picture, or let go of it when it already is. */
+/** A tap on a row of the list: name that structure on the picture. Tapping the chosen row again keeps it chosen
+ * and swells its outline once more, so the tap is answered (wave three: it used to let go without a word and
+ * leave the caption empty). */
 function choosePart(s) {
   if (state.chosen === s) {
-    state.chosen = -1;
-    state.pointedAt = -1;
-    el('name-tip').hidden = true;
-    draw();
+    state.pointedAt = s;
+    state.listChosen = s;
+    state.spotlight = s;
+    nameTip(s);
+    pulsePart();
     return;
   }
-  namePart(s);
+  namePart(s, true);
+}
+
+/** After a step to another slice, the chosen structure stays chosen while it is outlined there, so a visitor can
+ * follow one organ through the scan. Otherwise the choice is let go and the caption says how to name one. */
+function followChoice() {
+  const s = state.chosen;
+  const here = s >= 0 && state.current === state.readingSeries && (state.outlines.get(state.slice) || []).some(([k]) => k === s);
+  if (!here) { forgetPointing(); return; }
+  state.pointedAt = s;
+  state.spotlight = state.listChosen;
+  nameTip(s);
 }
 
 const RIB = /^(left|right) rib (\d+)$/;
@@ -637,19 +841,22 @@ function outlinesForSlice() {
 /** Draw a labeller's outlines over the picture, in the picture's own pixels, and return which
  * structures were drawn. Lines rather than filled shapes: the picture underneath stays readable,
  * and an outline says "the model put this structure here" without pretending to be the organ. */
-function overlayOutlines(canvas, frame, fit, panX, panY, paths, dpr) {
+function overlayOutlines(canvas, view, paths, dpr) {
   if (!paths.length) return [];
   const ctx = canvas.getContext('2d');
-  const x0 = (canvas.width - frame.width * fit) / 2 + panX;
-  const y0 = (canvas.height - frame.height * fit) / 2 + panY;
+  const { x0, y0, fit } = view;
   const drawn = new Set();
-  state.view = { x0, y0, fit, dpr };
   ctx.save();
   ctx.lineJoin = 'round';
-  for (const [s, text] of paths) {
+  // The one pointed at is drawn last, on top. While a name in the list is pointed at or tapped, the other
+  // outlines step back, so it finds its own outline even where two colours are alike.
+  const focus = state.pointedAt;
+  const ordered = focus < 0 ? paths : [...paths.filter(([s]) => s !== focus), ...paths.filter(([s]) => s === focus)];
+  for (const [s, text] of ordered) {
     const p = pointsOf(text);
     if (p.length < 4) continue;
-    const pointed = s === state.pointedAt;
+    const pointed = s === focus;
+    ctx.globalAlpha = state.spotlight >= 0 && state.spotlight === focus && !pointed ? 0.35 : 1;
     const width = Math.max(1, (pointed ? (state.pulse && s === state.chosen ? 5 : 3) : 1.25) * dpr);
     ctx.beginPath();
     ctx.moveTo(x0 + p[0] * fit, y0 + p[1] * fit);
@@ -692,7 +899,7 @@ function describeOutlines(note, drawn) {
   if (!drawn.length) {
     note.dataset.sig = '';
     note.textContent = state.showMarks ? 'No outlines on this slice.'
-      : 'The outlines are hidden. Press Show the outlines to bring them back.';
+      : 'The outlines are hidden. Turn on Show the outlines to bring them back.';
     return;
   }
   const sig = drawn.join(',');
@@ -700,7 +907,7 @@ function describeOutlines(note, drawn) {
     note.dataset.sig = sig;
     note.replaceChildren();
     const how = document.createElement('p');
-    how.textContent = 'Tap a name to light it up on the slice.';
+    how.textContent = `${mouseDevice() ? 'Click' : 'Tap'} a name to light it up on the slice.`;
     const all = document.createElement('details');
     all.className = 'outline-all';
     all.open = state.keyOpen;
@@ -731,14 +938,21 @@ function describeOutlines(note, drawn) {
         row.append(what);
       }
       row.addEventListener('click', () => choosePart(s));
+      // A mouse over a row previews it on the picture and in the caption, so the two always name the same
+      // structure; off the row, the chosen one comes back.
       row.addEventListener('pointerenter', (ev) => {
         if (ev.pointerType === 'touch') return;
         state.pointedAt = s;
+        state.spotlight = s;
+        nameTip(s);
         draw();
       });
       row.addEventListener('pointerleave', (ev) => {
         if (ev.pointerType === 'touch') return;
         state.pointedAt = state.chosen;
+        state.spotlight = state.listChosen;
+        if (state.chosen >= 0) nameTip(state.chosen);
+        else el('name-tip').hidden = true;
         draw();
       });
       item.append(row);
@@ -762,13 +976,20 @@ function describeOutlines(note, drawn) {
         head.type = 'button';
         head.className = 'part-row rib-group';
         head.setAttribute('aria-expanded', String(state.ribsOpen));
-        const chev = document.createElement('span');
-        chev.className = 'rib-chevron';
-        chev.setAttribute('aria-hidden', 'true');
+        // Built like every other row: a swatch (a strip of the ribs' own colours), the name, and the page's
+        // disclosure chevron at the end, as on "Brightness and contrast" (wave three: a lone chevron in the
+        // swatch column read as a different kind of row).
+        const swatch = document.createElement('span');
+        swatch.className = 'outline-swatch rib-swatch';
+        const stripes = ribs.slice(0, 4).map(colourOf);
+        swatch.style.backgroundImage = `linear-gradient(90deg, ${stripes.map((c, i) => `${c} ${(i * 100) / stripes.length}% ${((i + 1) * 100) / stripes.length}%`).join(', ')})`;
         const text = document.createElement('span');
         text.className = 'part-name';
         text.textContent = `Ribs (${ribs.length})`;
-        head.append(chev, text);
+        const chev = document.createElement('span');
+        chev.className = 'rib-chevron';
+        chev.setAttribute('aria-hidden', 'true');
+        head.append(swatch, text, chev);
         const sub = document.createElement('ul');
         sub.className = 'parts rib-parts';
         sub.hidden = !state.ribsOpen;
@@ -787,7 +1008,7 @@ function describeOutlines(note, drawn) {
     all.append(summary, list);
     note.append(how, all);
   }
-  for (const row of note.querySelectorAll('.part-row')) {
+  for (const row of note.querySelectorAll('.part-row:not(.rib-group)')) {
     const s = Number(row.dataset.part);
     row.classList.toggle('is-pointed', s === state.pointedAt);
     row.setAttribute('aria-pressed', String(s === state.chosen));
@@ -812,20 +1033,27 @@ async function openSeries(index) {
   state.direction = 1;
   forgetFrames();
   forgetPointing();
-  el('viewer-h').textContent = `${s.info.modality || 'Scan'} · ${s.info.seriesDescription || 'untitled'}`;
+  // The sample is named for what it is; a visitor's set by its own description from the disc.
+  el('viewer-h').textContent = (state.credit && state.credit.title) || setName(s.info).full;
   el('slice').max = String(s.slices.length - 1);
   el('slice').value = String(state.slice);
   const frame = await frameAt(index, state.slice);
+  if (s.box === undefined) {
+    const box = await setBox(index);
+    if (box !== undefined) s.box = box;
+  }
+  // The frame takes the shape of what is drawn in it (the body on a CT, the whole picture otherwise), so the
+  // picture fills it instead of sitting in black bars (wave three, on a phone held either way and on a computer).
+  const shape = s.box ? s.box.w / s.box.h : frame.width / frame.height;
+  el('viewer').style.setProperty('--pic-ratio', String(Math.min(1.8, Math.max(0.6, shape || 1)).toFixed(4)));
   const w = (Number.isFinite(s.info.windowCentre) && Number.isFinite(s.info.windowWidth) && s.info.windowWidth > 0)
     ? { centre: s.info.windowCentre, width: s.info.windowWidth }
     : autoWindow(frame);
   state.centre = w.centre;
   state.width = w.width;
   syncWindowSliders(frame);
-  const marks = el('toggle-marks');
-  marks.hidden = !(state.reading && index === state.readingSeries);
-  marks.textContent = state.showMarks ? 'Hide the outlines' : 'Show the outlines';
-  marks.setAttribute('aria-pressed', String(!state.showMarks));
+  showOutlineTools(Boolean(state.reading && index === state.readingSeries));
+  markSwitch();
   // One way out of the viewer: back to the list when there is more than one set to choose from,
   // otherwise straight to opening a different scan (a list of one has nothing in it).
   el('back').textContent = state.series.length > 1 ? 'Back to the list' : 'Open a different scan';
@@ -939,7 +1167,10 @@ function tableFor(frame, lo, scale) {
   return greyTable;
 }
 
-function paint(canvas, frame, window, zoom, panX, panY) {
+/** Paint `frame` into `canvas`, fitted to `box` (the part of the picture to fill the canvas with: the body, on a
+ * CT) or to the whole picture, then zoomed and moved. Returns where it went: image pixel (0, 0) lands at
+ * (x0, y0) on the canvas, and one image pixel is `fit` canvas pixels. */
+function paint(canvas, frame, window, zoom, panX, panY, box = null) {
   const ctx = canvas.getContext('2d');
   const img = ctx.createImageData(frame.width, frame.height);
   const lo = window.centre - window.width / 2;
@@ -976,13 +1207,80 @@ function paint(canvas, frame, window, zoom, panX, panY) {
   ctx.save();
   ctx.fillStyle = '#000';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  const fit = Math.min(canvas.width / frame.width, canvas.height / frame.height) * zoom;
-  const w = frame.width * fit;
-  const h = frame.height * fit;
+  const b = box || { x: 0, y: 0, w: frame.width, h: frame.height };
+  const fit = Math.min(canvas.width / b.w, canvas.height / b.h) * zoom;
+  const x0 = canvas.width / 2 + panX - (b.x + b.w / 2) * fit;
+  const y0 = canvas.height / 2 + panY - (b.y + b.h / 2) * fit;
   ctx.imageSmoothingEnabled = true;
-  ctx.drawImage(off, (canvas.width - w) / 2 + panX, (canvas.height - h) / 2 + panY, w, h);
+  ctx.drawImage(off, x0, y0, frame.width * fit, frame.height * fit);
   ctx.restore();
-  return fit;
+  return { fit, x0, y0 };
+}
+
+// Round eleven: on a phone the body filled 62% of the black box, so small outlines were hard to tap. A CT
+// opens fitted to the body instead. The body is the largest patch denser than air (-500 HU) on a coarse grid;
+// the table under the patient is a patch of its own and is left out.
+function bodyBox(frame) {
+  if (!frame || !frame.raw || !frame.width || !frame.height) return null;
+  const { width: w, height: h, raw, slope, intercept } = frame;
+  const step = Math.max(1, Math.ceil(Math.max(w, h) / 128));
+  const gw = Math.ceil(w / step);
+  const gh = Math.ceil(h / step);
+  const dense = new Uint8Array(gw * gh);
+  for (let gy = 0; gy < gh; gy++) {
+    for (let gx = 0; gx < gw; gx++) dense[gy * gw + gx] = raw[gy * step * w + gx * step] * slope + intercept > -500 ? 1 : 0;
+  }
+  const seen = new Uint8Array(gw * gh);
+  let best = null;
+  const stack = [];
+  for (let i = 0; i < dense.length; i++) {
+    if (!dense[i] || seen[i]) continue;
+    const patch = { n: 0, x0: gw, y0: gh, x1: -1, y1: -1 };
+    seen[i] = 1;
+    stack.push(i);
+    while (stack.length) {
+      const k = stack.pop();
+      const x = k % gw;
+      const y = (k - x) / gw;
+      patch.n += 1;
+      if (x < patch.x0) patch.x0 = x;
+      if (x > patch.x1) patch.x1 = x;
+      if (y < patch.y0) patch.y0 = y;
+      if (y > patch.y1) patch.y1 = y;
+      for (const j of [x > 0 ? k - 1 : -1, x < gw - 1 ? k + 1 : -1, y > 0 ? k - gw : -1, y < gh - 1 ? k + gw : -1]) {
+        if (j >= 0 && dense[j] && !seen[j]) { seen[j] = 1; stack.push(j); }
+      }
+    }
+    if (!best || patch.n > best.n) best = patch;
+  }
+  if (!best || best.n < dense.length * 0.02) return null;
+  return { x: best.x0 * step, y: best.y0 * step, w: (best.x1 - best.x0 + 1) * step, h: (best.y1 - best.y0 + 1) * step };
+}
+
+/** Several body boxes as one, with a margin, inside the picture; null when the body already fills most of it. */
+function padBox(boxes, frame) {
+  const list = (Array.isArray(boxes) ? boxes : [boxes]).filter(Boolean);
+  if (!list.length || !frame) return null;
+  let x0 = Math.min(...list.map((b) => b.x));
+  let y0 = Math.min(...list.map((b) => b.y));
+  let x1 = Math.max(...list.map((b) => b.x + b.w));
+  let y1 = Math.max(...list.map((b) => b.y + b.h));
+  const pad = 0.05 * Math.max(x1 - x0, y1 - y0);
+  x0 = Math.max(0, x0 - pad); y0 = Math.max(0, y0 - pad);
+  x1 = Math.min(frame.width, x1 + pad); y1 = Math.min(frame.height, y1 + pad);
+  if ((x1 - x0) * (y1 - y0) > 0.8 * frame.width * frame.height) return null;
+  return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+}
+
+/** Where the body is across a CT set: its first, middle and last pictures, so the shoulders or hips at the ends
+ * stay in view as the visitor steps through. Null for anything but a CT. */
+async function setBox(index) {
+  const s = state.series[index];
+  if (!s || s.info.modality !== 'CT') return null;
+  const last = s.slices.length - 1;
+  const frames = [s.firstFrame, await frameAt(index, Math.floor(last / 2)), await frameAt(index, last)];
+  if (state.current !== index) return undefined;               // the visitor opened another set meanwhile
+  return padBox(frames.map(bodyBox), s.firstFrame);
 }
 
 let drawPending = false;
@@ -1014,8 +1312,10 @@ function draw() {
     const dpr = Math.min(2, window.devicePixelRatio || 1);
     canvas.width = Math.max(1, Math.round(rect.width * dpr));
     canvas.height = Math.max(1, Math.round(rect.height * dpr));
-    const fit = paint(canvas, frame, { centre: state.centre, width: state.width }, state.zoom, state.panX * dpr, state.panY * dpr);
-    const drawn = overlayOutlines(canvas, frame, fit, state.panX * dpr, state.panY * dpr, outlinesForSlice(), dpr);
+    const view = paint(canvas, frame, { centre: state.centre, width: state.width }, state.zoom, state.panX * dpr, state.panY * dpr, s.box);
+    const { fit } = view;
+    state.view = { ...view, dpr };
+    const drawn = overlayOutlines(canvas, view, outlinesForSlice(), dpr);
     describeImage(el('finding'), drawn);
     describeView(s.info);
     // Which picture, and nothing else. The brightness and contrast numbers and the sort order were
@@ -1025,7 +1325,11 @@ function draw() {
     // The slider is what a screen reader hears on each move, so it says the picture and the outline count.
     const parts = el('finding').hidden || !drawn.length ? '' : `, ${drawn.length} structure${drawn.length === 1 ? '' : 's'} outlined`;
     el('slice').setAttribute('aria-valuetext', `Picture ${state.slice + 1} of ${s.slices.length}${parts}`);
-    el('hint-chip').hidden = state.moved || s.slices.length < 2;
+    // How far through the set, for the filled part of the slider's track (open.css).
+    el('slice').style.setProperty('--fill', `${s.slices.length > 1 ? (state.slice / (s.slices.length - 1)) * 100 : 0}%`);
+    // The one line that says how to step and zoom. It stays: it is the only place that says so (wave three found
+    // a second, different instruction further down, naming the arrow keys on a phone).
+    el('hint-chip').hidden = s.slices.length < 2;
     const spacing = s.info.pixelSpacing;
     const bar = el('scalebar');
     if (spacing && spacing[0] > 0) {
@@ -1104,7 +1408,7 @@ function describeView(info) {
     } else {
       parts.push('This slice runs from front to back through the body, seen from the side.');
     }
-    parts.push('The words at the edges say which side is which.');
+    parts.push('The labels at the edges say which side is which.');
   }
   if (SHADES[info.modality]) parts.push(SHADES[info.modality]);
   el('what').textContent = parts.join(' ');
@@ -1140,7 +1444,7 @@ function setSlice(next, byVisitor = true) {
   state.slice = Math.max(0, Math.min(s.slices.length - 1, next));
   if (state.slice !== before) {
     state.direction = state.slice > before ? 1 : -1;
-    forgetPointing();
+    followChoice();
   }
   if (byVisitor) state.moved = true;
   el('slice').value = String(state.slice);
@@ -1150,7 +1454,7 @@ function setSlice(next, byVisitor = true) {
 /** A tap that did not move is a question: what is this? */
 function tapped(ev, drag) {
   if (drag && state.slice === drag.slice && Math.hypot(ev.clientX - drag.x, ev.clientY - drag.y) < 6) {
-    pointAt(ev.clientX, ev.clientY, ev.pointerType !== 'mouse');
+    pointAt(ev.clientX, ev.clientY, ev.pointerType !== 'mouse', true);
   }
 }
 
@@ -1159,23 +1463,76 @@ function wireNaming(stage, dragging) {
   stage.addEventListener('pointermove', (ev) => {
     if (ev.pointerType === 'mouse' && !dragging()) pointAt(ev.clientX, ev.clientY);
   });
+  // Off the picture, the preview goes and the chosen structure, if there is one, is named again.
   stage.addEventListener('pointerleave', (ev) => {
     if (ev.pointerType !== 'mouse' || dragging()) return;
-    el('name-tip').hidden = true;
-    if (state.pointedAt >= 0) { state.pointedAt = -1; state.chosen = -1; draw(); }
+    const s = state.chosen;
+    if (state.pointedAt !== s) { state.pointedAt = s; state.spotlight = state.listChosen; draw(); }
+    if (s >= 0 && state.reading && state.reading.outlines) nameTip(s);
+    else el('name-tip').hidden = true;
   });
+}
+
+const ZOOM_MIN = 0.5;
+const ZOOM_MAX = 12;
+
+/** Zoom by `factor` about a point on the screen, so what is under the pointer (or between two fingers) stays put. */
+function zoomAbout(clientX, clientY, factor, from = { zoom: state.zoom, panX: state.panX, panY: state.panY }) {
+  const rect = el('canvas').getBoundingClientRect();
+  const px = clientX - rect.left - rect.width / 2;
+  const py = clientY - rect.top - rect.height / 2;
+  const zoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, from.zoom * factor));
+  const k = zoom / from.zoom;
+  state.zoom = zoom;
+  state.panX = px - (px - from.panX) * k;
+  state.panY = py - (py - from.panY) * k;
 }
 
 function wireStage() {
   const stage = el('stage');
+  if (mouseDevice()) {
+    el('canvas').setAttribute('aria-label', 'A picture from the set you chose. Drag up or down to step through them, or sideways to change the brightness.');
+  }
   let drag = null;
+  // Round eleven: "Scroll or pinch to zoom in", but on a touch screen a pinch stepped through the slices. Two
+  // fingers on the picture now zoom about the point between them and move it with them.
+  const fingers = new Map();
+  let pinch = null;
+  const spread = () => {
+    const [a, b] = [...fingers.values()];
+    return { d: Math.max(1, Math.hypot(a.x - b.x, a.y - b.y)), x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+  };
   stage.addEventListener('pointerdown', (ev) => {
     stage.setPointerCapture(ev.pointerId);
+    fingers.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+    ev.preventDefault();
+    if (fingers.size === 2) {
+      // The second finger makes it a pinch: whatever the first one started is put back.
+      if (drag) {
+        state.centre = drag.centre;
+        state.width = drag.width;
+        syncOnlyValues();
+        if (state.slice !== drag.slice) setSlice(drag.slice, false);
+      }
+      drag = null;
+      pinch = { ...spread(), zoom: state.zoom, panX: state.panX, panY: state.panY };
+      return;
+    }
+    if (fingers.size > 2 || pinch) return;
     drag = { x: ev.clientX, y: ev.clientY, slice: state.slice, centre: state.centre, width: state.width,
              panX: state.panX, panY: state.panY, pan: ev.button === 1 || ev.shiftKey };
-    ev.preventDefault();
   });
   stage.addEventListener('pointermove', (ev) => {
+    if (fingers.has(ev.pointerId)) fingers.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+    if (pinch) {
+      if (fingers.size < 2) return;
+      const now = spread();
+      zoomAbout(pinch.x, pinch.y, now.d / pinch.d, pinch);
+      state.panX += now.x - pinch.x;
+      state.panY += now.y - pinch.y;
+      draw();
+      return;
+    }
     if (!drag) return;
     const dx = ev.clientX - drag.x;
     const dy = ev.clientY - drag.y;
@@ -1195,14 +1552,25 @@ function wireStage() {
       draw();
     }
   });
-  stage.addEventListener('pointerup', (ev) => { tapped(ev, drag); drag = null; });
-  stage.addEventListener('pointercancel', () => { drag = null; });
-  wireNaming(stage, () => drag !== null);
+  // A pinch ends when its fingers lift; one finger left behind does nothing until it lifts too.
+  const lift = (ev) => {
+    fingers.delete(ev.pointerId);
+    if (!fingers.size) pinch = null;
+  };
+  stage.addEventListener('pointerup', (ev) => { if (!pinch) tapped(ev, drag); drag = null; lift(ev); });
+  stage.addEventListener('pointercancel', (ev) => { drag = null; lift(ev); });
+  wireNaming(stage, () => drag !== null || pinch !== null);
   stage.addEventListener('wheel', (ev) => {
     ev.preventDefault();
-    state.zoom = Math.max(0.5, Math.min(12, state.zoom * (ev.deltaY < 0 ? 1.12 : 1 / 1.12)));
+    zoomAbout(ev.clientX, ev.clientY, ev.deltaY < 0 ? 1.12 : 1 / 1.12);
     draw();
   }, { passive: false });
+  // A double click or a double tap puts the picture back to its first size and place.
+  stage.addEventListener('dblclick', () => {
+    if (state.zoom === 1 && !state.panX && !state.panY) return;
+    state.zoom = 1; state.panX = 0; state.panY = 0;
+    draw();
+  });
   stage.tabIndex = 0;
   // On the page, not on the picture: the hint under the picture says the keys move through it, and
   // with the listener on the picture alone they scrolled the page until somebody clicked it first.
@@ -1235,7 +1603,11 @@ function wireIntake() {
   const asks = viewPicker
     ? 'Your browser will ask first. Saying yes only lets this page read the files, here on this device.'
     : 'Your browser may ask "Upload files to this site?". That\'s its own wording for letting a page read the files. Nothing is sent: you can switch your Wi-Fi off first, and it still works.';
-  for (const line of document.querySelectorAll('.browser-asks')) line.textContent = asks;
+  // The numbered step is a step of its own, after the window in step 3, so it says the question in full.
+  const step = viewPicker
+    ? 'Your browser will ask whether this page may read the files. Say yes. They stay on this computer.'
+    : 'Your browser may ask "Upload files to this site?". That\'s its wording for letting this page read them. Say yes. They stay on this computer.';
+  for (const line of document.querySelectorAll('.browser-asks')) line.textContent = line.tagName === 'LI' ? step : asks;
   // The page's own address, put into a message the visitor sends to themselves from their own mail
   // app. Taken from the address bar rather than written here, and nothing is sent by this page.
   const here = `${window.location.origin}${window.location.pathname}`;
@@ -1324,18 +1696,25 @@ function wireIntake() {
   });
   el('toggle-marks').addEventListener('click', () => {
     state.showMarks = !state.showMarks;
-    el('toggle-marks').textContent = state.showMarks ? 'Hide the outlines' : 'Show the outlines';
-    el('toggle-marks').setAttribute('aria-pressed', String(!state.showMarks));
+    markSwitch();
+    if (state.showMarks && state.chosen >= 0) nameTip(state.chosen);
+    else el('name-tip').hidden = true;
     draw();
   });
   el('cancel').addEventListener('click', () => { state.cancelled = true; show('progress', false); });
   const startOver = () => {
     scanOpened(null);
     state.series = []; state.problems = []; state.current = null; forgetFrames();
+    state.credit = null;
+    titleFor(null);
     clearReading();
     show('series', false); show('viewer', false); show('problems', false); show('progress', false);
     show('intake', true);
     el('start-over').hidden = true;
+    // A reload after leaving the sample must show the intake, so the address drops ?sample=1.
+    if (new URLSearchParams(window.location.search).has('sample')) {
+      window.history.replaceState(null, '', window.location.pathname + window.location.hash);
+    }
     el('intake').scrollIntoView({ block: 'start' });
   };
   el('start-over').addEventListener('click', startOver);

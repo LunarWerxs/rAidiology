@@ -61,10 +61,13 @@ export async function parse(bytes) {
   try {
     doc = JSON.parse(text);
   } catch {
-    throw new Error('That isn\'t a rAidiology outline file: it doesn\'t read as JSON. Choose the one ending in .raidiology.json.gz.');
+    throw new Error('That isn\'t a rAidiology outline file. Choose the one ending in .raidiology.json.gz.');
   }
-  if (doc.raidiology_findings !== VERSION) {
-    throw new Error(`That outline file is version ${doc.raidiology_findings}, and the viewer reads version ${VERSION}.`);
+  if (!doc || doc.raidiology_findings !== VERSION) {
+    // A file with no version at all is some other JSON file, not an outline file of another version.
+    throw new Error(Number.isFinite(doc && doc.raidiology_findings)
+      ? `That outline file is version ${doc.raidiology_findings}, and this viewer reads version ${VERSION} files.`
+      : 'That isn\'t a rAidiology outline file. Choose the one ending in .raidiology.json.gz.');
   }
   if (!doc.scan || !doc.outlines || !Array.isArray(doc.outlines.slices)) {
     throw new Error('That file has no anatomy outlines, so there\'s nothing to show.');

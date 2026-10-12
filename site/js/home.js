@@ -1,6 +1,8 @@
-// Home page: wakes the live 3D and the sample CT after first paint, keeps the "Why back this" numbers equal to the
-// "Built in the open" block, and runs the small support chooser. "Try the sample scan" is a plain link to the full
-// viewer (open.html?sample=1). The stage keeps its poster until the 3D is running, and keeps it if an import fails.
+// Home page: wakes the live 3D and the sample CT after first paint, and runs the small support chooser. The
+// "Why back this" run counts carry data-log attributes that tools/build_momentum.py writes from the run ledger.
+// "Try the sample scan" is a plain link to the viewer (open.html?sample=1). The stage keeps its poster until the 3D
+// is running, and keeps it if an import fails. Where the sample CT card sits over the stage (wide screens), the 3D
+// moves the body clear of it.
 
 const stage = document.querySelector('.hero3d');
 const demo = document.getElementById('demo');
@@ -16,7 +18,7 @@ function mountHero() {
   if (!stage) return null;
   heroJob ||= import('./hero3d.js')
     .then((m) => {
-      const hero = m.mountHero3D(stage);
+      const hero = m.mountHero3D(stage, { avoid: demo });
       if (lastSlice && hero && typeof hero.setSlice === 'function') hero.setSlice(lastSlice);
       return hero;
     })
@@ -69,7 +71,7 @@ if (chooser) {
     const monthly = state.freq === 'month';
     segs.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.freq === state.freq)));
     amts.forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.amt) === state.amount)));
-    hours.textContent = `Pays for about ${Math.floor(state.amount / RATE)} hours of model training${monthly ? ' a month' : ''}`;
+    hours.textContent = `That pays for about ${Math.floor(state.amount / RATE)} hours of model training${monthly ? ' a month' : ''}.`;
     go.textContent = `Pay $${state.amount} ${monthly ? 'a month' : 'once'}`;
     go.href = `support.html?amount=${state.amount}&freq=${state.freq}`;
   };

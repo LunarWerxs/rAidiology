@@ -24,7 +24,8 @@
 .result-tile .interval { color: var(--muted); font-size: 0.875rem; font-weight: 500; letter-spacing: 0; white-space: nowrap; }
 .result-tile .what { margin: 6px 0 0; color: var(--text); font-size: 0.875rem; line-height: 1.45; }
 .result-tile .test { margin: 4px 0 0; color: var(--muted); font-size: 0.875rem; line-height: 1.45; }
-.result-tile .tag { justify-self: start; display: inline-flex; align-items: center; gap: 6px; margin: 10px 0 0; padding: 3px 10px 3px 7px; border-radius: 999px; background: var(--teal-soft); color: var(--teal-dark); font-size: 0.875rem; font-weight: 650; line-height: 1.4; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+/* The kind tag is sentence case at 14px everywhere, dark on its tint (6:1 or better). */
+.result-tile .tag { justify-self: start; display: inline-flex; align-items: center; gap: 6px; margin: 10px 0 0; padding: 3px 10px 3px 7px; border-radius: 999px; background: var(--teal-soft); color: var(--teal-dark); font-size: 0.875rem; font-weight: 650; line-height: 1.4; letter-spacing: 0; text-transform: none; white-space: nowrap; }
 .result-tile .tag.dev { background: var(--grey-soft); color: var(--muted); }
 @media (min-width: 640px) and (max-width: 899px) {
   .result-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
@@ -59,7 +60,7 @@
 .rc-ax { position: relative; align-self: end; height: 1.45em; margin: 0 12px !important; font-variant-numeric: tabular-nums; }
 .rc-ax span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
 .rc-vh { align-self: end; white-space: nowrap; }
-.rc-grp { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; margin: 12px 0 2px !important; max-width: none !important; color: var(--muted); font-size: 0.875rem; font-weight: 650; line-height: 1.4; letter-spacing: 0.06em; text-transform: uppercase; }
+.rc-grp { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; margin: 12px 0 2px !important; max-width: none !important; color: var(--text); font-size: 0.875rem; font-weight: 650; line-height: 1.4; }
 .rc-row { border-radius: 8px; }
 .rc-row:hover { background: var(--bg-soft); }
 .rc-l { margin: 0 !important; max-width: none !important; padding: 6px 0; color: var(--ink); }
@@ -106,7 +107,7 @@
 .rnums th, .rnums td { padding: 8px 12px; border-bottom: 1px solid var(--line); text-align: start; vertical-align: top; }
 .rnums thead th { color: var(--muted); font-weight: 600; white-space: nowrap; }
 .rnums tbody th { color: var(--ink); font-weight: 600; }
-.rnums tr.grp th { padding-top: 14px; background: var(--bg-soft); color: var(--muted); font-size: 0.875rem; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase; }
+.rnums tr.grp th { padding-top: 14px; background: var(--bg-soft); color: var(--ink); font-size: 0.875rem; font-weight: 650; }
 .rnums td:nth-child(3), .rnums td:nth-child(4) { white-space: nowrap; }
 .rnums td:last-child { min-width: 16rem; }
 .rnums tbody:last-child tr:last-child > * { border-bottom: 0; }
@@ -137,7 +138,7 @@
   .results-head .result-tile h3 { font-size: 0.9375rem; }
   .results-head .result-tile .score { font-size: 1.1875rem; }
   .results-head .result-tile .interval { font-size: 0.875rem; }
-  .results-head .result-tile .tag { padding: 2px 8px 2px 6px; font-size: 0.6875rem; letter-spacing: 0.04em; }
+  .results-head .result-tile .tag { gap: 5px; padding: 2px 8px 2px 6px; }
 }
 
 /* A model section. Desktop: picture | name, summary and main results; then the breakdowns with the facts
@@ -155,6 +156,8 @@
 .model-pic figcaption { margin-top: 10px; font-size: 0.875rem; line-height: 1.45; }
 .model-main { grid-area: main; min-width: 0; }
 .model-sum { margin: 0 0 20px; max-width: 68ch; font-size: var(--fs-m); line-height: 1.6; color: var(--text); }
+/* A note above a model's main results keeps the same 20px from the chart card as the summary does. */
+.model-main > .callout { margin: 0 0 20px; }
 .model-more { display: grid; gap: 24px 40px; margin-top: 24px; }
 .model-bd { display: grid; gap: 20px; min-width: 0; align-content: start; }
 .model-facts { display: grid; gap: 24px 40px; align-content: start; min-width: 0; padding-top: 8px; }

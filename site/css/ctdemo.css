@@ -23,12 +23,12 @@
 .ctdemo .ctdemo__play:hover { background: var(--primary-dark, #0f4c9e); }
 .ctdemo .ctdemo__play .ctdemo__i { width: 18px; height: 18px; }
 .ctdemo .ctdemo__play[aria-pressed="true"] .ctdemo__i--play, .ctdemo .ctdemo__play:not([aria-pressed="true"]) .ctdemo__i--pause { display: none; }
-.ctdemo .ctdemo__step { flex: none; display: none; place-items: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--primary-dark, #0f4c9e); cursor: pointer; transition: background-color 0.15s; }
+.ctdemo .ctdemo__step { flex: none; display: none; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--primary-dark, #0f4c9e); cursor: pointer; transition: background-color 0.15s; }
 .ctdemo .ctdemo__step:hover { background: var(--primary-soft, #e8f0fb); }
 .ctdemo .ctdemo__play:focus-visible, .ctdemo .ctdemo__step:focus-visible, .ctdemo .ctdemo__link:focus-visible { outline: 2px solid var(--primary, #1660c4); outline-offset: 2px; }
 
 /* The slider fills up to its thumb: --p (0 to 1) is set by ctdemo.js on every slice change. */
-.ctdemo .ctdemo__range { --p: 0.5; --thumb: 20px; flex: 1 1 auto; min-width: 0; height: 40px; margin: 0 4px; padding: 0; background: transparent; cursor: pointer; -webkit-appearance: none; appearance: none; touch-action: pan-y; }
+.ctdemo .ctdemo__range { --p: 0.5; --thumb: 20px; flex: 1 1 auto; min-width: 0; height: 44px; margin: 0 4px; padding: 0; background: transparent; cursor: pointer; -webkit-appearance: none; appearance: none; touch-action: pan-y; }
 .ctdemo .ctdemo__range:focus-visible { outline: 2px solid var(--primary, #1660c4); outline-offset: 2px; border-radius: 8px; }
 .ctdemo .ctdemo__range::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(var(--primary, #1660c4), var(--primary, #1660c4)) 0 0 / calc(var(--thumb) / 2 + (100% - var(--thumb)) * var(--p)) 100% no-repeat, var(--line-strong, #cdd6e0); }
 .ctdemo .ctdemo__range::-moz-range-track { height: 4px; border-radius: 2px; background: var(--line-strong, #cdd6e0); }
@@ -36,14 +36,22 @@
 .ctdemo .ctdemo__range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: var(--thumb); height: var(--thumb); margin-top: calc((4px - var(--thumb)) / 2); border-radius: 50%; background: var(--primary, #1660c4); border: 3px solid var(--card, #fff); box-shadow: var(--shadow-thumb); }
 .ctdemo .ctdemo__range::-moz-range-thumb { box-sizing: border-box; width: var(--thumb); height: var(--thumb); border-radius: 50%; background: var(--primary, #1660c4); border: 3px solid var(--card, #fff); box-shadow: var(--shadow-thumb); }
 
-/* The way into the full viewer: a small text link with an arrow, then the credit in fine print. */
-.ctdemo .ctdemo__link { display: flex; align-items: center; gap: 6px; width: fit-content; max-width: 100%; min-height: 40px; margin: 4px auto 0; padding: 0 8px; border-radius: 8px; color: var(--primary-dark, #0f4c9e); font-size: 0.875rem; font-weight: 600; line-height: 1.3; text-decoration: none; white-space: nowrap; transition: background-color 0.15s; }
-.ctdemo .ctdemo__link:hover { color: var(--primary-dark, #0f4c9e); background: var(--primary-soft, #e8f0fb); }
+/* On touch every control is a 48 px target. The glyphs keep their size: the step arrows stay quiet, and only the
+   play button's disc grows by 4 px. */
+@media (pointer: coarse) {
+  .ctdemo .ctdemo__play, .ctdemo .ctdemo__step { width: 48px; height: 48px; }
+  .ctdemo .ctdemo__range { height: 48px; }
+}
+
+/* The way into the viewer: a modest outlined pill, as wide as its words, then the credit in fine print. */
+.ctdemo .ctdemo__link { display: flex; align-items: center; gap: 6px; width: fit-content; max-width: 100%; min-height: 44px; margin: 4px auto 0; padding: 0 14px; border: 1px solid var(--primary-line, #c5d8f3); border-radius: 999px; color: var(--primary-dark, #0f4c9e); font-size: 0.875rem; font-weight: 600; line-height: 1.3; text-decoration: none; white-space: nowrap; transition: background-color 0.15s, border-color 0.15s; }
+.ctdemo .ctdemo__link:hover { color: var(--primary-dark, #0f4c9e); background: var(--primary-soft, #e8f0fb); border-color: var(--primary, #1660c4); }
 .ctdemo .ctdemo__i--go { width: 16px; height: 16px; stroke-width: 2.25; transition: transform 0.15s; }
 .ctdemo .ctdemo__link:hover .ctdemo__i--go { transform: translateX(2px); }
 .ctdemo .ctdemo__link-long { display: none; }
 .ctdemo .ctdemo__credit { margin: 2px 0; color: var(--muted, #526173); font-size: 0.75rem; line-height: 1.5; text-align: center; }
 .ctdemo .ctdemo__credit span { display: inline-block; }
+@container ctdemo (max-width: 299.98px) { .ctdemo .ctdemo__link { padding-inline: 10px; } }
 @container ctdemo (min-width: 300px) {
   .ctdemo .ctdemo__step { display: grid; }
   .ctdemo .ctdemo__play { margin-inline-end: 6px; }
@@ -59,11 +67,11 @@
 .ctdemo.is-loading .ctdemo__bar { position: relative; overflow: hidden; border-radius: 22px; background: var(--skeleton-fill); }
 .ctdemo.is-loading .ctdemo__bar > *, .ctdemo.is-loading .ctdemo__count, .ctdemo.is-loading .ctdemo__cap, .ctdemo.is-loading .ctdemo__link, .ctdemo.is-loading .ctdemo__credit { visibility: hidden; }
 .ctdemo.is-loading .ctdemo__link { position: relative; }
-.ctdemo.is-loading .ctdemo__link::after { content: ""; position: absolute; inset: 14px 8px; visibility: visible; border-radius: 6px; background: var(--skeleton-fill); }
+.ctdemo.is-loading .ctdemo__link::after { content: ""; position: absolute; inset: 15px 14px; visibility: visible; border-radius: 6px; background: var(--skeleton-fill); }
 .ctdemo .demo-ph::before, .ctdemo .demo-sk span::before, .ctdemo.is-loading .ctdemo__lightbox::before, .ctdemo.is-loading .ctdemo__bar::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(100deg, transparent 20%, var(--skeleton-sweep) 50%, transparent 80%); transform: translateX(-100%); animation: ctdemo-sweep 1.8s ease-in-out infinite; pointer-events: none; }
 .ctdemo.is-failed *::before { animation: none; }
 .ctdemo.is-failed .ctdemo__bar, .ctdemo.is-failed .ctdemo__count, .ctdemo.is-failed .ctdemo__cap { display: none; }
-.ctdemo.is-failed .ctdemo__link { color: var(--on-dark, #e9eef4); }
+.ctdemo.is-failed .ctdemo__link { color: var(--on-dark, #e9eef4); border-color: var(--line-dark-ring, rgba(255, 255, 255, 0.16)); }
 .ctdemo.is-failed .ctdemo__link:hover { background: var(--line-dark, rgba(255, 255, 255, 0.12)); }
 @keyframes ctdemo-sweep { to { transform: translateX(100%); } }
 @media (prefers-reduced-motion: reduce) {

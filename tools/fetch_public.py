@@ -151,6 +151,9 @@ ASKED = ("Added 2026-10-06 on the modelling chat's ask, under the owner's word t
          "its own record's licence was re-read at the source")
 GAPS = ("Added 2026-10-11 for the modelling chat's nine weak lines, on the owner's word that day (\"fill the gaps that "
         "it's missing things on\"), once its own record's licence and open download were re-read at the source")
+GAPS2 = ("Added 2026-10-11 for the modelling chat's gaps 10 and 11 (CT with its reports; CT size findings), under the "
+         "owner's word that day (\"fill the gaps that it's missing things on\"), once its own record's licence and open "
+         "download were re-read at the source")
 NHANES2 = "https://wwwn.cdc.gov/nchs/data/nhanes2/NH2_Xray.htm"
 NHANES2_RELEASE = ("These digitized x-ray images had been publicly released previously on the NIH National Library of "
                    "Medicine (NLM) website")   # the release page's own words: NCHS, a US federal agency, publishes them
@@ -442,7 +445,21 @@ SETS = [
     S("nhanes2-lumbar-xray", "Lumbar X-ray", 3, "page", 46.2, NHANES2, {fetch.licence_id(NHANES2_RELEASE)}, page=NHANES2,
       pattern=re.escape(NHANES2_RELEASE), index="https://ftp.cdc.gov/pub/NHANES/XRays/Nhanes2/", files=r"L\d+\.tiff",
       jobs=32, approved=GAPS),
-    S("nhanes2-vertebra-masks", "Lumbar X-ray", 3, Z, 1.0, ZR + "10223910", BY4, ids=[10223910], approved=GAPS),
+    # Kept packed: its 1 GB zip holds 543 pickles of 134.6 GB (each film as uint8 and every vertebra's mask as float64),
+    # 275 of them cervical, for films not taken. Unpacked, it held G:'s one turn for hours (2026-10-11). The pickles
+    # name only numpy's _reconstruct, ndarray and dtype (read with pickletools): load them with an unpickler that
+    # allows those three and nothing else.
+    S("nhanes2-vertebra-masks", "Lumbar X-ray", 3, Z, 1.0, ZR + "10223910", BY4, ids=[10223910], approved=GAPS,
+      packed=True),
+    # Gaps 10 and 11 (2026-10-11 evening): CT with its reports, and CT size findings with a human answer key
+    S("splenoct-kauh", "CT organs", 5, Z, 40.0, ZR + "15824373", BY4, ids=[15824373], approved=GAPS2),
+    S("petwb-rep", "CT lesions", 3, Z, 39.9, ZR + "18670487", BY4, ids=[18670487], exclude=[r"^derivatives\.zip$"],
+      approved=GAPS2),
+    S("aortaseg-60", "CT organs", 3, Z, 15.9, ZR + "18147026", CC0, ids=[18147026], approved=GAPS2),
+    S("pericardial-effusion-usb", "CT organs", 3, Z, 3.2, ZR + "6384747", BY4, ids=[6384747], approved=GAPS2),
+    S("aaa-siriapisith", "CT organs", 3, F, 2.6, "https://doi.org/10.6084/m9.figshare.19090052", BY4, ids=[19090052], approved=GAPS2),
+    S("aortic-dissection-mayer", "CT organs", 2, F, 7.8, "https://doi.org/10.6084/m9.figshare.22269091", BY4, ids=[22269091], approved=GAPS2),
+    S("avt-aorta", "CT organs", 2, F, 6.3, "https://doi.org/10.6084/m9.figshare.14806362", BY4, ids=[14806362], approved=GAPS2),
     # FRDR publishes it on a Globus collection whose HTTPS server answers anyone; FRDR's web page offers only Globus
     # Transfer (a Globus account) and a zip it makes on request.
     S("nl-breast-screen", "Mammography", 5, "frdr", 90.8, "https://doi.org/10.20383/103.01526", BY4,

@@ -25,10 +25,11 @@ AXES = {
     "percent": (0.0, 100.0, [0, 50, 100], "Percent", "0 to 100", None),
 }
 ORDER = ("AUROC", "Dice", "kappa", "percent")
+# The dot only repeats the words beside it ("Held-out test", "Development"), so screen readers skip it.
 GLYPH = {
-    True: '<svg class="dot-key" viewBox="0 0 12 12" width="12" height="12" role="img" aria-label="Filled dot">'
+    True: '<svg class="dot-key" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false">'
           '<circle cx="6" cy="6" r="4.5"/></svg>',
-    False: '<svg class="dot-key hollow" viewBox="0 0 12 12" width="12" height="12" role="img" aria-label="Hollow dot">'
+    False: '<svg class="dot-key hollow" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false">'
            '<circle cx="6" cy="6" r="4.5"/></svg>',
 }
 KIND = {True: "Held-out test", False: "Development"}
@@ -160,7 +161,7 @@ def numbers(m):
     def row(metric, r, setx, held, dp):
         return (f'<tr><th scope="row">{esc(r["label"])}</th><td>{esc(AXES[metric][3])}</td>'
                 f'<td>{fmt(metric, r["value"], dp)}{"%" if metric == "percent" else ""}</td>'
-                f'<td>{esc(interval(metric, r, dp))}</td><td>{KIND[held].lower()}</td><td>{esc(setx)}</td></tr>')
+                f'<td>{esc(interval(metric, r, dp))}</td><td>{KIND[held]}</td><td>{esc(setx)}</td></tr>')
 
     hl = m["headline"]
     dps = {mt: places(mt, [h for h in hl if h["metric"] == mt]) for mt in ORDER}
@@ -198,7 +199,9 @@ def tiles():
         n = re.search(r"\d+", h["label"])
         what = PLAIN[m["key"]].format(n=n.group(0) if n else "")
         size = SET_SIZE.search(h["set"])
-        head = f"Measured on {size.group(1)} {size.group(2)}" if size else m["scan"]
+        # A held-out result says in plain words what the tag means; a development one is only "measured".
+        head = ((f"Tested on {size.group(1)} {size.group(2)} it never saw" if h["held_out"]
+                 else f"Measured on {size.group(1)} {size.group(2)}") if size else m["scan"])
         tag = (f'<span class="tag">{GLYPH[True]}{KIND[True]}</span>' if h["held_out"]
                else f'<span class="tag dev">{GLYPH[False]}Development</span>')
         w, h_ = webp_size(m["picture"])
