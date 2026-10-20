@@ -1,0 +1,67 @@
+name: Bug report
+description: Something in rAidiology crashes, gives a wrong result or does not do what the README says.
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Do not attach a scan, a report or any other patient data: not in the
+        text, not in a screenshot and not in a log. A public example (the dataset's name and the case's ID) is enough.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you saw, and what you expected to see instead.
+      placeholder: "Describe the problem in a few sentences."
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The command or the page you used, and what you did, in order.
+      placeholder: "1. ...  2. ..."
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part of rAidiology?
+      options:
+        - The scan viewer (site/)
+        - The local launcher and reading tools (reading/)
+        - A research model or its scorecard (modalities/)
+        - The MCP server (mcp/)
+        - Shared code (core/)
+        - Repository tooling (tools/)
+        - Something else, or not sure
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: The commit you ran. You can copy its hash from the repository's commit list on GitHub. If you do not know it, write the date you downloaded it.
+      placeholder: "e.g. the commit's hash"
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      description: Your operating system and its version.
+      placeholder: "e.g. Windows 11, macOS, Android"
+    validations:
+      required: true
+  - type: input
+    id: other
+    attributes:
+      label: Other software involved
+      description: Optional. Your browser, Python or AI assistant, and their versions, if they matter to the problem.
+      placeholder: "e.g. browser name and version"
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else
+      description: "Optional. Remove private data before you post: no scan, no report, no name, no date of birth and no ID. A screenshot can show a name in a corner, so crop it or leave it out."

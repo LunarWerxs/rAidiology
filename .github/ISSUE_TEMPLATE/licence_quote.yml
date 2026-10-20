@@ -1,0 +1,61 @@
+name: Commercial licence request
+description: Using rAidiology commercially, or building it into a paid product or service.
+title: "Commercial licence request: "
+labels: ["licensing"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        rAidiology is free for noncommercial use under the PolyForm Noncommercial License 1.0.0.
+        Commercial use, internal tools and testing included, needs a separate licence from LunarWerx.
+
+        The **60-day evaluation is free** (500 studies in total, internal testing only) and needs no
+        sign-up and no issue. The paid tiers, in US dollars:
+
+        - **Startup:** $1,500 a year (the Builder allowance, for a company under 3 years old that has raised under US$2M)
+        - **Builder:** $300 a month or $3,000 a year (2,000 studies a month; 1 product or internal tool)
+        - **Growth:** $15,000 a year (25,000 studies a month; up to 3 products or internal tools)
+        - **Enterprise / OEM:** from $30,000 a year, by agreement (higher volumes and distribution inside a product)
+
+        Full terms are in [COMMERCIAL-LICENSE.md](https://github.com/LunarWerxs/rAidiology/blob/main/COMMERCIAL-LICENSE.md).
+        This form starts that conversation.
+
+        Only what you type here becomes public. Do not post patient data here. If you would rather not post a
+        company name, say so and write to contact@lunarwerx.com instead.
+  - type: textarea
+    id: use
+    attributes:
+      label: How would you use rAidiology?
+      placeholder: "Describe the product, tool or internal use, and what the research models would do in it."
+    validations:
+      required: true
+  - type: input
+    id: studies
+    attributes:
+      label: Roughly how many studies a month?
+      description: Your best estimate. The licence tiers are set by studies a month.
+    validations:
+      required: true
+  - type: dropdown
+    id: payment
+    attributes:
+      label: How would you pay?
+      options:
+        - Card
+        - Purchase order / invoice
+        - Bank transfer
+        - Not sure yet
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Optional. Products, team size, or when you need the licence by.
+  - type: input
+    id: contact
+    attributes:
+      label: Where should we reply?
+      description: An email address or another way to reach you.
+    validations:
+      required: true

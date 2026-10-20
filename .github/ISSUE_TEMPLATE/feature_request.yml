@@ -1,0 +1,35 @@
+name: Idea
+description: A change or a new feature you would like to see in rAidiology.
+title: "[Idea] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ideas are welcome. Do not attach a scan, a report or any other patient data to an idea, in text or in a picture.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: Describe the situation you are in, not the solution you have in mind.
+      placeholder: "e.g. I teach from spine MRI and I want to ..."
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would help?
+      description: Your idea for a change. A rough idea is fine.
+      placeholder: "Describe the change you would like to see."
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: Optional. The commit you are using, if it matters to the idea.
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else
+      description: "Optional. Please leave out any scan, report or name."
