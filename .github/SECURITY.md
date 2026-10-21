@@ -14,6 +14,9 @@ rAidiology is not a medical device. It is for education and research, never for 
 
 If you find a security problem or a privacy leak (for example, a way for another program or web page to reach the local server or the MCP server, or a file that seems to hold patient data), **please report it privately** rather than in a public issue:
 
+- **Preferred:** GitHub's private
+  **[Report a vulnerability](https://github.com/LunarWerxs/rAidiology/security/advisories/new)**
+  (the repository's *Security, Advisories* tab), or
 - open a normal issue **asking us to contact you** (don't include the exploit details there), or
 - message the maintainers on [Discord](https://discord.gg/PsWpeNUzhk) and ask for a private channel.
 
