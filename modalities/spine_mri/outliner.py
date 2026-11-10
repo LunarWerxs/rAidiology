@@ -165,6 +165,10 @@ def label_verdict(path, dataset):
     kind = split_name(path)[2]
     if kind in REFUSED_KINDS:
         return "refuse", REFUSED_KINDS[kind]
+    folder = os.path.basename(os.path.dirname(os.path.dirname(os.path.abspath(path))))   # labels/<sub>/anat/<file>
+    who = os.path.basename(path).split("_")[0]
+    if folder.startswith("sub-") and who != folder:   # whole-spine files sub-amuALT's cord under sub-amuAM
+        return "unclear", f"named for {who} but filed under {folder}"
     side = sidecar_of(path)
     if not os.path.exists(side):
         return "unclear", "no sidecar"

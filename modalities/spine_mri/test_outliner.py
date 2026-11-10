@@ -61,6 +61,14 @@ def test_sidecar_gate_refuses_totalspineseg(tmp_path):
     assert set(case) >= {"cord", "discs"} and "canal" not in case
 
 
+def test_a_label_filed_under_another_subject_is_left_out(tmp_path):
+    """whole-spine files sub-amuALT's cord mask under sub-amuAM: its image would be looked for in the wrong folder."""
+    d = _bids(tmp_path, {"sub-b_T2w_label-SC_seg": GB_SCT, "sub-a_T2w_label-SC_seg": GB_SCT})
+    assert o.label_verdict(str(d / "sub-b_T2w_label-SC_seg.nii.gz"), "spine-generic")[0] == "unclear"
+    assert o.label_verdict(str(d / "sub-a_T2w_label-SC_seg.nii.gz"), "spine-generic")[0] == "keep"
+    assert not [f for f in o.fetchlist("spine-generic", str(tmp_path)) if "sub-b" in f]
+
+
 def test_sidecar_gate_refuses_scts_canal_model(tmp_path):
     """SCT's canal model learned from TotalSpineSeg/TotalSegMRI canal files (model-canal-seg's canal.json), so a canal
     it drew, even hand-corrected, is TotalSpineSeg's answer at one remove."""
