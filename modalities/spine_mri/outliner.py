@@ -222,7 +222,9 @@ def fetchlist(dataset, root):
     """The kept label files of the contrasts v2 reads, with their images: the only files the box downloads."""
     out = set()
     for rel, _, contrast, verdict, _ in census(dataset, root):
-        if verdict == "keep" and contrast in CONTRASTS:
+        # lexists: in a git-annex clone a file not yet fetched is a dangling link. whole-spine labels sub-amuED, sub-amuJD
+        # and sub-amuJW but publishes no images for them, and one missing path made `git annex get` fail the staging
+        if verdict == "keep" and contrast in CONTRASTS and os.path.lexists(os.path.join(root, image_of(rel))):
             out.update((rel, image_of(rel)))
     return sorted(out)
 
