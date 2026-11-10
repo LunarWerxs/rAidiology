@@ -261,7 +261,7 @@ def split():
     split.json is locked: it was stratified on the set's own labels, before the sample's slip marks were merged,
     so running this now would stratify on the merged label and change the folds. It is not rewritten."""
     from sklearn.model_selection import StratifiedKFold
-    ids, _p, cls = annotations("LA")
+    ids, _p, cls = annotations("LA", merged=False)
     y = slip_label(cls)
     fold = np.zeros(len(ids), np.int64)
     for k, (_tr, te) in enumerate(StratifiedKFold(FOLDS, shuffle=True, random_state=SEED).split(ids, y)):
