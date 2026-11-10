@@ -1,5 +1,5 @@
-"""How a model leaves: a paid model goes to Hugging Face only on request, answered by review_requests.py; a free one
-behind the automatic gate; and the public export lets no weight file out."""
+"""How a model leaves: a model licensed to companies goes to Hugging Face only on request, answered by
+review_requests.py; a noncommercial-only one behind the automatic gate; and the public export lets no weight file out."""
 import importlib.util
 import re
 import subprocess
@@ -11,8 +11,14 @@ ROOT = Path(__file__).resolve().parent.parent
 HF = ROOT / "release" / "huggingface"
 PUBLISH = HF / "publish.py"
 EXPORT = ROOT / "tools" / "public_export.py"
-PAID = {"chest-xray", "fracture-detector", "ct-segmenter", "lung-nodules", "mammography"}
-FREE = {"disc-grader", "spine-xray-corners"}
+PAID = {"chest-xray", "fracture-detector", "ct-segmenter", "lung-nodules", "mammography", "spine-xray-corners"}
+# The owner's rule: every model trains and runs only on what he can sell, so every card is in Schedule A. A card may
+# sit outside it only while it is being made sellable, named here with what blocks it and what clears it.
+NOT_SELLABLE_YET = {
+    "disc-grader": "finds the discs with TotalSpineSeg's weights, not cleared for commercial use; cleared by the disc "
+                   "finder retrained from scratch on SPIDER's own masks (CC BY 4.0)",
+}
+FREE = set(NOT_SELLABLE_YET)
 
 
 def load(path, name):
@@ -30,9 +36,20 @@ def test_paid_list_is_schedule_a():
     assert load(PUBLISH, "publish").paid_cards() == PAID
 
 
-def test_every_card_is_paid_or_free():
+def test_every_card_is_sellable_or_named_with_its_fix():
+    """A model the owner cannot sell is a defect, not a category (2026-11-09: two were found trained or run on parts
+    he could not sell). A new card fails here until it is in Schedule A or named in NOT_SELLABLE_YET with its fix."""
     cards = {p.stem for p in (ROOT / "release" / "cards").glob("*.md")}
-    assert cards == PAID | FREE, "a new card must be put on one list here, and a paid one in Schedule A"
+    assert cards == PAID | FREE, "a new card goes in Schedule A, or in NOT_SELLABLE_YET with what blocks it"
+    assert not PAID & FREE
+    for card, why in NOT_SELLABLE_YET.items():
+        assert len(why) > 40 and "cleared by" in why, card
+        text = (ROOT / "release" / "cards" / f"{card}.md").read_text(encoding="utf-8")
+        assert "not covered by the commercial licence" in text, card
+    for card in PAID:
+        text = (ROOT / "release" / "cards" / f"{card}.md").read_text(encoding="utf-8")
+        assert "not covered by the commercial licence" not in text and "noncommercial use only" not in text, card
+        assert "COMMERCIAL-LICENSE.md" in text, card
 
 
 def test_gate_by_schedule_a():

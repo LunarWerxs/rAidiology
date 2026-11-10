@@ -72,7 +72,7 @@ A newer pair of networks also learned from four fifths of the outside set. On th
 
 | Dataset | What it was used for | Licence | Credit the licence asks for | Commercial use allowed? |
 |---|---|---|---|---|
-| BUU-LSPINE, the 2,000-patient release (Burapha University, Thailand): 4,000 lumbar spine X-ray pictures, front and side, with hand-drawn lines on the upper and lower edge of each vertebra | **Training.** Each network trained on four fifths of the patients by patient (1,600 patients), five networks for the front view and five pairs for the side view. The held-out fifth was used to score it. | The dataset's End-User License Agreement from Burapha University, accepted before download | Do not try to identify or contact the patients. Acknowledge the Burapha Spine Dataset, and data derived from it, when presenting results or algorithms that used it. Cite: Klinwichit P, et al. BUU-LSPINE: A Thai Open Lumbar Spine Dataset for Spondylolisthesis Detection. Applied Sciences 2023;13(15):8646. Dataset page: https://services.informatics.buu.ac.th/spine/. Do not use Burapha University's name to suggest it endorses anything. No warranty. | No clause limits use to research or rules out commercial use. The agreement does not say in so many words that commercial use is allowed. The article in Applied Sciences is CC BY 4.0, and that covers the article only. |
+| BUU-LSPINE, the 2,000-patient release (Burapha University, Thailand): 4,000 lumbar spine X-ray pictures, front and side, with hand-drawn lines on the upper and lower edge of each vertebra | **Training.** Each network trained on four fifths of the patients by patient (1,600 patients), five networks for the front view and five pairs for the side view. The held-out fifth was used to score it. | The dataset's End-User License Agreement from Burapha University, accepted before download | Do not try to identify or contact the patients. Acknowledge the Burapha Spine Dataset, and data derived from it, when presenting results or algorithms that used it. Cite: Klinwichit P, et al. BUU-LSPINE: A Thai Open Lumbar Spine Dataset for Spondylolisthesis Detection. Applied Sciences 2023;13(15):8646. Dataset page: https://services.informatics.buu.ac.th/spine/. Do not use Burapha University's name to suggest it endorses anything. No warranty. | Yes. Its terms are patient privacy, credit, no endorsement and no warranty; no clause limits use to research or rules out commercial use. The article in Applied Sciences is CC BY 4.0, and that covers the article only. |
 | Spondylolisthesis Vertebral Landmark Dataset v1 (Reyes, VSB-TU Ostrava), Mendeley Data: https://data.mendeley.com/datasets/5jdfdgp762/1 | **Testing only.** 590 side-view pictures, scored once. No network trained on any of it. | CC BY 4.0 | Name the dataset, its author and the source link, and give the licence. | Yes |
 
 Other things you might ask about:
@@ -102,9 +102,12 @@ The weights and the code are under the [PolyForm Noncommercial License 1.0.0](ht
 
 Required Notice: Copyright (c) 2026 LunarWerx (https://github.com/LunarWerxs)
 
-That notice travels with every copy. The licence is free for noncommercial use. This model is not covered by the commercial licence: it is for noncommercial use only. The reason: its dataset agreement does not say commercial use is allowed.
+That notice travels with every copy.
 
-Downloads are gated: you accept the licence before you download.
+- Free (a plain reading; the LICENSE text is what binds): personal study, research, and use by charities, schools, public research and health organisations, and governments.
+- Commercial use is available under the rAidiology Commercial Licence ([COMMERCIAL-LICENSE.md](https://github.com/LunarWerxs/rAidiology/blob/main/COMMERCIAL-LICENSE.md)), with a free 60-day evaluation (500 studies, internal testing only, no customers, no patients' care), priced on the rAidiology site's pricing page. Commercial use includes companies using it in paid work, in internal tools, and in any product or hosted service built on it. Not for diagnosis or treatment. Not cleared by the FDA or any regulator.
+- Downloads are on request: universities, schools, public research and health bodies and governments are approved from their email address; a company gets the commercial licence and its free 60-day evaluation copy.
+- The data credits above also travel with the weights.
 
 Please keep the Burapha University credit above when you share results made with this reader.
 

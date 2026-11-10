@@ -1112,7 +1112,7 @@
           "url": "https://data.mendeley.com/datasets/5jdfdgp762/1"
         }
       ],
-      "weights": "On Hugging Face, after you accept the licence: https://huggingface.co/LunarWerx/rAidiology-spine-xray-corners",
+      "weights": "On request on Hugging Face: https://huggingface.co/LunarWerx/rAidiology-spine-xray-corners",
       "card": "release/cards/spine-xray-corners.md"
     }
   ]

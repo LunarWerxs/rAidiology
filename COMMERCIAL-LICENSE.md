@@ -178,10 +178,10 @@ Covered (code and weights):
 | CT organ outliner | `release/cards/ct-segmenter.md` |
 | Lung nodule research model (CT) | `release/cards/lung-nodules.md` |
 | Mammogram research model | `release/cards/mammography.md` |
+| Lumbar spine X-ray corner reader | `release/cards/spine-xray-corners.md` |
 
 Not covered:
 
-- the lumbar spine X-ray corner reader (noncommercial only; `release/cards/spine-xray-corners.md`);
 - the disc grading model (MRI; `release/cards/disc-grader.md`);
 - anything that runs on TotalSpineSeg's weights;
 - MedGemma;
@@ -277,6 +277,20 @@ Credits:
 - OMAMA-DB: doi:10.7910/DVN/KXJCIU on Harvard Dataverse, https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/KXJCIU, cited as its page asks. **MIT notice:** OMAMA-DB is released under the MIT licence (Harvard Dataverse records doi:10.7910/DVN/KXJCIU, v3.0, and doi:10.7910/DVN/HYFOWN, v1.0). The record's copyright and permission notice stays with the weights.
 - CMMD (TCIA): https://www.cancerimagingarchive.net/collection/cmmd/, cited as that page asks.
 - TOMPEI-CMMD (TCIA): https://www.cancerimagingarchive.net/analysis-result/tompei-cmmd/, cited as that page asks.
+
+### B.6 Lumbar spine X-ray corner reader
+
+No outside pretrained weights. Every network trained from scratch.
+
+| Dataset | Used for | Licence |
+|---|---|---|
+| BUU-LSPINE, the 2,000-patient release (Burapha University, Thailand) | training | Burapha University's End-User License Agreement, accepted before download; no clause limits use to research or rules out commercial use |
+| Spondylolisthesis Vertebral Landmark Dataset v1 (Reyes, VSB-TU Ostrava, Mendeley Data) | testing only, no training | CC BY 4.0 |
+
+Credits:
+
+- BUU-LSPINE: do not try to identify or contact the patients. Acknowledge the Burapha Spine Dataset, and data derived from it, when presenting results or algorithms that used it. Cite: Klinwichit P, et al. BUU-LSPINE: A Thai Open Lumbar Spine Dataset for Spondylolisthesis Detection. Applied Sciences 2023;13(15):8646. Dataset page: https://services.informatics.buu.ac.th/spine/. Do not use Burapha University's name to suggest it endorses anything. No warranty.
+- Spondylolisthesis Vertebral Landmark Dataset v1: Reyes, VSB-TU Ostrava, Mendeley Data, https://data.mendeley.com/datasets/5jdfdgp762/1, CC BY 4.0.
 
 ## Schedule C: Tiers
 
