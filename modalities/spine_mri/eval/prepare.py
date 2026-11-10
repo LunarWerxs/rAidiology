@@ -105,7 +105,9 @@ def _check_order(p, m, discs, report):
     for i in discs:
         if i < 1 or _cut(m, i) or _cut(m, 200 + i):
             continue
-        d, up, lo = rows_centroid(m, 200 + i), rows_centroid(m, i), rows_centroid(m, i - 1) if i > 1 else None
+        # a vertebra i-1 cut by the top edge has a misleading centroid too, so the disc is not checked against it
+        lo_ok = i > 1 and not _cut(m, i - 1)
+        d, up, lo = rows_centroid(m, 200 + i), rows_centroid(m, i), rows_centroid(m, i - 1) if lo_ok else None
         if up is not None and not d > up:
             report["order_violations"].append([p, i, "disc not below vertebra i"])
         if lo is not None and not d < lo:
