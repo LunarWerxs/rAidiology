@@ -25,8 +25,18 @@ with its size and sha256, and uploads nothing. Read the list. Then run it again 
 Links in a card must be full web addresses (http:// or https://) or a #anchor in the same card, because the card is
 shown on Hugging Face, outside this repository. A card with any other link is refused, and the line is named.
 
+Paid and free models get different gates, and there is no flag to change which. The paid models are the cards
+Schedule A of COMMERCIAL-LICENSE.md lists as covered. They go up on request only: a manual gate, so nobody downloads
+until review_requests.py answers (universities, schools, public research and health bodies and governments approved
+by their email address; everyone else declined with the way to the commercial licence and its free evaluation). A
+paid model's repository must be named rAidiology-<card>, the name the reviewer looks for. After pushing a paid model
+this script answers the requests once and installs the reviewer's timer, so the answering needs no one. The free
+models get the automatic gate: accept the licence form and you are in. The licence is the one list: move a model in
+or out of Schedule A and this script follows. If the licence is missing or its Schedule A cannot be read, nothing is
+built.
+
 --push creates the repository as PRIVATE if it does not exist, uploads the folder, then turns on gated access
-(automatic approval, so a person accepts the licence form and is let in). The repository stays private until you
+(automatic for a free model, on request for a paid one, as above). The repository stays private until you
 add --public, which makes it public after the gate is on. A repository that already exists, is public and is not
 gated is refused, so a file is never exposed without the form.
 
@@ -48,8 +58,20 @@ ROOT = os.path.dirname(RELEASE)
 CARDS = os.path.join(RELEASE, "cards")
 TEMPLATE = os.path.join(HERE, "README.template.md")
 LICENSE = os.path.join(ROOT, "LICENSE")
+COMMERCIAL = os.path.join(ROOT, "COMMERCIAL-LICENSE.md")
 
 PLACEHOLDER = "{{CARD}}"
+GATE_PLACEHOLDER = "{{GATE_NOTE}}"
+# A covered model's row in Schedule A names its card as `release/cards/<name>.md`.
+PAID_ROW = re.compile(r"`release/cards/([A-Za-z0-9._-]+)\.md`")
+# What the gate form says above its fields, by gate. No double quote: it sits inside a quoted YAML string.
+GATE_NOTES = {
+    "auto": "Access is granted automatically once you accept.",
+    "manual": ("Access is on request. A request from a university, school, public research or health body, or "
+               "government email address is approved automatically. Any other request is declined with the way in: "
+               "a company gets the commercial licence, which starts with a free 60-day evaluation copy, and a charity "
+               "or a person writes to contact@lunarwerx.com."),
+}
 # The file kinds models are saved as here (records/provenance/manifest.py lists the same).
 WEIGHT_SUFFIXES = (".pt", ".pth", ".onnx", ".safetensors", ".bin", ".xml")
 # What a weights folder gives up by default. Everything else in it (training logs, scores, fingerprints, scratch
@@ -130,6 +152,40 @@ def check_links(name, text):
             f"or a #anchor: {shown}{more}. The card is shown on Hugging Face, where a path in this repository leads nowhere")
 
 
+def paid_cards():
+    """The cards of the paid models: Schedule A's covered table in COMMERCIAL-LICENSE.md, lower-cased (Windows finds
+    release/cards/Chest-Xray.md as chest-xray.md, so the name is compared without case). Fails closed: a licence that
+    is missing, or whose Schedule A cannot be read or lists nothing, stops the build."""
+    if not os.path.isfile(COMMERCIAL):
+        die("no COMMERCIAL-LICENSE.md at the root of the repository; without it a paid model cannot be told from a "
+            "free one, so nothing is built")
+    with open(COMMERCIAL, encoding="utf-8") as f:
+        text = f.read()
+    start = text.find("## Schedule A")
+    covered = text.find("Covered (code and weights):", start) if start >= 0 else -1
+    end = text.find("Not covered:", covered) if covered >= 0 else -1
+    if end < 0:
+        die("COMMERCIAL-LICENSE.md has no Schedule A with a 'Covered (code and weights):' list followed by 'Not "
+            "covered:'; without it a paid model cannot be told from a free one, so nothing is built")
+    cards = {c.lower() for c in PAID_ROW.findall(text[covered:end])}
+    if not cards:
+        die("Schedule A of COMMERCIAL-LICENSE.md lists no covered card (rows naming `release/cards/<name>.md`); "
+            "nothing is built")
+    return cards
+
+
+def gate_for(card):
+    """'manual' (on request) for a paid model, 'auto' for a free one. Decided by Schedule A alone."""
+    return "manual" if card.lower() in paid_cards() else "auto"
+
+
+def check_repo_name(card, gate, repo_id):
+    """A paid model's repository is named rAidiology-<card>, so review_requests.py finds it and answers its requests."""
+    if gate == "manual" and repo_id and repo_id.split("/", 1)[1].lower() != f"raidiology-{card.lower()}":
+        die(f"{card} is a paid model (Schedule A of COMMERCIAL-LICENSE.md), so its repository must be named "
+            f"rAidiology-{card}; review_requests.py answers requests only there, and anywhere else they would wait")
+
+
 def read_card(name):
     name = name[:-3] if name.endswith(".md") else name
     if not NAME.fullmatch(name):
@@ -151,13 +207,16 @@ def read_card(name):
     return name, text.strip()
 
 
-def build_readme(card_text):
+def build_readme(card_text, gate):
     with open(TEMPLATE, encoding="utf-8") as f:
         front, body = split_front_matter(f.read())
     if front is None:
         die("release/huggingface/README.template.md has no front matter")
     if body.count(PLACEHOLDER) != 1:
         die(f"the template body must hold {PLACEHOLDER} exactly once")
+    if front.count(GATE_PLACEHOLDER) != 1:
+        die(f"the template front matter must hold {GATE_PLACEHOLDER} exactly once")
+    front = front.replace(GATE_PLACEHOLDER, GATE_NOTES[gate])
     return (front + body.replace(PLACEHOLDER, card_text)).replace("\r\n", "\n").rstrip("\n") + "\n"
 
 
@@ -245,7 +304,34 @@ def show(folder):
         print(f"{rel:<52} {human(os.path.getsize(path)):>10}  {sha256_of(path)}")
 
 
-def push(folder, repo_id, card, public):
+def check_metadata(folder):
+    """Send the built README.md to Hugging Face's own metadata check (the one an upload runs) and stop on any error it
+    names. It once refused a gate field whose name held a '.', after the repository had been created. Uses the login
+    huggingface_hub finds; the token is sent only to huggingface.co and never shown."""
+    import json
+    import urllib.error
+    import urllib.request
+    from huggingface_hub import get_token
+    with open(os.path.join(folder, "README.md"), encoding="utf-8") as f:
+        readme = f.read()
+    headers = {"Content-Type": "application/json"}
+    token = get_token()
+    if token:
+        headers["Authorization"] = "Bearer " + token
+    req = urllib.request.Request("https://huggingface.co/api/validate-yaml", method="POST", headers=headers,
+                                 data=json.dumps({"content": readme, "repoType": "model"}).encode("utf-8"))
+    try:
+        with urllib.request.urlopen(req, timeout=60) as r:
+            answer = json.loads(r.read() or b"{}")
+    except urllib.error.HTTPError as exc:
+        answer = json.loads(exc.read() or b"{}")
+    errors = [e.get("message", str(e)) for e in answer.get("errors", [])]
+    if errors:
+        die("Hugging Face refuses this README.md's metadata, so nothing was sent: " + "; ".join(errors), 1)
+    print("Hugging Face's metadata check: passed")
+
+
+def push(folder, repo_id, card, public, gate):
     try:
         from huggingface_hub import HfApi
     except ImportError:
@@ -253,23 +339,29 @@ def push(folder, repo_id, card, public):
     api = HfApi()  # finds the login by itself; no token is read or shown here
     try:
         print(f"logged in as: {api.whoami().get('name', '(unknown)')}")
+        check_metadata(folder)  # Hugging Face's own check, before anything is created or sent
         api.create_repo(repo_id=repo_id, repo_type="model", private=True, exist_ok=True)
         info = api.repo_info(repo_id=repo_id, repo_type="model")
         if not info.private and not info.gated:
             die(f"{repo_id} exists, is public and is not gated; make it private (or gate it) on the Hub, then run again", 1)
         api.upload_folder(folder_path=folder, repo_id=repo_id, repo_type="model", commit_message=f"Release {card}")
         print("uploaded the folder")
-        api.update_repo_settings(repo_id=repo_id, gated="auto", repo_type="model")
-        print("gated access is on (automatic approval)")
+        api.update_repo_settings(repo_id=repo_id, gated=gate, repo_type="model")
+        print("gated access is on (" + ("on request" if gate == "manual" else "automatic approval") + ")")
         if public:
             api.update_repo_settings(repo_id=repo_id, private=False, repo_type="model")
             print("the repository is now public")
+        if gate == "manual":
+            sys.path.insert(0, HERE)
+            import review_requests  # the one place requests are answered
+            review_requests.review(repo_id.split("/", 1)[0], act=True)
+            review_requests.install_timer(30)
     except SystemExit:
         raise
     except Exception as exc:  # a network or permission error; show its kind and text, never anything that looks like a token
         die(f"{type(exc).__name__}: {scrub(exc)}", 1)
     state = "public" if public else "private (add --public when you are ready)"
-    print(f"done: https://huggingface.co/{repo_id} is {state}, gated")
+    print(f"done: https://huggingface.co/{repo_id} is {state}, gated " + ("on request" if gate == "manual" else "automatically"))
 
 
 def main():
@@ -300,7 +392,9 @@ def main():
 
     check_license()
     card, card_text = read_card(a.card)
-    readme = build_readme(card_text)
+    gate = gate_for(card)
+    check_repo_name(card, gate, a.repo_id)
+    readme = build_readme(card_text, gate)
     weights, left_behind = collect_weights(a.weights_dir, a.include, a.tensors_only)
 
     if a.out:
@@ -320,7 +414,7 @@ def main():
             print(f"left behind: {left_behind} other file(s) in the weights folders (logs, scores, scratch networks, anything not named above)")
         show(out)
         if a.push:
-            push(out, a.repo_id, card, a.public)
+            push(out, a.repo_id, card, a.public, gate)
         else:
             print("\nDry run: nothing was uploaded. Read the list above, then repeat the command with --push.")
     finally:

@@ -95,11 +95,11 @@ The cancer-or-not labels are two kinds of opinion. For LIDC they are the radiolo
 
 ## Licence
 
-The weights and the code are under the **PolyForm Noncommercial License 1.0.0** ([LICENSE](../../LICENSE)).
+The weights and the code are under the **PolyForm Noncommercial License 1.0.0** ([LICENSE](https://github.com/LunarWerxs/rAidiology/blob/main/LICENSE)).
 
 Required Notice: Copyright (c) 2026 LunarWerx (https://github.com/LunarWerxs)
 
-That line travels with every copy. Commercial use is available under the rAidiology Commercial Licence ([COMMERCIAL-LICENSE.md](../../COMMERCIAL-LICENSE.md)), with a free 60-day evaluation (500 studies, internal testing only, no customers, no patients' care), priced on the rAidiology site's pricing page. Not for diagnosis or treatment. Not cleared by the FDA or any regulator. Downloads are gated: you accept the licence before you download the weights. The datasets above keep their own licences and credits, which travel with the weights as well. Selling a product that uses this model for diagnosis would also need regulatory clearance first. See [LICENSING.md](../../LICENSING.md) for the third-party list.
+That line travels with every copy. Commercial use is available under the rAidiology Commercial Licence ([COMMERCIAL-LICENSE.md](https://github.com/LunarWerxs/rAidiology/blob/main/COMMERCIAL-LICENSE.md)), with a free 60-day evaluation (500 studies, internal testing only, no customers, no patients' care), priced on the rAidiology site's pricing page. Not for diagnosis or treatment. Not cleared by the FDA or any regulator. Downloads are on request: universities, schools, public research and health bodies and governments are approved from their email address; a company gets the commercial licence and its free 60-day evaluation copy. The datasets above keep their own licences and credits, which travel with the weights as well. Selling a product that uses this model for diagnosis would also need regulatory clearance first. See [LICENSING.md](https://github.com/LunarWerxs/rAidiology/blob/main/LICENSING.md) for the third-party list.
 
 ## How to run it
 

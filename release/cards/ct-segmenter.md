@@ -59,7 +59,7 @@ A scan can sit in more than one group, so the rows overlap.
 - **Weakest.** Both kidney cysts score 0.0000 (left cyst in 4 scans, right cyst in 3). Next are vertebra C6 at 0.6699 (34 scans), the gallbladder at 0.7079 (52), the portal vein and splenic vein together at 0.7189 (65), the left adrenal gland at 0.7375 (65) and the duodenum at 0.7375 (65).
 - **Strongest.** The left hip at 0.9691 (58 scans), the spleen at 0.9656 (65) and the right hip at 0.9534 (59).
 
-The full scorecard, with every structure for version 1 and the later looks at the test, is in [modalities/ct/eval/SCORECARD.md](../../modalities/ct/eval/SCORECARD.md). How each number is worked out is in [modalities/ct/eval/METRICS_SPEC.md](../../modalities/ct/eval/METRICS_SPEC.md).
+The full scorecard, with every structure for version 1 and the later looks at the test, is in [modalities/ct/eval/SCORECARD.md](https://github.com/LunarWerxs/rAidiology/blob/main/modalities/ct/eval/SCORECARD.md). How each number is worked out is in [modalities/ct/eval/METRICS_SPEC.md](https://github.com/LunarWerxs/rAidiology/blob/main/modalities/ct/eval/METRICS_SPEC.md).
 
 ## Data it learned from
 
@@ -98,13 +98,13 @@ The dataset does not publish a patient identifier. The scan is the unit here, no
 
 ## Licence
 
-The weights and the code are under the [PolyForm Noncommercial License 1.0.0](../../LICENSE). This line travels with every copy:
+The weights and the code are under the [PolyForm Noncommercial License 1.0.0](https://github.com/LunarWerxs/rAidiology/blob/main/LICENSE). This line travels with every copy:
 
 > Required Notice: Copyright (c) 2026 LunarWerx (https://github.com/LunarWerxs)
 
-You may use them for noncommercial purposes under that licence. Commercial use is available under the rAidiology Commercial Licence ([COMMERCIAL-LICENSE.md](../../COMMERCIAL-LICENSE.md)), with a free 60-day evaluation (500 studies, internal testing only, no customers, no patients' care), priced on the rAidiology site's pricing page. Not for diagnosis or treatment. Not cleared by the FDA or any regulator.
+You may use them for noncommercial purposes under that licence. Commercial use is available under the rAidiology Commercial Licence ([COMMERCIAL-LICENSE.md](https://github.com/LunarWerxs/rAidiology/blob/main/COMMERCIAL-LICENSE.md)), with a free 60-day evaluation (500 studies, internal testing only, no customers, no patients' care), priced on the rAidiology site's pricing page. Not for diagnosis or treatment. Not cleared by the FDA or any regulator.
 
-The weights are not stored in this repository. Downloads are gated: you accept the licence before you download. Official weights are trained and published by LunarWerx only.
+The weights are not stored in this repository. Downloads are on request: universities, schools, public research and health bodies and governments are approved from their email address; a company gets the commercial licence and its free 60-day evaluation copy. Official weights are trained and published by LunarWerx only.
 
 The training dataset is CC BY 4.0, which asks for the credit given above wherever the model or its outputs are described.
 
@@ -125,9 +125,9 @@ Then read the dataset's development scans with the cascade:
     python modalities/ct/eval/segmenter.py coarse --version 116
     python modalities/ct/eval/segmenter.py predict dev --version 121
 
-The last line writes the out-of-fold rows that [modalities/ct/eval/score.py](../../modalities/ct/eval/score.py) reads.
+The last line writes the out-of-fold rows that [modalities/ct/eval/score.py](https://github.com/LunarWerxs/rAidiology/blob/main/modalities/ct/eval/score.py) reads.
 
-**Reading one scan of your own with version 121 is not supported yet.** The `scan` command stops with "a 1.5 mm version reads prepared scans only for now". For your own file, `python modalities/ct/eval/segmenter.py scan <ct.nii.gz> --out labels.nii.gz --version 1` reads with version 1 instead, a 3 mm model with a lower score (0.7667, 95% interval 0.7517 to 0.7811, on the same 89 test scans, first look). Its card is [modalities/ct/models/segmenter.md](../../modalities/ct/models/segmenter.md).
+**Reading one scan of your own with version 121 is not supported yet.** The `scan` command stops with "a 1.5 mm version reads prepared scans only for now". For your own file, `python modalities/ct/eval/segmenter.py scan <ct.nii.gz> --out labels.nii.gz --version 1` reads with version 1 instead, a 3 mm model with a lower score (0.7667, 95% interval 0.7517 to 0.7811, on the same 89 test scans, first look). Its card is [modalities/ct/models/segmenter.md](https://github.com/LunarWerxs/rAidiology/blob/main/modalities/ct/models/segmenter.md).
 
 ---
 

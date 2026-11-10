@@ -6,7 +6,7 @@ tags:
   - medical-imaging
   - not-a-medical-device
 extra_gated_heading: "Accept the licence to download this model"
-extra_gated_description: "Access is granted automatically once you accept. Hugging Face shares your username and email address with LunarWerx when you ask for access."
+extra_gated_description: "{{GATE_NOTE}} Hugging Face shares your username and email address with LunarWerx when you ask for access."
 extra_gated_prompt: |-
   This model is released under the PolyForm Noncommercial License 1.0.0. The full text is in the LICENSE file of this repository. To download it, you agree to the following.
 
@@ -19,6 +19,16 @@ extra_gated_fields:
   Name: text
   Affiliation: text
   Country: country
+  Organisation type:
+    type: select
+    options:
+      - University or school
+      - Public research body
+      - Public hospital or health body
+      - Charity
+      - Government
+      - Company
+      - Individual
   Intended use:
     type: select
     options:
@@ -26,7 +36,7 @@ extra_gated_fields:
       - Education
       - Personal
       - Other
-  I have read the PolyForm Noncommercial License 1.0.0 in this repository: checkbox
+  I have read the PolyForm Noncommercial License in the LICENSE file of this repository: checkbox
   I will use this model for noncommercial purposes only: checkbox
   I understand this model is not a medical device and I will not use it for diagnosis or treatment: checkbox
   I will not use this model or its outputs to try to identify any person: checkbox

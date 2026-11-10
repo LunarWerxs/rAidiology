@@ -53,7 +53,7 @@ Each version alone scored 58.67 (v133), 60.06 (v134) and 58.07 (v140) exact on t
 
 ### The earlier version, v1, on held-out test patients
 
-These patients were never used to train or tune v1. The full tables are in [the SPIDER scorecard](../../modalities/spine_mri/eval/SCORECARD.md).
+These patients were never used to train or tune v1. The full tables are in [the SPIDER scorecard](https://github.com/LunarWerxs/rAidiology/blob/main/modalities/spine_mri/eval/SCORECARD.md).
 
 | Measure | Ours (95% CI) | Test set | Best published, and who holds it | Same pictures? |
 |---|---|---|---|---|
@@ -106,11 +106,11 @@ Credits for the sets above stay with every copy of the weights.
 
 ## Licence
 
-The weights and the code are under the [PolyForm Noncommercial License 1.0.0](../../LICENSE). This line travels with every copy:
+The weights and the code are under the [PolyForm Noncommercial License 1.0.0](https://github.com/LunarWerxs/rAidiology/blob/main/LICENSE). This line travels with every copy:
 
 Required Notice: Copyright (c) 2026 LunarWerx (https://github.com/LunarWerxs)
 
-You may use them free for noncommercial purposes the licence lists, such as personal study and use by educational or public research organisations. This model is not covered by the commercial licence: it is for noncommercial use only. The reason: it runs on TotalSpineSeg to find and label the discs, and its authors were never asked for commercial use. Permission for commercial use was never given. It depends on TotalSpineSeg's weights, which are not cleared for commercial use (see 'Tool it depends on'). It is still not a medical device and may not be used for diagnosis. You must accept the licence before you download the weights. The datasets keep their own CC BY 4.0 licences and credits, listed above. TotalSpineSeg has its own terms. More in [LICENSING.md](../../LICENSING.md).
+You may use them free for noncommercial purposes the licence lists, such as personal study and use by educational or public research organisations. This model is not covered by the commercial licence: it is for noncommercial use only. The reason: it runs on TotalSpineSeg to find and label the discs, and its authors were never asked for commercial use. Permission for commercial use was never given. It depends on TotalSpineSeg's weights, which are not cleared for commercial use (see 'Tool it depends on'). It is still not a medical device and may not be used for diagnosis. You must accept the licence before you download the weights. The datasets keep their own CC BY 4.0 licences and credits, listed above. TotalSpineSeg has its own terms. More in [LICENSING.md](https://github.com/LunarWerxs/rAidiology/blob/main/LICENSING.md).
 
 ## How to run it
 

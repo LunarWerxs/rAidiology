@@ -12,7 +12,7 @@ Not for diagnosis or treatment. Not cleared by the FDA or any regulator.
 
 1.3 The company or person that accepts this licence is the "Licensee". It accepts this licence by buying through a commercial link on LunarWerx's pages, or by an order agreed by email with contact@lunarwerx.com. The person who buys confirms they may bind the Licensee. Checkout asks for the Licensee's legal name and billing address.
 
-1.4 The free Evaluation tier (section 5) is accepted by first use of the Covered Models under this licence.
+1.4 The free Evaluation tier (section 5) is accepted when the Licensee asks for it from a work email address and LunarWerx sends its evaluation copy.
 
 ## 2. How this sits beside PolyForm Noncommercial
 
@@ -52,7 +52,7 @@ Not for diagnosis or treatment. Not cleared by the FDA or any regulator.
 
 5.2 It is for internal testing only. No customers use it, and no patient's care depends on it.
 
-5.3 It starts on first use. It needs no sign-up.
+5.3 The Licensee asks for it from a work email address, at contact@lunarwerx.com. It starts when LunarWerx sends the Licensee its own marked evaluation copy, and the 60 days run from that day.
 
 5.4 It needs no reports (section 7.1 does not apply to it).
 
@@ -282,7 +282,7 @@ Credits:
 
 | Tier | Price | Allowance |
 |---|---|---|
-| Evaluation | free, 60 days | 500 Studies in total; internal testing only; no customers, no patients' care; no reports due. Starts on first use, needs no sign-up, never turns into a paid plan by itself. |
+| Evaluation | free, 60 days | 500 Studies in total; internal testing only; no customers, no patients' care; no reports due. Asked for from a work email address; starts when LunarWerx sends the Licensee's own marked evaluation copy; never turns into a paid plan by itself. |
 | Startup | $1,500 a year | the Builder Allowance, for a company less than 3 years from incorporation that has raised under US$2M of equity or convertible financing, grants not counted (self-certified at purchase and at each renewal); the weights stay on the Licensee's Controlled Systems |
 | Builder | $300 a month or $3,000 a year | 2,000 Studies a month; 1 Product or internal tool; the weights stay on the Licensee's Controlled Systems |
 | Growth | $15,000 a year | 25,000 Studies a month; up to 3 Products or internal tools; the weights stay on the Licensee's Controlled Systems; overage capped at $7,500 a quarter |

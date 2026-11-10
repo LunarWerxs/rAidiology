@@ -68,7 +68,7 @@ The site in `site/` is static: no build step, no npm. Opening a page straight fr
 
 ## The research models
 
-Weights are coming as a gated download on Hugging Face (disc grading research model version 1 already downloads from the Releases page as `disc-grader-v1`).
+Weights are on Hugging Face. The two free models download once you accept the licence: [disc-grader](https://huggingface.co/LunarWerx/rAidiology-disc-grader), [spine-xray-corners](https://huggingface.co/LunarWerx/rAidiology-spine-xray-corners) (disc grading version 1 also downloads from the Releases page as `disc-grader-v1`). The five paid models are on request: [chest-xray](https://huggingface.co/LunarWerx/rAidiology-chest-xray), [ct-segmenter](https://huggingface.co/LunarWerx/rAidiology-ct-segmenter), [fracture-detector](https://huggingface.co/LunarWerx/rAidiology-fracture-detector), [lung-nodules](https://huggingface.co/LunarWerx/rAidiology-lung-nodules), [mammography](https://huggingface.co/LunarWerx/rAidiology-mammography). They are free for universities, schools, public research and health bodies and governments, approved from their email address; a company gets the commercial licence and its free evaluation copy.
 
 | Model | Scan | Card |
 |---|---|---|
@@ -127,7 +127,7 @@ Any company or person using rAidiology's code or covered research models for com
 | Growth | $15,000 a year | 25,000 studies a month; up to 3 products or internal tools |
 | Enterprise / OEM | from $30,000 a year, by agreement | higher volumes and distribution inside a product |
 
-The 60-day evaluation is free, needs no sign-up and never turns into a paid plan by itself. Full terms are in [COMMERCIAL-LICENSE.md](COMMERCIAL-LICENSE.md).
+The 60-day evaluation is free: ask from your work email address at contact@lunarwerx.com and you get your own copy. It never turns into a paid plan by itself. Full terms are in [COMMERCIAL-LICENSE.md](COMMERCIAL-LICENSE.md).
 
 Not for diagnosis or treatment. Not cleared by the FDA or any regulator.
 

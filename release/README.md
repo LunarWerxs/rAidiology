@@ -7,7 +7,7 @@ Models and code are released under the [PolyForm Noncommercial License 1.0.0](..
 A release has three parts:
 
 - the code: a clean copy of the repository on GitHub, with no history,
-- the models: one gated repository per model on Hugging Face, so a person accepts the licence before downloading,
+- the models: one gated repository per model on Hugging Face. A free model's gate is automatic: a person accepts the licence and downloads. A paid model (the covered list in Schedule A of [COMMERCIAL-LICENSE.md](../COMMERCIAL-LICENSE.md)) is on request, in a repository named `rAidiology-<card>`: `huggingface/review_requests.py` approves universities, schools, public research and health bodies and governments by their email address and declines everyone else with the way to the commercial licence, on a timer `huggingface/publish.py` installs after the first paid push. The export in step c refuses every weight file,
 - the paperwork: [CONTRIBUTING.md](../CONTRIBUTING.md) and [CLA.md](../CLA.md).
 
 Two of the tools below (the provenance scripts in step b and the export script in step c) live in the maintainers' working copy. They are not part of this public repository.
@@ -53,7 +53,7 @@ Run the export script, `tools/public_export.py`, in the maintainers' working cop
 
 Then read the file list. List every file in the new folder (for example with `find <folder> -type f`). Look for:
 
-- anything under `records/`, `ledger/`, `cases/`, `functions/`, `.github/`, `.claude/` or `data/efficiency/`, and anything under `docs/` other than `docs/FINDINGS_FILE.md` and `docs/COST_MODEL.md`: these must not be there,
+- anything under `records/`, `ledger/`, `cases/`, `functions/`, `.claude/` or `data/efficiency/`, anything under `.github/` other than the files copied from `release/github/` (the funding links, the CLA workflow, the pull request template, the security policy and the issue forms), and anything under `docs/` other than `docs/FINDINGS_FILE.md` and `docs/COST_MODEL.md`: these must not be there,
 - any weight file (`.pt`, `.pth`, `.onnx`, `.safetensors`, `.bin`), scan or image that is not an approved sample,
 - anything that names a person, a private scan, or a private web address.
 

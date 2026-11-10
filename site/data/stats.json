@@ -280,7 +280,7 @@
           "url": "https://doi.org/10.6084/m9.figshare.32086362.v1"
         }
       ],
-      "weights": "Not released yet.",
+      "weights": "On request on Hugging Face: https://huggingface.co/LunarWerx/rAidiology-chest-xray",
       "card": "release/cards/chest-xray.md"
     },
     {
@@ -288,7 +288,7 @@
       "name": "CT organ outliner",
       "scan": "CT",
       "picture": "img/scans/ct-organs.webp",
-      "summary": "A two-step network trained to label each point of a 3D CT scan as one of 117 organs and bones, such as the liver, spleen, aorta, ribs and vertebrae, or as nothing.",
+      "summary": "It looks at the whole 3D CT scan and labels every tiny point as one of 117 organs and bones, such as the liver, spleen, aorta, ribs and vertebrae, or as background.",
       "headline": [
         {
           "metric": "Dice",
@@ -459,7 +459,7 @@
           "url": "https://zenodo.org/records/10047292"
         }
       ],
-      "weights": "Not released yet.",
+      "weights": "On request on Hugging Face: https://huggingface.co/LunarWerx/rAidiology-ct-segmenter",
       "card": "release/cards/ct-segmenter.md"
     },
     {
@@ -624,7 +624,7 @@
           "url": "https://doi.org/10.17632/9j9hmy8kbn.1"
         }
       ],
-      "weights": "Not released yet for versions 133, 134 and 140. Version 1 already has a download.",
+      "weights": "On Hugging Face, after you accept the licence: https://huggingface.co/LunarWerx/rAidiology-disc-grader",
       "card": "release/cards/disc-grader.md"
     },
     {
@@ -761,7 +761,7 @@
           "url": "https://nihcc.app.box.com/v/ChestXray-NIHCC"
         }
       ],
-      "weights": "Not released yet.",
+      "weights": "On request on Hugging Face: https://huggingface.co/LunarWerx/rAidiology-fracture-detector",
       "card": "release/cards/fracture-detector.md"
     },
     {
@@ -865,7 +865,7 @@
           "url": "https://doi.org/10.7937/K9/TCIA.2015.UZLSU3FL"
         }
       ],
-      "weights": "Not released yet.",
+      "weights": "On request on Hugging Face: https://huggingface.co/LunarWerx/rAidiology-lung-nodules",
       "card": "release/cards/lung-nodules.md"
     },
     {
@@ -969,7 +969,7 @@
           "url": "https://nihcc.app.box.com/v/ChestXray-NIHCC"
         }
       ],
-      "weights": "Not released yet.",
+      "weights": "On request on Hugging Face: https://huggingface.co/LunarWerx/rAidiology-mammography",
       "card": "release/cards/mammography.md"
     },
     {
@@ -1112,7 +1112,7 @@
           "url": "https://data.mendeley.com/datasets/5jdfdgp762/1"
         }
       ],
-      "weights": "Not released yet.",
+      "weights": "On Hugging Face, after you accept the licence: https://huggingface.co/LunarWerx/rAidiology-spine-xray-corners",
       "card": "release/cards/spine-xray-corners.md"
     }
   ]

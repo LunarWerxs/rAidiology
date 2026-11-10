@@ -82,7 +82,7 @@ Other things you might ask about:
 - **Calibration sets:** none.
 - **BUU-LSPINE 400-patient sample:** these are the first 400 patients of the 2,000. They are not extra patients. They were used only to check slip labels, and the corner reader does not use those labels.
 
-For the licences of the other datasets used by other rAidiology models, see [LICENSING.md](../../LICENSING.md).
+For the licences of the other datasets used by other rAidiology models, see [LICENSING.md](https://github.com/LunarWerxs/rAidiology/blob/main/LICENSING.md).
 
 ## Limitations and known failure modes
 
@@ -98,7 +98,7 @@ For the licences of the other datasets used by other rAidiology models, see [LIC
 
 ## Licence
 
-The weights and the code are under the [PolyForm Noncommercial License 1.0.0](../../LICENSE).
+The weights and the code are under the [PolyForm Noncommercial License 1.0.0](https://github.com/LunarWerxs/rAidiology/blob/main/LICENSE).
 
 Required Notice: Copyright (c) 2026 LunarWerx (https://github.com/LunarWerxs)
 
@@ -126,9 +126,9 @@ All fifteen files together are 148,743,390 bytes. The side reader needs both its
 
 To read the side view the way this card describes, use the repository's modules:
 
-- [`modalities/spine_xray/eval/corners_reread.py`](../../modalities/spine_xray/eval/corners_reread.py) places the points with the close-look networks, five looks. It starts from the first-look points saved in `corners-v1`. This is the command that made the side numbers above: `python modalities/spine_xray/eval/corners_reread.py --from-version 1 --passes 1 --looks 5 --out-version <a new number> --against 2`
-- [`modalities/spine_xray/eval/corners.py`](../../modalities/spine_xray/eval/corners.py) is the first look. `python modalities/spine_xray/eval/corners.py eval --view AP --version 10 --folds all` prints the front-view corner miss.
-- [`modalities/spine_xray/eval/vertebra_boxes.py`](../../modalities/spine_xray/eval/vertebra_boxes.py) scores vertebrae found: `python modalities/spine_xray/eval/vertebra_boxes.py score --view AP --version 10`
-- [`modalities/spine_xray/eval/landmarks_test.py`](../../modalities/spine_xray/eval/landmarks_test.py) holds `load_models` and `read_picture`, which read a picture from outside the BUU-LSPINE set with all five side-view chains. It is the closest thing to a one-picture reader. It was written for the outside test, which uses 640 by 640 pictures.
+- [`modalities/spine_xray/eval/corners_reread.py`](https://github.com/LunarWerxs/rAidiology/blob/main/modalities/spine_xray/eval/corners_reread.py) places the points with the close-look networks, five looks. It starts from the first-look points saved in `corners-v1`. This is the command that made the side numbers above: `python modalities/spine_xray/eval/corners_reread.py --from-version 1 --passes 1 --looks 5 --out-version <a new number> --against 2`
+- [`modalities/spine_xray/eval/corners.py`](https://github.com/LunarWerxs/rAidiology/blob/main/modalities/spine_xray/eval/corners.py) is the first look. `python modalities/spine_xray/eval/corners.py eval --view AP --version 10 --folds all` prints the front-view corner miss.
+- [`modalities/spine_xray/eval/vertebra_boxes.py`](https://github.com/LunarWerxs/rAidiology/blob/main/modalities/spine_xray/eval/vertebra_boxes.py) scores vertebrae found: `python modalities/spine_xray/eval/vertebra_boxes.py score --view AP --version 10`
+- [`modalities/spine_xray/eval/landmarks_test.py`](https://github.com/LunarWerxs/rAidiology/blob/main/modalities/spine_xray/eval/landmarks_test.py) holds `load_models` and `read_picture`, which read a picture from outside the BUU-LSPINE set with all five side-view chains. It is the closest thing to a one-picture reader. It was written for the outside test, which uses 640 by 640 pictures.
 
-There is no command yet that takes any single X-ray and prints its corners. The modules above are what exist today. See also the [spine X-ray reader overview](../../modalities/spine_xray/README.md).
+There is no command yet that takes any single X-ray and prints its corners. The modules above are what exist today. See also the [spine X-ray reader overview](https://github.com/LunarWerxs/rAidiology/blob/main/modalities/spine_xray/README.md).

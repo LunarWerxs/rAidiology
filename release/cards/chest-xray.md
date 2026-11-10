@@ -116,7 +116,7 @@ The weights and the code are under the PolyForm Noncommercial License 1.0.0 (see
 
 Required Notice: Copyright (c) 2026 LunarWerx (https://github.com/LunarWerxs)
 
-Commercial use is available under the rAidiology Commercial Licence ([COMMERCIAL-LICENSE.md](../../COMMERCIAL-LICENSE.md)), with a free 60-day evaluation (500 studies, internal testing only, no customers, no patients' care), priced on the rAidiology site's pricing page. Not for diagnosis or treatment. Not cleared by the FDA or any regulator. Downloads are gated: you accept the licence before you download.
+Commercial use is available under the rAidiology Commercial Licence ([COMMERCIAL-LICENSE.md](https://github.com/LunarWerxs/rAidiology/blob/main/COMMERCIAL-LICENSE.md)), with a free 60-day evaluation (500 studies, internal testing only, no customers, no patients' care), priced on the rAidiology site's pricing page. Not for diagnosis or treatment. Not cleared by the FDA or any regulator. Downloads are on request: universities, schools, public research and health bodies and governments are approved from their email address; a company gets the commercial licence and its free 60-day evaluation copy.
 
 The credits above, BDCXR-3257's hospital acknowledgement included, must stay with the weights.
 

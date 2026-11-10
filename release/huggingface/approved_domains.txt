@@ -1,0 +1,4 @@
+# Domains approved by hand for the paid models: a charity, a public hospital or a research body whose email address
+# review_requests.py does not recognise, added once it wrote to contact@lunarwerx.com and was checked.
+# One domain per line; a subdomain of a listed domain is approved too. A request declined before its domain was added
+# is approved on the next pass.

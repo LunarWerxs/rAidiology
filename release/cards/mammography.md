@@ -112,18 +112,18 @@ Anyone who shares these weights must pass these credits on with them.
 
 ## Licence
 
-The weights and the code are under the **PolyForm Noncommercial License 1.0.0** ([LICENSE](../../LICENSE)). The notice `Required Notice: Copyright (c) 2026 LunarWerx (https://github.com/LunarWerxs)` travels with every copy.
+The weights and the code are under the **PolyForm Noncommercial License 1.0.0** ([LICENSE](https://github.com/LunarWerxs/rAidiology/blob/main/LICENSE)). The notice `Required Notice: Copyright (c) 2026 LunarWerx (https://github.com/LunarWerxs)` travels with every copy.
 
 - Free (a plain reading; the LICENSE text is what binds): personal study, research, and use by charities, schools, public research and health organisations, and governments.
-- Commercial use is available under the rAidiology Commercial Licence ([COMMERCIAL-LICENSE.md](../../COMMERCIAL-LICENSE.md)), with a free 60-day evaluation (500 studies, internal testing only, no customers, no patients' care), priced on the rAidiology site's pricing page. Commercial use includes companies using it in paid work, in internal tools, and in any product or hosted service built on it. Not for diagnosis or treatment. Not cleared by the FDA or any regulator.
-- Downloads are gated: you accept the licence before you download.
+- Commercial use is available under the rAidiology Commercial Licence ([COMMERCIAL-LICENSE.md](https://github.com/LunarWerxs/rAidiology/blob/main/COMMERCIAL-LICENSE.md)), with a free 60-day evaluation (500 studies, internal testing only, no customers, no patients' care), priced on the rAidiology site's pricing page. Commercial use includes companies using it in paid work, in internal tools, and in any product or hosted service built on it. Not for diagnosis or treatment. Not cleared by the FDA or any regulator.
+- Downloads are on request: universities, schools, public research and health bodies and governments are approved from their email address; a company gets the commercial licence and its free 60-day evaluation copy.
 - The data credits above also travel with the weights.
 
-More detail is in [LICENSING.md](../../LICENSING.md). The licence does not change the first line of this card: this is not a medical device.
+More detail is in [LICENSING.md](https://github.com/LunarWerxs/rAidiology/blob/main/LICENSING.md). The licence does not change the first line of this card: this is not a medical device.
 
 ## How to run it
 
-The code is in [modalities/mammo/eval/mammo.py](../../modalities/mammo/eval/mammo.py). It needs Python with PyTorch and the CMMD files from The Cancer Imaging Archive, placed in `Datasets/public/cmmd` beside the repository folder.
+The code is in [modalities/mammo/eval/mammo.py](https://github.com/LunarWerxs/rAidiology/blob/main/modalities/mammo/eval/mammo.py). It needs Python with PyTorch and the CMMD files from The Cancer Imaging Archive, placed in `Datasets/public/cmmd` beside the repository folder.
 
 Put the downloaded files where the code looks for them: `work/eval/mammo/mammo-v<N>/fold<k>.pt`, with N one of 29, 30, 34, 35, 38 and 6, and k from 0 to 4. Each file is about 9.4 MB. The list:
 
