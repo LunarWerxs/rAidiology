@@ -141,9 +141,7 @@ def test_paid_list_fails_closed(tmp_path, monkeypatch):
 
 
 def test_export_holds_every_weight_file():
-    src = EXPORT.read_text(encoding="utf-8")
-    m = re.search(r"^MEDIA\s*=\s*(re\.compile\(.*?\))\s*$", src, re.M | re.S)
-    media = eval(m.group(1), {"re": re})
+    media = load(EXPORT, "public_export").MEDIA
     for name in ("fold0.pt", "m.pth", "m.onnx", "m.safetensors", "openvino.bin", "M.ONNX"):
         assert media.search("models/" + name), name
     assert not media.search("tools/public_export.py")
