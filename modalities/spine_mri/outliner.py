@@ -89,13 +89,21 @@ CROP = 256
 CLASSES = ("background", "vertebra", "disc", "canal", "cord")
 BG, VERT, DISC, CANAL, CORD = range(len(CLASSES))
 ALL = (1 << len(CLASSES)) - 1   # a pixel that may be any class: unlabelled, costs nothing
+DICE_GROUPS = ((VERT,), (DISC,), (CANAL, CORD), (CORD,))   # canal alone has no positives: SPIDER's canal is canal or cord
 HEAT, LEVEL = len(CLASSES), len(CLASSES) + 1
 OUTPUTS = len(CLASSES) + 2
 LEVEL_SCALE = 25.0
 CFG = {"iters": int(os.environ.get("OUTLINER_ITERS", 12000)), "batch": 16, "lr": 1e-3, "weight_decay": 1e-4, "width": 32,
-       "seed": 20261110, "sigma_px": 3.0, "heat_w": 10.0, "level_w": 1.0, "level_radius": 4,
+       "seed": 20261110, "sigma_px": 3.0, "heat_w": 10.0, "level_w": 1.0, "level_radius": 4, "dice": "groups",
        "share": {"spider": 0.5, "spine-generic": 0.35, "whole-spine": 0.15}}
 PEAK, NMS_MM, NEAR_PEAK_MM, MIN_DISC_MM3, CHAIN_MM, GAP = 0.3, 7.0, 12.0, 300.0, 60.0, 1.7
+MERGE_MM = 10.0               # one disc's points on neighbouring sagittal slices (adult discs sit 15 mm or more apart)
+SAME_SI = 0.35                # two points closer in height than this share of the disc spacing are one disc
+OFF_CHAIN = 1.5               # a point whose vote is this far from its numbered level is not a disc of the chain
+# The level map is surest beside its landmarks, C2 (C2-C3 is SCT 3) and the sacrum (L5-S1 is 25), and drifts away from
+# them: out of fold on 25 SPIDER patients its votes ran 0.18 high at L5-S1 and 0.99 high at T10-T11, so a plain median
+# numbered 29% of the discs one level low. The chain's offset weighs each disc by its vote's nearness to a landmark.
+ANCHORS, ANCHOR_POW = (3.0, 25.0), 2.0
 FOLDS = 5
 CARD_GB = 4.0
 DATASETS = {"spine-generic": os.environ.get("SPINE_GENERIC_ROOT", os.path.join(paths.DATASETS, "public", "spine-generic")),
@@ -406,7 +414,11 @@ def partial_loss(z, allowed):
     """(marginal cross-entropy, soft Dice) of class logits z (B, C, H, W) against `allowed` (B, H, W), each pixel's
     bitmask of the classes it may be. -log(sum of p over the allowed set): one allowed class is ordinary
     cross-entropy, several share the probability, all of them (or 0, padding) cost nothing and pass no gradient.
-    Dice per class over the pixels that decide it (the set is exactly that class, or leaves it out)."""
+    Soft Dice per DICE_GROUPS group (its classes' summed probability) over the pixels that decide it (their set lies
+    inside the group, or leaves all of it out), only for a group with positives in the batch. The first version scored
+    each class alone: no pixel is ever canal alone (SPIDER's canal is canal or cord), so the canal term had no positives,
+    sat near 1 and only pushed canal out, and three of the five out-of-fold models (folds 0, 3, 4) dropped the canal at
+    about step 9,000 (Dice term 0.32 -> 0.07), calling SPIDER's canal background (median canal Dice 0.58, 2026-11-10)."""
     import torch
     C = z.shape[1]
     a = allowed.long()
@@ -416,14 +428,22 @@ def partial_loss(z, allowed):
     logp = z.float().log_softmax(1)
     lse = torch.logsumexp(logp.masked_fill(~(ok | ~known.unsqueeze(1)), float("-inf")), 1)   # padding (0) as "any": no -inf
     ce = -(lse * known).sum() / known.sum().clamp(min=1)
-    t = (a.unsqueeze(1) == (1 << bit)).float()
-    dec = ((~ok) | t.bool()) & known.unsqueeze(1)
-    p = logp.exp() * dec
-    used = dec[:, 1:].flatten(2).any(2).any(0)
-    if not used.any():
+    p = logp.exp()
+    terms = []
+    for g in DICE_GROUPS:
+        m = 0
+        for c in g:
+            m |= 1 << c
+        pos = known & ((a & ~m) == 0)                 # the pixel's set lies inside the group: a positive
+        if not bool(pos.any()):
+            continue                                  # no positive in the batch: a Dice term would only push the group out
+        dec = (pos | ((a & m) == 0)) & known          # inside the group, or leaving all of it out
+        pg = p[:, list(g)].sum(1) * dec
+        inter, den = (pg * pos).sum(), pg.sum() + pos.sum()
+        terms.append(1 - (2 * inter + 1) / (den + 1))
+    if not terms:
         return ce, ce * 0
-    inter, den = (p * t).sum((0, 2, 3))[1:], (p + t * dec).sum((0, 2, 3))[1:]
-    return ce, 1 - ((2 * inter + 1) / (den + 1))[used].mean()
+    return ce, torch.stack(terms).mean()
 
 
 def train(fold):
@@ -585,12 +605,64 @@ def find_discs(cls, heat, level, z):
         if all(np.linalg.norm((tip - q) * z) >= NEAR_PEAK_MM for q in pts):
             pts.append(tip)
     P = np.array(pts, np.float64).reshape(-1, 3)
-    votes = []
+    votes, weight = [], []
     for p in P:
         i = np.rint(p).astype(int)
         lo, hi = np.maximum(i - 1, 0), np.minimum(i + 2, level.shape)
         votes.append(float(np.median(level[lo[0]:hi[0], lo[1]:hi[1], lo[2]:hi[2]])))
-    return P, np.array(votes, np.float64)
+        weight.append(float(heat[tuple(np.clip(i, 0, np.array(heat.shape) - 1))]))
+    return merge_slices(P, np.array(votes, np.float64), np.array(weight, np.float64), z)
+
+
+def merge_slices(P, votes, weight, z):
+    """(points, votes), one per disc. A disc shows on several sagittal slices: a point within MERGE_MM of a disc's
+    heat-weighted mean in the sagittal plane (AP and SI, whatever its left-right distance) joins that disc, strongest
+    points first, and each disc keeps its mean position and its points' median vote. Then two discs whose heights differ
+    by less than SAME_SI of the chain's spacing (its gaps' upper quartile) are one disc seen at its middle or its far side: the weaker goes.
+    Counting every slice's point as its own disc numbered a lumbar stack's eight discs 4 to 42 (spine outliner v2's
+    first out-of-fold score, 2026-11-10)."""
+    if len(P) < 2:
+        return P, votes
+    zz = np.asarray(z, np.float64)
+    groups, mean = [], []
+    for i in np.argsort(-weight, kind="stable"):
+        for g, m in enumerate(mean):
+            if np.linalg.norm((P[i, :2] - m[:2]) * zz[:2]) < MERGE_MM:
+                groups[g].append(i)
+                wg = np.maximum(weight[groups[g]], 1e-6)
+                mean[g] = (P[groups[g]] * wg[:, None]).sum(0) / wg.sum()
+                break
+        else:
+            groups.append([i])
+            mean.append(P[i].astype(np.float64))
+    out = np.array(mean, np.float64).reshape(-1, 3)
+    v = np.array([float(np.median(votes[g])) for g in groups], np.float64)
+    strength = np.array([float(weight[g].max()) for g in groups], np.float64)
+    order = np.argsort(out[:, 1], kind="stable")
+    if len(order) >= 3:
+        gaps = np.diff(out[order, 1]) * zz[1]
+        tol = SAME_SI * float(np.percentile(gaps, 75))     # the upper quartile: duplicates shrink the median
+        keep = [order[0]]
+        for i in order[1:]:
+            if (out[i, 1] - out[keep[-1], 1]) * zz[1] < tol:
+                if strength[i] > strength[keep[-1]]:
+                    keep[-1] = i
+            else:
+                keep.append(i)
+        keep = np.sort(np.array(keep))
+        out, v = out[keep], v[keep]
+    return out, v
+
+
+def weighted_median(x, w):
+    """The value where the weights below and above it balance (the plain median for equal weights)."""
+    x, w = np.asarray(x, np.float64), np.asarray(w, np.float64)
+    o = np.argsort(x, kind="stable")
+    c = np.cumsum(w[o])
+    lo = int(np.searchsorted(c, c[-1] / 2.0))
+    if np.isclose(c[lo], c[-1] / 2.0) and lo + 1 < len(x):
+        return float((x[o][lo] + x[o][lo + 1]) / 2.0)
+    return float(x[o][lo])
 
 
 def number_discs(pos_mm, votes):
@@ -608,7 +680,9 @@ def number_discs(pos_mm, votes):
         ref = float(np.median(ref)) if ref else g
         steps.append(max(1, int(round(g / ref))) if ref > 0 and g / ref >= GAP else 1)
     rank = np.concatenate([[0], np.cumsum(steps)]).astype(int)
-    offset = int(np.rint(np.median(votes[order] - rank)))
+    v = votes[order]
+    w = 1.0 / (1.0 + np.minimum(np.abs(v - ANCHORS[0]), np.abs(v - ANCHORS[1]))) ** ANCHOR_POW
+    offset = int(np.rint(weighted_median(v - rank, w)))
     out = np.zeros(len(pos_mm), int)
     out[order] = offset + rank
     return out
@@ -670,6 +744,13 @@ def outline(seg, heat, level, aff):
     if not len(P):
         return lab, []
     levels = number_discs(P * z, votes)
+    while len(P) > 2:                       # a stray peak (a disc's edge, a slice's rim) disagrees with the chain's count
+        off = np.abs(votes - levels)
+        worst = int(off.argmax())
+        if off[worst] <= OFF_CHAIN:
+            break
+        P, votes = np.delete(P, worst, 0), np.delete(votes, worst)
+        levels = number_discs(P * z, votes)
     order = np.argsort(P[:, 1], kind="stable")
     P, levels, votes = P[order], levels[order], votes[order]
     keep = (levels >= 2) & (levels <= 25)

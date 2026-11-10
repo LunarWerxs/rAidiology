@@ -118,6 +118,52 @@ def test_partial_loss_masks_what_a_source_does_not_label():
     assert torch.allclose(o.partial_loss(z.detach()[:1], one)[0], F.cross_entropy(z.detach()[:1], torch.full((1, 8, 8), o.DISC)), atol=1e-5)
 
 
+def test_partial_loss_rewards_the_canal_as_canal_or_cord():
+    """SPIDER's canal is canal-or-cord: calling it background must cost Dice, and nothing may push canal out alone
+    (the per-class version let three of five models drop the canal)."""
+    import torch
+    a = torch.full((1, 16, 16), 1 << o.BG)
+    a[0, 4:12, 6:9] = (1 << o.CANAL) | (1 << o.CORD)
+    a[0, 4:12, 0:3] = 1 << o.VERT
+    z_bg = torch.zeros(1, len(o.CLASSES), 16, 16)
+    z_bg[:, o.BG] = 6.0
+    z_bg[:, o.VERT, 4:12, 0:3] = 12.0
+    z_ok = z_bg.clone()
+    z_ok[:, o.CANAL, 4:12, 6:9] = 12.0
+    d_bg, d_ok = o.partial_loss(z_bg, a)[1].item(), o.partial_loss(z_ok, a)[1].item()
+    assert d_ok < 0.05 < 0.4 < d_bg
+    z_cord = z_bg.clone()
+    z_cord[:, o.CORD, 4:12, 6:9] = 12.0                          # cord or canal: either fills the group
+    assert o.partial_loss(z_cord, a)[1].item() < 0.05
+
+
+def test_one_disc_on_several_slices_is_one_disc():
+    """Run 3's out-of-fold score counted each slice's point as its own disc: eight lumbar discs became levels 4 to 42."""
+    z = np.array([0.6, 0.5, 3.3])
+    P, votes, heat = [], [], []
+    for j in range(8):                                       # T10-T11 (18) ... L5-S1 (25), 36 mm apart, 3 slices each
+        for lr, dap in ((5, 0.0), (8, 6.0), (11, -5.0)):
+            P.append([300 + dap, 20 + j * 72, lr])
+            votes.append(18 + j + 0.3)
+            heat.append(0.9 if lr == 8 else 0.7)
+    P.append([270, 20 + 3 * 72 + 4, 8])                      # the middle of disc 3, 18 mm in front of its tip
+    votes.append(20.7)
+    heat.append(0.4)
+    m, v = o.merge_slices(np.array(P, float), np.array(votes), np.array(heat), z)
+    assert len(m) == 8
+    assert list(o.number_discs(m * z, v)) == list(range(18, 26))
+
+
+def test_numbering_trusts_the_disc_beside_the_sacrum():
+    """Votes drift high away from L5-S1 (0.2 there, 1.0 at T10-T11 out of fold): the plain median numbered a lumbar
+    chain one level low; the landmark weighting keeps L5-S1 at 25."""
+    pos = np.array([[30.0, 10 + 36 * i, 5.0] for i in range(8)])
+    votes = np.array([19.0, 19.9, 20.9, 21.8, 22.5, 23.4, 24.4, 25.2])     # true 18 ... 25
+    assert list(o.number_discs(pos, votes)) == list(range(18, 26))
+    neck = np.array([[30.0, 10 + 16 * i, 5.0] for i in range(6)])
+    assert list(o.number_discs(neck, [3.1, 4.3, 5.5, 6.6, 7.8, 8.9])) == [3, 4, 5, 6, 7, 8]   # drift away from C2
+
+
 @pytest.mark.parametrize("start, n, missing", [(3, 6, None), (3, 6, 2), (20, 6, None), (20, 6, 3)])
 def test_numbering_from_disc_points(start, n, missing):
     """Neck-only from C2-C3 (SCT 3) and lumbar-only up to L5-S1 (SCT 25), noisy votes, with and without a missed disc."""
