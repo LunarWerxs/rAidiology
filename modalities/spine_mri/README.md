@@ -6,7 +6,9 @@ From a patient MRI disc (a folder with a `DICOMDIR`) to the data the web app sho
 
 ```
 DICOM  ->  core/dicom/to_nifti.py   one NIfTI volume per series (pixels + geometry, no patient tags)
-       ->  TotalSpineSeg (tss.py)   vertebrae C1..L5 + sacrum, discs, spinal cord, spinal canal (nnU-Net, GPU)
+       ->  outliner.py              vertebrae C1..L5, discs (numbered), spinal canal, spinal cord: rAidiology's own
+                                    spine outliner v2 (Models/spine-outliner-v2); TotalSpineSeg (tss.py) only behind
+                                    --outliner tss, for a side-by-side comparison (its weights are not cleared for sale)
        ->  metrics.py               per level: disc height, disc-to-CSF signal (hydration), canal and cord width
        ->  build_meshes.py          smooth .glb mesh per structure + anchor points (app frame, mm)
        ->  build_stacks.py          de-identified JPEG slice stacks, plus "AI outlines" overlays
@@ -44,6 +46,8 @@ py -3.12 -m venv .venv
 `kornia<0.8` matters: TotalSpineSeg's augmentation package imports `kornia.core.Tensor`, which
 kornia 0.8 removed, and the error only shows when the model loads.
 TotalSpineSeg downloads its weights from its GitHub release on first run (about 300 MB).
+TotalSpineSeg, nnU-Net and kornia are needed only for `--outliner tss`; the default outliner needs torch, nibabel,
+numpy and scipy, and reads its weights from `Models/spine-outliner-v2`.
 
 ## The reading step
 
