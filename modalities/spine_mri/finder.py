@@ -97,7 +97,8 @@ def three(v, k):
     return np.stack([v[max(k - 1, 0)], v[k], v[min(k + 1, n - 1)]])
 
 
-def build_net(width):
+def build_net(width, out=None):
+    """The 2D U-Net; `out` output channels (default: one per class; outliner.py adds two heads)."""
     import torch.nn as nn
 
     def block(i, o):
@@ -111,7 +112,7 @@ def build_net(width):
             self.down = nn.ModuleList([block(3, ch[0])] + [block(ch[i], ch[i + 1]) for i in range(4)])
             self.up = nn.ModuleList([nn.ConvTranspose2d(ch[i + 1], ch[i], 2, stride=2) for i in range(4)])
             self.dec = nn.ModuleList([block(2 * ch[i], ch[i]) for i in range(4)])
-            self.head = nn.Conv2d(ch[0], len(CLASSES), 1)
+            self.head = nn.Conv2d(ch[0], len(CLASSES) if out is None else out, 1)
 
         def forward(self, x):
             import torch

@@ -76,7 +76,7 @@ any optional file is missing (show a tasteful empty state, never a blank page or
 | `disc_to_csf_signal` | disc signal divided by spinal-fluid signal on the same slices (higher = more water) |
 | `canal_ap_at_disc_mm` | front-to-back width of the fluid sac at the disc |
 | `cord_ap_at_disc_mm` | front-to-back width of the cord at the disc |
-| `cord_compression_ratio_hc` | cervical only, in percent: how much narrower front to back the cord is at this level than expected from healthy adults of the same sex and age +-10 years (Spinal Cord Toolbox `sct_compute_compression -normalize-hc 1`, its `diameter_AP_ratio_PAM50_normalized`; database of 203 healthy adults, `modalities/spine_mri/sct/`). 0 = as expected, positive = narrower, negative = wider. Present only where the reading reports cord or canal narrowing. PAM50 template: permission pending. |
+| `cord_compression_ratio_hc` | cervical only, in percent: how much narrower front to back the cord is at this level than expected from healthy adults of the same sex and age +-10 years (SCT's normalised MSCC formula on the cord's front-to-back diameter, against rAidiology's own reference of 203 healthy adults measured from Spine Generic data-multi-subject, CC BY 4.0: `modalities/spine_mri/sct/healthy_norms.py`). 0 = as expected, positive = narrower, negative = wider. Present only where the reading reports cord or canal narrowing. |
 
 `levels[].specialist` (optional, lumbar T12-L1 to L5-S1 only): the shipped specialist model's
 grades. Present only when a method passed the ship rule on the held-out test split

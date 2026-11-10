@@ -63,8 +63,8 @@ Each slice is also rendered in a fluid/disc window and a bone/marrow window from
 
 `eval/` measures every reading method against expert grades on the public SPIDER dataset, trains
 the disc grader and decides what ships: see [eval/README.md](eval/README.md). The cervical cord
-comparison with healthy adults uses Spinal Cord Toolbox (`sct/install_sct.ps1`,
-`sct/cord_compression.py`).
+comparison with healthy adults segments the cord with Spinal Cord Toolbox (`sct/install_sct.ps1`,
+`sct/cord_compression.py`) and compares it with rAidiology's own healthy reference (`sct/healthy_norms.py`).
 
 ## Measurement caveats
 

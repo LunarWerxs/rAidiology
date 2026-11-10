@@ -1,4 +1,6 @@
-"""TotalSpineSeg step-2 label ids -> names."""
+"""TotalSpineSeg step-2 label ids -> names, and where a patient's label file lives (outline_path).
+outliner.py (v2, the default) writes these same ids, so readers do not care which outliner ran."""
+import os
 
 NAMES = {1: "cord", 2: "canal", 50: "sacrum"}
 for i in range(1, 8):
@@ -29,3 +31,12 @@ def kind(name):
 
 def level_of(name):
     return name[5:].replace("_", "-") if name.startswith("disc_") else name
+
+
+OUTLINE_DIR = "outline"   # run_pipeline.py writes every sagittal T2's labels here, whichever outliner ran
+
+
+def outline_path(work, name):
+    """The label file (TotalSpineSeg step-2 ids) of series `name` in a patient work folder: run_pipeline.py writes it,
+    every reader (specialist.py, audit_measure.py, sct/cord_compression.py, eval/panel_runner.py) reads it here."""
+    return os.path.join(work, OUTLINE_DIR, name + ".nii.gz")

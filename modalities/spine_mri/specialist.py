@@ -66,14 +66,15 @@ def is_not_blind():
 
 
 def read_patient(work, version):
-    """The grader's per-level grades on the patient's lumbar sagittal T2/T1 (needs the scan, TSS labels and a GPU)."""
+    """The grader's per-level grades on the patient's lumbar sagittal T2/T1 (needs the scan, its outline labels and a GPU)."""
     from grader import patient
+    from labels import outline_path
     series = json.load(open(os.path.join(work, "nifti", "series.json")))
     pick = lambda seq: max((s for s in series if s["region"] == "L" and s["plane"] == "sagittal" and s["sequence"] == seq),
                            key=lambda s: s["count"], default=None)
     t2, t1 = pick("T2"), pick("T1")
     nii = lambda s: os.path.join(work, "nifti", s["name"] + ".nii.gz")
-    return patient(version, nii(t2), os.path.join(work, "tss_out", "step2_output", t2["name"] + ".nii.gz"),
+    return patient(version, nii(t2), outline_path(work, t2["name"]),
                    nii(t1) if t1 else None)
 
 

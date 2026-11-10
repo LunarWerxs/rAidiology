@@ -42,7 +42,7 @@ sys.path.insert(0, PIPE)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(HERE))))  # the repository root
 from core import paths  # noqa: E402
 paths.use("spine_mri")
-from labels import NAMES, level_of  # noqa: E402
+from labels import NAMES, level_of, outline_path  # noqa: E402
 from prepare import WORK  # noqa: E402
 from spider import ITEMS, SEED, grades  # noqa: E402
 from split import load as load_split  # noqa: E402
@@ -607,7 +607,7 @@ def _case_content(case, png):
                 content.append(png_block(Image.open(os.path.join(png, s, f"{k:02d}{w}.png")).convert("RGB")))
     # the same back-edge zoom for every disc of the region (never only the case's level)
     sag_t2 = [s for s in case["series"] if s.endswith("SAG_T2")]
-    lab_p = os.path.join(os.path.dirname(WORK), "..", "tss_out", "step2_output", f"{sag_t2[0]}.nii.gz") if sag_t2 else None
+    lab_p = outline_path(os.path.join(os.path.dirname(WORK), ".."), sag_t2[0]) if sag_t2 else None
     if lab_p and os.path.exists(lab_p):
         region_levels = {"lumbar": SCORED, "cervical": ["C2-C3", "C3-C4", "C4-C5", "C5-C6", "C6-C7", "C7-T1"]}[case["region"]]
         ids = [k for k, v in NAMES.items() if v.startswith("disc_") and level_of(v) in region_levels]

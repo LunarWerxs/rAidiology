@@ -1,7 +1,7 @@
 """Export de-identified JPEG slice stacks (pixels only) for the web viewer, plus an
 "AI outlines" stack of the TotalSpineSeg labels over each sagittal T2. Series are chosen per
 region from nifti_dir/series.json (written by to_nifti.py), so any spine disc works.
-Usage: python build_stacks.py <nifti_dir> <tss_step2_dir> <site_dir>"""
+Usage: python build_stacks.py <nifti_dir> <labels_dir> <site_dir>   (labels_dir: <work>/outline, run_pipeline.py)"""
 import json
 import os
 import sys
