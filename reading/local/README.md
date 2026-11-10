@@ -27,7 +27,7 @@ GPU code is run), `disk_free_bytes`, and `models` (from `models.json`, each with
 
 ## Weights
 
-Research-model weights come from Hugging Face: the two free models download once you accept the licence, and the five paid models are on request. Put each in `models/<key>/` inside the project
+Research-model weights come from Hugging Face: the two noncommercial-only models download once you accept the licence, and the five that are also licensed to companies are on request. Put each in `models/<key>/` inside the project
 folder (a `.safetensors`, `.onnx` or `.pt` file). Keys are listed in `models.json`.
 
 Not a medical device. For education and research.

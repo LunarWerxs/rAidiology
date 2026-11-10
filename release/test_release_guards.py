@@ -96,6 +96,21 @@ def test_gate_field_names_pass_hugging_faces_key_rule():
         assert "." not in name and "$" not in name, name
 
 
+def test_visitor_text_never_splits_models_into_paid_and_free():
+    """All seven models are under one licence (free for noncommercial use, companies pay); what differs is whether a
+    model is also licensed to companies. 'Paid model' / 'free model' told the owner his models were given away
+    (2026-11-09), so no text a visitor reads may say it."""
+    rr = reviewer()
+    pub = load(PUBLISH, "publish")
+    texts = {"decline reason": rr.DECLINE_REASON, **{f"gate note {k}": v for k, v in pub.GATE_NOTES.items()}}
+    for rel in ["README.md", "reading/local/README.md", "reading/local/ui/index.html", "reading/local/models.json",
+                "site/data/stats.json", "site/pricing.html", *[f"release/cards/{c}.md" for c in PAID | FREE]]:
+        texts[rel] = (ROOT / rel).read_text(encoding="utf-8")
+    bad = re.compile(r"\b(paid|free) (model|ones)\b|\bfive paid\b|\btwo free\b", re.I)
+    found = {k: bad.findall(v) for k, v in texts.items() if bad.search(v)}
+    assert not found, found
+
+
 def test_paid_list_fails_closed(tmp_path, monkeypatch):
     mod = load(PUBLISH, "publish")
     broken = tmp_path / "COMMERCIAL-LICENSE.md"

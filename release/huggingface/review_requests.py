@@ -43,7 +43,7 @@ PUBLIC_SUFFIX = re.compile(
     r")$")
 
 DECLINE_REASON = (
-    "rAidiology's paid models are free on request for universities, schools, public research and health bodies and "
+    "These rAidiology models are free on request for universities, schools, public research and health bodies and "
     "governments: ask from your institution's email address. A company needs the commercial licence, which starts "
     "with a free 60-day evaluation copy: email contact@lunarwerx.com from your work address. A charity or a person: "
     "email contact@lunarwerx.com.")
