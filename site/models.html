@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>rAidiology · Research results</title>
-  <meta name="description" content="Seven research models for X-ray, CT, MRI and mammograms, trained on public data, with their results on public test data.">
+  <meta name="description" content="Seven open research models across X-ray, CT, MRI and mammogram, trained on public data, with their results on public test data.">
   <meta property="og:title" content="rAidiology · Research results">
-  <meta property="og:description" content="Seven research models for X-ray, CT, MRI and mammograms, trained on public data, with their results on public test data.">
+  <meta property="og:description" content="Seven open research models across X-ray, CT, MRI and mammogram, trained on public data, with their results on public test data.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://raw.githubusercontent.com/LunarWerxs/rAidiology/main/site/img/og.png">
   <meta name="twitter:card" content="summary_large_image">
@@ -31,7 +31,7 @@
         <a class="nav-home" href="index.html">Home</a>
         <a class="nav-home" href="open.html?sample=1">Sample scan</a>
         <a href="index.html#scans"><span class="nav-long">CT, MRI, X-ray</span><span class="nav-short">Scans</span></a>
-        <a aria-current="page" href="models.html">Research</a>
+        <a href="models.html" aria-current="page">Research</a>
         <a href="support.html">Support us</a>
         <span class="nav-group">For companies</span>
         <a class="nav-biz" href="pricing.html"><span class="nav-long">Company licenses</span><span class="nav-short">Licenses</span></a>
@@ -51,8 +51,8 @@
     <section class="page-head results-head" aria-labelledby="page-h">
       <div class="wrap">
         <h1 id="page-h">Research results</h1>
-        <p class="lede">Seven research models cover <span class="nb">X-ray</span>, CT, MRI and mammograms. We trained them all on public data, for education and research.</p>
-        <p class="callout">Research results on public test data. They say nothing about your scan.</p>
+        <p class="lede">Seven open research models across <span class="nb">X-ray</span>, CT, MRI and mammogram, trained on public data, for education and research.</p>
+        <p class="callout">Research results on public test data. They say nothing about your own scan.</p>
         <h2 class="sr">The seven models</h2>
         <!-- chart:tiles -->
 <div class="result-tiles"><a class="result-tile" href="models.html#chest-xray"><img src="img/scans/xray-chest.webp" width="800" height="800" alt="" loading="lazy"><span class="pic-chip">X-ray</span><h3>Chest <span class="nb">X-ray</span> research model</h3><p class="score"><strong>25,596</strong> test pictures</p><p class="score-sub">none used in training</p><p class="what">Scores one chest <span class="nb">X-ray</span> for 14 kinds of label from a public dataset.</p><span class="cue">See the results</span></a><a class="result-tile" href="models.html#ct-segmenter"><img src="img/scans/ct-organs.webp" width="720" height="900" alt="" loading="lazy"><span class="pic-chip">CT</span><h3>CT organ outliner</h3><p class="score"><strong>89</strong> test scans</p><p class="score-sub">none used in training</p><p class="drew">Drew the outlines on the sample CT</p><p class="what">Outlines and names 117 body structures on CT.</p><span class="cue">See the results</span></a><a class="result-tile" href="models.html#disc-grader"><img src="img/scans/mri-spine.webp" width="640" height="900" alt="" loading="lazy"><span class="pic-chip">MRI</span><h3>Disc grading research model (MRI)</h3><p class="score"><strong>44</strong> test patients</p><p class="score-sub">none used in training</p><p class="what">Grades the discs of a spine MRI on a public <span class="nb">five-step</span> scale.</p><span class="cue">See the results</span></a><a class="result-tile" href="models.html#fracture-detector"><img src="img/scans/xray-wrist.webp" width="720" height="900" alt="" loading="lazy"><span class="pic-chip">X-ray</span><h3>Fracture research model <span class="nb">(X-ray)</span></h3><p class="score"><strong>4,067</strong> test pictures</p><p class="score-sub">none used in training</p><p class="what">Scores a child's wrist <span class="nb">X-ray</span> for a fracture label from a public dataset.</p><span class="cue">See the results</span></a><a class="result-tile" href="models.html#lung-nodules"><img src="img/scans/ct-lungs.webp" width="800" height="800" alt="" loading="lazy"><span class="pic-chip">CT</span><h3>Lung nodule research model (CT)</h3><p class="score"><strong>888</strong> scans</p><p class="score-sub">scored while building</p><p class="what">Marks small lung nodules on CT.</p><span class="tag dev"><svg class="dot-key hollow" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6 1 11 6 6 11 1 6Z"/></svg>In development</span><span class="cue">See the results</span></a><a class="result-tile" href="models.html#mammography"><img src="img/scans/mammogram.webp" width="720" height="900" alt="" loading="lazy"><span class="pic-chip">Mammogram</span><h3>Mammogram research model</h3><p class="score"><strong>3,744</strong> pictures</p><p class="score-sub">scored while building</p><p class="what">Scores one mammogram picture as benign or malignant against a public dataset.</p><span class="tag dev"><svg class="dot-key hollow" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6 1 11 6 6 11 1 6Z"/></svg>In development</span><span class="cue">See the results</span></a><a class="result-tile" href="models.html#spine-xray-corners"><img src="img/scans/xray-spine.webp" width="640" height="900" alt="" loading="lazy"><span class="pic-chip">X-ray</span><h3>Lumbar spine <span class="nb">X-ray</span> corner reader</h3><p class="score"><strong>2,000</strong> patients</p><p class="score-sub">scored while building</p><p class="what">Marks the corners of the lower back's vertebrae on a <span class="nb">side-view</span> spine <span class="nb">X-ray</span>.</p><span class="tag dev"><svg class="dot-key hollow" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6 1 11 6 6 11 1 6Z"/></svg>In development</span><span class="cue">See the results</span></a></div>
@@ -67,16 +67,16 @@
             <h2 id="chest-xray-h">Chest X-ray research model</h2>
           </div>
           <figure class="lightbox model-pic">
-            <img src="img/scans/xray-chest.webp" width="800" height="800" alt="An example chest X-ray from a public dataset." loading="lazy">
+            <img src="img/scans/xray-chest.webp" width="800" height="800" alt="Chest X-ray, a public dataset picture used as an example of this scan type." loading="lazy">
             <span class="pic-chip" aria-hidden="true">Chest X-ray</span>
-            <figcaption>NIH ChestX-ray14. Use is unrestricted, and NIH asks for credit. <a href="https://nihcc.app.box.com/v/ChestXray-NIHCC">Source</a></figcaption>
+            <figcaption>NIH ChestX-ray14, No restrictions (NIH), attribution requested. <a href="https://nihcc.app.box.com/v/ChestXray-NIHCC">Source</a></figcaption>
           </figure>
           <div class="model-main">
-<!-- chart:chest-xray-headline -->
+            <p class="model-sum">A team of ten networks trained to give 15 scores for one frontal chest <span class="nb">X-ray</span>, one for each of the 14 NIH <span class="nb">ChestX-ray14</span> label types and one for its abnormal label.</p>
+            <!-- chart:chest-xray-headline -->
 <figure class="rc"><figcaption class="rc-cap"><h3>Main results</h3></figcaption><div class="rc-grid"><div class="rc-hd"><p class="rc-scale">How well it ranks cases (<strong>AUROC</strong>): 0.5 is a coin toss, 1 is perfect</p><p class="rc-ax" aria-hidden="true"><span style="left:0%">0.5</span><span style="left:50%">0.75</span><span style="left:100%">1</span></p><p class="rc-vh">Score <span>(likely range)</span></p></div><p class="rc-grp"><svg class="dot-key" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.5"/></svg>Tested on data it never saw</p><div class="rc-row"><p class="rc-l">Agreement with <span class="nb">ChestX-ray14's</span> labels, mean over its 14 label types<span class="rc-set">NIH's official test list: 25,596 pictures of 2,797 patients</span></p><span class="rc-t" style="--v:63.5;--lo:62.2;--hi:64.62" aria-hidden="true"><i class="c" style="left:0%"></i><i style="left:50%"></i><i style="left:100%"></i></span><p class="rc-v"><strong>0.818</strong> <span>(0.811 to 0.823)</span></p></div><div class="rc-row"><p class="rc-l">Agreement with <span class="nb">ChestX-ray14's</span> abnormal label<span class="rc-set">NIH's official test list: 25,596 pictures</span></p><span class="rc-t" style="--v:47.26;--lo:44.82;--hi:49.54" aria-hidden="true"><i class="c" style="left:0%"></i><i style="left:50%"></i><i style="left:100%"></i></span><p class="rc-v"><strong>0.736</strong> <span>(0.724 to 0.748)</span></p></div><p class="rc-ax rc-ax-end" aria-hidden="true"><span style="left:0%">0.5</span><span style="left:50%">0.75</span><span style="left:100%">1</span></p></div></figure>
 <!-- /chart:chest-xray-headline -->
-            <p class="model-sum">A team of ten networks gives one frontal chest <span class="nb">X-ray</span> 15 scores. There's one for each of the 14 NIH <span class="nb">ChestX-ray14</span> label types, and one for its abnormal label.</p>
-                      </div>
+          </div>
         </div>
         <div class="model-more has-bd">
           <div class="model-bd">
@@ -88,19 +88,19 @@
             <div>
               <h3>Where it falls short</h3>
               <ul class="short-list">
-                <li>Agreement is lower for some label types: infiltration scores 0.707, pneumonia 0.727 and nodule 0.754.</li>
-                <li>Rare label types have wide intervals. Hernia has only 86 test pictures, and its interval runs from 0.878 to 0.957.</li>
-                <li>All the labeled pictures come from one hospital, so nothing shows how it behaves on other scanners, other patient groups or children.</li>
+                <li>Agreement is lower for some label types: infiltration scores 0.7071, pneumonia 0.7267 and nodule 0.7544.</li>
+                <li>Rare label types have wide intervals. Hernia has only 86 test pictures, and its interval runs from 0.8776 to 0.9574.</li>
+                <li>All the labelled pictures come from one hospital, so nothing shows how it behaves on other scanners, other patient groups or children.</li>
               </ul>
             </div>
             <div>
               <h3>Trained and tested on</h3>
               <ul class="data-list">
-                <li><a href="https://nihcc.app.box.com/v/ChestXray-NIHCC">NIH <span class="nb">ChestX-ray14</span></a> <span class="lic">Use is unrestricted, and NIH asks for credit</span></li>
-                <li><a href="https://huggingface.co/datasets/TLAIM/TAIX-Ray"><span class="nb">TAIX-Ray</span> (pre-training pictures only)</a> <span class="lic">CC&nbsp;BY&nbsp;4.0</span></li>
-                <li><a href="https://doi.org/10.7937/TCIA.BBAG-2923"><span class="nb">COVID-19-NY-SBU</span> (pre-training pictures only)</a> <span class="lic">CC&nbsp;BY&nbsp;4.0</span></li>
-                <li><a href="https://doi.org/10.17632/8j2g3csprk.3">Tuberculosis chest <span class="nb">X-ray</span> sets, Kiran and Jabeen (pre-training pictures only)</a> <span class="lic">CC&nbsp;BY&nbsp;4.0</span></li>
-                <li><a href="https://doi.org/10.6084/m9.figshare.32086362.v1"><span class="nb">BDCXR-3257</span> (pre-training pictures only)</a> <span class="lic">CC&nbsp;BY&nbsp;4.0</span></li>
+                <li><a href="https://nihcc.app.box.com/v/ChestXray-NIHCC">NIH <span class="nb">ChestX-ray14</span></a> <span class="lic">NIH asks for credit; use is unrestricted</span></li>
+                <li><a href="https://huggingface.co/datasets/TLAIM/TAIX-Ray"><span class="nb">TAIX-Ray</span> <span class="nb">(pre-training</span> pictures only)</a> <span class="lic">CC&nbsp;BY&nbsp;4.0</span></li>
+                <li><a href="https://doi.org/10.7937/TCIA.BBAG-2923"><span class="nb">COVID-19-NY-SBU</span> <span class="nb">(pre-training</span> pictures only)</a> <span class="lic">CC&nbsp;BY&nbsp;4.0</span></li>
+                <li><a href="https://doi.org/10.17632/8j2g3csprk.3">Tuberculosis chest <span class="nb">X-ray</span> sets, Kiran and Jabeen <span class="nb">(pre-training</span> pictures only)</a> <span class="lic">CC&nbsp;BY&nbsp;4.0</span></li>
+                <li><a href="https://doi.org/10.6084/m9.figshare.32086362.v1"><span class="nb">BDCXR-3257</span> <span class="nb">(pre-training</span> pictures only)</a> <span class="lic">CC&nbsp;BY&nbsp;4.0</span></li>
               </ul>
               <p class="model-card"><a class="btn secondary small" href="https://github.com/LunarWerxs/rAidiology/blob/main/release/cards/chest-xray.md">Model card on GitHub</a></p>
             </div>
@@ -115,22 +115,20 @@
       <div class="wrap">
         <div class="model-top">
           <div class="model-name">
-            <p class="eyebrow">Research results: CT</p>
+            <p class="eyebrow">CT</p>
             <h2 id="ct-segmenter-h">CT organ outliner</h2>
           </div>
           <figure class="lightbox model-pic">
-            <img src="img/scans/ct-organs.webp" width="720" height="900" alt="An example CT from a public dataset, with the structures colored." loading="lazy">
-            <span class="pic-chip" aria-hidden="true">CT, structures colored</span>
+            <img src="img/scans/ct-organs.webp" width="720" height="900" alt="CT, organs and bones coloured, a public dataset picture used as an example of this scan type." loading="lazy">
+            <span class="pic-chip" aria-hidden="true">CT, organs and bones coloured</span>
             <figcaption>TotalSegmentator dataset v2.0.1, CC BY 4.0. <a href="https://doi.org/10.5281/zenodo.10047292">Source</a></figcaption>
           </figure>
           <div class="model-main">
-<!-- chart:ct-segmenter-headline -->
+            <p class="model-sum">It looks at the whole 3D CT scan and labels every tiny point as one of 117 organs and bones, such as the liver, spleen, aorta, ribs and vertebrae, or as background.</p>
+            <!-- chart:ct-segmenter-headline -->
 <figure class="rc"><figcaption class="rc-cap"><h3>Main results</h3></figcaption><div class="rc-grid"><div class="rc-hd"><p class="rc-scale">Outline overlap (<strong>Dice</strong>): how closely it matches the dataset's own outlines, 1 is a perfect match</p><p class="rc-ax" aria-hidden="true"><span style="left:0%">0</span><span style="left:50%">0.5</span><span style="left:100%">1</span></p><p class="rc-vh">Score <span>(likely range)</span></p></div><p class="rc-grp"><svg class="dot-key" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.5"/></svg>Tested on data it never saw</p><div class="rc-row"><p class="rc-l">Mean over 115 structures<span class="rc-set">Tested on 89 CT scans</span></p><span class="rc-t" style="--v:86.68;--lo:85.38;--hi:87.81" aria-hidden="true"><i style="left:0%"></i><i style="left:50%"></i><i style="left:100%"></i></span><p class="rc-v"><strong>0.867</strong> <span>(0.854 to 0.878)</span></p></div><p class="rc-grp"><svg class="dot-key hollow" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6 1 11 6 6 11 1 6Z"/></svg>Development result (scored while building)</p><div class="rc-row dev"><p class="rc-l">Mean over 115 structures, development scans<span class="rc-set">1,139 development scans, each scored by models trained without it</span></p><span class="rc-t" style="--v:81.56;--lo:81.16;--hi:81.94" aria-hidden="true"><i style="left:0%"></i><i style="left:50%"></i><i style="left:100%"></i></span><p class="rc-v"><strong>0.816</strong> <span>(0.812 to 0.819)</span></p></div><p class="rc-ax rc-ax-end" aria-hidden="true"><span style="left:0%">0</span><span style="left:50%">0.5</span><span style="left:100%">1</span></p></div></figure>
 <!-- /chart:ct-segmenter-headline -->
-            <p class="model-sum">It outlines and names the structures in a CT scan, such as the liver, spleen, aorta, ribs and vertebrae. It works in two passes. First it looks at the whole scan at low detail to find roughly where each structure is. Then it looks closer and decides, for every tiny cube of the scan, which structure it belongs to, if any.</p>
-            <p class="model-sum">It outlines 117 structures. The score below is the mean over the 115 that appear in at least 10 of the 89 test scans, because the two kidney cysts are too rare there to score. Those two are still reported, in the notes below.</p>
-            <p class="callout">This research model drew the outlines on the <a href="open.html?sample=1">sample CT</a>. Its score comes from 89 CT scans it never saw during training. The overlap score (<strong>Dice</strong>) says how closely an outline matches the dataset's own, from 0 to 1, and the likely range (the 95% interval) is where the true score probably falls.</p>
-                      </div>
+          </div>
         </div>
         <div class="model-more has-bd">
           <div class="model-bd">
@@ -142,9 +140,9 @@
             <div>
               <h3>Where it falls short</h3>
               <ul class="short-list">
-                <li>Both kidney cysts score 0.000 on the test scans. Vertebra C6, the gallbladder, the portal and splenic veins and the adrenal glands are the next weakest.</li>
-                <li>About 4% of the time on the test scans, it outlines a structure that isn't there. On the development ones, that rises to about 13%.</li>
-                <li>Most test scans come from one institute and one scanner maker, and the score is lower for that institute (0.857) than for the others (0.887).</li>
+                <li>Both kidney cysts score 0.0000 on the test scans. Vertebra C6, the gallbladder, the portal and splenic veins and the adrenal glands are the next weakest.</li>
+                <li>It outlines a structure that is not in the scan about 4% of the time on the test scans and about 13% of the time on the development scans.</li>
+                <li>Most test scans come from one institute and one scanner maker, and the score is lower for that institute (0.8573) than for the others (0.8866).</li>
               </ul>
             </div>
             <div>
@@ -169,16 +167,16 @@
             <h2 id="disc-grader-h">Disc grading research model (MRI)</h2>
           </div>
           <figure class="lightbox model-pic">
-            <img src="img/scans/mri-spine.webp" width="640" height="900" alt="An example MRI of the lumbar spine from a public dataset, with the vertebrae and discs colored." loading="lazy">
-            <span class="pic-chip" aria-hidden="true">MRI of the lumbar spine, vertebrae and discs colored</span>
+            <img src="img/scans/mri-spine.webp" width="640" height="900" alt="MRI of the lumbar spine, vertebrae and discs coloured, a public dataset picture used as an example of this scan type." loading="lazy">
+            <span class="pic-chip" aria-hidden="true">MRI of the lumbar spine, vertebrae and discs coloured</span>
             <figcaption>SPIDER lumbar spine MRI, CC BY 4.0. <a href="https://doi.org/10.5281/zenodo.10159290">Source</a></figcaption>
           </figure>
           <div class="model-main">
-<!-- chart:disc-grader-headline -->
-<figure class="rc"><figcaption class="rc-cap"><h3>Main results</h3></figcaption><div class="rc-grid"><div class="rc-hd"><p class="rc-scale">Agreement beyond chance (<strong>Kappa</strong>): 0 is chance agreement, 1 is full agreement</p><p class="rc-ax" aria-hidden="true"><span style="left:0%">0</span><span style="left:50%">0.5</span><span style="left:100%">1</span></p><p class="rc-vh">Score <span>(likely range)</span></p></div><p class="rc-grp"><svg class="dot-key" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.5"/></svg>Tested on data it never saw</p><div class="rc-row"><p class="rc-l">Agreement with SPIDER's Pfirrmann grades, on data it never saw<span class="rc-set">SPIDER, tested on data it never saw: 44 patients, 264 discs, scored once</span></p><span class="rc-t" style="--v:77.3;--lo:66.4;--hi:85.3" aria-hidden="true"><i class="c" style="left:0%"></i><i style="left:50%"></i><i style="left:100%"></i></span><p class="rc-v"><strong>0.773</strong> <span>(0.664 to 0.853)</span></p></div><p class="rc-ax rc-ax-end" aria-hidden="true"><span style="left:0%">0</span><span style="left:50%">0.5</span><span style="left:100%">1</span></p></div><div class="rc-grid"><div class="rc-hd"><p class="rc-scale">Share matched (<strong>Percent</strong>): 0 to 100</p><p class="rc-ax" aria-hidden="true"><span style="left:0%">0</span><span style="left:50%">50</span><span style="left:100%">100</span></p><p class="rc-vh">Score <span>(likely range)</span></p></div><p class="rc-grp"><svg class="dot-key hollow" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6 1 11 6 6 11 1 6Z"/></svg>Development result (scored while building)</p><div class="rc-row dev"><p class="rc-l">Share of discs given SPIDER's exact grade, development patients<span class="rc-set">SPIDER development patients, each scored by a model trained without it: 168 patients, 1,004 discs</span></p><span class="rc-t" style="--v:59.6;--lo:55.5;--hi:63.4" aria-hidden="true"><i style="left:0%"></i><i style="left:50%"></i><i style="left:100%"></i></span><p class="rc-v"><strong>59.6%</strong> <span>(55.5 to 63.4%)</span></p></div><p class="rc-ax rc-ax-end" aria-hidden="true"><span style="left:0%">0</span><span style="left:50%">50</span><span style="left:100%">100</span></p></div></figure>
+            <p class="model-sum">Three networks trained to give each <span class="nb">lower-spine</span> disc on a sagittal MRI a Pfirrmann grade from 1 to 5 and a score for seven wear label types.</p>
+            <!-- chart:disc-grader-headline -->
+<figure class="rc"><figcaption class="rc-cap"><h3>Main results</h3></figcaption><div class="rc-grid"><div class="rc-hd"><p class="rc-scale">Agreement beyond chance (<strong>Kappa</strong>): 0 is chance agreement, 1 is full agreement</p><p class="rc-ax" aria-hidden="true"><span style="left:0%">0</span><span style="left:50%">0.5</span><span style="left:100%">1</span></p><p class="rc-vh">Score <span>(likely range)</span></p></div><p class="rc-grp"><svg class="dot-key" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.5"/></svg>Tested on data it never saw</p><div class="rc-row"><p class="rc-l">Agreement with SPIDER's Pfirrmann grades, on data it never saw<span class="rc-set">SPIDER, tested on data it never saw: 44 patients, 264 discs, scored once</span></p><span class="rc-t" style="--v:77.3;--lo:66.4;--hi:85.3" aria-hidden="true"><i class="c" style="left:0%"></i><i style="left:50%"></i><i style="left:100%"></i></span><p class="rc-v"><strong>0.773</strong> <span>(0.664 to 0.853)</span></p></div><p class="rc-ax rc-ax-end" aria-hidden="true"><span style="left:0%">0</span><span style="left:50%">0.5</span><span style="left:100%">1</span></p></div><div class="rc-grid"><div class="rc-hd"><p class="rc-scale">Share matched (<strong>Percent</strong>): 0 to 100</p><p class="rc-ax" aria-hidden="true"><span style="left:0%">0</span><span style="left:50%">50</span><span style="left:100%">100</span></p><p class="rc-vh">Score <span>(likely range)</span></p></div><p class="rc-grp"><svg class="dot-key hollow" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6 1 11 6 6 11 1 6Z"/></svg>Development result (scored while building)</p><div class="rc-row dev"><p class="rc-l">Share of discs given SPIDER's exact grade, development patients<span class="rc-set">SPIDER development patients, each scored by a model trained without it: 168 patients, 1,004 discs</span></p><span class="rc-t" style="--v:60.1;--lo:55.8;--hi:64.2" aria-hidden="true"><i style="left:0%"></i><i style="left:50%"></i><i style="left:100%"></i></span><p class="rc-v"><strong>60.1%</strong> <span>(55.8 to 64.2%)</span></p></div><p class="rc-ax rc-ax-end" aria-hidden="true"><span style="left:0%">0</span><span style="left:50%">50</span><span style="left:100%">100</span></p></div></figure>
 <!-- /chart:disc-grader-headline -->
-            <p class="model-sum">Three networks give each <span class="nb">lower-spine</span> disc on a side-view (sagittal) MRI a Pfirrmann grade from 1 to 5. They also score it for seven wear label types.</p>
-                      </div>
+          </div>
         </div>
         <div class="model-more has-bd">
           <div class="model-bd">
@@ -190,25 +188,26 @@
             <div>
               <h3>Where it falls short</h3>
               <ul class="short-list">
-                <li>The three current versions haven't been scored on patients they never saw, so their results are development results.</li>
-                <li>Herniation is the weak spot. On the dataset's herniation label per patient, the three versions together agree on 53% (38% to 70%) of patients who have one. For patients without one, it's 74%.</li>
-                <li>A new hospital can cost it most of its skill. Version 1 scored kappa 0.42 on a collection it had never seen. The version trained on that collection's development discs scored 0.78.</li>
+                <li>The three current versions have not been scored on <span class="nb">held-out</span> test patients; their results are development results.</li>
+                <li>Herniation is the weak spot: for the dataset's herniation label per patient, the three versions together catch 51% (37% to 65%) of patients with one while clearing 75% of patients without one.</li>
+                <li>A new hospital can cost it most of its skill: version 1 scored kappa 0.42 on a collection it had never seen, against 0.78 for the version trained on that collection's development discs.</li>
               </ul>
             </div>
             <div>
               <h3>Trained and tested on</h3>
               <ul class="data-list">
                 <li><a href="https://doi.org/10.5281/zenodo.10159290">SPIDER</a> <span class="lic">CC&nbsp;BY&nbsp;4.0</span></li>
-                <li><a href="https://doi.org/10.17632/k57fr854j2.2"><span class="nb">LSMA-PQR</span> v2</a> <span class="lic">CC&nbsp;BY&nbsp;4.0</span></li>
+                <li><a href="https://doi.org/10.17632/p3r4xd2488.2"><span class="nb">LSMA-PQR</span> v2</a> <span class="lic">CC&nbsp;BY&nbsp;4.0</span></li>
                 <li><a href="https://doi.org/10.17632/k57fr854j2.2">Lumbar Spine MRI Dataset v2</a> <span class="lic">CC&nbsp;BY&nbsp;4.0</span></li>
                 <li><a href="https://doi.org/10.17632/9j9hmy8kbn.1"><span class="nb">Multi-Disorder</span> Annotations for Lumbar Spine <span class="nb">Mid-Sagittal</span> Images v1</a> <span class="lic">CC&nbsp;BY&nbsp;4.0</span></li>
+                <li><a href="https://doi.org/10.17632/s6bgczr8s2.2">Radiologists Notes for Lumbar Spine MRI Dataset v2</a> <span class="lic">CC&nbsp;BY&nbsp;4.0</span></li>
               </ul>
               <p class="model-card"><a class="btn secondary small" href="https://github.com/LunarWerxs/rAidiology/blob/main/release/cards/disc-grader.md">Model card on GitHub</a></p>
             </div>
           </div>
         </div>
         <!-- chart:disc-grader-numbers -->
-<details class="rnums"><summary>Show the numbers</summary><div class="rnums-wrap"><table><caption class="sr">Disc grading research model (MRI): every result</caption><thead><tr><th scope="col">Result</th><th scope="col">Metric</th><th scope="col">Score</th><th scope="col">Likely range (95% interval)</th><th scope="col">Kind</th><th scope="col">Data it was scored on</th></tr></thead><tbody><tr class="grp"><th scope="colgroup" colspan="6">Main results</th></tr><tr><th scope="row">Agreement with SPIDER&#x27;s Pfirrmann grades, on data it never saw</th><td>Kappa</td><td>0.773</td><td>0.664 to 0.853</td><td>Tested on data it never saw</td><td>SPIDER, tested on data it never saw: 44 patients, 264 discs, scored once</td></tr><tr><th scope="row">Share of discs given SPIDER&#x27;s exact grade, development patients</th><td>Percent</td><td>59.6%</td><td>55.5 to 63.4</td><td>Development result (scored while building)</td><td>SPIDER development patients, each scored by a model trained without it: 168 patients, 1,004 discs</td></tr></tbody><tbody><tr class="grp"><th scope="colgroup" colspan="6">Agreement with SPIDER&#x27;s labels, seven label types, earlier version 1</th></tr><tr><th scope="row">Herniation (per disc)</th><td>AUROC</td><td>0.818</td><td>0.710 to 0.912</td><td>Tested on data it never saw</td><td>SPIDER, tested on data it never saw: 44 patients, 264 discs, scored once</td></tr><tr><th scope="row">Narrowing</th><td>AUROC</td><td>0.956</td><td>0.930 to 0.980</td><td>Tested on data it never saw</td><td>SPIDER, tested on data it never saw: 44 patients, 264 discs, scored once</td></tr><tr><th scope="row">Bulging</th><td>AUROC</td><td>0.874</td><td>0.824 to 0.919</td><td>Tested on data it never saw</td><td>SPIDER, tested on data it never saw: 44 patients, 264 discs, scored once</td></tr><tr><th scope="row">Slipped vertebra</th><td>AUROC</td><td>0.887</td><td>0.789 to 0.964</td><td>Tested on data it never saw</td><td>SPIDER, tested on data it never saw: 44 patients, 264 discs, scored once</td></tr><tr><th scope="row">Upper endplate change</th><td>AUROC</td><td>0.817</td><td>0.734 to 0.893</td><td>Tested on data it never saw</td><td>SPIDER, tested on data it never saw: 44 patients, 264 discs, scored once</td></tr><tr><th scope="row">Lower endplate change</th><td>AUROC</td><td>0.850</td><td>0.784 to 0.908</td><td>Tested on data it never saw</td><td>SPIDER, tested on data it never saw: 44 patients, 264 discs, scored once</td></tr><tr><th scope="row">Any Modic change</th><td>AUROC</td><td>0.832</td><td>0.743 to 0.911</td><td>Tested on data it never saw</td><td>SPIDER, tested on data it never saw: 44 patients, 264 discs, scored once</td></tr></tbody></table></div></details>
+<details class="rnums"><summary>Show the numbers</summary><div class="rnums-wrap"><table><caption class="sr">Disc grading research model (MRI): every result</caption><thead><tr><th scope="col">Result</th><th scope="col">Metric</th><th scope="col">Score</th><th scope="col">Likely range (95% interval)</th><th scope="col">Kind</th><th scope="col">Data it was scored on</th></tr></thead><tbody><tr class="grp"><th scope="colgroup" colspan="6">Main results</th></tr><tr><th scope="row">Agreement with SPIDER&#x27;s Pfirrmann grades, on data it never saw</th><td>Kappa</td><td>0.773</td><td>0.664 to 0.853</td><td>Tested on data it never saw</td><td>SPIDER, tested on data it never saw: 44 patients, 264 discs, scored once</td></tr><tr><th scope="row">Share of discs given SPIDER&#x27;s exact grade, development patients</th><td>Percent</td><td>60.1%</td><td>55.8 to 64.2</td><td>Development result (scored while building)</td><td>SPIDER development patients, each scored by a model trained without it: 168 patients, 1,004 discs</td></tr></tbody><tbody><tr class="grp"><th scope="colgroup" colspan="6">Agreement with SPIDER&#x27;s labels, seven label types, earlier version 1</th></tr><tr><th scope="row">Herniation (per disc)</th><td>AUROC</td><td>0.818</td><td>0.710 to 0.912</td><td>Tested on data it never saw</td><td>SPIDER, tested on data it never saw: 44 patients, 264 discs, scored once</td></tr><tr><th scope="row">Narrowing</th><td>AUROC</td><td>0.956</td><td>0.930 to 0.980</td><td>Tested on data it never saw</td><td>SPIDER, tested on data it never saw: 44 patients, 264 discs, scored once</td></tr><tr><th scope="row">Bulging</th><td>AUROC</td><td>0.874</td><td>0.824 to 0.919</td><td>Tested on data it never saw</td><td>SPIDER, tested on data it never saw: 44 patients, 264 discs, scored once</td></tr><tr><th scope="row">Slipped vertebra</th><td>AUROC</td><td>0.887</td><td>0.789 to 0.964</td><td>Tested on data it never saw</td><td>SPIDER, tested on data it never saw: 44 patients, 264 discs, scored once</td></tr><tr><th scope="row">Upper endplate change</th><td>AUROC</td><td>0.817</td><td>0.734 to 0.893</td><td>Tested on data it never saw</td><td>SPIDER, tested on data it never saw: 44 patients, 264 discs, scored once</td></tr><tr><th scope="row">Lower endplate change</th><td>AUROC</td><td>0.850</td><td>0.784 to 0.908</td><td>Tested on data it never saw</td><td>SPIDER, tested on data it never saw: 44 patients, 264 discs, scored once</td></tr><tr><th scope="row">Any Modic change</th><td>AUROC</td><td>0.832</td><td>0.743 to 0.911</td><td>Tested on data it never saw</td><td>SPIDER, tested on data it never saw: 44 patients, 264 discs, scored once</td></tr></tbody></table></div></details>
 <!-- /chart:disc-grader-numbers -->
       </div>
     </section>
@@ -220,16 +219,16 @@
             <h2 id="fracture-detector-h">Fracture research model (X-ray)</h2>
           </div>
           <figure class="lightbox model-pic">
-            <img src="img/scans/xray-wrist.webp" width="720" height="900" alt="An example X-ray of a child&#x27;s wrist, from a public dataset." loading="lazy">
+            <img src="img/scans/xray-wrist.webp" width="720" height="900" alt="X-ray of a child&#x27;s wrist, a public dataset picture used as an example of this scan type." loading="lazy">
             <span class="pic-chip" aria-hidden="true">X-ray of a child&#x27;s wrist</span>
             <figcaption>GRAZPEDWRI-DX v2, CC BY 4.0. <a href="https://doi.org/10.6084/m9.figshare.14825193">Source</a></figcaption>
           </figure>
           <div class="model-main">
-<!-- chart:fracture-detector-headline -->
+            <p class="model-sum">Two sets of five small networks trained to match a dataset's fracture labels on one wrist, hand, leg, hip or shoulder <span class="nb">X-ray</span>.</p>
+            <!-- chart:fracture-detector-headline -->
 <figure class="rc"><figcaption class="rc-cap"><h3>Main results</h3></figcaption><div class="rc-grid"><div class="rc-hd"><p class="rc-scale">How well it ranks cases (<strong>AUROC</strong>): 0.5 is a coin toss, 1 is perfect</p><p class="rc-ax" aria-hidden="true"><span style="left:0%">0.5</span><span style="left:50%">0.75</span><span style="left:100%">1</span></p><p class="rc-vh">Score <span>(likely range)</span></p></div><p class="rc-grp"><svg class="dot-key" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.5"/></svg>Tested on data it never saw</p><div class="rc-row"><p class="rc-l">Agreement with <span class="nb">GRAZPEDWRI-DX's</span> fracture labels, children's wrists<span class="rc-set"><span class="nb">GRAZPEDWRI-DX</span>, tested on data it never saw: 4,067 pictures of 1,176 patients with a certain label</span></p><span class="rc-t" style="--v:95.8;--lo:94.8;--hi:96.8" aria-hidden="true"><i class="c" style="left:0%"></i><i style="left:50%"></i><i style="left:100%"></i></span><p class="rc-v"><strong>0.979</strong> <span>(0.974 to 0.984)</span></p></div><div class="rc-row"><p class="rc-l">Agreement with FracAtlas's fracture labels, mixed bones<span class="rc-set">FracAtlas, tested on data it never saw: 798 pictures</span></p><span class="rc-t" style="--v:83.6;--lo:77.6;--hi:89" aria-hidden="true"><i class="c" style="left:0%"></i><i style="left:50%"></i><i style="left:100%"></i></span><p class="rc-v"><strong>0.918</strong> <span>(0.888 to 0.945)</span></p></div><div class="rc-row"><p class="rc-l">Agreement with <span class="nb">GRAZPEDWRI-DX's</span> fracture labels, first visits only<span class="rc-set"><span class="nb">GRAZPEDWRI-DX</span>, tested on data it never saw, first visits: 2,172 pictures of 990 patients</span></p><span class="rc-t" style="--v:93.8;--lo:92;--hi:95.6" aria-hidden="true"><i class="c" style="left:0%"></i><i style="left:50%"></i><i style="left:100%"></i></span><p class="rc-v"><strong>0.969</strong> <span>(0.960 to 0.978)</span></p></div><p class="rc-ax rc-ax-end" aria-hidden="true"><span style="left:0%">0.5</span><span style="left:50%">0.75</span><span style="left:100%">1</span></p></div></figure>
 <!-- /chart:fracture-detector-headline -->
-            <p class="model-sum">Two groups of five small networks learned to match a dataset's fracture labels on one wrist, hand, leg, hip or shoulder <span class="nb">X-ray</span>.</p>
-                      </div>
+          </div>
         </div>
         <div class="model-more has-bd">
           <div class="model-bd">
@@ -241,9 +240,9 @@
             <div>
               <h3>Where it falls short</h3>
               <ul class="short-list">
-                <li>Shoulders are weak. On 65 FracAtlas test pictures the AUROC is 0.692 (0.494 to 0.863), and with so few of them the true figure is uncertain.</li>
+                <li>Shoulders are weak: on 65 FracAtlas test pictures the AUROC is 0.692 (0.494 to 0.863), from very few pictures, so the true figure is uncertain.</li>
                 <li>Hands raise many false alarms: on 299 FracAtlas hand pictures it agrees with the <span class="nb">no-fracture</span> label on 0.645 of them, so roughly a third disagree.</li>
-                <li>It learned mostly from children's wrists (16,157 of 19,383 pictures). Its starting point was a network trained on chest <span class="nb">X-rays</span>.</li>
+                <li>It learned mostly from children's wrists (16,157 of 19,383 pictures) and started from a network trained on chest <span class="nb">X-rays</span>, not bones.</li>
               </ul>
             </div>
             <div>
@@ -251,7 +250,7 @@
               <ul class="data-list">
                 <li><a href="https://doi.org/10.6084/m9.figshare.14825193"><span class="nb">GRAZPEDWRI-DX</span> v2</a> <span class="lic">CC&nbsp;BY&nbsp;4.0</span></li>
                 <li><a href="https://doi.org/10.6084/m9.figshare.22363012">FracAtlas v7</a> <span class="lic">CC&nbsp;BY&nbsp;4.0</span></li>
-                <li><a href="https://nihcc.app.box.com/v/ChestXray-NIHCC">NIH <span class="nb">ChestX-ray14</span> (pre-training only, through the chest <span class="nb">X-ray</span> research model)</a> <span class="lic">Use is unrestricted, and NIH asks for credit</span></li>
+                <li><a href="https://nihcc.app.box.com/v/ChestXray-NIHCC">NIH <span class="nb">ChestX-ray14</span> <span class="nb">(pre-training</span> only, through the chest <span class="nb">X-ray</span> research model)</a> <span class="lic">NIH asks for credit; use is unrestricted</span></li>
               </ul>
               <p class="model-card"><a class="btn secondary small" href="https://github.com/LunarWerxs/rAidiology/blob/main/release/cards/fracture-detector.md">Model card on GitHub</a></p>
             </div>
@@ -270,25 +269,25 @@
             <h2 id="lung-nodules-h">Lung nodule research model (CT)</h2>
           </div>
           <figure class="lightbox model-pic">
-            <img src="img/scans/ct-lungs.webp" width="800" height="800" alt="An example chest CT in the lung window, from a public dataset." loading="lazy">
+            <img src="img/scans/ct-lungs.webp" width="800" height="800" alt="CT of the chest, lung window, a public dataset picture used as an example of this scan type." loading="lazy">
             <span class="pic-chip" aria-hidden="true">CT of the chest, lung window</span>
             <figcaption>LIDC-IDRI, CC BY 3.0. <a href="https://doi.org/10.7937/K9/TCIA.2015.LO9QL9SX">Source</a></figcaption>
           </figure>
           <div class="model-main">
-<!-- chart:lung-nodules-headline -->
+            <p class="model-sum">A chain of 3D networks trained to list places in a chest CT scan that look like small round spots (nodules), plus one network trained on <span class="nb">LIDC-IDRI's</span> malignancy ratings of nodules.</p>
+            <!-- chart:lung-nodules-headline -->
 <figure class="rc"><figcaption class="rc-cap"><h3>Main results</h3></figcaption><div class="rc-grid"><div class="rc-hd"><p class="rc-scale">How well it ranks cases (<strong>AUROC</strong>): 0.5 is a coin toss, 1 is perfect</p><p class="rc-ax" aria-hidden="true"><span style="left:0%">0.5</span><span style="left:50%">0.75</span><span style="left:100%">1</span></p><p class="rc-vh">Score <span>(likely range)</span></p></div><p class="rc-grp"><svg class="dot-key hollow" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6 1 11 6 6 11 1 6Z"/></svg>Development result (scored while building)</p><div class="rc-row dev"><p class="rc-l">Agreement with <span class="nb">LIDC-IDRI's</span> malignancy ratings, per patient<span class="rc-set">117 LIDC patients (86 cancers, 31 benign), each scored by a model trained without it</span></p><span class="rc-t" style="--v:43.4;--lo:19.8;--hi:65.4" aria-hidden="true"><i class="c" style="left:0%"></i><i style="left:50%"></i><i style="left:100%"></i></span><p class="rc-v"><strong>0.717</strong> <span>(0.599 to 0.827)</span></p></div><div class="rc-row dev"><p class="rc-l">Agreement with <span class="nb">LIDC-IDRI's</span> malignancy ratings, per nodule<span class="rc-set">749 LIDC nodules, each scored by a model trained without it</span></p><span class="rc-t" style="--v:89.7;--lo:86;--hi:93.04" aria-hidden="true"><i class="c" style="left:0%"></i><i style="left:50%"></i><i style="left:100%"></i></span><p class="rc-v"><strong>0.949</strong> <span>(0.930 to 0.965)</span></p></div><p class="rc-ax rc-ax-end" aria-hidden="true"><span style="left:0%">0.5</span><span style="left:50%">0.75</span><span style="left:100%">1</span></p></div><div class="rc-grid"><div class="rc-hd"><p class="rc-scale">Share matched (<strong>Percent</strong>): 0 to 100</p><p class="rc-ax" aria-hidden="true"><span style="left:0%">0</span><span style="left:50%">50</span><span style="left:100%">100</span></p><p class="rc-vh">Score <span>(likely range)</span></p></div><p class="rc-grp"><svg class="dot-key hollow" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6 1 11 6 6 11 1 6Z"/></svg>Development result (scored while building)</p><div class="rc-row dev"><p class="rc-l">Share of LUNA16's marked nodules matched, averaged over seven <span class="nb">false-alarm</span> allowances<span class="rc-set">LUNA16: 888 <span class="nb">thin-slice</span> <span class="nb">LIDC-IDRI</span> scans, five groups, each scored by a model trained without it</span></p><span class="rc-t" style="--v:88;--lo:86;--hi:89.6" aria-hidden="true"><i style="left:0%"></i><i style="left:50%"></i><i style="left:100%"></i></span><p class="rc-v"><strong>88.0%</strong> <span>(86.0 to 89.6%)</span></p></div><p class="rc-ax rc-ax-end" aria-hidden="true"><span style="left:0%">0</span><span style="left:50%">50</span><span style="left:100%">100</span></p></div></figure>
 <!-- /chart:lung-nodules-headline -->
-            <p class="model-sum">A chain of 3D networks marks the places in a chest CT scan that look like small round spots, called nodules. Another network learned from <span class="nb">LIDC-IDRI's</span> malignancy ratings of nodules.</p>
-                      </div>
+          </div>
         </div>
         <div class="model-more">
           <div class="model-facts">
             <div>
               <h3>Where it falls short</h3>
               <ul class="short-list">
-                <li>All the <span class="nb">nodule-matching</span> numbers are development scores from the same 888 scans used to choose between designs. There's no untouched test.</li>
+                <li>All the <span class="nb">nodule-matching</span> numbers are development scores from the same 888 scans used to choose between designs; there is no untouched test.</li>
                 <li>Per patient, the largest nodule's diameter alone scores 0.755, higher than the model's 0.717.</li>
-                <li>At one false alarm in eight scans, it matches 70.5% of LUNA16's marked nodules under the strict scoring.</li>
+                <li>At one false alarm in eight scans it matches 70.5% of LUNA16's marked nodules under the strict reading.</li>
               </ul>
             </div>
             <div>
@@ -317,25 +316,25 @@
             <h2 id="mammography-h">Mammogram research model</h2>
           </div>
           <figure class="lightbox model-pic">
-            <img src="img/scans/mammogram.webp" width="720" height="900" alt="An example mammogram from a public dataset." loading="lazy">
+            <img src="img/scans/mammogram.webp" width="720" height="900" alt="Mammogram, a public dataset picture used as an example of this scan type." loading="lazy">
             <span class="pic-chip" aria-hidden="true">Mammogram</span>
             <figcaption>CMMD (Chinese Mammography Database), CC BY 4.0. <a href="https://doi.org/10.7937/tcia.eqde-4b16">Source</a></figcaption>
           </figure>
           <div class="model-main">
-<!-- chart:mammography-headline -->
+            <p class="model-sum">Five versions of a network trained to match a dataset's benign/malignant labels for a lesion already marked on a mammogram.</p>
+            <!-- chart:mammography-headline -->
 <figure class="rc"><figcaption class="rc-cap"><h3>Main results</h3></figcaption><div class="rc-grid"><div class="rc-hd"><p class="rc-scale">How well it ranks cases (<strong>AUROC</strong>): 0.5 is a coin toss, 1 is perfect</p><p class="rc-ax" aria-hidden="true"><span style="left:0%">0.5</span><span style="left:50%">0.75</span><span style="left:100%">1</span></p><p class="rc-vh">Score <span>(likely range)</span></p></div><p class="rc-grp"><svg class="dot-key" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.5"/></svg>Tested on data it never saw</p><div class="rc-row"><p class="rc-l">Agreement with <span class="nb">CBIS-DDSM's</span> benign/malignant labels, masses, per lesion and view<span class="rc-set"><span class="nb">CBIS-DDSM</span> official test list: 378 masses, scored once</span></p><span class="rc-t" style="--v:65.8;--lo:55;--hi:74.6" aria-hidden="true"><i class="c" style="left:0%"></i><i style="left:50%"></i><i style="left:100%"></i></span><p class="rc-v"><strong>0.829</strong> <span>(0.775 to 0.873)</span></p></div><p class="rc-grp"><svg class="dot-key hollow" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6 1 11 6 6 11 1 6Z"/></svg>Development result (scored while building)</p><div class="rc-row dev"><p class="rc-l">Agreement with CMMD's benign/malignant labels, per picture<span class="rc-set">CMMD: 3,744 pictures of 1,775 patients, five groups split by patient</span></p><span class="rc-t" style="--v:58.6;--lo:54.8;--hi:62.2" aria-hidden="true"><i class="c" style="left:0%"></i><i style="left:50%"></i><i style="left:100%"></i></span><p class="rc-v"><strong>0.793</strong> <span>(0.774 to 0.811)</span></p></div><div class="rc-row dev"><p class="rc-l">Agreement with CMMD's benign/malignant labels, per breast<span class="rc-set">CMMD: 1,872 breasts, five groups split by patient</span></p><span class="rc-t" style="--v:62.94;--lo:58.9;--hi:66.92" aria-hidden="true"><i class="c" style="left:0%"></i><i style="left:50%"></i><i style="left:100%"></i></span><p class="rc-v"><strong>0.815</strong> <span>(0.794 to 0.835)</span></p></div><p class="rc-ax rc-ax-end" aria-hidden="true"><span style="left:0%">0.5</span><span style="left:50%">0.75</span><span style="left:100%">1</span></p></div></figure>
 <!-- /chart:mammography-headline -->
-            <p class="model-sum">Five versions of one network learned to match a dataset's benign/malignant labels for a lesion that's already marked on a mammogram.</p>
-                      </div>
+          </div>
         </div>
         <div class="model-more">
           <div class="model-facts">
             <div>
               <h3>Where it falls short</h3>
               <ul class="short-list">
-                <li>Masses are the weak spot. They score 0.737, against 0.842 for calcifications, and they make up 2,298 of the 3,744 pictures.</li>
-                <li>Where no lesion outline exists, the score is close to a coin toss. Version 38 scores 0.573 on those 1,002 pictures.</li>
-                <li>Every CMMD number comes from CMMD itself. There's no set of pictures it never saw and no second hospital, so the figure may be a little high for new pictures.</li>
+                <li>Masses are the weak spot: they score 0.7371 against 0.8424 for calcifications, and masses are 2,298 of the 3,744 pictures.</li>
+                <li>Where no lesion outline exists the score is close to a coin toss: version 38 scores 0.5726 on those 1,002 pictures.</li>
+                <li>Every CMMD number comes from CMMD itself. There is no <span class="nb">held-out</span> test and no second hospital, so the figure may be a little high for new pictures.</li>
               </ul>
             </div>
             <div>
@@ -345,7 +344,7 @@
                 <li><a href="https://www.cancerimagingarchive.net/analysis-result/tompei-cmmd/"><span class="nb">TOMPEI-CMMD</span> (lesion outlines, training only)</a> <span class="lic">CC&nbsp;BY&nbsp;4.0</span></li>
                 <li><a href="https://www.cancerimagingarchive.net/collection/cbis-ddsm/"><span class="nb">CBIS-DDSM</span></a> <span class="lic">CC&nbsp;BY&nbsp;3.0</span></li>
                 <li><a href="https://doi.org/10.7910/DVN/KXJCIU"><span class="nb">OMAMA-DB</span></a> <span class="lic">MIT</span></li>
-                <li><a href="https://nihcc.app.box.com/v/ChestXray-NIHCC">NIH <span class="nb">ChestX-ray14</span> (start of the training chain)</a> <span class="lic">Use is unrestricted, and NIH asks for credit</span></li>
+                <li><a href="https://nihcc.app.box.com/v/ChestXray-NIHCC">NIH <span class="nb">ChestX-ray14</span> (start of the training chain)</a> <span class="lic">NIH asks for credit; use is unrestricted</span></li>
               </ul>
               <p class="model-card"><a class="btn secondary small" href="https://github.com/LunarWerxs/rAidiology/blob/main/release/cards/mammography.md">Model card on GitHub</a></p>
             </div>
@@ -364,16 +363,16 @@
             <h2 id="spine-xray-corners-h">Lumbar spine X-ray corner reader</h2>
           </div>
           <figure class="lightbox model-pic">
-            <img src="img/scans/xray-spine.webp" width="640" height="900" alt="An example side X-ray of the lower spine, from a public dataset." loading="lazy">
+            <img src="img/scans/xray-spine.webp" width="640" height="900" alt="Side X-ray of the lower spine, a public dataset picture used as an example of this scan type." loading="lazy">
             <span class="pic-chip" aria-hidden="true">Side X-ray of the lower spine</span>
             <figcaption>Spondylolisthesis Vertebral Landmark Dataset v1 (Reyes, VSB-TU Ostrava), CC BY 4.0. <a href="https://data.mendeley.com/datasets/5jdfdgp762/1">Source</a></figcaption>
           </figure>
           <div class="model-main">
-<!-- chart:spine-xray-corners-headline -->
+            <p class="model-sum">Small networks trained to place the corners of the <span class="nb">lower-back</span> vertebrae L1 to L5 on a spine <span class="nb">X-ray</span>, one for the side view and one for the front view.</p>
+            <!-- chart:spine-xray-corners-headline -->
 <figure class="rc"><figcaption class="rc-cap"><h3>Main results</h3></figcaption><div class="rc-grid"><div class="rc-hd"><p class="rc-scale">Share matched (<strong>Percent</strong>): 0 to 100</p><p class="rc-ax" aria-hidden="true"><span style="left:0%">0</span><span style="left:50%">50</span><span style="left:100%">100</span></p><p class="rc-vh">Score <span>(likely range)</span></p></div><p class="rc-grp"><svg class="dot-key" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.5"/></svg>Tested on data it never saw</p><div class="rc-row"><p class="rc-l">Share of the second set's marked corners within 5 pixels, side view<span class="rc-set">Outside set: 590 <span class="nb">side-view</span> pictures from the Spondylolisthesis Vertebral Landmark set, no network trained on it, scored once</span></p><span class="rc-t" style="--v:64.3;--lo:61.7;--hi:66.9" aria-hidden="true"><i style="left:0%"></i><i style="left:50%"></i><i style="left:100%"></i></span><p class="rc-v"><strong>64.3%</strong> <span>(61.7 to 66.9%)</span></p></div><p class="rc-grp"><svg class="dot-key hollow" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6 1 11 6 6 11 1 6Z"/></svg>Development result (scored while building)</p><div class="rc-row dev"><p class="rc-l">Share of <span class="nb">BUU-LSPINE's</span> marked vertebrae matched, side view (IoU 0.5)<span class="rc-set">All 2,000 <span class="nb">BUU-LSPINE</span> patients, each scored by a model trained without it</span></p><span class="rc-t" style="--v:97.9;--lo:97.3;--hi:98.4" aria-hidden="true"><i style="left:0%"></i><i style="left:50%"></i><i style="left:100%"></i></span><p class="rc-v"><strong>97.9%</strong> <span>(97.3 to 98.4%)</span></p></div><div class="rc-row dev"><p class="rc-l">Share of <span class="nb">BUU-LSPINE's</span> marked vertebrae matched, front view (IoU 0.5)<span class="rc-set">All 2,000 <span class="nb">BUU-LSPINE</span> patients, each scored by a model trained without it</span></p><span class="rc-t" style="--v:95.8;--lo:95;--hi:96.6" aria-hidden="true"><i style="left:0%"></i><i style="left:50%"></i><i style="left:100%"></i></span><p class="rc-v"><strong>95.8%</strong> <span>(95.0 to 96.6%)</span></p></div><p class="rc-ax rc-ax-end" aria-hidden="true"><span style="left:0%">0</span><span style="left:50%">50</span><span style="left:100%">100</span></p></div></figure>
 <!-- /chart:spine-xray-corners-headline -->
-            <p class="model-sum">Small networks place the corners of the <span class="nb">lower-back</span> vertebrae L1 to L5 on a spine <span class="nb">X-ray</span>. One handles the side view and one the front view.</p>
-                      </div>
+          </div>
         </div>
         <div class="model-more has-bd">
           <div class="model-bd">
@@ -385,9 +384,9 @@
             <div>
               <h3>Where it falls short</h3>
               <ul class="short-list">
-                <li>On the second set it places 64.3% of corners within 5 pixels. Pictures of the Burapha patients score 71.6%, and those of the Honduran patients 18.3%.</li>
+                <li>On the second set it places 64.3% of corners within 5 pixels; the pictures of the Burapha patients score 71.6% and those of the Honduran patients score 18.3%.</li>
                 <li>Everything it learned from comes from one dataset collected in Thailand.</li>
-                <li>The average miss is bigger than the typical one. On the side view it's 11.78 pixels, against 7.10 for the median patient.</li>
+                <li>The average miss is bigger than the typical miss: on the side view 11.78 pixels against a median patient of 7.10.</li>
               </ul>
             </div>
             <div>

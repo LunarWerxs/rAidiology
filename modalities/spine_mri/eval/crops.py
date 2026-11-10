@@ -7,7 +7,9 @@ The centre and angle come from the disc's TotalSpineSeg label on T2 (or SPIDER's
 (when there is no T1 the channel is zeros and a flag says so). Each series is scaled by its own
 1st and 99th percentiles, so 0 ~ dark and 1 ~ bright on every scanner.
 Output: float16 array (2 sequences, 5 planes, H, W).
-Usage: python crops.py <dev|test> [work_dir]  -> <work>/<split>/crops.npz"""
+With RAIDIOLOGY_NO_TSS=1 (match.no_tss) crops.npz holds the spider_masks rows alone and no TotalSpineSeg file is read.
+Usage: python crops.py <dev|test> [work_dir]  -> <work>/<split>/crops.npz
+       python crops.py finder dev  -> <work>/dev/crops_finder.npz (finder.py's out-of-fold discs; finder_main)"""
 import os
 import sys
 
@@ -92,7 +94,9 @@ def crop(t2, t1, lab, label):
 
 
 def main(split, work=WORK):
+    from match import no_tss
     guard_test(split)
+    locs = ("spider_masks",) if no_tss() else ("tss", "spider_masks")
     base = os.path.join(work, split)
     m = pd.read_csv(os.path.join(base, "matches.csv"), keep_default_na=False)
     X, rows = [], []
@@ -101,10 +105,11 @@ def main(split, work=WORK):
         t2 = Series(os.path.join(base, "t2", f"{p}.nii.gz"))
         t1p = os.path.join(base, "t1", f"{p}.nii.gz")
         t1 = Series(t1p) if os.path.exists(t1p) else None
-        labs = {"tss": np.asarray(nib.load(os.path.join(base, "tss", "step2_output", f"{p}.nii.gz")).dataobj).astype(np.int32),
-                "spider_masks": np.asarray(nib.load(os.path.join(base, "spiderlab", f"{p}.nii.gz")).dataobj).astype(np.int32)}
+        labs = {"spider_masks": np.asarray(nib.load(os.path.join(base, "spiderlab", f"{p}.nii.gz")).dataobj).astype(np.int32)}
+        if "tss" in locs:
+            labs["tss"] = np.asarray(nib.load(os.path.join(base, "tss", "step2_output", f"{p}.nii.gz")).dataobj).astype(np.int32)
         for _, r in mp.iterrows():
-            for loc in ("tss", "spider_masks"):
+            for loc in locs:
                 if loc == "tss" and r.matched != 1:
                     continue
                 label = int(r.tss_label) if loc == "tss" else disc_id(int(r.ivd))
@@ -120,5 +125,44 @@ def main(split, work=WORK):
     print(split, "crops", len(X), idx.groupby("localisation").size().to_dict(), "no T1:", int((idx.has_t1 == 0).sum()))
 
 
+def finder_main(split="dev", work=WORK):
+    """Crops of the in-scope discs where rAidiology's own disc finder (../finder.py, out of fold) puts them:
+    each SPIDER disc takes the finder disc with the best Dice, kept at Dice >= match.MIN_DICE, exactly as
+    TotalSpineSeg's discs are matched. Written beside crops.npz, which stays untouched, as crops_finder.npz
+    and crops_finder_index.csv (localisation "finder"); a disc the finder missed has no row (missed.csv)."""
+    from match import MIN_DICE, match_patient
+    assert split == "dev", "the finder's crops are out of fold, development patients only"
+    base = os.path.join(work, split)
+    m = pd.read_csv(os.path.join(base, "matches.csv"), keep_default_na=False)
+    X, rows, missed = [], [], []
+    for p in sorted(m[(m.in_scope == 1)].patient.unique()):
+        mp = m[(m.patient == p) & (m.in_scope == 1)]
+        t2 = Series(os.path.join(base, "t2", f"{p}.nii.gz"))
+        t1p = os.path.join(base, "t1", f"{p}.nii.gz")
+        t1 = Series(t1p) if os.path.exists(t1p) else None
+        lab = np.asarray(nib.load(os.path.join(base, "finder", f"{p}.nii.gz")).dataobj).astype(np.int32)
+        mask = np.asarray(nib.load(os.path.join(base, "mask", f"{p}.nii.gz")).dataobj).astype(np.int32)
+        mt = match_patient(mask, lab)
+        for _, r in mp.iterrows():
+            label, dice = mt.get(int(r.ivd), (None, 0.0))
+            x = None
+            if label is not None and dice >= MIN_DICE:
+                x, has_t1 = crop(t2, t1, lab, int(label))
+            if x is None:
+                missed.append({"patient": int(p), "ivd": int(r.ivd), "fold": r.fold, "dice": dice})
+                continue
+            X.append(x)
+            rows.append({"patient": int(p), "ivd": int(r.ivd), "localisation": "finder", "fold": r.fold,
+                         "vendor": r.vendor, "has_t1": int(has_t1)})
+    idx = pd.DataFrame(rows)
+    np.savez_compressed(os.path.join(base, "crops_finder.npz"), x=np.stack(X))
+    idx.to_csv(os.path.join(base, "crops_finder_index.csv"), index=False)
+    pd.DataFrame(missed, columns=["patient", "ivd", "fold", "dice"]).to_csv(os.path.join(base, "crops_finder_missed.csv"), index=False)
+    print(split, "finder crops", len(X), "missed", len(missed), "no T1:", int((idx.has_t1 == 0).sum()))
+
+
 if __name__ == "__main__":
-    main(sys.argv[1], *(sys.argv[2:3] or [WORK]))
+    if sys.argv[1] == "finder":
+        finder_main(*sys.argv[2:4])
+    else:
+        main(sys.argv[1], *(sys.argv[2:3] or [WORK]))

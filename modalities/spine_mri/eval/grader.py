@@ -18,7 +18,11 @@ Protocol, all on development folds:
   all nested-ensemble OOF predictions; the test split is never touched here.
 Usage: python grader.py train [--version 1] [--seed N] [--extra lsma] [--set key=<json> ...]
                                 [--both-localisations]
-       | predict <dev|test> | patient <t2.nii.gz> <labels.nii.gz> [t1.nii.gz]"""
+       | predict <dev|test> | patient <t2.nii.gz> <labels.nii.gz> [t1.nii.gz]
+
+Ideas 151 and 154 (--extra yolov9aid) train on YOLOv9-AID's lumbar discs as well: a training-only
+collection whose rows join every fold's training and never the out-of-fold read, an early-stop
+draw or a score (grader.py's TRAIN_ONLY; yolov9aid.py)."""
 import argparse
 import copy
 import hashlib
@@ -69,7 +73,8 @@ CFG = {"epochs": 60, "batch": 32, "lr": 2e-3, "weight_decay": 1e-4, "patience": 
        # idea 19, all off at these values (docs/efficiency): pool "avgmax" adds a max-pooled copy of the last maps to
        # the head; wear_w weighs grade 4-5 discs in the herniation loss; rank_w > 0 adds a same-grade ranking term
        # of each herniated disc over rank_k herniation-free discs of its grade
-       "pool": "avg", "wear_w": 1.0, "rank_w": 0.0, "rank_k": 2}
+       "pool": "avg", "wear_w": 1.0, "rank_w": 0.0, "rank_k": 2,
+       "arch": "2d"}   # idea 170: "3d" reads the five planes as a depth-5 volume (Net3D)
 
 
 def fingerprint_cfg(cfg):
@@ -77,6 +82,8 @@ def fingerprint_cfg(cfg):
     c = dict(cfg)
     if c.get("pool", "avg") == "avg":
         c.pop("pool", None)
+    if c.get("arch", "2d") == "2d":
+        c.pop("arch", None)
     if c.get("wear_w", 1.0) == 1.0:
         c.pop("wear_w", None)
     if c.get("rank_w", 0.0) == 0:
@@ -87,6 +94,8 @@ def fingerprint_cfg(cfg):
 
 def build_net(cfg):
     """A Net from a cfg dict (training's CFG or a saved grader.json's); keys an old file lacks mean the old net."""
+    if cfg.get("arch", "2d") == "3d":
+        return Net3D(cfg["width"], cfg.get("pool", "avg")).to(DEV)
     return Net(cfg["width"], cfg.get("pool", "avg")).to(DEV)
 
 
@@ -111,6 +120,33 @@ class Net(nn.Module):
             parts.append(F.adaptive_max_pool2d(f, 1).flatten(1))
         f = torch.cat([*parts, has_t1[:, None]], 1)
         return self.head(self.drop(f))   # [:, :4] cumulative Pfirrmann logits, [:, 4:] binary items
+
+
+class Net3D(nn.Module):
+    """Idea 170: the same heads over 3D convolutions on the (2 sequences, 5 planes, H, W) crop: T2 and T1 are 2
+    channels, the 5 sagittal planes a depth axis (3-wide kernels, 'same' padding, pooled in H and W only until the
+    last stage, which also halves the depth). Width is halved against the 2D net to keep the parameters near it."""
+    def __init__(self, width=32, pool="avg"):
+        super().__init__()
+        self.pool = pool
+        w = max(4, width // 2)
+        chans = [2, w, w * 2, w * 4, w * 8]
+        layers = []
+        for i in range(4):
+            layers += [nn.Conv3d(chans[i], chans[i + 1], 3, padding=1), nn.BatchNorm3d(chans[i + 1]), nn.ReLU(inplace=True),
+                       nn.Conv3d(chans[i + 1], chans[i + 1], 3, padding=1), nn.BatchNorm3d(chans[i + 1]), nn.ReLU(inplace=True),
+                       nn.MaxPool3d((2, 2, 2) if i >= 2 else (1, 2, 2), ceil_mode=True)]
+        self.body = nn.Sequential(*layers)
+        self.drop = nn.Dropout(0.3)
+        self.head = nn.Linear(chans[-1] * (2 if pool == "avgmax" else 1) + 1, 4 + len(ITEMS))
+
+    def forward(self, x, has_t1):
+        f = self.body(x)
+        parts = [F.adaptive_avg_pool3d(f, 1).flatten(1)]
+        if self.pool == "avgmax":
+            parts.append(F.adaptive_max_pool3d(f, 1).flatten(1))
+        f = torch.cat([*parts, has_t1[:, None]], 1)
+        return self.head(self.drop(f))
 
 
 def targets(df):
@@ -142,13 +178,31 @@ def augment(x, rng):
 
 
 PROBE = {}   # the selftest reads what the last train_one did: epochs run, where it resumed, what it loaded
+_XBUF = []   # the run's one card copy of a training set (_on_card)
+
+
+def _on_card(a):
+    """`a` as float32 on DEV, copied into one buffer the run keeps and grows only when a bigger set comes. A fresh copy
+    per call left the last call's copy pinned in the card's cache even after empty_cache: v141 held two 3.92 GiB copies
+    (4.04 GiB stayed reserved, 2026-10-13 06:44; a 9.5 GB share), and v142 ran out at a 9.0 GB ceiling with 7.52 GiB
+    reserved and 131 MiB in use (2026-10-14 02:59)."""
+    a = np.ascontiguousarray(a, dtype=np.float32)
+    if not _XBUF or _XBUF[0].numel() < a.size:
+        _XBUF.clear()
+        if DEV.type == "cuda":
+            torch.cuda.empty_cache()
+        _XBUF.append(torch.empty(a.size, dtype=torch.float32, device=DEV))
+    return _XBUF[0][:a.size].view(a.shape).copy_(torch.from_numpy(a))
 
 
 def _hold_out(rng, X):
-    """The early-stop patients: a seeded share of the training patients. Advances rng."""
-    pts = np.unique(X["patients"])
+    """The early-stop patients: a seeded share of the training patients. Advances rng. When X carries
+    `hold` (the training-only extra set, ideas 151 and 154), only rows marked there may be held out,
+    so those rows join every fold's training and never become early-stop rows."""
+    ok = X["hold"] if "hold" in X else np.ones(len(X["patients"]), bool)
+    pts = np.unique(X["patients"][ok])
     hold = set(rng.choice(pts, max(1, int(round(CFG["early_stop_frac"] * len(pts)))), replace=False))
-    va = np.isin(X["patients"], list(hold))
+    va = np.isin(X["patients"], list(hold)) & ok
     return va, ~va
 
 
@@ -278,13 +332,15 @@ def _save_partial(part, fp, ep, net, opt, sched, idx_tr, rng, best, best_state, 
     foldck.stop_after(ep + 1)
 
 
-def train_one(X, hasT1, Y, seed, log=None, ckpt=None):
+def train_one(X, hasT1, Y, seed, log=None, ckpt=None, led=None, prefix=""):
     """Train one model with early stopping on a held-back slice of its own training patients.
 
     With `ckpt` (a path without extension) the model is <ckpt>.pt, a bare state dict as ever, and the fingerprint of
     its training settings sits in <ckpt>.pt.fp: a model with a matching fingerprint is loaded, not retrained
     (RAIDIOLOGY_NO_RESUME=1 retrains). <ckpt>.partial.pt is saved after every epoch (an epoch is seconds, so there is
-    no mid-epoch save) and continued from, early stopping and all; it is removed once the model is saved."""
+    no mid-epoch save) and continued from, early stopping and all; it is removed once the model is saved.
+    With `led` (the run's ledger) each epoch's held-out loss, learning rate and seconds go to its curve, under `prefix`
+    (e.g. "fold2.") so a run of several models keeps them apart."""
     final = part = fp = None
     PROBE.clear()
     PROBE.update(epochs_run=0, resumed_epoch=None, cached=False)
@@ -302,7 +358,9 @@ def train_one(X, hasT1, Y, seed, log=None, ckpt=None):
     rng = np.random.default_rng(seed)
     torch.manual_seed(seed)
     va, tr = _hold_out(rng, X)
-    x = torch.tensor(X["x"], dtype=torch.float32, device=DEV)
+    if DEV.type == "cuda":
+        torch.cuda.empty_cache()
+    x = _on_card(X["x"])
     h = torch.tensor(hasT1, dtype=torch.float32, device=DEV)
     y = torch.tensor(Y, dtype=torch.float32, device=DEV)
     known, partial, y_items, pw = _targets(y, tr)
@@ -320,9 +378,19 @@ def train_one(X, hasT1, Y, seed, log=None, ckpt=None):
     ep = start - 1
     for ep in range(start, CFG["epochs"]):
         PROBE["epochs_run"] += 1
+        t_ep = time.time()
         _train_epoch(net, opt, idx_tr, rng, d)
+        if led is not None:
+            led.items(len(idx_tr), "items")
         sched.step()
         vl = _val_loss(net, d, va)
+        if led is not None:                                # values this loop already holds; no new sync
+            try:
+                led.point(prefix + "val.loss", ep + 1, vl)
+                led.point(prefix + "lr", ep + 1, sched.get_last_lr()[0])
+                led.point(prefix + "epoch_s", ep + 1, time.time() - t_ep)
+            except Exception:  # noqa: BLE001  a record never fails the model
+                pass
         if vl < best - 1e-4:
             best, best_state, stale = vl, {k: v.detach().clone() for k, v in net.state_dict().items()}, 0
         else:
@@ -406,9 +474,17 @@ def decode(z, T):
     return grade, p[:, 4:], cls / cls.sum(1, keepdims=True)
 
 
+# Where a SPIDER disc's crop is centred: tss and spider_masks are in crops.npz (crops.main); finder, rAidiology's
+# own disc finder read out of fold (../finder.py, crops.finder_main), has its own file beside it.
+LOCALISATION = {"tss": "TotalSpineSeg r20260730 disc labels (TSS weights: permission pending)",
+                "finder": "rAidiology spine disc finder v1 (trained from scratch on SPIDER development masks, CC BY 4.0; "
+                          "out of fold for every development disc)"}
+
+
 def load_split_crops(split, loc="tss"):
-    d = np.load(os.path.join(WORK, split, "crops.npz"), allow_pickle=False)
-    idx = pd.read_csv(os.path.join(WORK, split, "crops_index.csv"))
+    stem = "crops_finder" if loc == "finder" else "crops"
+    d = np.load(os.path.join(WORK, split, stem + ".npz"), allow_pickle=False)
+    idx = pd.read_csv(os.path.join(WORK, split, stem + "_index.csv"))
     sel = (idx.localisation == loc).to_numpy()
     idx = idx[sel].reset_index(drop=True)
     g = grades().rename(columns={k: "t_" + k for k in ["pfirrmann", *ITEMS]})
@@ -457,6 +533,15 @@ def lsma_all_text_slip_crops(split):
     return lsma.load_crops(split, items=True, notes=True, text=True, slip=True)
 
 
+def yolov9aid_crops(split):
+    """The YOLOv9-AID lumbar set as training-only rows (ideas 151 and 154): the cached development
+    crops and an index of Pfirrmann plus herniation (S2 or S3 against S1 or none, joined by box
+    overlap), T1 absent. Imported lazily so grader.py needs no data to import; only dev is answered,
+    since this outside set is training material and never one of our splits."""
+    from yolov9aid import load_crops
+    return load_crops(split)
+
+
 # Collections beyond SPIDER a trial may train on: name -> (split -> (crops, index)). The index has
 # patient (distinct from SPIDER's), ivd, fold, has_t1, t_pfirrmann, and NaN for every item it lacks.
 # lsma_items: lsma plus bulging and spondylolisthesis (Multi-Disorder); lsma_notes: plus herniation
@@ -464,17 +549,59 @@ def lsma_all_text_slip_crops(split):
 # whose notes report one but locate none; lsma_all_text: both, herniation from the radiologists'
 # free-text notes (lsma_text.py) instead; lsma_all_slip, lsma_all_text_slip: lsma_all and lsma_all_text
 # with spondylolisthesis backed by the notes (lsma.slip_items; docs/efficiency/README.md, idea 22).
+# yolov9aid: YOLOv9-AID's lumbar set (ideas 151 and 154), every disc's Pfirrmann grade and its own
+# bulge/protrusion/extrusion herniation label joined by box overlap, cropped on the T2 slice, T1
+# absent (see yolov9aid.py). Off by default: it is added only by `--extra yolov9aid`, and with that
+# option unused this file's training rows, out-of-fold reads and every number stay today's.
 EXTRA = {"lsma": lsma_crops, "lsma_items": lsma_items_crops, "lsma_notes": lsma_notes_crops, "lsma_all": lsma_all_crops,
          "lsma_all_clean": lsma_all_clean_crops, "lsma_all_text": lsma_all_text_crops,
-         "lsma_all_slip": lsma_all_slip_crops, "lsma_all_text_slip": lsma_all_text_slip_crops}
+         "lsma_all_slip": lsma_all_slip_crops, "lsma_all_text_slip": lsma_all_text_slip_crops,
+         "yolov9aid": yolov9aid_crops}
+
+# Collections whose rows join every fold's training and nothing else: never the out-of-fold read,
+# the early-stop draw, a temperature, a threshold or any score. yolov9aid (ideas 151 and 154) is the
+# only one, so its ~9,100 discs add graded rows without touching a single SPIDER development number.
+TRAIN_ONLY = frozenset({"yolov9aid"})
 
 
-def train(version, seed=0, extra=(), both=False, led=None):
+def _pool(keep, x, idx, Y, folds, train_only=None, both=None):
+    """The training rows of the folds `keep` accepts. The evaluation collections' rows contribute
+    where `keep` accepts their fold; `train_only`, a (crops, index, targets) triple, contributes all
+    of its rows to every fold; `both`, a (crops, index, targets, folds) tuple, is SPIDER's second
+    crops where `keep` accepts. X carries `hold` only when a training-only collection is present, so
+    without one the row order, arrays and every draw are exactly what they were before."""
+    m = keep(folds)
+    X = {"x": x[m], "patients": idx.patient[m].to_numpy()}
+    h, y = idx.has_t1[m].to_numpy(), Y[m]
+    hold = [np.ones(int(m.sum()), bool)]
+    if train_only is not None:
+        tx, ti, tY = train_only
+        X["x"] = np.concatenate([X["x"], tx])
+        X["patients"] = np.concatenate([X["patients"], ti.patient.to_numpy()])
+        h, y = np.concatenate([h, ti.has_t1.to_numpy()]), np.concatenate([y, tY])
+        hold.append(np.zeros(len(tx), bool))
+    if both is not None:
+        bxa, bia, bYa, bfa = both
+        a = keep(bfa)
+        X["x"] = np.concatenate([X["x"], bxa[a]])
+        X["patients"] = np.concatenate([X["patients"], bia.patient[a].to_numpy()])
+        h, y = np.concatenate([h, bia.has_t1[a].to_numpy()]), np.concatenate([y, bYa[a]])
+        hold.append(np.ones(int(a.sum()), bool))
+    if len(hold) > 1:
+        X["hold"] = np.concatenate(hold)
+    return X, h, y
+
+
+def train(version, seed=0, extra=(), both=False, led=None, loc="tss"):
     """`seed` shifts every draw (0 is version 1's); `extra` names collections in EXTRA whose
     development discs join every fold's training. Out-of-fold predictions cover them too, but the
     temperatures, thresholds and calibration are fitted on SPIDER's discs alone, as version 1's.
-    `both` adds SPIDER's development discs a second time, cut where SPIDER's own masks put them
-    (crops.py's spider_masks), to training only: the out-of-fold rows stay the TotalSpineSeg ones."""
+    A collection in TRAIN_ONLY (yolov9aid, ideas 151 and 154) instead joins every fold's training
+    only: its rows never enter the out-of-fold read, the early-stop draw or any score, so the
+    out-of-fold rows stay SPIDER's. `both` adds SPIDER's development discs a second time, cut where
+    SPIDER's own masks put them (crops.py's spider_masks), to training only. `loc` says where SPIDER's discs
+    are cut for training and the out-of-fold read: tss (every version up to v143) or finder (rAidiology's own
+    finder, out of fold; LOCALISATION)."""
     out_dir = os.path.join(MODELS, f"disc-grader-v{version}")
     os.makedirs(out_dir, exist_ok=True)
     logf = open(os.path.join(out_dir, "train.log"), "a")
@@ -484,12 +611,17 @@ def train(version, seed=0, extra=(), both=False, led=None):
         logf.write(s + "\n")
         logf.flush()
 
-    x, idx = load_split_crops("dev")
+    x, idx = load_split_crops("dev", loc)
     idx["collection"] = "spider"
+    xt, it = None, None
     for name in extra:
         xe, ie = EXTRA[name]("dev")
-        x, idx = np.concatenate([x, xe]), pd.concat([idx, ie.assign(collection=name)], ignore_index=True)
+        if name in TRAIN_ONLY:                        # training-only rows, kept out of the out-of-fold set
+            xt, it = (xe, ie) if xt is None else (np.concatenate([xt, xe]), pd.concat([it, ie], ignore_index=True))
+        else:
+            x, idx = np.concatenate([x, xe]), pd.concat([idx, ie.assign(collection=name)], ignore_index=True)
     Y = targets(idx)
+    Yt = targets(it) if it is not None else None
     folds = idx.fold.to_numpy(int)
     xa = None
     if both:
@@ -497,18 +629,15 @@ def train(version, seed=0, extra=(), both=False, led=None):
         Ya, fa = targets(ia), ia.fold.to_numpy(int)
 
     def pool(keep):
-        """The training rows of the folds `keep` accepts, plus their second crops when `both`."""
-        m = keep(folds)
-        X, h, y = {"x": x[m], "patients": idx.patient[m].to_numpy()}, idx.has_t1[m].to_numpy(), Y[m]
-        if xa is not None:
-            a = keep(fa)
-            X = {"x": np.concatenate([X["x"], xa[a]]), "patients": np.concatenate([X["patients"], ia.patient[a].to_numpy()])}
-            h, y = np.concatenate([h, ia.has_t1[a].to_numpy()]), np.concatenate([y, Ya[a]])
-        return X, h, y
+        """The training rows of the folds `keep` accepts, plus the training-only collections and
+        their second crops when `both`."""
+        return _pool(keep, x, idx, Y, folds, (xt, it, Yt) if xt is not None else None,
+                     (xa, ia, Ya, fa) if both else None)
 
     base = SEED + 1000 * seed
     log(f"{time.strftime('%Y-%m-%d %H:%M')} training on {len(idx)} discs, {idx.patient.nunique()} patients, device {DEV}, cfg {CFG}"
         + (f", seed {seed}" if seed else "") + (f", with {', '.join(extra)}: {dict(idx.collection.value_counts())}" if extra else "")
+        + (f", plus {len(xt)} training-only discs ({', '.join(sorted(TRAIN_ONLY & set(extra)))})" if xt is not None else "")
         + (f", plus {len(xa)} SPIDER-mask crops for training" if both else ""))
     oof_single = np.zeros_like(Y)
     oof_nested = np.zeros_like(Y)
@@ -518,13 +647,14 @@ def train(version, seed=0, extra=(), both=False, led=None):
         log(f"outer fold {k}: train {int(tr.sum())} discs")
         # train_one saves fold{k}.pt itself (a bare state dict, its settings' fingerprint in fold{k}.pt.fp) and
         # loads it instead of training when the fingerprint matches; inner{k}_{j}.pt are the nested models.
-        net = train_one(*pool(lambda f: f != k), base + k, log, os.path.join(out_dir, f"fold{k}"))
+        net = train_one(*pool(lambda f: f != k), base + k, log, os.path.join(out_dir, f"fold{k}"),
+                        led=led, prefix=f"fold{k}.")
         outer.append(net)
         oof_single[~tr] = logits([net], x[~tr], idx.has_t1[~tr].to_numpy())
         inner = []
         for j in [f for f in range(5) if f != k]:
             inner.append(train_one(*pool(lambda f: (f != k) & (f != j)), base + 100 * (k + 1) + j, log,
-                                   os.path.join(out_dir, f"inner{k}_{j}")))
+                                   os.path.join(out_dir, f"inner{k}_{j}"), led=led, prefix=f"fold{k}.inner{j}."))
         oof_nested[~tr] = logits(inner, x[~tr], idx.has_t1[~tr].to_numpy())
     np.savez(os.path.join(out_dir, "oof_logits.npz"), single=oof_single, nested=oof_nested, y=Y,
              patient=idx.patient.to_numpy(), ivd=idx.ivd.to_numpy(), fold=folds,
@@ -544,10 +674,11 @@ def train(version, seed=0, extra=(), both=False, led=None):
     thr_ship = {b: youden(p_ship[:, j], Y[:, 4 + j]) for j, b in enumerate(ITEMS)}
     meta = {"version": version, "cfg": CFG, "trained": time.strftime("%Y-%m-%d"), "n_discs": int(len(idx)),
             **({"seed": seed} if seed else {}), **({"extra": list(extra)} if extra else {}),
+            **({"train_only_discs": int(len(xt))} if xt is not None else {}),
             **({"both_localisations": True} if both else {}),
             "n_patients": int(idx.patient.nunique()), "temperature": T_ship.tolist(), "thresholds": thr_ship,
             "calibration": calib, "inputs": "crops.py: T2+T1, 5 planes x 80 x 112 at 0.6 mm, 3.3 mm apart",
-            "localisation": "TotalSpineSeg r20260730 disc labels (TSS weights: permission pending)",
+            "localisation": LOCALISATION[loc],
             "weights": {f"fold{k}.pt": hashlib.sha256(open(os.path.join(out_dir, f"fold{k}.pt"), "rb").read()).hexdigest()
                         for k in range(5)}}
     if DEV.type == "cuda":
@@ -688,6 +819,98 @@ def patient(version, t2_p, lab_p, t1_p=None):
     return res
 
 
+def _selftest_train_only():
+    """CPU, synthetic, seconds: `_pool`, `_hold_out` and a tiny `train` with a training-only
+    collection (yolov9aid's role). Proves the rows join every fold's training, never the early-stop
+    draw, the out-of-fold read, a temperature, a threshold or any score; and that with no such
+    collection the pooled arrays, row order and out-of-fold shape are exactly the old ones."""
+    import shutil
+    import tempfile
+    global MODELS
+    saved = (MODELS, dict(EXTRA), globals()["load_split_crops"], dict(CFG))
+    root = tempfile.mkdtemp(prefix="grader-extra-")
+    MODELS = root
+    npt, npe = 20, 12
+    g = np.random.default_rng(3)
+    folds = np.repeat(np.arange(5), 4)
+    pts = folds * 100 + np.tile(np.arange(4), 5)
+    npt = len(pts)
+
+    def spider(split, loc="tss"):
+        assert split == "dev" and loc == "tss", (split, loc)
+        idx = pd.DataFrame({"patient": pts, "ivd": np.zeros(npt, int), "fold": folds, "has_t1": g.integers(0, 2, npt),
+                            "t_pfirrmann": g.integers(1, 6, npt)})
+        for i in ITEMS:
+            idx["t_" + i] = g.integers(0, 2, npt)
+        return g.normal(size=(npt, 2, 5, 16, 16)).astype(np.float32), idx
+
+    def extra(split):
+        assert split == "dev"
+        idx = pd.DataFrame({"patient": 900000 + np.arange(npe), "ivd": np.zeros(npe, int), "fold": np.arange(npe) % 5,
+                            "has_t1": np.zeros(npe, np.float32), "t_pfirrmann": g.integers(1, 6, npe)})
+        for i in ITEMS:
+            idx["t_" + i] = np.nan
+        return g.normal(size=(npe, 2, 5, 16, 16)).astype(np.float32), idx
+
+    try:
+        CFG.update(epochs=2, patience=100, width=4, batch=16, early_stop_frac=0.25, amp=False,
+                   pool="avg", wear_w=1.0, rank_w=0.0)
+        x, idx = spider("dev")
+        Y = targets(idx)
+        tx, ti = extra("dev")
+        tY = targets(ti)
+
+        def keep0(f):
+            return f != 0
+
+        m0 = folds != 0
+        # no training-only collection: byte-for-byte the old assembly, and no hold key
+        q = _pool(keep0, x, idx, Y, folds)
+        assert "hold" not in q[0] and len(q[0]["x"]) == int(m0.sum()) == 16
+        assert (np.array_equal(q[0]["x"], x[m0]) and np.array_equal(q[0]["patients"], pts[m0])
+                and np.array_equal(q[1], idx.has_t1.to_numpy()[m0]) and np.array_equal(q[2], Y[m0]))
+        # with it: every training-only row is in the pool, none is holdable, all are in training
+        p = _pool(keep0, x, idx, Y, folds, (tx, ti, tY))
+        assert len(p[0]["x"]) == 16 + npe and np.array_equal(p[0]["x"][16:], tx)
+        assert not p[0]["hold"][16:].any() and p[0]["hold"][:16].all()
+        va, tr = _hold_out(np.random.default_rng(1), p[0])
+        assert not va[16:].any(), "a training-only row is never an early-stop row"
+        assert tr[16:].all(), "a training-only row is in training in every fold"
+        assert va[:16].any(), "SPIDER rows are still held out"
+        # `both` adds SPIDER's second crops under a hold of all ones: the draws are the old ones, so an
+        # existing --both-localisations model (v133's recipe) still resumes on its own fingerprint
+        b = _pool(keep0, x, idx, Y, folds, None, (x, idx, Y, folds))
+        assert len(b[0]["x"]) == 32 and b[0]["hold"].all() and np.array_equal(b[0]["x"][:16], x[m0])
+        old = _hold_out(np.random.default_rng(7), {"patients": b[0]["patients"]})
+        new = _hold_out(np.random.default_rng(7), b[0])
+        assert np.array_equal(old[0], new[0]) and np.array_equal(old[1], new[1]) and old[0].any(), \
+            "both localisations: the early-stop draw is exactly the one without a hold key"
+        # end to end: the rows train, and the out-of-fold set stays SPIDER's alone
+        globals()["load_split_crops"] = spider
+        globals()["EXTRA"] = dict(EXTRA, yolov9aid=extra)
+        train(999, 0, ("yolov9aid",), False, None)
+        with np.load(os.path.join(root, "disc-grader-v999", "oof_logits.npz"), allow_pickle=False) as d:
+            y, nested, coll = d["y"], d["nested"], d["collection"]
+        assert len(y) == npt and set(coll) == {"spider"}, "out-of-fold rows are SPIDER's"
+        m = json.load(open(os.path.join(root, "disc-grader-v999", "grader.json")))
+        assert m["extra"] == ["yolov9aid"] and m["train_only_discs"] == npe and m["n_discs"] == npt
+        assert int(np.isfinite(nested).all()) and os.path.exists(os.path.join(root, "disc-grader-v999", "fold4.pt"))
+        # with the option off, the out-of-fold shape and meta carry no training-only trace
+        train(1000, 0, (), False, None)
+        with np.load(os.path.join(root, "disc-grader-v1000", "oof_logits.npz"), allow_pickle=False) as d0:
+            y0 = d0["y"]
+        m0 = json.load(open(os.path.join(root, "disc-grader-v1000", "grader.json")))
+        assert len(y0) == npt and "extra" not in m0 and "train_only_discs" not in m0
+        print("train-only extra (yolov9aid) selftest OK")
+    finally:
+        MODELS, ext, loader, cfg = saved
+        globals()["EXTRA"] = ext
+        globals()["load_split_crops"] = loader
+        CFG.clear()
+        CFG.update(cfg)
+        shutil.rmtree(root, ignore_errors=True)
+
+
 def selftest():
     """CPU, synthetic tiny data, seconds: train_one stopped after epoch 3 of 6 and run again resumes at 3 with the
     saved optimiser and best score, runs only the last 3 epochs, ends on the weights an uninterrupted run reaches,
@@ -759,6 +982,9 @@ def selftest():
         assert foldck.same(again.state_dict(), net.state_dict()), "the avgmax model loads back"
         run("sw")
         assert PROBE["cached"] and PROBE["epochs_run"] == 0
+        # the training-only extra set (ideas 151 and 154): its rows join every fold's training and
+        # never the out-of-fold read or the early-stop draw; with none, the assembly is unchanged.
+        _selftest_train_only()
         print("grader selftest OK")
     finally:
         os.environ.pop("RAIDIOLOGY_CKPT_SELFTEST_STOP", None)
@@ -774,11 +1000,13 @@ if __name__ == "__main__":
     ap.add_argument("--version", type=int, default=1)
     ap.add_argument("--seed", type=int, default=0, help="shifts every draw; 0 is version 1's")
     ap.add_argument("--extra", nargs="*", default=[], choices=sorted(EXTRA),
-                    help="collections whose development discs join every fold's training")
+                    help="collections whose development discs join every fold's training; yolov9aid is training-only")
     ap.add_argument("--set", action="append", default=[], metavar="KEY=JSON",
                     help="override one CFG entry for a trial, e.g. width=48")
     ap.add_argument("--both-localisations", action="store_true",
                     help="also train on SPIDER's discs cut where SPIDER's own masks put them")
+    ap.add_argument("--localisation", default="tss", choices=sorted(LOCALISATION),
+                    help="where SPIDER's discs are cut for training and the out-of-fold read (finder: rAidiology's own)")
     a = ap.parse_args()
     CFG.update(sets.parse(a.set, known=CFG))
     if a.mode == "selftest":
@@ -787,8 +1015,10 @@ if __name__ == "__main__":
         with ledger.run("grader", f"grader v{a.version} seed {a.seed}") as led:
             led.settings_from({"version": a.version, "seed": a.seed, "extra": list(a.extra), "folds": 5, "split": "dev",
                                "both_localisations": a.both_localisations, "set": list(a.set),
+                               "train_only": sorted(TRAIN_ONLY & set(a.extra)),
+                               **({"localisation": a.localisation} if a.localisation != "tss" else {}),
                                **{f"cfg.{k}": v for k, v in CFG.items()}})
-            train(a.version, a.seed, tuple(a.extra), a.both_localisations, led)
+            train(a.version, a.seed, tuple(a.extra), a.both_localisations, led, a.localisation)
     elif a.mode == "predict":
         with ledger.run("grader", f"grader v{a.version} predict {a.args[0]}") as led:
             led.settings_from({"version": a.version, "split": a.args[0]})

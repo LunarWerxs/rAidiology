@@ -179,10 +179,10 @@ Covered (code and weights):
 | Lung nodule research model (CT) | `release/cards/lung-nodules.md` |
 | Mammogram research model | `release/cards/mammography.md` |
 | Lumbar spine X-ray corner reader | `release/cards/spine-xray-corners.md` |
+| Disc grading model (MRI) | `release/cards/disc-grader.md` |
 
 Not covered:
 
-- the disc grading model (MRI; `release/cards/disc-grader.md`);
 - anything that runs on TotalSpineSeg's weights;
 - MedGemma;
 - third-party parts under their own licences.
@@ -291,6 +291,26 @@ Credits:
 
 - BUU-LSPINE: do not try to identify or contact the patients. Acknowledge the Burapha Spine Dataset, and data derived from it, when presenting results or algorithms that used it. Cite: Klinwichit P, et al. BUU-LSPINE: A Thai Open Lumbar Spine Dataset for Spondylolisthesis Detection. Applied Sciences 2023;13(15):8646. Dataset page: https://services.informatics.buu.ac.th/spine/. Do not use Burapha University's name to suggest it endorses anything. No warranty.
 - Spondylolisthesis Vertebral Landmark Dataset v1: Reyes, VSB-TU Ostrava, Mendeley Data, https://data.mendeley.com/datasets/5jdfdgp762/1, CC BY 4.0.
+
+### B.7 Disc grading model (MRI)
+
+No outside pretrained weights. The disc finder and the grader both start from random numbers. No TotalSpineSeg weight or label is used.
+
+| Dataset | Used for | Licence |
+|---|---|---|
+| SPIDER, development patients | training the disc finder and the grader; labels; tuning | CC BY 4.0 |
+| LSMA-PQR v2, development patients | training and tuning: Pfirrmann grades and disc masks | CC BY 4.0 |
+| Lumbar Spine MRI Dataset v2 | the pictures LSMA-PQR graded | CC BY 4.0 |
+| Multi-Disorder Annotations for Lumbar Spine Mid-Sagittal Images v1 | bulging and slipped-vertebra labels | CC BY 4.0 |
+| Radiologists Notes for Lumbar Spine MRI Dataset v2 | herniation labels, read by a written rule, checked by Claude Sonnet 5.5 (Anthropic's terms give the output to the user) and settled by hand | CC BY 4.0 |
+
+Credits:
+
+- SPIDER: van der Graaf, van Hooff, Buckens et al., "Lumbar spine segmentation in MR images: a dataset and a public benchmark", Scientific Data 11, 264 (2024), doi:10.1038/s41597-024-03090-w; data doi:10.5281/zenodo.10159290, CC BY 4.0.
+- LSMA-PQR: Masood, Taj, Talha and Khan, "LSMA-PQR: Lumbar Spine Multi-view Annotations with Pfirrmann grading, Quantitative measurements and structured Radiological reports", Mendeley Data v2, doi:10.17632/p3r4xd2488.2, CC BY 4.0.
+- Lumbar Spine MRI Dataset: Sudirman, Al Kafri, Natalia, Meidia, Afriliana, Al-Rashdan, Bashtawi and Al-Jumaily, Mendeley Data v2, doi:10.17632/k57fr854j2.2, CC BY 4.0.
+- Multi-Disorder Annotations for Lumbar Spine Mid-Sagittal Images: Masood, Taj, Talha and Khan, Mendeley Data v1, doi:10.17632/9j9hmy8kbn.1, CC BY 4.0.
+- Radiologists Notes for Lumbar Spine MRI Dataset: Sudirman, Al Kafri, Natalia, Meidia, Afriliana, Al-Rashdan, Bashtawi and Al-Jumaily, Mendeley Data v2, doi:10.17632/s6bgczr8s2.2, CC BY 4.0.
 
 ## Schedule C: Tiers
 

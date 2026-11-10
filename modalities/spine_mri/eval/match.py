@@ -15,6 +15,12 @@ Scope (one row per graded disc of the split, written to <work>/<split>/matches.c
   - unmatched, nominal level outside       -> out, "unmatched, nominal level outside T12-L1..L5-S1"
 The nominal level is SPIDER's bottom-up count (spider.NOMINAL); it decides scope only for discs
 TotalSpineSeg did not find, and it is the reference for the level-mislabel rate.
+
+No-TotalSpineSeg mode (RAIDIOLOGY_NO_TSS=1, no_tss()): no TotalSpineSeg label is read. Scope is SPIDER's alone: a
+graded disc on the T2 (its mask is there), IVD label >= 1, nominal level T12-L1..L5-S1 -> scored; any other nominal
+level -> out, "nominal level outside T12-L1..L5-S1 (no TotalSpineSeg)". matched stays 0 and the tss_* and dice
+columns stay empty. On SPIDER development this is the same 1004 discs of 168 patients the matched scope gives
+(DEV_SCOPE; on the PC every in-scope disc was TotalSpineSeg-matched at a level in range), and main says so or fails.
 Usage: python match.py <dev|test> [work_dir]"""
 import os
 import sys
@@ -33,6 +39,12 @@ from split import load as load_split  # noqa: E402
 
 MIN_DICE = 0.3
 DISC_IDS = sorted(k for k, v in NAMES.items() if v.startswith("disc_"))
+DEV_SCOPE = (1004, 168)      # SPIDER development: in-scope discs, patients (matched scope, 2026-11-07 spine171m)
+
+
+def no_tss():
+    """True when this run may not read TotalSpineSeg (RAIDIOLOGY_NO_TSS=1): scope by nominal level, no tss crops."""
+    return os.environ.get("RAIDIOLOGY_NO_TSS", "").strip() == "1"
 
 
 def match_patient(mask, tss):
@@ -57,6 +69,7 @@ def match_patient(mask, tss):
 
 def main(split, work=WORK):
     guard_test(split)
+    bare = no_tss()
     sp = load_split()
     base = os.path.join(work, split)
     g = grades()
@@ -69,9 +82,12 @@ def main(split, work=WORK):
         m = None
         if s["t2"]:
             mask = np.asarray(nib.load(os.path.join(base, "mask", f"{p}.nii.gz")).dataobj).astype(np.int32)
-            tss = np.asarray(nib.load(os.path.join(base, "tss", "step2_output", f"{p}.nii.gz")).dataobj).astype(np.int32)
-            assert mask.shape == tss.shape, (p, mask.shape, tss.shape)
-            m = match_patient(mask, np.clip(tss, 0, None))
+            if bare:                     # no TotalSpineSeg: only which discs the T2's mask holds
+                m = {int(v) - 200: (None, 0.0) for v in np.unique(mask) if v >= 200}
+            else:
+                tss = np.asarray(nib.load(os.path.join(base, "tss", "step2_output", f"{p}.nii.gz")).dataobj).astype(np.int32)
+                assert mask.shape == tss.shape, (p, mask.shape, tss.shape)
+                m = match_patient(mask, np.clip(tss, 0, None))
         for _, r in gp.iterrows():
             i = int(r.ivd)
             nominal = NOMINAL.get(i, "")
@@ -84,6 +100,11 @@ def main(split, work=WORK):
                 row["drop_reason"] = "IVD label 0"
             elif i not in m:
                 row["drop_reason"] = "not in the T2's field of view"
+            elif bare:
+                if nominal in SCORED_LEVELS:
+                    row["in_scope"] = 1
+                else:
+                    row["drop_reason"] = "nominal level outside T12-L1..L5-S1 (no TotalSpineSeg)"
             else:
                 lab, dice = m.get(i, (None, 0.0))
                 if lab is not None:
@@ -109,6 +130,12 @@ def main(split, work=WORK):
           f"level differs from SPIDER's count {(mt.tss_level != mt.nominal_level).sum()}; "
           f"in scope {df.in_scope.sum()}; TSS discs matched twice {(dup > 1).sum()}")
     print(df.drop_reason.replace("", "scored").value_counts().to_dict())
+    if bare:
+        n, pts = int(df.in_scope.sum()), int(df[df.in_scope == 1].patient.nunique())
+        print(f"{split} without TotalSpineSeg: in scope {n} discs of {pts} patients (nominal level)")
+        if split == "dev" and (n, pts) != DEV_SCOPE:
+            raise SystemExit(f"no-TotalSpineSeg scope is {n} discs of {pts} patients, not {DEV_SCOPE[0]} of "
+                             f"{DEV_SCOPE[1]}: the grader would be scored on another set than the bar's")
 
 
 if __name__ == "__main__":

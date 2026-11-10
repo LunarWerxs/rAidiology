@@ -1,12 +1,12 @@
-# Model card: rAidiology disc grader v133 + v134 + v140
+# Model card: rAidiology disc grader v144 + v145 + v146, with the rAidiology disc finder v1
 
 **Not a medical device. Not for diagnosis or treatment decisions.**
 
-Written 2026-10-10. These are three versions of one recipe, trained with three different random seeds (0, 1 and 2). The scores below are for the three read together. An earlier version, v1, was published before them; its held-out test scores are given too.
+Written 2026-11-10. These are three versions of one recipe, trained with three different random seeds (0, 1 and 2), on discs placed by rAidiology's own disc finder. The scores below are for the three read together. They replace v133, v134 and v140, which placed the discs with TotalSpineSeg; the scores are the same within the seed noise. An earlier version, v1, was published before them; its held-out test scores are given too.
 
 ## What it does
 
-It grades the discs of the lower spine on a sagittal MRI. You give it a sagittal T2 scan, a sagittal T1 scan if you have one, and the disc labels that TotalSpineSeg draws on the T2 (they show it where each disc is). For each disc from T12-L1 down to L5-S1 it cuts out a small block of pictures and returns a Pfirrmann grade from 1 to 5, the chance of each grade, and the chance of seven findings: herniation, narrowing, bulging, a slipped vertebra (spondylolisthesis), change in the upper endplate, change in the lower endplate, and any Modic change. Each version is five small networks (about 4.7 MB each) whose answers are averaged.
+It grades the discs of the lower spine on a sagittal MRI. You give it a sagittal T2 scan and a sagittal T1 scan if you have one. Its own disc finder, included in the download, first finds and numbers each disc on the T2. For each disc from T12-L1 down to L5-S1 it cuts out a small block of pictures and returns a Pfirrmann grade from 1 to 5, the chance of each grade, and the chance of seven findings: herniation, narrowing, bulging, a slipped vertebra (spondylolisthesis), change in the upper endplate, change in the lower endplate, and any Modic change. Each version is five small networks (about 4.7 MB each) whose answers are averaged.
 
 A Pfirrmann grade says how worn a disc looks on MRI. Grade 1 is a healthy, plump, watery disc. Grade 5 is a disc worn flat and dried out.
 
@@ -18,7 +18,6 @@ A Pfirrmann grade says how worn a disc looks on MRI. Grade 1 is a healthy, plump
 - Other pictures. It reads sagittal T2 (with sagittal T1 if present) of the lumbar spine. It does not read axial or coronal pictures, neck (cervical) discs, chest (thoracic) discs, or other body parts.
 - Spines after surgery or with implants. It was not checked on them.
 - Other scanners and hospitals, without your own check. Its skill dropped sharply when an earlier version met a hospital it had never seen (see Limitations).
-- Any paid or commercial use. None is offered for this model (see Licence).
 
 ## How well it does
 
@@ -30,23 +29,23 @@ Every score here is agreement with a doctor's grades, or with the grades a datas
 
 | Measure | Ours (95% CI where recorded) | Test set | Best published, and who holds it | Same pictures? |
 |---|---|---|---|---|
-| Exact grade, out of 100 discs | 59.6 (55.5 to 63.4) | SPIDER development patients, out of fold: 168 patients, 1,004 discs | 79: SpineNet against a panel of experts (Spine 2023), which counts grades 1 and 2 as one. 84: the scale's authors, three observers on 300 discs (Pfirrmann et al., Spine 2001) | No. Counted the way SpineNet counts, ours is 69.1 (65.3 to 72.9) |
-| Within one grade, out of 100 | 96.41 | the same | 99: SpineNet, and the scale's authors | No |
-| Two or more steps off, out of 100 | 3.59 | the same | 1: the same two | No |
-| Agreement score (quadratic weighted kappa; 0 is guessing, 1 is always agreeing) | 0.7997 | the same | 0.83 (0.74 to 0.91): three radiologists and three spine surgeons (Urrutia et al., Eur Spine J 2016; not re-read at the source). Doctors reach 0.66 to 0.83 with each other on this scale | No |
-| Patients with a herniation caught, out of 100, when clearing 74 of 100 patients without one | 53 (38 to 70) | the same patients: 168, of whom 49 have a herniation | 58 (41 to 74): Gemini 3.1 Pro, untrained, on the middle sagittal T1 alone, 119 SPIDER patients (Eur Spine J 2026) | Same dataset, other patients |
-| LSMA-PQR: exact grade, within one grade (out of 100), kappa | 71.68 (68.85 to 74.51), 98.30 (97.49 to 99.03), 0.7590 (0.7214 to 0.7903) | LSMA-PQR development patients, out of fold: 412 patients, 1,236 discs | Kappa 0.51: the dataset's own baseline grader (J Imaging Inform Med 2026) | Same dataset, other split. Its abstract does not say which patients scored 0.51 |
+| Exact grade, out of 100 discs | 60.1 (55.8 to 64.2) | SPIDER development patients, out of fold: 168 patients, 1,004 discs | 79: SpineNet against a panel of experts (Spine 2023), which counts grades 1 and 2 as one. 84: the scale's authors, three observers on 300 discs (Pfirrmann et al., Spine 2001) | No. Counted the way SpineNet counts, ours is 69.2 (65.3 to 73.0) |
+| Within one grade, out of 100 | 96.31 (94.52 to 97.90) | the same | 99: SpineNet, and the scale's authors | No |
+| Two or more steps off, out of 100 | 3.69 | the same | 1: the same two | No |
+| Agreement score (quadratic weighted kappa; 0 is guessing, 1 is always agreeing) | 0.8012 (0.7550 to 0.8368) | the same | 0.83 (0.74 to 0.91): three radiologists and three spine surgeons (Urrutia et al., Eur Spine J 2016; not re-read at the source). Doctors reach 0.66 to 0.83 with each other on this scale | No |
+| Patients with a herniation caught, out of 100, when clearing 75 of 100 patients without one | 51 (37 to 65) | the same patients: 168, of whom 49 have a herniation | 58 (41 to 74): Gemini 3.1 Pro, untrained, on the middle sagittal T1 alone, 119 SPIDER patients (Eur Spine J 2026) | Same dataset, other patients |
+| LSMA-PQR: exact grade, within one grade (out of 100), kappa | 72.17 (69.34 to 75.08), 98.22 (97.41 to 98.95), 0.7612 (0.7271 to 0.7928) | LSMA-PQR development patients, out of fold: 412 patients, 1,236 discs | Kappa 0.51: the dataset's own baseline grader (J Imaging Inform Med 2026) | Same dataset, other split. Its abstract does not say which patients scored 0.51 |
 
-Each version alone scored 58.67 (v133), 60.06 (v134) and 58.07 (v140) exact on the same SPIDER discs. Changing only the random seed moves the exact grade by about 2 points.
+Each version alone scored 58.37 (v144), 59.06 (v145) and 58.67 (v146) exact on the same SPIDER discs. Changing only the random seed moves the exact grade by about 2 points. The three versions they replace (v133 + v134 + v140, discs placed by TotalSpineSeg) scored 59.6 exact and kappa 0.7997 together; paired by patient, the difference is +0.5 points exact (95% interval -1.6 to +2.5) and +0.0014 kappa (-0.0096 to +0.0122), both inside the seed noise.
 
 ### Other findings (area under the curve; 0.5 is a coin flip, 1.0 is always right)
 
 | Finding | Three versions together, SPIDER development, out of fold | Version 1, SPIDER held-out test (95% CI) |
 |---|---|---|
-| Herniation (per disc) | 0.8836 | 0.818 (0.710 to 0.912) |
+| Herniation (per disc) | 0.8732 | 0.818 (0.710 to 0.912) |
 | Narrowing | not recorded | 0.956 (0.930 to 0.980) |
-| Bulging | 0.8878 | 0.874 (0.824 to 0.919) |
-| Slipped vertebra | 0.8642 | 0.887 (0.789 to 0.964) |
+| Bulging | 0.8872 | 0.874 (0.824 to 0.919) |
+| Slipped vertebra | 0.8660 | 0.887 (0.789 to 0.964) |
 | Upper endplate change | not recorded | 0.817 (0.734 to 0.893) |
 | Lower endplate change | not recorded | 0.850 (0.784 to 0.908) |
 | Any Modic change | not recorded | 0.832 (0.743 to 0.911) |
@@ -67,10 +66,10 @@ These patients were never used to train or tune v1. The full tables are in [the 
 
 ### Where it is behind
 
-- Exact grade: 59.6 of 100 against 79 and 84. Counted the way SpineNet counts, 69.1 against 79.
-- Two or more steps off: 3.59 of 100 against 1.
-- Herniation per patient: 53 caught against 58. The gap is not statistically significant, but no version tried so far has reached 58. Single versions catch from 27 to 57.
-- Kappa 0.7997 sits inside the 0.66 to 0.83 that doctors reach with each other. It is below the top of that range, and the intervals overlap, so it is not shown to be below doctors either.
+- Exact grade: 60.1 of 100 against 79 and 84. Counted the way SpineNet counts, 69.2 against 79.
+- Two or more steps off: 3.69 of 100 against 1.
+- Herniation per patient: 51 caught against 58. The gap is not statistically significant, but no version tried so far has reached 58. Earlier single versions caught from 27 to 57.
+- Kappa 0.8012 sits inside the 0.66 to 0.83 that doctors reach with each other. It is below the top of that range, and the intervals overlap, so it is not shown to be below doctors either.
 - It learned from 2,240 discs of 580 patients. SpineNet's 2017 version learned from 12,018 discs.
 - It has not been shown to beat doctors, and these tests could not show it. The answer key is one doctor's grades, so a reader better than that doctor is marked wrong exactly where it is right.
 
@@ -78,29 +77,29 @@ These patients were never used to train or tune v1. The full tables are in [the 
 
 No dataset was used for pretraining. The networks start from random numbers (no ImageNet or other pretrained weights). The sets below were used for training, for labels and for tuning, in the roles named. The temperatures that turn scores into probabilities, and the yes/no cut-offs, were fitted on out-of-fold predictions for these same development patients.
 
-- **SPIDER**, development patients only (168 scored patients, 1,004 discs). Used for training, labels (one musculoskeletal radiologist's grade for every disc) and tuning. Each disc was cut out twice, once placed by TotalSpineSeg and once by SPIDER's own masks. Licence: CC BY 4.0. Commercial use: allowed with credit. Credit: van der Graaf, van Hooff, Buckens et al., "Lumbar spine segmentation in MR images: a dataset and a public benchmark", Scientific Data 11, 264 (2024), doi:10.1038/s41597-024-03090-w; data doi:10.5281/zenodo.10159290, CC BY 4.0.
+- **SPIDER**, development patients only (168 scored patients, 1,004 discs). Used for training, labels (one musculoskeletal radiologist's grade for every disc) and tuning. Each disc was cut out twice, once placed by rAidiology's disc finder (out of fold: by a finder that never saw that patient) and once by SPIDER's own masks. SPIDER's masks of the same development patients also trained the disc finder. Licence: CC BY 4.0. Commercial use: allowed with credit. Credit: van der Graaf, van Hooff, Buckens et al., "Lumbar spine segmentation in MR images: a dataset and a public benchmark", Scientific Data 11, 264 (2024), doi:10.1038/s41597-024-03090-w; data doi:10.5281/zenodo.10159290, CC BY 4.0.
 - **LSMA-PQR** v2, development patients only (412 patients, 1,236 discs, levels L3-L4, L4-L5 and L5-S1). Used for training and tuning: its Pfirrmann grades are the labels, and its disc masks place the crops. Licence: CC BY 4.0. Commercial use: allowed with credit. Credit: Masood, Taj, Talha and Khan, "LSMA-PQR: Lumbar Spine Multi-view Annotations with Pfirrmann grading, Quantitative measurements and structured Radiological reports", Mendeley Data v2, doi:10.17632/p3r4xd2488.2, CC BY 4.0.
 - **Lumbar Spine MRI Dataset** v2, the scans that LSMA-PQR graded. Used for the pictures of those 412 patients. Licence: CC BY 4.0. Commercial use: allowed with credit. Credit: Sudirman, Al Kafri, Natalia, Meidia, Afriliana, Al-Rashdan, Bashtawi and Al-Jumaily, "Lumbar Spine MRI Dataset", Mendeley Data v2, doi:10.17632/k57fr854j2.2, CC BY 4.0.
 - **Multi-Disorder Annotations for Lumbar Spine Mid-Sagittal Images** v1. Used for the bulging and slipped-vertebra labels of the LSMA-PQR discs. Licence: CC BY 4.0. Commercial use: allowed with credit. Credit: Masood, Taj, Talha and Khan, "Multi-Disorder Annotations for Lumbar Spine Mid-Sagittal Images", Mendeley Data v1, doi:10.17632/9j9hmy8kbn.1, CC BY 4.0.
-- **Radiologists Notes for Lumbar Spine MRI Dataset** v2 (free-text notes from radiologists, one per patient). Used for the herniation labels of the LSMA-PQR discs. A written rule reads each note. A second reading by AI language models flagged where the rule might be wrong. In 505 patients the two agreed, and 10 notes where they differed were settled by hand. 60 patients have no note, so their herniation labels are left unknown. No model's output was used directly as a label. LSMA-PQR's own structured table was not used for herniation, because it marked "no evidence of disc herniation" as a herniation. Licence: CC BY 4.0. Commercial use: allowed with credit. Credit: Sudirman, Al Kafri, Natalia, Meidia, Afriliana, Al-Rashdan, Bashtawi and Al-Jumaily, "Radiologists Notes for Lumbar Spine MRI Dataset", Mendeley Data v2, doi:10.17632/s6bgczr8s2.2, CC BY 4.0.
+- **Radiologists Notes for Lumbar Spine MRI Dataset** v2 (free-text notes from radiologists, one per patient). Used for the herniation labels of the LSMA-PQR discs. A written rule reads each note. A second reading by an AI language model (Claude Sonnet 5.5 over Anthropic's API, whose terms give the output to the user) flagged where the rule might be wrong. In 505 patients the two agreed, and 10 notes where they differed were settled by hand. 60 patients have no note, so their herniation labels are left unknown. No model's output was used directly as a label. LSMA-PQR's own structured table was not used for herniation, because it marked "no evidence of disc herniation" as a herniation. Licence: CC BY 4.0. Commercial use: allowed with credit. Credit: Sudirman, Al Kafri, Natalia, Meidia, Afriliana, Al-Rashdan, Bashtawi and Al-Jumaily, "Radiologists Notes for Lumbar Spine MRI Dataset", Mendeley Data v2, doi:10.17632/s6bgczr8s2.2, CC BY 4.0.
 
 **Used only for testing.** SPIDER's 44 held-out test patients (opened once, for v1) and LSMA-PQR's 103 held-out test patients (opened once, for v103). These three versions never trained on them and were not tuned on them.
 
-**Not used.** ImageNet or any pretrained backbone; the RSNA LumbarDISC data and the SpineNet model (both noncommercial). Other AI models were run as comparison readers, or as a checker on the herniation labels. None of their answers is a label.
+**Not used.** ImageNet or any pretrained backbone; TotalSpineSeg's weights and labels (not cleared for commercial use; `RAIDIOLOGY_NO_TSS=1` makes the code refuse to load it); the RSNA LumbarDISC data and the SpineNet model (both noncommercial). Other AI models were run as comparison readers, or as a checker on the herniation labels. None of their answers is a label.
 
-**Tool it depends on.** TotalSpineSeg (NeuroPoly; code under LGPL-3.0; release r20260730) finds and labels the discs, both when the training pictures were cut and when you read a scan. It is not included here. The licence of its trained weights is unsettled, and parts of its own training data are noncommercial or have no clear terms (sacrum labels from SynthRAD2023, CC BY-NC 4.0; MRSpineSeg and GoldAtlas, terms not confirmed). NeuroPoly has not cleared the weights for commercial use. Anything that depends on them, this model included, is for research and noncommercial use only. This is why commercial use of this model is not allowed (see Licence).
+**The disc finder.** rAidiology's own (`modalities/spine_mri/finder.py`, folder `spine-disc-finder-v1`): a small 2D network trained from random numbers on SPIDER's development patients' T2 masks (CC BY 4.0) and nothing else. Out of fold on the 168 development patients it found all 1,004 discs, with Dice 0.885 (0.878 to 0.892) and a median centre miss of 0.72 mm, and gave 96.8 of 100 discs (94.0 to 99.2) their right level; every level was right in 96.4 of 100 patients. It ships with the grader, so nothing outside this download is needed to read a scan.
 
 Credits for the sets above stay with every copy of the weights.
 
 ## Limitations and known failure modes
 
-- **Scores on SPIDER are optimistic.** TotalSpineSeg was trained on SPIDER's pictures, so it finds SPIDER's discs better than it will find yours. Expect lower scores on new scans. On SPIDER's test patients TotalSpineSeg found 293 of 294 eligible discs.
+- **Scores on SPIDER are optimistic.** The disc finder learned from SPIDER's pictures. Each patient was read by a finder that never saw that patient, but the patients come from the same four hospitals, so it finds SPIDER's discs better than it will find yours. Expect lower scores on new scans. The finder has not been scored on SPIDER's held-out test patients.
 - **One doctor's grades, one kind of patient.** The truth is one radiologist's grades of a Dutch back-pain group (SPIDER) and the grades of one other dataset's authors (LSMA-PQR). Other doctors would disagree on some discs. This card gives no results split by age, sex or scanner brand.
 - **A new hospital can cost it most of its skill.** Version 1 scored kappa 0.42 on LSMA-PQR's test discs. Version 103, trained with that collection's development discs, scored 0.78 on the same discs. These three versions have seen two collections only: SPIDER's four Dutch hospitals and LSMA-PQR. On any other scanner or hospital, measure it before trusting any number here.
 - **Herniation is the weak spot.** Asked "does this patient have a herniation anywhere?", it catches 53 of 100 while clearing 74 of 100 patients without one. Earlier versions mostly read wear. A healthy patient's worn L5-S1 disc scored as high as a real herniation. The herniation labels were rebuilt from the radiologists' own notes to fix part of this. The per-disc yes/no flag is set low so that it catches most herniations, and it raises many false alarms. For version 1 on SPIDER's test discs the flag had sensitivity 0.824 and specificity 0.785. Treat a flag as a reason to look, not as a finding.
 - **Upper levels have less data.** LSMA-PQR covers L3-L4, L4-L5 and L5-S1 only. T12-L1, L1-L2 and L2-L3 learned from SPIDER's 168 patients alone.
 - **Rare findings are noisy.** Modic types 1 and 3 are too rare to score on their own (4 and 7 discs in all of SPIDER), so only "any Modic change" is given. The slipped-vertebra score rests on few cases and has wide intervals.
-- **It needs the disc finder.** If TotalSpineSeg misses a disc or labels the wrong level, you get no grade for that disc or a grade for the wrong disc. A T2 scan is required. A missing T1 is allowed (it is replaced by zeros and a flag).
+- **It needs the disc finder.** If the finder misses a disc or labels the wrong level (it gave 3.2 of 100 SPIDER development discs the wrong level), you get no grade for that disc or a grade for the wrong disc. A T2 scan is required. A missing T1 is allowed (it is replaced by zeros and a flag).
 - **Three seeds differ.** One version alone moves the exact grade by about 2 points. The averaged scores above need all three.
 - **No held-out test yet.** These versions were chosen on development patients. See the note at the top of "How well it does".
 
@@ -110,44 +109,51 @@ The weights and the code are under the [PolyForm Noncommercial License 1.0.0](ht
 
 Required Notice: Copyright (c) 2026 LunarWerx (https://github.com/LunarWerxs)
 
-You may use them free for noncommercial purposes the licence lists, such as personal study and use by educational or public research organisations. This model is not covered by the commercial licence: it is for noncommercial use only. The reason: it runs on TotalSpineSeg to find and label the discs, and its authors were never asked for commercial use. Permission for commercial use was never given. It depends on TotalSpineSeg's weights, which are not cleared for commercial use (see 'Tool it depends on'). It is still not a medical device and may not be used for diagnosis. You must accept the licence before you download the weights. The datasets keep their own CC BY 4.0 licences and credits, listed above. TotalSpineSeg has its own terms. More in [LICENSING.md](https://github.com/LunarWerxs/rAidiology/blob/main/LICENSING.md).
+- Free (a plain reading; the LICENSE text is what binds): personal study, research, and use by charities, schools, public research and health organisations, and governments.
+- Commercial use is available under the rAidiology Commercial Licence ([COMMERCIAL-LICENSE.md](https://github.com/LunarWerxs/rAidiology/blob/main/COMMERCIAL-LICENSE.md)), with a free 60-day evaluation (500 studies, internal testing only, no customers, no patients' care), priced on the rAidiology site's pricing page. Commercial use includes companies using it in paid work, in internal tools, and in any product or hosted service built on it. Not for diagnosis or treatment. Not cleared by the FDA or any regulator.
+- Downloads are on request: universities, schools, public research and health bodies and governments are approved from their email address; a company gets the commercial licence and its free 60-day evaluation copy.
+- The data credits above also travel with the weights. Its whole chain (training data, the disc finder, the labels) allows commercial use; more in [LICENSING.md](https://github.com/LunarWerxs/rAidiology/blob/main/LICENSING.md).
 
 ## How to run it
 
-Put the version folders you want (see Files) in one folder, set `RAIDIOLOGY_MODELS` to that folder, and run the reader on one version:
+Put the version folders you want and the `spine-disc-finder-v1` folder (see Files) in one folder, set `RAIDIOLOGY_MODELS` to that folder, find the discs, then read the scan with one version:
 
 ```
-# environment variable RAIDIOLOGY_MODELS = the folder that holds disc-grader-v133, disc-grader-v134, disc-grader-v140
-python modalities/spine_mri/eval/grader.py patient <t2.nii.gz> <labels.nii.gz> [<t1.nii.gz>] --version 140
+# environment variable RAIDIOLOGY_MODELS = the folder that holds spine-disc-finder-v1 and disc-grader-v144, -v145, -v146
+# environment variable RAIDIOLOGY_NO_TSS = 1 (optional: the code then refuses to load TotalSpineSeg anywhere)
+python modalities/spine_mri/finder.py segment <t2.nii.gz> <labels.nii.gz>
+python modalities/spine_mri/eval/grader.py patient <t2.nii.gz> <labels.nii.gz> [<t1.nii.gz>] --version 146
 ```
 
-`<labels.nii.gz>` is TotalSpineSeg's step 2 label file for the same T2 scan (see `modalities/spine_mri/tss.py` for the call). The T2 and T1 scans are NIfTI files. It prints one block of JSON per level that TotalSpineSeg found: the grade, the probability of each grade, each finding's probability, and the yes/no flags. The temperatures and cut-offs it applies are in each version's `grader.json`. It runs on a processor or a graphics card.
+`<labels.nii.gz>` is the disc finder's label file for the same T2 scan, written by the first command. The T2 and T1 scans are NIfTI files. It prints one block of JSON per level the finder found: the grade, the probability of each grade, each finding's probability, and the yes/no flags. The temperatures and cut-offs it applies are in each version's `grader.json`. It runs on a processor or a graphics card; on a processor the finder took about 10 seconds for one SPIDER scan.
 
 The command reads one version at a time. The scores above are for the three versions averaged, taking the mean of their probabilities. This repository does not yet have a command that does the averaging. Running the command once per version and averaging the probabilities gives a close read, but that exact route was not the one scored.
 
 ### Files
 
-Each version is a folder of five fold networks and one `grader.json`. Only these 18 files are needed to read a scan.
+Each version is a folder of five fold networks and one `grader.json`; the disc finder is one network (`all.pt`) and its `finder.json`. Only these 20 files are needed to read a scan.
 
 | File | Bytes | SHA-256 |
 |---|---:|---|
-| `disc-grader-v133/fold0.pt` | 4,742,438 | `b9be076447f945bcf356dcc6815ce9fec9885ee6afa83bfe8d139855d4f0462a` |
-| `disc-grader-v133/fold1.pt` | 4,742,438 | `e20a7a12d56d3cfc1fec1d10b32f76e60af70f9e1ad7258ff46f91446a00eb94` |
-| `disc-grader-v133/fold2.pt` | 4,742,438 | `32bb0ee92abe192e751dbfc0e83b52dc9f8cb39da7b2ea712f6f8b11cce110ab` |
-| `disc-grader-v133/fold3.pt` | 4,742,438 | `d4c1d27a173652a6a4b67942bcfed3b5648f884f402057caf88c623e90d3e2a9` |
-| `disc-grader-v133/fold4.pt` | 4,742,438 | `88207cb1cce80cbef5006dfac19554a78b8f57d686221821d47e503a60e706be` |
-| `disc-grader-v133/grader.json` | 2,312 | `911d8f3eba968733d7b5a51df7031d332cedc6e179070ba0d9ac20b769d26e78` |
-| `disc-grader-v134/fold0.pt` | 4,742,438 | `0f6b62125a2f69ca78be2daddbf3d41229049e366be3c80e1cb084ea652ffa1b` |
-| `disc-grader-v134/fold1.pt` | 4,742,438 | `fd2ed057a35bc586017ce4f4041d745ac159dc9c75c0f39dec8680aab3d746a1` |
-| `disc-grader-v134/fold2.pt` | 4,742,438 | `9cc1c836fb40e00dcb29b56525520954c42838ce2ad248e024fa402b6a1c7da5` |
-| `disc-grader-v134/fold3.pt` | 4,742,438 | `623749109d0ffe688e7a31c013802b6b6de2462f0081718e3528225b7d0b5ee5` |
-| `disc-grader-v134/fold4.pt` | 4,742,438 | `83d7bc7fa0f444921ef52006b2ed555d7ee08c3a2c80113531765849a62784e9` |
-| `disc-grader-v134/grader.json` | 2,319 | `1b01883676f6c94abfebf2dbf6e5864e984ac143f29531c117c5c08d339f9230` |
-| `disc-grader-v140/fold0.pt` | 4,742,438 | `e7d6dd92bf8e4c0d657fa3e041d4542993b82cc34470541eea930144e290c984` |
-| `disc-grader-v140/fold1.pt` | 4,742,438 | `92e8eecf670edc2567baebdfb89038b483dbee6621e6bb555803950c3f30bf32` |
-| `disc-grader-v140/fold2.pt` | 4,742,438 | `f501eea6fc5fb9212ca72bdaad9da3ff171ab9d2b99006aa3a19017ff2e28000` |
-| `disc-grader-v140/fold3.pt` | 4,742,438 | `fc2929563693710e02df52d95900b1a88d2a6023a753d6be64153c8041cf96c5` |
-| `disc-grader-v140/fold4.pt` | 4,742,438 | `546753fcdf2db6dbb8df51ef7d0c628278ccb2826ecbb8d0ae8d74f049e7d814` |
-| `disc-grader-v140/grader.json` | 2,348 | `321119f8096d9d0656c84e252a3d84bf73d3f6ee8090922cd587847c3651b798` |
+| `disc-grader-v144/fold0.pt` | 4,742,837 | `d49ba29377bd09b279b402c84749fb19188a5f25218e3c8090d68e66d16935f4` |
+| `disc-grader-v144/fold1.pt` | 4,742,837 | `378d3b22e6e2242f3e1e80fdd78d2e20d5aa1392fc46c1cf1b746aba87ca45c9` |
+| `disc-grader-v144/fold2.pt` | 4,742,837 | `36a8ac7173aa811b347062af5c067753b39e0a0beb2237709449a146f4878b33` |
+| `disc-grader-v144/fold3.pt` | 4,742,837 | `b9d2c07f2a334324a0216e5cd3bb9000d1d0454a87d1363e38f893d717f5c0dc` |
+| `disc-grader-v144/fold4.pt` | 4,742,837 | `479f424a911f7711e9622ee4decedd3b80aab6ec246598497eeeced8cb275913` |
+| `disc-grader-v144/grader.json` | 2,328 | `b91564a1bcaf3dbbfb3ec7e73e565ceeb2877764aa47f43cceca71ed2d2ba629` |
+| `disc-grader-v145/fold0.pt` | 4,742,837 | `746a1ef329a686d8cf9b47f681185071e885ff306e6fd08c236419a57da90137` |
+| `disc-grader-v145/fold1.pt` | 4,742,837 | `eea2bc591d5df759b6c59f87b80d28517577ba5c9cc5c03069a518b97c8b52ca` |
+| `disc-grader-v145/fold2.pt` | 4,742,837 | `e818802e6b68bde20fa53a67e348728ff9dd6e8441bf53b26616afaf5031014a` |
+| `disc-grader-v145/fold3.pt` | 4,742,837 | `d9f565ed8a3efff7a81afbec018d52c37cd6959fc11a6a6da8ee038b39e8a6c1` |
+| `disc-grader-v145/fold4.pt` | 4,742,837 | `b62e5651cd60f855ea284f84e4611962155aaaacf4defe6d7e1c0f7cb8aa5ce4` |
+| `disc-grader-v145/grader.json` | 2,340 | `cfc8de72814879545ccac2ea7b5c96a90d50c43545bda121d4a2af35b128de18` |
+| `disc-grader-v146/fold0.pt` | 4,742,837 | `dd4001868777a24f73896ae6e80e029935ceaf1bcea57b3125aba6f1e29801fd` |
+| `disc-grader-v146/fold1.pt` | 4,742,837 | `1ba865d7fd50ecf95d549780cfd9de8b0496f96e125a5f9439d003dd4902ad42` |
+| `disc-grader-v146/fold2.pt` | 4,742,837 | `72a30b424dda2aa7e1fabfe09ebdf5d78ec6c23fce1cc9b0efe457bb7547a308` |
+| `disc-grader-v146/fold3.pt` | 4,742,837 | `39dd47fc90436e5c3756d7a82d4b6736e07665c3e30b7897b370ac281925120a` |
+| `disc-grader-v146/fold4.pt` | 4,742,837 | `5d6248801f02752a97ef4901ec313359f98fb18dcbe6b757b64b9d2f62a6ed3e` |
+| `disc-grader-v146/grader.json` | 2,339 | `434252eac4f0548d7e51277f9306fbdc1063e0aacea63dee832c9a5795c10799` |
+| `spine-disc-finder-v1/all.pt` | 22,760,779 | `da7f9fc19bb27bbd2fbb0270279400935ba128c16e36fc99b97201228c0e4ded` |
+| `spine-disc-finder-v1/finder.json` | 1,537 | `1b28ad5eff74478ca1e34427924e70e5aa77f50d4e48e0b5a6fde69279e54c57` |
 
 Code: `modalities/spine_mri/eval/grader.py` (network and reader), `modalities/spine_mri/eval/crops.py` (how a disc is cut out). The earlier version's card is `modalities/spine_mri/models/disc-grader.md`.

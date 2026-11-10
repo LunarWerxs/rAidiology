@@ -11,13 +11,12 @@ ROOT = Path(__file__).resolve().parent.parent
 HF = ROOT / "release" / "huggingface"
 PUBLISH = HF / "publish.py"
 EXPORT = ROOT / "tools" / "public_export.py"
-PAID = {"chest-xray", "fracture-detector", "ct-segmenter", "lung-nodules", "mammography", "spine-xray-corners"}
+PAID = {"chest-xray", "fracture-detector", "ct-segmenter", "lung-nodules", "mammography", "spine-xray-corners",
+        "disc-grader"}
 # The owner's rule: every model trains and runs only on what he can sell, so every card is in Schedule A. A card may
-# sit outside it only while it is being made sellable, named here with what blocks it and what clears it.
-NOT_SELLABLE_YET = {
-    "disc-grader": "finds the discs with TotalSpineSeg's weights, not cleared for commercial use; cleared by the disc "
-                   "finder retrained from scratch on SPIDER's own masks (CC BY 4.0)",
-}
+# sit outside it only while it is being made sellable, named here with what blocks it and what clears it. Empty since
+# 2026-11-10: the disc grader's own disc finder (SPIDER masks, CC BY 4.0) replaced TotalSpineSeg.
+NOT_SELLABLE_YET = {}
 FREE = set(NOT_SELLABLE_YET)
 
 
@@ -78,7 +77,7 @@ def test_each_card_builds_with_its_own_gate_note(tmp_path):
 def test_paid_repo_must_be_named_for_the_reviewer():
     r = run_publish("chest-xray", "--repo-id", "LunarWerx/chest")
     assert r.returncode == 2 and "must be named rAidiology-chest-xray" in r.stderr, r.stderr
-    r = run_publish("disc-grader", "--repo-id", "LunarWerx/anything")
+    r = run_publish("disc-grader", "--repo-id", "LunarWerx/rAidiology-disc-grader")
     assert r.returncode == 0, r.stderr
 
 
@@ -90,7 +89,7 @@ def test_push_gets_the_cards_gate(tmp_path, monkeypatch):
     (folder / "fold0.pt").write_bytes(b"not a real network")
     calls = []
     monkeypatch.setattr(mod, "push", lambda *args: calls.append(args))
-    for card, gate in (("disc-grader", "auto"), ("chest-xray", "manual")):
+    for card, gate in (("disc-grader", "manual"), ("chest-xray", "manual")):
         monkeypatch.setattr(sys, "argv", ["publish.py", card, "--weights-dir", str(folder),
                                           "--repo-id", f"LunarWerx/rAidiology-{card}", "--push"])
         mod.main()

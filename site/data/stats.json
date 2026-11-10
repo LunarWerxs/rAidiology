@@ -480,21 +480,21 @@
           "version": "v1 (earlier version)",
           "source": {
             "file": "release/cards/disc-grader.md",
-            "line": 63
+            "line": 62
           }
         },
         {
           "metric": "percent",
           "label": "Share of discs given SPIDER's exact grade, development patients",
-          "value": 59.6,
-          "low": 55.5,
-          "high": 63.4,
+          "value": 60.1,
+          "low": 55.8,
+          "high": 64.2,
           "held_out": false,
           "set": "SPIDER development patients, out of fold: 168 patients, 1,004 discs",
-          "version": "v133 + v134 + v140 together",
+          "version": "v144 + v145 + v146 together",
           "source": {
             "file": "release/cards/disc-grader.md",
-            "line": 33
+            "line": 32
           }
         }
       ],
@@ -513,7 +513,7 @@
               "high": 0.912,
               "source": {
                 "file": "release/cards/disc-grader.md",
-                "line": 46
+                "line": 45
               }
             },
             {
@@ -523,7 +523,7 @@
               "high": 0.98,
               "source": {
                 "file": "release/cards/disc-grader.md",
-                "line": 47
+                "line": 46
               }
             },
             {
@@ -533,7 +533,7 @@
               "high": 0.919,
               "source": {
                 "file": "release/cards/disc-grader.md",
-                "line": 48
+                "line": 47
               }
             },
             {
@@ -543,7 +543,7 @@
               "high": 0.964,
               "source": {
                 "file": "release/cards/disc-grader.md",
-                "line": 49
+                "line": 48
               }
             },
             {
@@ -553,7 +553,7 @@
               "high": 0.893,
               "source": {
                 "file": "release/cards/disc-grader.md",
-                "line": 50
+                "line": 49
               }
             },
             {
@@ -563,7 +563,7 @@
               "high": 0.908,
               "source": {
                 "file": "release/cards/disc-grader.md",
-                "line": 51
+                "line": 50
               }
             },
             {
@@ -573,7 +573,7 @@
               "high": 0.911,
               "source": {
                 "file": "release/cards/disc-grader.md",
-                "line": 52
+                "line": 51
               }
             }
           ]
@@ -584,21 +584,21 @@
           "text": "The three current versions have not been scored on held-out test patients; their results are development results.",
           "source": {
             "file": "release/cards/disc-grader.md",
-            "line": 105
+            "line": 104
           }
         },
         {
-          "text": "Herniation is the weak spot: for the dataset's herniation label per patient, the three versions together agree on 53% (38% to 70%) of patients with one and 74% of patients without one.",
+          "text": "Herniation is the weak spot: for the dataset's herniation label per patient, the three versions together catch 51% (37% to 65%) of patients with one while clearing 75% of patients without one.",
           "source": {
             "file": "release/cards/disc-grader.md",
-            "line": 100
+            "line": 99
           }
         },
         {
           "text": "A new hospital can cost it most of its skill: version 1 scored kappa 0.42 on a collection it had never seen, against 0.78 for the version trained on that collection's development discs.",
           "source": {
             "file": "release/cards/disc-grader.md",
-            "line": 99
+            "line": 98
           }
         }
       ],
@@ -611,7 +611,7 @@
         {
           "name": "LSMA-PQR v2",
           "licence": "CC BY 4.0",
-          "url": "https://doi.org/10.17632/k57fr854j2.2"
+          "url": "https://doi.org/10.17632/p3r4xd2488.2"
         },
         {
           "name": "Lumbar Spine MRI Dataset v2",
@@ -622,9 +622,14 @@
           "name": "Multi-Disorder Annotations for Lumbar Spine Mid-Sagittal Images v1",
           "licence": "CC BY 4.0",
           "url": "https://doi.org/10.17632/9j9hmy8kbn.1"
+        },
+        {
+          "name": "Radiologists Notes for Lumbar Spine MRI Dataset v2",
+          "licence": "CC BY 4.0",
+          "url": "https://doi.org/10.17632/s6bgczr8s2.2"
         }
       ],
-      "weights": "On Hugging Face, after you accept the licence: https://huggingface.co/LunarWerx/rAidiology-disc-grader",
+      "weights": "On request on Hugging Face: https://huggingface.co/LunarWerx/rAidiology-disc-grader",
       "card": "release/cards/disc-grader.md"
     },
     {

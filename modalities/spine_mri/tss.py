@@ -4,23 +4,22 @@ evaluation (eval/), so both segment the same way.
 TotalSpineSeg's released weights are "permission pending" (LICENSING.md): anything that depends
 on them is internal development and evaluation only: NeuroPoly is not asked (no email goes to a data
 owner, 2026-10-06), so nothing that depends on them goes into a paid product."""
-import glob
 import os
+import shlex
 import shutil
 import subprocess
 import sys
 
 PERMISSION = "TSS weights: permission pending"
+# The commercial disc-grader chain (finder.py, spine_finder_box.sh) runs with RAIDIOLOGY_NO_TSS=1: nothing in it may read
+# TotalSpineSeg, so importing this module there is an error, not a silent fallback (2026-11-10).
+if os.environ.get("RAIDIOLOGY_NO_TSS", "").strip() == "1":
+    raise ImportError("RAIDIOLOGY_NO_TSS=1: TotalSpineSeg is barred from this chain (its weights are not cleared for "
+                      "commercial use); this run must not import tss.py")
 
 
 def executable():
     return shutil.which("totalspineseg") or os.path.join(os.path.dirname(sys.executable), "totalspineseg")
-
-
-def weights_release(data_dir):
-    """The release tag of the installed weights, e.g. 'r20260730', or None."""
-    tags = sorted(os.path.basename(p) for p in glob.glob(os.path.join(data_dir, "nnUNet", "results", "r*")))
-    return tags[-1] if tags else None
 
 
 def segment(in_path, out_dir, data_dir, keep_only=None, quiet=False, workers=None):
@@ -34,8 +33,10 @@ def segment(in_path, out_dir, data_dir, keep_only=None, quiet=False, workers=Non
         args += ["--keep-only", *keep_only]
     if quiet:
         args.append("--quiet")
+    # a fleet box's flags and time limit (eval/fleet_stage.sh): TotalSpineSeg's pools stalled there with the default start method
+    args += shlex.split(os.environ.get("TSS_EXTRA", ""))
     print("+", " ".join(args), flush=True)
-    subprocess.run(args, check=True)
+    subprocess.run(args, check=True, timeout=int(os.environ["TSS_TIMEOUT"]) if os.environ.get("TSS_TIMEOUT") else None)
     return os.path.join(out_dir, "step2_output")
 
 

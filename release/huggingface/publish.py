@@ -78,7 +78,7 @@ WEIGHT_SUFFIXES = (".pt", ".pth", ".onnx", ".safetensors", ".bin", ".xml")
 # networks) stays behind, so a scan, an image, an archive or a person's data can never be picked up by accident.
 FOLDER_PATTERNS = ("*fold[0-9].pt", "*.onnx", "*.safetensors")
 # A JSON file goes out only under one of these names, and only beside a weight file in the same folder.
-CONFIG_NAMES = ("meta.json", "grader.json", "config.json")
+CONFIG_NAMES = ("meta.json", "grader.json", "config.json", "finder.json")
 RESERVED = ("readme.md", "license")  # names the script writes itself; a weights folder cannot take them
 # Markdown link targets that are not a full web address or an anchor in the same card are refused (see read_card).
 LINK = re.compile(r"!?\[[^\]\n]*\]\(\s*<?([^)\s>]*)")        # [text](target) and ![alt](target)

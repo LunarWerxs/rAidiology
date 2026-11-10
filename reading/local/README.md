@@ -27,7 +27,7 @@ GPU code is run), `disk_free_bytes`, and `models` (from `models.json`, each with
 
 ## Weights
 
-Research-model weights come from Hugging Face: the noncommercial-only disc grader downloads once you accept the licence, and the six models also licensed to companies are on request. Put each in `models/<key>/` inside the project
+Research-model weights come from Hugging Face: all seven are on request: free for universities, schools, public research and health bodies and governments, approved from their email address, and licensed to companies. Put each in `models/<key>/` inside the project
 folder (a `.safetensors`, `.onnx` or `.pt` file). Keys are listed in `models.json`.
 
 Not a medical device. For education and research.
