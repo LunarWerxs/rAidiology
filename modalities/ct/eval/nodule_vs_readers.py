@@ -53,7 +53,7 @@ def prepare(cands, keys, marks, scans_frame):
     with their scores and scan, and the radiologist's own hits and false alarms per scan."""
     four = set(scans_frame.series_uid[scans_frame.n_readers == 4])
     cands = cands.assign(seriesuid=cands.seriesuid.astype(str))
-    uids = sorted(set(cands.seriesuid) & {str(u) for u in four})
+    uids = sorted(str(u) for u in four)          # every 4-reader scan, also one the detector found nothing on
     cands = cands[cands.seriesuid.isin(uids)]
     pat = dict(zip(scans_frame.series_uid.astype(str), scans_frame.patient))
     patient = np.array([pat[u] for u in uids])
